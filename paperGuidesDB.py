@@ -21,7 +21,8 @@ def createDatabase():
         component TEXT,
         board TEXT,
         level INTEGER,
-        file BLOB UNIQUE)''')
+        file BLOB UNIQUE, 
+        approved DEFAULT False)''')
 
 
         # Create questions table
@@ -34,7 +35,8 @@ def createDatabase():
         board TEXT,
         level TEXT,
         component TEXT,
-        file BLOB UNIQUE)''')
+        file BLOB UNIQUE, 
+        approved DEFAULT False)''')
         connection.commit()
 
 
