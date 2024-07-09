@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Paper-Guides
+{% endblock %}
+
+{% block body %}
+    <h1>Questions</h1>
+    <ul>
+        {% for question in questions %}
+            <li>
+                <strong>Subject:</strong> {{ question[1] }}<br>
+                <strong>Topic:</strong> {{ question[2] }}<br>
+                <strong>Difficulty:</strong> {{ question[3] }}<br>
+                <strong>Board:</strong> {{ question[4] }}<br>
+                <strong>Level:</strong> {{ question[5] }}<br>
+                <!-- If you have a file column, you can display it -->
+                {% if question[6] %}
+                    <strong>File:</strong> <a href="{{ url_for('static', filename='file.png') }}">Download File</a><br>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
