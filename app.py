@@ -35,9 +35,14 @@ def index():
     return render_template('index.html')
 
 
-@app.template_filter('b64encode')
-def b64encode_filter(s):
-    return base64.b64encode(s).decode('utf-8') if s else ''
+@app.route('/submit')
+def submit():
+    return render_template('submit.html')
+
+@app.route('/submitQuestion', methods = ['POST'])
+def submitQuestion():
+    ...
+
 
 """
 This functionality for the user login and authentication will be implemented later so this part of the code has been commented.
@@ -113,6 +118,15 @@ This allows for more functionalities for uploading user submitted data and allow
     
 #     # Logic for admin-only functionality
 #     return render_template('admin.html')
+
+
+
+
+
+@app.template_filter('b64encode')
+def b64encode_filter(s):
+    return base64.b64encode(s).decode('utf-8') if s else ''
+
 
 if __name__ == '__main__':
     app.run(debug=True)

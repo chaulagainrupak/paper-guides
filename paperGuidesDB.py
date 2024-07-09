@@ -7,7 +7,7 @@ def createDatabase():
         connection = sqlite3.connect('./instance/paper-guides-resources.db')
         db = connection.cursor()
 
-        
+
         # Create papers table
         db.execute('''CREATE TABLE IF NOT EXISTS papers
         (id INTEGER PRIMARY KEY,
@@ -30,6 +30,7 @@ def createDatabase():
         difficulty INTEGER,
         board TEXT,
         level TEXT,
+        component TEXT,
         file BLOB UNIQUE)''')
         connection.commit()
 
@@ -41,7 +42,7 @@ def createDatabase():
         if connection:
             connection.close()
 
-def insertQuestion(db, question):
+def insertQuestion():
     ...
 
 def retrieveQuestions():

@@ -1,0 +1,49 @@
+{% extends 'base.html'%}
+
+{% block title %}
+    Submit
+{% endblock %}
+
+{% block body %}
+<h1>Submit a Question</h1>
+<form id="questionForm" action="/submit_question" method="post" enctype="multipart/form-data">
+    <div>
+        <label for="subject">Subject:</label>
+        <select id="subject" name="subject" required>
+            <option value="choose">Choose One</option>
+            <!-- Options will be loaded from the config file using Python -->
+        </select>
+    </div>
+    <div>
+        <label for="topic">Topic:</label>
+        <select id="topic" name="topic" required>
+            <option value="choose">Choose One</option>
+            <!-- Options will be dynamically loaded based on the selected subject -->
+        </select>
+    </div>
+    <div>
+        <label for="difficulty">Difficulty (1-5):</label>
+        <input type="number" id="difficulty" name="difficulty" min="1" max="5" required>
+    </div>
+    <input type="hidden" id="board" name="board" value="NEB">
+    <div>
+        <label for="level">Level:</label>
+        <select id="level" name="level" required>
+            <option value="NEB" selected>NEB</option>
+            <!-- Options will be loaded from the config file using Python -->
+        </select>
+    </div>
+    <div>
+        <label for="component">Component:</label>
+        <select id="component" name="component" required>
+            <option value="choose">Choose One</option>
+            <!-- Options will be loaded from the config file using Python -->
+        </select>
+    </div>
+    <div>
+        <label for="file">Question Image:</label>
+        <input type="file" id="file" name="file" accept="image/*" required>
+    </div>
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}

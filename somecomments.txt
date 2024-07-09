@@ -1,0 +1,5 @@
+
+
+
+<!-- This is required to render the images for questions in the site -->
+<!-- <strong>File:</strong> <img src="data:image/png;base64,{{ question[7] | b64encode }}" alt="Question Image"><br> -->
