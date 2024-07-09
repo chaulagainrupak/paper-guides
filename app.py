@@ -7,8 +7,10 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from flask_sqlalchemy import SQLAlchemy
 from models import db, User
 from datetime import datetime
+import base64
 
-from createDB import *
+
+from paperGuidesDB import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'
@@ -17,7 +19,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-createDatabases()
+createDatabase()
 
 # Initialize Flask-Login
 login_manager = LoginManager()
@@ -30,8 +32,12 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    questions = retrieveQuestions()
-    return render_template('index.html', questions=questions)
+    return render_template('index.html')
+
+
+@app.template_filter('b64encode')
+def b64encode_filter(s):
+    return base64.b64encode(s).decode('utf-8') if s else ''
 
 """
 This functionality for the user login and authentication will be implemented later so this part of the code has been commented.
