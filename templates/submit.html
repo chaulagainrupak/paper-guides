@@ -2,13 +2,14 @@
 
 {% block title %}
     Submit
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 {% endblock %}
 
 {% block body %}
 <h1>Submit a Question</h1>
 <form id="questionForm" action="/submit_question" method="post" enctype="multipart/form-data">
     
-
+    <p style="display: none;" id="config"> {{ config | tojson | safe }}</p>
     <div>
         <label for="board">Board:</label>
         <select name="board" id="board" required>
@@ -19,23 +20,14 @@
     <div>
         <label for="subject">Subject:</label>
         <select id="subject" name="subject" required>
-            <option value="choose">Choose One</option>
-            <!-- Options will be loaded from the config file using Python -->
-
             {% for subject in config.NEB.subjects%}
-                <option value="{{subject}}">{{subject}}</option>
+                <option value="{{subject.name}}" id="subject">{{subject.name}}</option>
             {%endfor%}
         </select>
     </div>
     <div>
         <label for="topic">Topic:</label>
-        <select id="topic" name="topic" required>
-            <option value="choose">Choose One</option>
-
-            {% for topic in config.NEB.topic%}
-                <option value="{{topic}}">{{topic}}</option>
-            {%endfor%}
-            <!-- Options will be dynamically loaded based on the selected subject -->
+        <select id="topic" name="topic" required>   
         </select>
     </div>
     <div>
@@ -45,12 +37,10 @@
     <div>
         <label for="level">Level:</label>
         <select id="level" name="level" required>
-            <option value="choose">Choose One</option>
 
             {% for level in config.NEB.levels%}
                 <option value="{{level}}">{{level}}</option>
             {%endfor%}
-            <!-- Options will be loaded from the config file using Python -->
         </select>
     </div>
     <div>
@@ -72,9 +62,8 @@
 </form>
 
 
-
 <script>
 
-    console.log();
+
 </script>
 {% endblock %}

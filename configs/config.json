@@ -1,16 +1,94 @@
 {
     "NEB": {
         "subjects": [
-            "Compulsory Maths",
-            "Optional Maths",
-            "Physics",
-            "Chemistry",
-            "Biology",
-            "English",
-            "Nepali",
-            "Computer",
-            "Accounts",
-            "Economics"
+            {
+                "name": "Compulsory Maths",
+                "topics": [
+                    "Algebra",
+                    "Geometry",
+                    "Trigonometry",
+                    "Calculus"
+                ]
+            },
+            {
+                "name": "Optional Maths",
+                "topics": [
+                    "Statistics",
+                    "Probability",
+                    "Discrete Mathematics"
+                ]
+            },
+            {
+                "name": "Physics",
+                "topics": [
+                    "Mechanics",
+                    "Thermodynamics",
+                    "Electricity and Magnetism",
+                    "Optics"
+                ]
+            },
+            {
+                "name": "Chemistry",
+                "topics": [
+                    "Inorganic Chemistry",
+                    "Organic Chemistry",
+                    "Physical Chemistry",
+                    "Analytical Chemistry"
+                ]
+            },
+            {
+                "name": "Biology",
+                "topics": [
+                    "Cell Biology",
+                    "Genetics",
+                    "Ecology",
+                    "Anatomy and Physiology"
+                ]
+            },
+            {
+                "name": "English",
+                "topics": [
+                    "Grammar",
+                    "Literature",
+                    "Writing Skills",
+                    "Reading Comprehension"
+                ]
+            },
+            {
+                "name": "Nepali",
+                "topics": [
+                    "Grammar",
+                    "Literature",
+                    "Writing Skills",
+                    "Reading Comprehension"
+                ]
+            },
+            {
+                "name": "Computer",
+                "topics": [
+                    "Programming",
+                    "Database Management",
+                    "Web Development",
+                    "Algorithms"
+                ]
+            },
+            {
+                "name": "Accounts",
+                "topics": [
+                    "Financial Accounting",
+                    "Cost Accounting",
+                    "Management Accounting"
+                ]
+            },
+            {
+                "name": "Economics",
+                "topics": [
+                    "Microeconomics",
+                    "Macroeconomics",
+                    "International Economics",
+                    "Development Economics"
+                ]
+            }
         ],
         "levels": [
             "8",
