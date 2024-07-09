@@ -48,9 +48,23 @@ def submit():
 
     return render_template('submit.html', config = config)
 
-@app.route('/submitQuestion', methods = ['POST'])
+
+@app.route('/submitQuestion', methods=['POST'])
 def submitQuestion():
-    ...
+    # Get form data
+    board = request.form.get('board')
+    subject = request.form.get('subject')
+    topic = request.form.get('topic')
+    difficulty = request.form.get('difficulty')
+    level = request.form.get('level')
+    component = request.form.get('component')
+    file = request.files['file']
+
+    # Call insertQuestion function
+    if insertQuestion(board, subject, topic, difficulty, level, component, file):
+        return redirect(url_for('index'))  # Redirect to home or any other page on success
+    else:
+        return "Error occurred while submitting question", 500  # Return an error message on failure
 
 
 """

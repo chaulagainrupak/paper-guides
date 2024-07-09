@@ -6,14 +6,13 @@
 
 {% block body %}
 <h1>Submit a Question</h1>
-<form id="questionForm" action="/submit_question" method="post" enctype="multipart/form-data">
+<form id="questionForm" action="/submitQuestion" method="post" enctype="multipart/form-data">
     
     <p style="display: none;" id="config"> {{ config | tojson | safe }}</p>
     <div>
         <label for="board">Board:</label>
         <select name="board" id="board" required>
             <option value="NEB" selected>NEB</option>
-            <!-- Options will be loaded from the config file using Python -->
         </select>
     </div>
     <div>
@@ -50,7 +49,6 @@
             {% for component in config.NEB.components%}
                 <option value="{{component}}">{{component}}</option>
             {%endfor%}
-            <!-- Options will be loaded from the config file using Python -->
         </select>
     </div>
     <div>
