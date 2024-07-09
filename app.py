@@ -11,6 +11,8 @@ import base64
 
 
 from paperGuidesDB import *
+from config import *
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'
@@ -20,6 +22,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 createDatabase()
+
+# path for the config
+configPath = './configs/config.json'
+
 
 # Initialize Flask-Login
 login_manager = LoginManager()
@@ -37,7 +43,10 @@ def index():
 
 @app.route('/submit')
 def submit():
-    return render_template('submit.html')
+
+    config = loadConfig(configPath)
+
+    return render_template('submit.html', config = config)
 
 @app.route('/submitQuestion', methods = ['POST'])
 def submitQuestion():

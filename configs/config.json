@@ -1,0 +1,31 @@
+{
+    "NEB": {
+        "subjects": [
+            "Compulsory Maths",
+            "Optional Maths",
+            "Physics",
+            "Chemistry",
+            "Biology",
+            "English",
+            "Nepali",
+            "Computer",
+            "Accounts",
+            "Economics"
+        ],
+        "levels": [
+            "8",
+            "10",
+            "11",
+            "12"
+        ],
+        "components": [
+            "Province 1",
+            "Province 2",
+            "Bagmati Province",
+            "Gandaki Province",
+            "Lumbini Province",
+            "Karnali Province",
+            "Sudurpashchim Province"
+        ]
+    }
+}
