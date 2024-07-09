@@ -1,14 +1,11 @@
 
-
 // JavaScript to dynamically populate topics based on selected subject
 document.addEventListener('DOMContentLoaded', function () {
     const subjectSelect = document.getElementById('subject');
     const topicSelect = document.getElementById('topic');
-    const config = document.getElementById('config').innerHTML;
+    const config = JSON.parse(document.getElementById('config').innerHTML);
 
-    console.log(config);
-
-
+    
     // Event listener for subject dropdown change
     subjectSelect.addEventListener('change', function () {
         const selectedSubjectName = subjectSelect.value;

@@ -2,7 +2,6 @@
 
 {% block title %}
     Submit
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -62,8 +61,5 @@
 </form>
 
 
-<script>
-
-
-</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 {% endblock %}
