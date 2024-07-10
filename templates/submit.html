@@ -44,7 +44,6 @@
     <div>
         <label for="component">Component:</label>
         <select id="component" name="component" required>
-            <option value="choose">Choose One</option>
 
             {% for component in config.NEB.components%}
                 <option value="{{component}}">{{component}}</option>
