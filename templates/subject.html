@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Subject-List
+{% endblock %}
+
+
+{% block body %}
+
+    {%for year in years%}
+        <a href="/{{subject}}/{{year}}">{{year}}</a>
+    {% endfor %}
+{% endblock %}

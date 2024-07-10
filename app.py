@@ -38,7 +38,23 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    config = loadConfig(configPath)
+    return render_template('index.html', config = config)
+
+
+@app.route('/<subject_name>')
+def getSubjectYears(subject_name):
+
+    years = getYears(subject_name)
+    return render_template('subject.html', years = years, subject = subject_name)
+
+
+@app.route('/<subject_name>/<int:year>')
+def getSubjectComponents(subject_name, year):
+
+    components = getComponents(year, subject_name)
+    return render_template('components.html', subject  = subject_name , year  = year , components = components)
+
 
 
 @app.route('/submit')

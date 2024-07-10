@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Subject-List
+{% endblock %}
+
+
+{% block body %}
+
+    {%for component in components%}
+        <a href="/{{subject}}/{{year}}/{{component}}">{{component}}</a>
+    {% endfor %}
+{% endblock %}
