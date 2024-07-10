@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Level-List
+{% endblock %}
+
+
+{% block body %}
+
+    {%for level in config.NEB.levels%}
+        <a href="/subjects/{{level}}">{{level}}</a>
+    {% endfor %}
+{% endblock %}

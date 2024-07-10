@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Paper-Guides
+{% endblock %}
+
+
+{% block body %}
+    {% for question in questions_name %}
+        <a href="{{question}}">{{question}}</a>
+    {% endfor%}
+{% endblock %}

@@ -7,7 +7,7 @@
 
 
 {% block body %}
-    {% for subject in config.NEB.subjects%}
-        <a href="/subjects/{{level}}/{{subject.name}}">{{subject.name}}</a>
+    {% for year in years%}
+        <a href="/subjects/{{level}}/{{subject_name}}/{{year}}">{{year}}</a>
     {%endfor%}
 {% endblock %}

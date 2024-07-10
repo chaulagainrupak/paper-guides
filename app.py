@@ -38,22 +38,32 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
+    return render_template('index.html')
+
+@app.route('/level')
+def getLevels():
     config = loadConfig(configPath)
-    return render_template('index.html', config = config)
+    return render_template('levels.html',config=config )
+
+@app.route('/subjects/<int:level>')
+def getLevelSubjects(level):
+    print(level)
+    config = loadConfig(configPath)
+    return render_template('subject.html', config = config, level = level)
 
 
-@app.route('/<subject_name>')
-def getSubjectYears(subject_name):
+@app.route('/subjects/<int:level>/<subject_name>')
+def getSubjectYears(level, subject_name):
 
-    years = getYears(subject_name)
-    return render_template('subject.html', years = years, subject = subject_name)
+    years = getYears(level,subject_name)
+    return render_template('years.html', subject_name = subject_name, level = level, years = years)
 
 
-@app.route('/<subject_name>/<int:year>')
-def getSubjectComponents(subject_name, year):
+@app.route('/subjects/<int:level>/<subject_name>/<int:year>')
+def getSubjectQuestions(level ,subject_name, year):
 
-    components = getComponents(year, subject_name)
-    return render_template('components.html', subject  = subject_name , year  = year , components = components)
+    question_name , questions = getQuestions(level, subject_name, year)
+    return render_template('questions.html', questions_name = question_name)
 
 
 

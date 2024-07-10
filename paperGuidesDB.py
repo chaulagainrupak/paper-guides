@@ -33,7 +33,7 @@ def createDatabase():
         topic TEXT,
         difficulty INTEGER,
         board TEXT,
-        level TEXT,
+        level INTEGER,
         component TEXT,
         questionFile BLOB UNIQUE,
         solutionFile BLOB UNIQUE, 
@@ -86,7 +86,7 @@ def insertQuestion(board, subject, topic, difficulty, level, component, question
 
 
 
-def getYears(subjectName):
+def getYears(level , subjectName):
     try:
         # Connect to the database
         connection = sqlite3.connect(dbPath)
@@ -96,7 +96,7 @@ def getYears(subjectName):
         print(f"Subject Name: {subjectName}")
         
         # Execute the query and fetch all results
-        rows = db.execute('SELECT year FROM papers WHERE subject = ?', (subjectName,)).fetchall()
+        rows = db.execute('SELECT year FROM papers WHERE level = ? AND subject = ?', (level, subjectName)).fetchall()
         
         # Debugging: Print the raw query result
         print(f"Query Result: {rows}")
@@ -116,13 +116,53 @@ def getYears(subjectName):
         connection.close()
 
 
-import sqlite3
+def getQuestions(level, subject_name, year):
+    
+    try:
+        # Connect to the database
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+        
+        rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ? ', (level,subject_name,year)).fetchall()
+
+
+
+        # Debugging: Print the raw query result
+        print(f"Query Result: {rows}")
+        
+        # Extract the data from the query result
+        questions = [row[0] for row in rows]
+        
+        # Print the results for debugging purposes
+        print(f"Extracted question: {questions}")
+
+        rows = db.execute('SELECT component FROM papers WHERE level = ? AND subject = ? AND year = ? ', (level,subject_name,year)).fetchall()
+
+        components = [row[0] for row in rows]
+
+        question_name = []
+        print(components)
+
+        for component in components:
+            question_name.append(f'{subject_name}, {component}, Year: {year} question paper')
+
+        print(question_name)
+        return question_name , questions
+
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+        return None
+    finally:
+        # Close the connection
+        connection.close()
+
 
 def getComponents(year, subjectName):
     try:
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
+
         
         # Debugging: Print the subject name
         print(f"Subject Name: {subjectName}")
