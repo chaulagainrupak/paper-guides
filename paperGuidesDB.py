@@ -20,7 +20,8 @@ def createDatabase():
         component TEXT,
         board TEXT,
         level INTEGER,
-        file BLOB UNIQUE, 
+        questionFile BLOB UNIQUE,
+        solutionFile BLOB UNIQUE, 
         approved DEFAULT False)''')
 
 
@@ -34,8 +35,16 @@ def createDatabase():
         board TEXT,
         level TEXT,
         component TEXT,
-        file BLOB UNIQUE, 
-        approved DEFAULT False)''')
+        questionFile BLOB UNIQUE,
+        solutionFile BLOB UNIQUE, 
+        approved DEFAULT False,
+        one INTEGER DEFAULT 0,
+        two INTEGER DEFAULT 0,
+        three INTEGER DEFAULT 0,
+        four INTEGER DEFAULT 0,
+        five INTEGER DEFAULT 0)''')
+        
+        
         connection.commit()
 
 
@@ -46,23 +55,26 @@ def createDatabase():
         if connection:
             connection.close()
 
-def insertQuestion(board, subject, topic, difficulty, level, component, file):
+def insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile):
     try:
         # Generate a unique UUID for the question
         uuidStr = str(uuid.uuid4())
 
         # Compress the uploaded file data
-        fileData = file.read()
-        compressedData = zlib.compress(fileData)
+        qFile = questionFile.read()
+        sFile = solutionFile.read()
+
+        qCompressed = zlib.compress(qFile)
+        sCompressed = zlib.compress(sFile)
 
         # Insert data into SQLite database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
 
         db.execute('''INSERT INTO questions
-                          (uuid, subject, topic, difficulty, board, level, component, file)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-                       (uuidStr, subject, topic, difficulty, board, level, component, compressedData))
+                          (uuid, subject, topic, difficulty, board, level, component, questionFile, solutionFile)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                       (uuidStr, subject, topic, difficulty, board, level, component, qCompressed, sCompressed))
         connection.commit()
         connection.close()
 

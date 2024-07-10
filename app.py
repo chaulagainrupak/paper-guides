@@ -74,10 +74,11 @@ def submitQuestion():
     difficulty = request.form.get('difficulty')
     level = request.form.get('level')
     component = request.form.get('component')
-    file = request.files['file']
+    questionFile = request.files['questionFile']
+    solutionFile = request.files['solutionFile']
 
     # Call insertQuestion function
-    if insertQuestion(board, subject, topic, difficulty, level, component, file):
+    if insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile):
         return redirect(url_for('index'))  # Redirect to home or any other page on success
     else:
         return "Error occurred while submitting question", 500  # Return an error message on failure

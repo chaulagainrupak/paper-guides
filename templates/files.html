@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Paper-Guides
+{% endblock %}
+
+
+{% block body %}
+
+
+    {% for subject in config.NEB.subjects%}
+        <a href="{{subject.name}}">{{subject.name}}</a>
+    {%endfor%}
+{% endblock %}
