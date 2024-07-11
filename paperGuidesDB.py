@@ -191,24 +191,26 @@ def giveRating(user_id, question_UUID, rating):
 
         
         # Check if the user has already rated this question
-        db.execute('SELECT rating FROM ratings WHERE user_id = ? AND question_UUID = ?', (user_id, question_UUID))
-        previousRating = db.fetchall()
+        previousRating = db.execute('SELECT rating FROM ratings WHERE user_id = ? AND question_UUID = ?', (user_id, question_UUID)).fetchall()
 
         if previousRating:
             previousRatingValue = previousRating[0][0]  # Extract the rating value
 
-            previousRatingStr = convertRatingToString(previousRating)
+            previousRatingStr = convertRatingToString(previousRatingValue)
+
             # Update the rating for the user and question
             db.execute('UPDATE ratings SET rating = ? WHERE user_id = ? AND question_UUID = ?', (rating, user_id, question_UUID))
             # Decrease the previous rating count for the given question (assuming it's another table)
-            db.execute(f'UPDATE questions SET {previousRatingStr} = {previousRatingStr} - 1 WHERE question_UUID = ?', (question_UUID,))
+            db.execute(f'UPDATE questions SET {previousRatingStr} = {previousRatingStr} - 1 WHERE uuid = ?', (question_UUID,))
         else:
             # Insert new rating for the user and question
             db.execute('INSERT INTO ratings (user_id, question_UUID, rating) VALUES (?, ?, ?)', (user_id, question_UUID, rating))
 
+        print('got here')
         # Increase the new rating count for the given question
         newRatingStr = convertRatingToString(rating)
-        db.execute(f'UPDATE questions SET {newRatingStr} = {newRatingStr} + 1 WHERE question_uuid = ?', (question_UUID,))
+        db.execute(f'UPDATE questions SET {newRatingStr} = {newRatingStr} + 1 WHERE uuid = ?', (question_UUID,))
+
 
         # Commit the changes to the database
         connection.commit()

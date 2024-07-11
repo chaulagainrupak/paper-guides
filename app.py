@@ -172,21 +172,18 @@ This allows for more functionalities for uploading user submitted data and allow
 #     return render_template('profile.html')
 
 @app.route('/rate/<question_UUID>/<int:rating>', methods = ['POST'])
-# @login_required
+@login_required
 def rate(question_UUID, rating):
-     
-
+    
     try:
-        # if current_user.id:
-        # user = 1
-
-        if giveRating(1, question_UUID, rating):
+        user = current_user.id
+        if giveRating(user, question_UUID, rating):
             return True
         else: 
-            return 'False'
+            return False
     except Exception as e:
         print(f'Something went wrong while giving a rating: {e}')
-        return 'False'
+        return False
 
 
 # @app.route('/admin')
