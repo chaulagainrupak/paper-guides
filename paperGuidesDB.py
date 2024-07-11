@@ -44,6 +44,14 @@ def createDatabase():
         four INTEGER DEFAULT 0,
         five INTEGER DEFAULT 0)''')
         
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS ratings (
+                id INTEGER PRIMARY KEY,
+                user_id TEXT,
+                question_UUID TEXT,
+                rating INTEGER
+            )
+        ''')
         
         connection.commit()
 
@@ -174,6 +182,44 @@ def renderQuestion(level, subject_name, year, component):
         connection.close()
 
 
+
+def giveRating(user_id, question_UUID, rating):
+    try:
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+
+
+        
+        # Check if the user has already rated this question
+        db.execute('SELECT rating FROM ratings WHERE user_id = ? AND question_UUID = ?', (user_id, question_UUID))
+        previousRating = db.fetchall()
+
+        if previousRating:
+            previousRatingValue = previousRating[0][0]  # Extract the rating value
+
+            previousRatingStr = convertRatingToString(previousRating)
+            # Update the rating for the user and question
+            db.execute('UPDATE ratings SET rating = ? WHERE user_id = ? AND question_UUID = ?', (rating, user_id, question_UUID))
+            # Decrease the previous rating count for the given question (assuming it's another table)
+            db.execute(f'UPDATE questions SET {previousRatingStr} = {previousRatingStr} - 1 WHERE question_UUID = ?', (question_UUID,))
+        else:
+            # Insert new rating for the user and question
+            db.execute('INSERT INTO ratings (user_id, question_UUID, rating) VALUES (?, ?, ?)', (user_id, question_UUID, rating))
+
+        # Increase the new rating count for the given question
+        newRatingStr = convertRatingToString(rating)
+        db.execute(f'UPDATE questions SET {newRatingStr} = {newRatingStr} + 1 WHERE question_uuid = ?', (question_UUID,))
+
+        # Commit the changes to the database
+        connection.commit()
+
+    except sqlite3.Error as e:
+        print(f'DB error while updating/inserting rating: {e}')
+        return None
+    finally:
+        connection.close()
+
+
 def getComponents(year, subjectName):
     try:
         # Connect to the database
@@ -210,3 +256,19 @@ def getComponents(year, subjectName):
 
 
 
+
+
+def convertRatingToString(rating):
+    # Convert integer rating to string representation ('one', 'two', etc.)
+    if rating == 1:
+        return 'one'
+    elif rating == 2:
+        return 'two'
+    elif rating == 3:
+        return 'three'
+    elif rating == 4:
+        return 'four'
+    elif rating == 5:
+        return 'five'
+    else:
+        return 'unknown'
