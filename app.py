@@ -62,9 +62,21 @@ def getSubjectYears(level, subject_name):
 @app.route('/subjects/<int:level>/<subject_name>/<int:year>')
 def getSubjectQuestions(level ,subject_name, year):
 
-    question_name , questions = getQuestions(level, subject_name, year)
-    return render_template('questions.html', questions_name = question_name)
+    question_name = getQuestions(level, subject_name, year)
+    return render_template('questions.html', questions_name = question_name, year = year)
 
+
+
+@app.route('/subjects/<int:level>/<subject_name>/<int:year>/<file_data>')
+def renderSubjectQuestion(level ,subject_name, year, file_data):
+
+    component  = file_data.split(', ')
+
+    component = component[1]
+    question  = renderQuestion(level, subject_name, year, component)
+
+    # print(question)
+    return render_template('qp.html', question = question )
 
 
 @app.route('/submit')

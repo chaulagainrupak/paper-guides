@@ -122,38 +122,55 @@ def getQuestions(level, subject_name, year):
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-        
-        rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ? ', (level,subject_name,year)).fetchall()
-
-
-
-        # Debugging: Print the raw query result
-        print(f"Query Result: {rows}")
-        
-        # Extract the data from the query result
-        questions = [row[0] for row in rows]
-        
-        # Print the results for debugging purposes
-        print(f"Extracted question: {questions}")
-
+                
         rows = db.execute('SELECT component FROM papers WHERE level = ? AND subject = ? AND year = ? ', (level,subject_name,year)).fetchall()
 
         components = [row[0] for row in rows]
 
         question_name = []
-        print(components)
+        # print(components)
 
         for component in components:
             question_name.append(f'{subject_name}, {component}, Year: {year} question paper')
 
-        print(question_name)
-        return question_name , questions
+        # print(question_name)
+        return question_name
 
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
         return None
     finally:
         # Close the connection
+        connection.close()
+
+
+def renderQuestion(level, subject_name, year, component):
+
+    try:
+        # print('got here')
+        # Connect to the database
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+
+
+        rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ?  AND component = ?', (level,subject_name,year, component)).fetchall()
+
+
+
+        # Debugging: Print the raw query result
+        # print(f"Query Result: {rows}")
+        
+        # Extract the data from the query result
+        question = [row[0] for row in rows]
+
+        # print(question[0])
+
+        return question
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+        return None
+
+    finally:
         connection.close()
 
 
