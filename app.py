@@ -40,7 +40,7 @@ def load_user(user_id):
 def index():
     return render_template('index.html')
 
-@app.route('/level')
+@app.route('/levels')
 def getLevels():
     config = loadConfig(configPath)
     return render_template('levels.html',config=config )

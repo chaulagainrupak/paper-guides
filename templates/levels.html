@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base-papers.html' %}
 
 
 {% block title %}
@@ -6,9 +6,9 @@
 {% endblock %}
 
 
-{% block body %}
-
+{% block section%}
+    <h1>Choose Your Level</h1>
     {%for level in config.NEB.levels%}
-        <a href="/subjects/{{level}}">{{level}}</a>
+        <a href="/subjects/{{level}}">NEB Grade: {{level}} Question Papers</a>
     {% endfor %}
 {% endblock %}
