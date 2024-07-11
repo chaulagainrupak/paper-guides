@@ -1,0 +1,71 @@
+:root {
+    --rich-black: #0d1b2aff;
+    --plum: #92498fff;
+    --baby-powder: #fffffaff;
+    --picton-blue: #3eafe4ff;
+    --tickle-me-pink: #f08caeff;
+}
+
+/* styles.css */
+
+/* Navigation bar styling */
+.navbar {
+    background-color: #1a1e2e;
+    padding: 10px 0;
+  }
+  
+  .navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .navbar li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  /* Main content styling */
+  .main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .intro-text {
+    margin-bottom: 20px;
+  }
+  
+  .how-it-works-button {
+    background-color: #1a1e2e;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .features {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+  }
+  
+  .feature-box {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 5px;
+    width: 30%;
+    text-align: center;
+  }
+  
+  .image-placeholder {
+    background-color: #ff6347;
+    color: white;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+  }

@@ -5,9 +5,42 @@
     <meta charset="UTF-8">
     <title>{% block title %}base{% endblock %}</title>
     <link rel="shortcut icon" type="image/x-icon" href="../static/images/logo.svg" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-
+    <nav class="navbar">
+        <ul>
+            <li><a href="#">PAPER-GUIDES</a></li>
+            <li><a href="#">PAST PAPERS</a></li>
+            <li><a href="#">TOPICALS</a></li>
+            <li><a href="#">QUESTION GENERATOR</a></li>
+            <li><a href="#">CONTACT</a></li>
+        </ul>
+    </nav>
+    
+    <div class="main-content">
+        <div class="intro-text">
+            <h1>Paper-Guides helps you prepare for you exams faster, easier and a stress free experience.</h1>
+            <button class="how-it-works-button">How it works?</button>
+        </div>
+        
+        <div class="features">
+            <div class="feature-box">
+                <h2>MODEL QUESTIONS</h2>
+            </div>
+            <div class="feature-box">
+                <h2>PAST PAPERS</h2>
+            </div>
+            <div class="feature-box">
+                <h2>QUESTION GENERATOR</h2>
+            </div>
+        </div>
+        
+        <div class="image-placeholder">
+            <p>Some sort of image that shows what this site is about</p>
+            <p>or subject ko images swap bhai ra ko</p>
+        </div>
+    </div>
 
     {% block body %}
 
