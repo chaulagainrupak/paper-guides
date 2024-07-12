@@ -6,7 +6,8 @@
 {% endblock %}
 
 
-{% block body %}
+{% block section %}
+    <h1>Choose The Question Paper</h1>
     {% for question in questions_name %}
         <a href="{{year}}/{{question}}">{{question}}</a>
     {% endfor%}

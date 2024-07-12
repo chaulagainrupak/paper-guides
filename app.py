@@ -106,6 +106,26 @@ def submitQuestion():
         return "Error occurred while submitting question", 500  # Return an error message on failure
 
 
+@app.route('/submitPaper', methods = ['POST'])
+def submitPaper():
+    # Get form data
+    board = request.form.get('board')
+    subject = request.form.get('subject')
+    year = request.form.get('year')
+    level = request.form.get('level')
+    component = request.form.get('component')
+    questionFile = request.files['questionFile']
+    solutionFile = request.files['solutionFile']
+
+    # Call insertPaper function 
+
+    if insertPaper(board, subject, year, level, component, questionFile, solutionFile):
+        return redirect(url_for('index'))  # Redirect to home or any other page on success
+    else:
+        return "Error occurred while submitting paper", 500  # Return an error message on failure
+
+
+
 """
 This functionality for the user login and authentication will be implemented later so this part of the code has been commented.
 

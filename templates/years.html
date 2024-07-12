@@ -6,8 +6,9 @@
 {% endblock %}
 
 
-{% block body %}
+{% block section %}
+    <h1>Choose The Year</h1>
     {% for year in years%}
-        <a href="/subjects/{{level}}/{{subject_name}}/{{year}}">{{year}}</a>
+        <a href="/subjects/{{level}}/{{subject_name}}/{{year}}">Year: {{year}}</a>
     {%endfor%}
 {% endblock %}

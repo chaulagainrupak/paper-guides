@@ -93,6 +93,36 @@ def insertQuestion(board, subject, topic, difficulty, level, component, question
         return False  # Return False indicating failure
 
 
+def insertPaper(board, subject, year, level, component, questionFile, solutionFile):
+    try:
+        # Generate a unique UUID for the question
+        uuidStr = str(uuid.uuid4())
+
+        # Compress the uploaded file data
+        qFile = questionFile.read()
+        sFile = solutionFile.read()
+
+        qCompressed = zlib.compress(qFile)
+        sCompressed = zlib.compress(sFile)
+
+        # Insert data into SQLite database
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+
+        db.execute('''INSERT INTO papers
+                          (uuid, subject, year, board, level, component, questionFile, solutionFile)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+                       (uuidStr, subject, year, board, level, component, qCompressed, sCompressed))
+        connection.commit()
+        connection.close()
+
+        return True  # Return True indicating successful insertion
+
+    except sqlite3.Error as e:
+        print(f"Error inserting paper into database: {e}")
+        return False  # Return False indicating failure
+
+
 
 def getYears(level , subjectName):
     try:
@@ -151,31 +181,35 @@ def getQuestions(level, subject_name, year):
         # Close the connection
         connection.close()
 
-
 def renderQuestion(level, subject_name, year, component):
-
     try:
-        # print('got here')
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-
-
-        rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ?  AND component = ?', (level,subject_name,year, component)).fetchall()
-
-
-
-        # Debugging: Print the raw query result
-        # print(f"Query Result: {rows}")
         
-        # Extract the data from the query result
-        question = [row[0] for row in rows]
-
-        # print(question[0])
-
+        # Execute the query
+        rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ?', 
+                          (level, subject_name, year, component)).fetchall()
+        
+        # Extract the compressed data from the query result
+        compressed_data = [row[0] for row in rows]
+        
+        if not compressed_data:
+            print("No data found for the given criteria.")
+            return None
+        
+        # Decompress the data
+        question = [zlib.decompress(data) for data in compressed_data]
+        
+        print("Data successfully decompressed.")
         return question
+
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
+        return None
+    
+    except zlib.error as e:
+        print(f"Decompression error: {e}")
         return None
 
     finally:

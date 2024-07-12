@@ -6,7 +6,8 @@
 {% endblock %}
 
 
-{% block body %}
+{% block section %}
+    <h1>Choose The Subject</h1>
     {% for subject in config.NEB.subjects%}
         <a href="/subjects/{{level}}/{{subject.name}}">{{subject.name}}</a>
     {%endfor%}

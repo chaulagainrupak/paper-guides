@@ -1,20 +1,28 @@
-
-// JavaScript to dynamically populate topics based on selected subject
 document.addEventListener('DOMContentLoaded', function () {
+    const questionButton = document.getElementById('question_button');
+    const paperButton = document.getElementById('paper_button');
+    const questionForm = document.getElementById('question_form');
+    const paperForm = document.getElementById('paper_form');
     const subjectSelect = document.getElementById('subject');
     const topicSelect = document.getElementById('topic');
-    const config = JSON.parse(document.getElementById('config').innerHTML);
+    const yearSelect = document.getElementById('year');
+    const otherYearDiv = document.getElementById('other_year_div');
+    const config = JSON.parse(document.getElementById('config').textContent);
 
-    
-    // Event listener for subject dropdown change
-    subjectSelect.addEventListener('change', function () {
-        const selectedSubjectName = subjectSelect.value;
-        topicSelect.innerHTML = ''; // Clear current topics
+    questionButton.addEventListener('click', function() {
+        questionForm.style.display = 'block';
+        paperForm.style.display = 'none';
+    });
 
-        // Find the selected subject from config
+    paperButton.addEventListener('click', function() {
+        questionForm.style.display = 'none';
+        paperForm.style.display = 'block';
+    });
+
+    function populateTopics(subjectName) {
+        topicSelect.innerHTML = '';
         config.NEB.subjects.forEach(subject => {
-            if (subject.name === selectedSubjectName) {
-                // Populate topics for the selected subject
+            if (subject.name === subjectName) {
                 subject.topics.forEach(topic => {
                     let option = document.createElement('option');
                     option.value = topic;
@@ -23,18 +31,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
         });
+    }
+
+    subjectSelect.addEventListener('change', function () {
+        populateTopics(this.value);
     });
 
-    // Initialize topics based on the default selected subject
-    const initialSubjectName = subjectSelect.value;
-    config.NEB.subjects.forEach(subject => {
-        if (subject.name === initialSubjectName) {
-            subject.topics.forEach(topic => {
-                let option = document.createElement('option');
-                option.value = topic;
-                option.textContent = topic;
-                topicSelect.appendChild(option);
-            });
+    // Initialize topics for the default selected subject
+    populateTopics(subjectSelect.value);
+
+    yearSelect.addEventListener('change', function() {
+        if (this.value === 'other') {
+            otherYearDiv.style.display = 'block';
+        } else {
+            otherYearDiv.style.display = 'none';
         }
     });
 });

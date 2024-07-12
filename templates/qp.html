@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
-
 {% block title %}
-    Paper-Guides
+ Paper-Guides
 {% endblock %}
-
 {% block body %}
-    <img src="data:application/pdf  ;base64,{{ question[0] | b64encode}}" alt="Question Image">
+
+<img src="data:image/png;base64,{{ question[0] | b64encode }}" alt="Question Image">
+ <object data="data:application/pdf;base64,{{ question[0] | b64encode }}" type="application/pdf" width="100%" height="600px">
+
+    
+   <p>Your browser doesn't support embedded PDFs. You can <a href="data:application/pdf;base64,{{ question[0] | b64encode }}" download="document.pdf">download the PDF</a> instead.</p>
+ </object>
 {% endblock %}

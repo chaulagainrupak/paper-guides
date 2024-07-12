@@ -1,68 +1,119 @@
-{% extends 'base.html'%}
-
-{% block title %}
-    Submit
-{% endblock %}
-
+{% extends 'base.html' %}
+{% block title %} Submit {% endblock %}
 {% block body %}
-<h1>Submit a Question</h1>
-<form id="questionForm" action="/submitQuestion" method="post" enctype="multipart/form-data">
-    
-    <p style="display: none;" id="config"> {{ config | tojson | safe }}</p>
+<div id="config" style="display: none;">{{ config | tojson | safe }}</div>
+
+<h2>Submit a Question or Paper</h2>
+
+<div id="submission_type_selector">
+    <button id="question_button">Submit Question</button>
+    <button id="paper_button">Submit Paper</button>
+</div>
+
+<form id="question_form" action="/submitQuestion" method="post" enctype="multipart/form-data" style="display: none;">
     <div>
         <label for="board">Board:</label>
-        <select name="board" id="board" required>
-            <option value="NEB" selected>NEB</option>
+        <select id="board" name="board">
+            <option value="NEB">NEB</option>
         </select>
     </div>
     <div>
         <label for="subject">Subject:</label>
-        <select id="subject" name="subject" required>
-            {% for subject in config.NEB.subjects%}
-                <option value="{{subject.name}}" id="subject">{{subject.name}}</option>
-            {%endfor%}
+        <select id="subject" name="subject">
+            {% for subject in config.NEB.subjects %}
+                <option value="{{ subject.name }}">{{ subject.name }}</option>
+            {% endfor %}
         </select>
     </div>
-    <div>
+    <div id="topic_div">
         <label for="topic">Topic:</label>
-        <select id="topic" name="topic" required>   
-        </select>
-    </div>
-    <div>
-        <label for="difficulty">Difficulty (1-5):</label>
-        <input type="number" id="difficulty" name="difficulty" min="1" max="5" required>
+        <select id="topic" name="topic"></select>
     </div>
     <div>
         <label for="level">Level:</label>
-        <select id="level" name="level" required>
-
-            {% for level in config.NEB.levels%}
-                <option value="{{level}}">{{level}}</option>
-            {%endfor%}
+        <select id="level" name="level">
+            {% for level in config.NEB.levels %}
+                <option value="{{ level }}">{{ level }}</option>
+            {% endfor %}
         </select>
     </div>
     <div>
         <label for="component">Component:</label>
-        <select id="component" name="component" required>
-
-            {% for component in config.NEB.components%}
-                <option value="{{component}}">{{component}}</option>
-            {%endfor%}
+        <select id="component" name="component">
+            {% for component in config.NEB.components %}
+                <option value="{{ component }}">{{ component }}</option>
+            {% endfor %}
         </select>
     </div>
     <div>
-        <label for="file">Question Image:</label>
-            <input type="file" id="questionFile" name="questionFile" accept="image/*" required>
+        <label for="questionFile">Question Image:</label>
+        <input type="file" id="questionFile" name="questionFile" accept="image/*">
     </div>
-
     <div>
-        <label for="file">Solution Image:</label>
-
-        <input type="file" name="solutionFile" id="solutionFile" accept="image/*" required>
+        <label for="solutionFile">Solution Image:</label>
+        <input type="file" id="solutionFile" name="solutionFile" accept="image/*">
     </div>
-    <button type="submit">Submit</button>
+    <button type="submit">Submit Question</button>
 </form>
 
+<form id="paper_form" action="/submitPaper" method="post" enctype="multipart/form-data" style="display: none;">
+    <div>
+        <label for="board">Board:</label>
+        <select id="board" name="board">
+            <option value="NEB">NEB</option>
+        </select>
+    </div>
+    <div>
+        <label for="subject">Subject:</label>
+        <select id="subject" name="subject">
+            {% for subject in config.NEB.subjects %}
+                <option value="{{ subject.name }}">{{ subject.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="year">Year:</label>
+        <select id="year" name="year">
+            {% set current_year = 2024 %}
+            {% for i in range(10) %}
+                {% set year = current_year + 57 - i %}
+                <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+            <option value="other">Other</option>
+        </select>
+    </div>
+    <div id="other_year_div" style="display: none;">
+        <label for="other_year">Specify Year:</label>
+        <input type="number" id="other_year" name="other_year" min="1900" max="2100">
+    </div>
+    <div>
+        <label for="level">Level:</label>
+        <select id="level" name="level">
+            {% for level in config.NEB.levels %}
+                <option value="{{ level }}">{{ level }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="component">Component:</label>
+        <select id="component" name="component">
+            {% for component in config.NEB.components %}
+                <option value="{{ component }}">{{ component }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="questionFile">Paper PDF:</label>
+        <input type="file" id="questionFile" name="questionFile" accept="application/pdf">
+    </div>
+    <div>
+        <label for="solutionFile">Solution PDF:</label>
+        <input type="file" id="solutionFile" name="solutionFile" accept="application/pdf">
+    </div>
+    <button type="submit">Submit Paper</button>
+</form>
 
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script src="{{ url_for('static', filename='script.js')}}">
+
+</script>
 {% endblock %}
