@@ -87,6 +87,22 @@ def submit():
     return render_template('submit.html', config = config)
 
 
+@app.route('/model-questions')
+def modelQuestions():
+    return render_template('model-questions.html')
+
+@app.route('/question-generator')
+def questionGenerator():
+    return render_template('question-generator.html')
+
+@app.route('/support')
+def support():
+    return render_template('support.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
 @app.route('/submitQuestion', methods=['POST'])
 def submitQuestion():
     # Get form data
@@ -134,25 +150,25 @@ This allows for more functionalities for uploading user submitted data and allow
 """
 
 
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     if current_user.is_authenticated:
-#         return redirect(url_for('index'))
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
 
-#     # Handle login form submission
-#     if request.method == 'POST':
-#         username = request.form.get('username')
-#         password = request.form.get('password')
-#         user = User.query.filter_by(username=username).first()
+    # Handle login form submission
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = User.query.filter_by(username=username).first()
 
-#         if user and user.password == password:
-#             login_user(user)
-#             next_page = request.args.get('next')
-#             return redirect(next_page or url_for('index'))
-#         else:
-#             flash('Login unsuccessful. Please check username and password.', 'danger')
+        if user and user.password == password:
+            login_user(user)
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('index'))
+        else:
+            flash('Login unsuccessful. Please check username and password.', 'danger')
 
-#     return render_template('login.html')
+    return render_template('login.html')
 
 # @app.route('/logout')
 # @login_required
