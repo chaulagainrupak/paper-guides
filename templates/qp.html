@@ -4,8 +4,9 @@
 {% endblock %}
 {% block body %}
 
+<p id="compressedData" style="display: none;">{{question[0]}}</p>
 <img src="data:image/png;base64,{{ question[0] | b64encode }}" alt="Question Image">
- <object data="data:application/pdf;base64,{{ question[0] | b64encode }}" type="application/pdf" width="100%" height="600px">
+ <object data="data:application/pdf;base64,{{ question[0] | b64encode }}" type="application/pdf" width="100%" height="600px" id="embedPdf">
 
     
    <p>Your browser doesn't support embedded PDFs. You can <a href="data:application/pdf;base64,{{ question[0] | b64encode }}" download="document.pdf">download the PDF</a> instead.</p>

@@ -2,6 +2,7 @@ import sqlite3
 import uuid
 import os
 import zlib
+import json
 
 dbPath = './instance/paper-guides-resources.db'
 
@@ -140,8 +141,11 @@ def getYears(level , subjectName):
         print(f"Query Result: {rows}")
         
         # Extract the years from the query result
-        years = [row[0] for row in rows]
+        years = list(set([row[0] for row in rows]))
         
+
+        if years == []:
+            return False
         # Print the results for debugging purposes
         print(f"Extracted Years: {years}")
         
@@ -290,7 +294,55 @@ def getComponents(year, subjectName):
         # Close the connection
         connection.close()
 
+def dbDump():
+    output_json_file = './instance/db-dump.json'
+    output_text_file = './instance/db-dump.txt'
+    
+    try:
+        # Connect to the database
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
 
+        # Fetch all rows from the 'papers' table
+        rows = db.execute('SELECT id, uuid, subject, year, component, board, level FROM papers').fetchall()
+
+        data = [row for row in rows]
+
+        # Print for debugging 
+        print(data)
+
+
+        json_data = []
+
+        for data in data:
+            subject_name = data[2]
+            component = data[4]
+            year = data[3]
+            level = data[6]
+            board = data[5]
+
+            json_data.append(f'Grade: {level}, Subject: {subject_name}, Province: {component}, Year: {year} question paper. ({board})')
+            print(f'Grade: {level}, Subject: {subject_name}, Province: {component}, Year: {year} question paper. ({board})')
+
+
+        # Write to JSON file
+        with open(output_json_file, 'w') as json_file:
+            json.dump(json_data, json_file, indent=4)
+
+        # Write to text file
+        with open(output_text_file, 'w') as text_file:
+            for name in data:
+                text_file.write(f"{name}\n")
+
+        return data
+
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+        return None
+    finally:
+        # Close the connection
+        if connection:
+            connection.close()
 
 
 

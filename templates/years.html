@@ -8,7 +8,11 @@
 
 {% block section %}
     <h1>Choose The Year</h1>
-    {% for year in years%}
-        <a href="/subjects/{{level}}/{{subject_name}}/{{year}}">Year: {{year}}</a>
-    {%endfor%}
+    {%if years %}
+        {% for year in years%}
+            <a href="/subjects/{{level}}/{{subject_name}}/{{year}}">Year: {{year}}</a>
+        {%endfor%}
+    {%else%}
+    <h2>No Data Found!</h2>
+    {%endif%}
 {% endblock %}
