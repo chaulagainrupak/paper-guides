@@ -3,6 +3,7 @@ import uuid
 import os
 import zlib
 import json
+import base64
 
 dbPath = './instance/paper-guides-resources.db'
 
@@ -22,7 +23,7 @@ def createDatabase():
         board TEXT,
         level INTEGER,
         questionFile BLOB UNIQUE,
-        solutionFile BLOB UNIQUE, 
+        solutionFile BLOB , 
         approved DEFAULT False)''')
 
 
@@ -37,14 +38,26 @@ def createDatabase():
         level INTEGER,
         component TEXT,
         questionFile BLOB UNIQUE,
-        solutionFile BLOB UNIQUE, 
+        solutionFile BLOB , 
         approved DEFAULT False,
         one INTEGER DEFAULT 0,
         two INTEGER DEFAULT 0,
         three INTEGER DEFAULT 0,
         four INTEGER DEFAULT 0,
         five INTEGER DEFAULT 0)''')
-        
+
+        # Create the topicals table 
+
+        db.execute(''' CREATE TABLE IF NOT EXISTS topicals
+        (id INTEGER PRIMARY KEY,
+        uuid TEXT UNIQUE,
+        subject TEXT,
+        board TEXT,
+        questionFile BLOB UNIQUE,
+        solutionFile BLOB )''')
+
+
+        # Create the ratings table
         db.execute('''
             CREATE TABLE IF NOT EXISTS ratings (
                 id INTEGER PRIMARY KEY,
@@ -66,64 +79,67 @@ def createDatabase():
 
 def insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile):
     try:
-        # Generate a unique UUID for the question
         uuidStr = str(uuid.uuid4())
-
-        # Compress the uploaded file data
-        qFile = questionFile.read()
-        sFile = solutionFile.read()
-
-        qCompressed = zlib.compress(qFile)
-        sCompressed = zlib.compress(sFile)
-
-        # Insert data into SQLite database
         connection = sqlite3.connect(dbPath)
-        db = connection.cursor()
 
+        questionFile = zlib.compress(questionFile)
+        solutionFile = zlib.compress(solutionFile)
+
+
+        db = connection.cursor()
         db.execute('''INSERT INTO questions
-                          (uuid, subject, topic, difficulty, board, level, component, questionFile, solutionFile)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                       (uuidStr, subject, topic, difficulty, board, level, component, qCompressed, sCompressed))
+            (uuid, subject, topic, difficulty, board, level, component, questionFile, solutionFile)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            (uuidStr, subject, topic, difficulty, board, level, component, questionFile, solutionFile))
         connection.commit()
         connection.close()
-
-        return True  # Return True indicating successful insertion
-
+        return True
     except sqlite3.Error as e:
         print(f"Error inserting question into database: {e}")
-        return False  # Return False indicating failure
-
+        return False
 
 def insertPaper(board, subject, year, level, component, questionFile, solutionFile):
     try:
-        # Generate a unique UUID for the question
         uuidStr = str(uuid.uuid4())
-
-        # Compress the uploaded file data
-        qFile = questionFile.read()
-        sFile = solutionFile.read()
-
-        qCompressed = zlib.compress(qFile)
-        sCompressed = zlib.compress(sFile)
-
-        # Insert data into SQLite database
         connection = sqlite3.connect(dbPath)
-        db = connection.cursor()
 
+        questionFile = zlib.compress(questionFile)
+        solutionFile = zlib.compress(solutionFile)
+
+        
+        db = connection.cursor()
         db.execute('''INSERT INTO papers
-                          (uuid, subject, year, board, level, component, questionFile, solutionFile)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-                       (uuidStr, subject, year, board, level, component, qCompressed, sCompressed))
+            (uuid, subject, year, board, level, component, questionFile, solutionFile)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+            (uuidStr, subject, year, board, level, component, questionFile, solutionFile))
         connection.commit()
         connection.close()
-
-        return True  # Return True indicating successful insertion
-
+        return True
     except sqlite3.Error as e:
         print(f"Error inserting paper into database: {e}")
-        return False  # Return False indicating failure
+        return False
+
+def insertTopical(board, subject, questionFile, solutionFile):
+    try:
+        uuidStr = str(uuid.uuid4())
+        connection = sqlite3.connect(dbPath)
 
 
+        questionFile = zlib.compress(questionFile)
+        solutionFile = zlib.compress(solutionFile)
+
+
+        db = connection.cursor()
+        db.execute('''INSERT INTO topicals 
+            (uuid, subject, board, questionFile, solutionFile) 
+            VALUES (?, ?, ?, ?, ?)''', 
+            (uuidStr, subject, board, questionFile, solutionFile))
+        connection.commit()
+        connection.close()
+        return True
+    except sqlite3.Error as e:
+        print(f"Error inserting topical paper into database: {e}")
+        return False
 
 def getYears(level , subjectName):
     try:
@@ -195,18 +211,19 @@ def renderQuestion(level, subject_name, year, component):
         rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ?', 
                           (level, subject_name, year, component)).fetchall()
         
+
         # Extract the compressed data from the query result
-        compressed_data = [row[0] for row in rows]
+        compressedData = [row[0] for row in rows]
         
-        if not compressed_data:
+        if not compressedData:
             print("No data found for the given criteria.")
             return None
         
-        # Decompress the data
-        question = [zlib.decompress(data) for data in compressed_data]
+        # Encode the data in base64
+        encodedData = [base64.b64encode(data).decode('utf-8') for data in compressedData]
         
-        print("Data successfully decompressed.")
-        return question
+        print("Data successfully fetched and encoded.")
+        return encodedData
 
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")

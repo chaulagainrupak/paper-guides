@@ -37,6 +37,15 @@
             {% endfor %}
         </select>
     </div>
+
+    <div>
+        <label for="difficulty">Difficulty:</label>
+        <select name="difficulty" id="difficulty">
+            {% for i in range(5)%}
+                <option value="{{i+1}}">{{i+1}}</option>
+            {%endfor%}
+        </select>
+    </div>
     <div>
         <label for="component">Component:</label>
         <select id="component" name="component">
@@ -91,7 +100,7 @@
     </div>
     <div id="other_year_div" style="display: none;">
         <label for="other_year">Specify Year:</label>
-        <input type="number" id="other_year" name="other_year" min="1900" max="2100">
+        <input type="number" id="other_year" name="year" min="1900" max="2100">
     </div>
     <div>
         <label for="level">Level:</label>

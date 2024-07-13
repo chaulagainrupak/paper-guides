@@ -103,42 +103,61 @@ def support():
 def contact():
     return render_template('contact.html')
 
+
+
 @app.route('/submitQuestion', methods=['POST'])
 def submitQuestion():
-    # Get form data
     board = request.form.get('board')
     subject = request.form.get('subject')
     topic = request.form.get('topic')
     difficulty = request.form.get('difficulty')
     level = request.form.get('level')
     component = request.form.get('component')
-    questionFile = request.files['questionFile']
-    solutionFile = request.files['solutionFile']
+    questionFile = request.files['questionFile'].read()
+    solutionFile = request.files['solutionFile'].read()
 
-    # Call insertQuestion function
-    if insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile):
-        return redirect(url_for('index'))  # Redirect to home or any other page on success
+
+    if insertQuestion(board, subject, topic, difficulty, level, component, solutionFile, solutionFile):
+        return redirect(url_for('index'))
     else:
-        return "Error occurred while submitting question", 500  # Return an error message on failure
+        return "Error occurred while submitting question", 500
 
-
-@app.route('/submitPaper', methods = ['POST'])
+@app.route('/submitPaper', methods=['POST'])
 def submitPaper():
-    # Get form data
-    board = request.form.get('board')
-    subject = request.form.get('subject')
-    year = request.form.get('year')
-    level = request.form.get('level')
-    component = request.form.get('component')
-    questionFile = request.files['questionFile']
-    solutionFile = request.files['solutionFile']
+    try:
+        board = request.form.get('board')
+        subject = request.form.get('subject')
+        year = request.form.get('year')
+        level = request.form.get('level')
+        component = request.form.get('component')
+        questionFile = request.files['questionFile'].read()
+        solutionFile = request.files['solutionFile'].read()
 
-    # Call insertPaper function 
 
-    if insertPaper(board, subject, year, level, component, questionFile, solutionFile):
-        return redirect(url_for('index'))  # Redirect to home or any other page on success
-    else:
-        return "Error occurred while submitting paper", 500  # Return an error message on failure
+        paper_type = request.form.get('paper_type')
+
+        print(f"Received paper submission: {paper_type}, {subject}, {year}")  # Debug print
+
+        if not all([board, subject, level, component, questionFile, paper_type]):
+            raise ValueError("Missing required fields")
+
+        if paper_type == 'yearly':
+            if not year:
+                raise ValueError("Year is required for yearly papers")
+            result = insertPaper(board, subject, year, level, component, questionFile, solutionFile)
+        elif paper_type == 'topical':
+            result = insertTopical(board, subject, questionFile, solutionFile)
+        else:
+            raise ValueError(f"Invalid paper type: {paper_type}")
+
+        if result:
+            return redirect(url_for('index'))
+        else:
+            raise Exception("Insert operation failed")
+
+    except Exception as e:
+        print(f"Error in submitPaper: {str(e)}")  # Debug print
+        return f"Error occurred while submitting paper: {str(e)}", 500
 
 
 
