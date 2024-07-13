@@ -243,7 +243,7 @@ body {
   display: none;
 }
 
-@media screen and (max-width: 980px) {
+@media screen and (max-width: 1000px) {
   .navbar > div {
     display: none;
   }
