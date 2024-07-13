@@ -47,10 +47,10 @@
     </div>
     <div>
         <label for="questionFile">Question Image:</label>
-        <input type="file" id="questionFile" name="questionFile" accept="image/*">
+        <input type="file" id="questionFile" name="questionFile" accept="image/*" required>
     </div>
     <div>
-        <label for="solutionFile">Solution Image:</label>
+        <label for="solutionFile">Solution Image (optional):</label>
         <input type="file" id="solutionFile" name="solutionFile" accept="image/*">
     </div>
     <button type="submit">Submit Question</button>
@@ -72,6 +72,13 @@
         </select>
     </div>
     <div>
+        <label for="paper_type">Paper Type:</label>
+        <select id="paper_type" name="paper_type">
+            <option value="yearly">Yearly Paper</option>
+            <option value="topical">Topical Paper</option>
+        </select>
+    </div>
+    <div id="year_div">
         <label for="year">Year:</label>
         <select id="year" name="year">
             {% set current_year = 2024 %}
@@ -104,16 +111,14 @@
     </div>
     <div>
         <label for="questionFile">Paper PDF:</label>
-        <input type="file" id="questionFile" name="questionFile" accept="application/pdf">
+        <input type="file" id="questionFile" name="questionFile" accept="application/pdf" required>
     </div>
     <div>
-        <label for="solutionFile">Solution PDF:</label>
+        <label for="solutionFile">Solution PDF (optional):</label>
         <input type="file" id="solutionFile" name="solutionFile" accept="application/pdf">
     </div>
     <button type="submit">Submit Paper</button>
 </form>
 
-<script src="{{ url_for('static', filename='script.js')}}">
-
-</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 {% endblock %}

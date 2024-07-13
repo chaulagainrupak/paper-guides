@@ -48,3 +48,32 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+
+document.getElementById('question_button').addEventListener('click', function() {
+    document.getElementById('question_form').style.display = 'block';
+    document.getElementById('paper_form').style.display = 'none';
+});
+
+document.getElementById('paper_button').addEventListener('click', function() {
+    document.getElementById('paper_form').style.display = 'block';
+    document.getElementById('question_form').style.display = 'none';
+});
+
+document.getElementById('paper_type').addEventListener('change', function() {
+    var yearDiv = document.getElementById('year_div');
+    if (this.value === 'topical') {
+        yearDiv.style.display = 'none';
+    } else {
+        yearDiv.style.display = 'block';
+    }
+});
+
+document.getElementById('year').addEventListener('change', function() {
+    var otherYearDiv = document.getElementById('other_year_div');
+    if (this.value === 'other') {
+        otherYearDiv.style.display = 'block';
+    } else {
+        otherYearDiv.style.display = 'none';
+    }
+});

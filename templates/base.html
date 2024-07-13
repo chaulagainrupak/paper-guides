@@ -10,21 +10,36 @@
     <div class="navbar">
         <a href="{{ url_for('index')}}">Paper-<span class="blue-highlight">Guides</span></a>
         <div class="navlinks">
+          <a href="{{ url_for('getLevels') }}">Past Papers</a>
+          <a href="{{ url_for('modelQuestions') }}">Model Questions</a>
+          <a href="{{ url_for('questionGenerator') }}">Question Generator</a>
+        </div>
+        <div class="navright">
+          <a href="{{ url_for('support') }}"><span class="pink-highlight">Support</span></a>
+          <a href="{{ url_for('contact') }}">Contact</a>
+          <a href="{{url_for('login')}}">Login</a>
+        </div>
+        <div class="hamburger">
+          <input type="checkbox" id="hamburger"/>
+          <label for="hamburger">&#9776;</label>
+          <div class="hamitems">
             <a href="{{ url_for('getLevels') }}">Past Papers</a>
             <a href="{{ url_for('modelQuestions') }}">Model Questions</a>
             <a href="{{ url_for('questionGenerator') }}">Question Generator</a>
-        </div>
-        <div class="navright">
             <a href="{{ url_for('support') }}"><span class="pink-highlight">Support</span></a>
             <a href="{{ url_for('contact') }}">Contact</a>
             <a href="{{url_for('login')}}">Login</a>
+          </div>
         </div>
-    </div>
+      </div>
 
     {% block body %}
     <div class="section">
         {% block section %}
+            
         {% endblock %}
+        <a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
+
     </div>
     {% endblock %}
 </body>
