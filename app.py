@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from models import db, User
 from datetime import datetime
 import base64
+import jsonify
 
 
 from paperGuidesDB import *
@@ -79,6 +80,21 @@ def renderSubjectQuestion(level ,subject_name, year, file_data):
     return render_template('qp.html', question = question )
 
 
+@app.route('/question-gen', methods=['POST'])
+def questionGen():
+    try:
+        subject = request.form.get('subject')
+        level = request.form.get('level')
+        topics = request.form.getlist('topic')
+        difficulties = request.form.getlist('difficulty')
+        components = request.form.getlist('component')
+
+        return "Success"
+
+    except Exception as e:
+        return f"Some error occurred server-side, no reason to panic. Error: {e}", 500
+
+
 @app.route('/submit')
 def submit():
 
@@ -93,7 +109,8 @@ def modelQuestions():
 
 @app.route('/question-generator')
 def questionGenerator():
-    return render_template('question-generator.html')
+    config = loadConfig(configPath)
+    return render_template('question-generator.html', config = config)
 
 @app.route('/support')
 def support():

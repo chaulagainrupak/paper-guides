@@ -1,6 +1,148 @@
 {% extends 'base.html' %}
-
 {% block section %}
+<div id="config" style="display: none;">{{ config | tojson | safe }}</div>
+<form action="/question-gen" method="post" enctype="multipart/form-data">
+    <div>
+        <label for="subject">Subject:</label>
+        <select id="subject" name="subject" required>
+            {% for subject in config.NEB.subjects %}
+                <option value="{{ subject.name }}">{{ subject.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="multiselect">
+        <div class="selectBox" onclick="showCheckboxes('topicCheckboxes')">
+            <select>
+                <option>Select Topic(s)</option>
+            </select>
+            <div class="overSelect"></div>
+        </div>
+        <div id="topicCheckboxes" class="checkboxes">
+            <!-- Populated by JavaScript -->
+        </div>
+    </div>
+    <div class="multiselect">
+        <div class="selectBox" onclick="showCheckboxes('difficultyCheckboxes')">
+            <select>
+                <option>Select Difficulty</option>
+            </select>
+            <div class="overSelect"></div>
+        </div>
+        <div id="difficultyCheckboxes" class="checkboxes">
+            {% for i in range(1, 6) %}
+                <label><input type="checkbox" name="difficulty" value="{{ i }}" />{{ i }}</label>
+            {% endfor %}
+        </div>
+    </div>
+    <div>
+        <label for="level">Level:</label>
+        <select id="level" name="level" required>
+            {% for level in config.NEB.levels %}
+                <option value="{{ level }}">{{ level }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="multiselect">
+        <div class="selectBox" onclick="showCheckboxes('componentCheckboxes')">
+            <select>
+                <option>Select Component(s)</option>
+            </select>
+            <div class="overSelect"></div>
+        </div>
+        <div id="componentCheckboxes" class="checkboxes">
+            <label><input type="checkbox" name="component" value="ALL" />ALL</label>
+            {% for component in config.NEB.components %}
+                <label><input type="checkbox" name="component" value="{{ component }}" />{{ component }}</label>
+            {% endfor %}
+        </div>
+    </div>
+    <button type="submit">Generate Question</button>
+</form>
 <a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const config = JSON.parse(document.getElementById('config').textContent);
+    
+    function populateTopics(subjectName) {
+        const topicCheckboxes = document.getElementById('topicCheckboxes');
+        if (!topicCheckboxes) return;
+        topicCheckboxes.innerHTML = '';
+        const subject = config.NEB.subjects.find(s => s.name === subjectName);
+        if (subject) {
+            subject.topics.forEach(topic => {
+                let label = document.createElement('label');
+                let checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'topic';
+                checkbox.value = topic;
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(topic));
+                topicCheckboxes.appendChild(label);
+            });
+        }
+    }
+
+    const subjectSelect = document.getElementById('subject');
+    if (subjectSelect) {
+        subjectSelect.addEventListener('change', function () {
+            populateTopics(this.value);
+        });
+        // Initialize topics for the default selected subject
+        populateTopics(subjectSelect.value);
+    }
+});
+
+var expanded = {};
+
+function showCheckboxes(checkboxesId) {
+    var checkboxes = document.getElementById(checkboxesId);
+    if (!expanded[checkboxesId]) {
+        checkboxes.style.display = "block";
+        expanded[checkboxesId] = true;
+    } else {
+        checkboxes.style.display = "none";
+        expanded[checkboxesId] = false;
+    }
+}
+</script>
+
+<style>
+.multiselect {
+    width: 200px;
+    position: relative;
+}
+
+.selectBox {
+    position: relative;
+}
+
+.selectBox select {
+    width: 100%;
+    font-weight: bold;
+}
+
+.overSelect {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.checkboxes {
+    display: none;
+    border: 1px #dadada solid;
+    max-height: 150px;
+    overflow-y: scroll;
+}
+
+.checkboxes label {
+    display: block;
+}
+
+.checkboxes label:hover {
+    background-color: #1e90ff;
+}
+</style>
 {% endblock %}

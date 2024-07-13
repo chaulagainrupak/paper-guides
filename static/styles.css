@@ -211,6 +211,8 @@ body {
 .image-container:hover .img3 {
   transform: translateY(10px) translateX(10px);
 }
+
+
 /* Media query for responsiveness */
 @media screen and (max-width: 1185px) {
   .navbar {
@@ -241,7 +243,7 @@ body {
   display: none;
 }
 
-@media screen and (max-width: 870px) {
+@media screen and (max-width: 980px) {
   .navbar > div {
     display: none;
   }
