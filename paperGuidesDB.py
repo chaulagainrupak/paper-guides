@@ -22,7 +22,7 @@ def createDatabase():
         component TEXT,
         board TEXT,
         level INTEGER,
-        questionFile BLOB UNIQUE,
+        questionFile BLOB,
         solutionFile BLOB , 
         approved DEFAULT False)''')
 
@@ -37,8 +37,8 @@ def createDatabase():
         board TEXT,
         level INTEGER,
         component TEXT,
-        questionFile BLOB UNIQUE,
-        solutionFile BLOB , 
+        questionFile BLOB,
+        solutionFile BLOB, 
         approved DEFAULT False,
         one INTEGER DEFAULT 0,
         two INTEGER DEFAULT 0,
@@ -53,7 +53,7 @@ def createDatabase():
         uuid TEXT UNIQUE,
         subject TEXT,
         board TEXT,
-        questionFile BLOB UNIQUE,
+        questionFile BLOB,
         solutionFile BLOB )''')
 
 
@@ -81,10 +81,6 @@ def insertQuestion(board, subject, topic, difficulty, level, component, question
     try:
         uuidStr = str(uuid.uuid4())
         connection = sqlite3.connect(dbPath)
-
-        questionFile = zlib.compress(questionFile)
-        solutionFile = zlib.compress(solutionFile)
-
 
         db = connection.cursor()
         db.execute('''INSERT INTO questions
@@ -310,6 +306,57 @@ def getComponents(year, subjectName):
     finally:
         # Close the connection
         connection.close()
+
+
+def getQuestionsForGen(subject, level, topics, components, difficulties):
+    try:
+        # Connect to the database
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+
+        # Convert lists to comma-separated placeholders
+        topics_placeholder = ', '.join('?' for _ in topics)
+        difficulties_placeholder = ', '.join('?' for _ in difficulties)
+
+        # Prepare the components placeholder and value
+        if components == 'ALL':
+            components_condition = ''  # No additional condition for components
+            values = [subject, level] + topics + difficulties
+        else:
+            components_placeholder = ', '.join('?' for _ in components)
+            components_condition = f'AND component IN ({components_placeholder})'
+            values = [subject, level] + topics + difficulties + components
+
+        # Create the query string with the appropriate conditions
+        query = f'''
+            SELECT * FROM questions 
+            WHERE subject = ? AND level = ? 
+            AND topic IN ({topics_placeholder}) 
+            AND difficulty IN ({difficulties_placeholder}) 
+            {components_condition}
+        '''
+
+        # Print the query and values for debugging
+        print(f"Executing query: {query}")
+        print(f"With values: {values}")
+
+        # Execute the query
+        row = db.execute(query, values)
+        rows = row.fetchall()  # Fetch all the results
+
+        # Close the database connection
+        connection.close()
+
+        # Print the results for debugging
+        print(f"Query Results: {rows}")
+
+        return rows  # Return the fetched results
+
+    except sqlite3.Error as e:
+        raise Exception(f"An internal server error occurred: {e}")  # Raise exception to be handled by the route
+    finally:
+        connection.close()
+    
 
 def dbDump():
     output_json_file = './instance/db-dump.json'

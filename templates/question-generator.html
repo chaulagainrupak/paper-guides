@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 {% block section %}
 <div id="config" style="display: none;">{{ config | tojson | safe }}</div>
-<form action="/question-gen" method="post" enctype="multipart/form-data">
+<form id="questionForm" action="/question-gen" method="post" enctype="multipart/form-data">
     <div>
         <label for="subject">Subject:</label>
         <select id="subject" name="subject" required>
+            <option value="" disabled selected>Select Subject</option>
             {% for subject in config.NEB.subjects %}
                 <option value="{{ subject.name }}">{{ subject.name }}</option>
             {% endfor %}
@@ -13,22 +14,22 @@
     <div class="multiselect">
         <div class="selectBox" onclick="showCheckboxes('topicCheckboxes')">
             <select>
-                <option>Select Topic(s)</option>
+                <option value="" disabled selected>Select Topic(s)</option>
             </select>
             <div class="overSelect"></div>
         </div>
-        <div id="topicCheckboxes" class="checkboxes">
+        <div id="topicCheckboxes" class="checkboxes" required>
             <!-- Populated by JavaScript -->
         </div>
     </div>
     <div class="multiselect">
         <div class="selectBox" onclick="showCheckboxes('difficultyCheckboxes')">
             <select>
-                <option>Select Difficulty</option>
+                <option value="" disabled selected>Select Difficulty</option>
             </select>
             <div class="overSelect"></div>
         </div>
-        <div id="difficultyCheckboxes" class="checkboxes">
+        <div id="difficultyCheckboxes" class="checkboxes" required>
             {% for i in range(1, 6) %}
                 <label><input type="checkbox" name="difficulty" value="{{ i }}" />{{ i }}</label>
             {% endfor %}
@@ -37,6 +38,7 @@
     <div>
         <label for="level">Level:</label>
         <select id="level" name="level" required>
+            <option value="" disabled selected>Select Level</option>
             {% for level in config.NEB.levels %}
                 <option value="{{ level }}">{{ level }}</option>
             {% endfor %}
@@ -45,12 +47,12 @@
     <div class="multiselect">
         <div class="selectBox" onclick="showCheckboxes('componentCheckboxes')">
             <select>
-                <option>Select Component(s)</option>
+                <option value="" disabled selected>Select Component(s)</option>
             </select>
             <div class="overSelect"></div>
         </div>
-        <div id="componentCheckboxes" class="checkboxes">
-            <label><input type="checkbox" name="component" value="ALL" />ALL</label>
+        <div id="componentCheckboxes" class="checkboxes" required>
+            <label><input type="checkbox" name="component" value="ALL" checked />ALL</label>
             {% for component in config.NEB.components %}
                 <label><input type="checkbox" name="component" value="{{ component }}" />{{ component }}</label>
             {% endfor %}
@@ -91,6 +93,46 @@ document.addEventListener('DOMContentLoaded', function () {
         // Initialize topics for the default selected subject
         populateTopics(subjectSelect.value);
     }
+
+    // Add validation for checkboxes (all checkboxes required)
+    const form = document.querySelector('#questionForm');
+    form.addEventListener('submit', function (event) {
+        const subject = document.getElementById('subject').value;
+        const topicCheckboxes = document.querySelectorAll('input[name="topic"]');
+        const difficultyCheckboxes = document.querySelectorAll('input[name="difficulty"]');
+        const componentCheckboxes = document.querySelectorAll('input[name="component"]');
+        
+        // Check if a subject is selected
+        if (!subject) {
+            alert('Please select a subject.');
+            event.preventDefault();
+            return;
+        }
+        
+        // Check if at least one topic is selected
+        const isTopicChecked = Array.from(topicCheckboxes).some(cb => cb.checked);
+        if (!isTopicChecked) {
+            alert('Please select at least one topic.');
+            event.preventDefault();
+            return;
+        }
+
+        // Check if at least one difficulty level is selected
+        const isDifficultyChecked = Array.from(difficultyCheckboxes).some(cb => cb.checked);
+        if (!isDifficultyChecked) {
+            alert('Please select at least one difficulty level.');
+            event.preventDefault();
+            return;
+        }
+
+        // Check if at least one component is selected
+        const isComponentChecked = Array.from(componentCheckboxes).some(cb => cb.checked);
+        if (!isComponentChecked) {
+            alert('Please select at least one component.');
+            event.preventDefault();
+            return;
+        }
+    });
 });
 
 var expanded = {};
