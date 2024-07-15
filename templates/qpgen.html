@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{%block section%}
+    {%for row in rows%}
+        <p>{{row[5]}}: {{row[2]}}, {{row[3]}}, Grade: {{row[6]}}, Difficulty: {{row[4]}}, Component: {{row[7]}}</p>
+    {%endfor%}
+{%endblock%}

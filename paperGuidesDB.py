@@ -309,6 +309,7 @@ def getComponents(year, subjectName):
 
 
 def getQuestionsForGen(subject, level, topics, components, difficulties):
+    rowsList = []
     try:
         # Connect to the database
         connection = sqlite3.connect(dbPath)
@@ -346,9 +347,6 @@ def getQuestionsForGen(subject, level, topics, components, difficulties):
 
         # Close the database connection
         connection.close()
-
-        # Print the results for debugging
-        print(f"Query Results: {rows}")
 
         return rows  # Return the fetched results
 

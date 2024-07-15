@@ -80,43 +80,39 @@ def renderSubjectQuestion(level ,subject_name, year, file_data):
     return render_template('qp.html', question = question )
 
 
-@app.route('/question-gen', methods=['POST'])
+@app.route('/question-gen', methods=['POST', 'GET'])
 def questionGen():
-    try:
-        # Extract form data
-        subject = request.form.get('subject')
-        level = request.form.get('level')
-        topics = request.form.getlist('topic')
-        difficulties = request.form.getlist('difficulty')
-        components = request.form.getlist('component')
 
-        # Print the extracted data for debugging
-        print(f"Extracted data - Subject: {subject}, Level: {level}, Topics: {topics}, Difficulties: {difficulties}, Components: {components}")
+    if request.method == 'POST':
+        try:
+            # Extract form data
+            subject = request.form.get('subject')
+            level = request.form.get('level')
+            topics = request.form.getlist('topic')
+            difficulties = request.form.getlist('difficulty')
+            components = request.form.getlist('component')
 
-        # Convert lists to correct format for SQL placeholders
-        # No need to add single quotes around list items here
-        # Example: ['Algebra', 'Geometry'] stays as is
-        # Example: ['1', '2', '3'] stays as is
+            # Print the extracted data for debugging
+            print(f"Extracted data - Subject: {subject}, Level: {level}, Topics: {topics}, Difficulties: {difficulties}, Components: {components}")
 
-        # Convert components to correct format for SQL placeholders
-        if 'ALL' in components:
-            components = 'ALL'
-        else:
-            components = [component for component in components]
+            # Convert lists to correct format for SQL placeholders
+            # No need to add single quotes around list items here
+            # Example: ['Algebra', 'Geometry'] stays as is
+            # Example: ['1', '2', '3'] stays as is
 
-        # Call the getQuestions function
-        rows = getQuestionsForGen(subject, level, topics, components, difficulties)
+            # Convert components to correct format for SQL placeholders
+            if 'ALL' in components:
+                components = 'ALL'
+            else:
+                components = [component for component in components]
 
-        # Print the results for debugging
-        print(f"Rows returned: {rows}")
+            # Call the getQuestions function
+            rows = getQuestionsForGen(subject, level, topics, components, difficulties)
 
-        # Process results or format them for the response
-        results = "\n".join(map(str, rows))  # Convert list of tuples to a string for demonstration
+            return render_template('qpgen.html', rows = rows)  # Return results to the client
 
-        return results  # Return results to the client
-
-    except Exception as e:
-        return f"Some error occurred server-side, no reason to panic. Error: {e}", 500
+        except Exception as e:
+            return f"Some error occurred server-side, no reason to panic. Error: {e}", 500
 
 
 @app.route('/submit')
