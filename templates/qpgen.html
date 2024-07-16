@@ -1,7 +1,25 @@
 {% extends 'base.html' %}
 
 {%block section%}
-    {%for row in rows%}
-        <p>{{row[5]}}: {{row[2]}}, {{row[3]}}, Grade: {{row[6]}}, Difficulty: {{row[4]}}, Component: {{row[7]}}</p>
-    {%endfor%}
+    <div class="generated-question">
+        <div class="question-name">
+            {%for row in rows%}
+                <p>{{row[5]}}: {{row[2]}}, {{row[3]}}, Grade: {{row[6]}}, Difficulty: {{row[4]}}, Component: {{row[7]}}</p>
+            {%endfor%}
+        </div>
+
+        <div class="question-conatiner">
+            <div class="question-toolbar">
+                tool bar
+            </div>
+
+            <div class="question-image">
+                question image
+            </div>
+
+            <div class="solution-image">
+
+            </div>
+        </div>
+    </div>
 {%endblock%}
