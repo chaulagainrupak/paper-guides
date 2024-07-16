@@ -6,6 +6,8 @@
     <link rel="shortcut icon" type="image/x-icon" href="/static/images/logo.svg" />
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
+     crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="navbar">
@@ -16,8 +18,8 @@
           <a href="{{ url_for('questionGenerator') }}">Question Generator</a>
         </div>
         <div class="navright">
-          <a href="{{ url_for('support') }}"><span class="pink-highlight">Support</span></a>
-          <a href="{{ url_for('contact') }}">Contact</a>
+          <a href="{{ url_for('about') }}"><span class="pink-highlight">About</span></a>
+          <!-- <a href="{{ url_for('contact') }}">Contact</a> -->
           <a href="{{url_for('login')}}">Login</a>
         </div>
         <div class="hamburger">
@@ -27,8 +29,8 @@
             <a href="{{ url_for('getLevels') }}">Past Papers</a>
             <a href="{{ url_for('modelQuestions') }}">Model Questions</a>
             <a href="{{ url_for('questionGenerator') }}">Question Generator</a>
-            <a href="{{ url_for('support') }}"><span class="pink-highlight">Support</span></a>
-            <a href="{{ url_for('contact') }}">Contact</a>
+            <a href="{{ url_for('about') }}"><span class="pink-highlight">About</span></a>
+            <!-- <a href="{{ url_for('contact') }}">Contact</a> -->
             <a href="{{url_for('login')}}">Login</a>
           </div>
         </div>

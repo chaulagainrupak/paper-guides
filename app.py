@@ -80,6 +80,11 @@ def renderSubjectQuestion(level ,subject_name, year, file_data):
     return render_template('qp.html', question = question )
 
 
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
 @app.route('/question-gen', methods=['POST', 'GET'])
 def questionGen():
 

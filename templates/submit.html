@@ -3,7 +3,7 @@
 {% block body %}
 <div id="config" style="display: none;">{{ config | tojson | safe }}</div>
 
-<h2>Submit a Question or Paper</h2>
+<h2>Submit a Question (Question submission is currently disabled) or Paper</h2>
 
 <div id="submission_type_selector">
     <button id="question_button">Submit Question</button>
@@ -62,7 +62,7 @@
         <label for="solutionFile">Solution Image:</label>
         <input type="file" id="solutionFile" name="solutionFile" accept="image/*">
     </div>
-    <button type="submit">Submit Question</button>
+    <button type="submit" disabled>Submit Question</button>
 </form>
 
 <form id="paper_form" action="/submitPaper" method="post" enctype="multipart/form-data" style="display: none;">

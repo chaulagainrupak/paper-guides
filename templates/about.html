@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    About
+{% endblock %}
+
+{% block section %}
+    <style>
+        .about-section {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
+        }
+
+        .about-section h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .about-section h3 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .about-section p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .contact-info {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .contact-info p {
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <div class="about-section">
+        <h2>Welcome to Paper-<span class="blue-highlight">Guides</span>!</h2>
+        <p>Our paper guides initiative is a student-run effort dedicated to providing free study materials to fellow students. We understand the challenges of academics and aim to support each other through accessible resources.</p>
+        <p>We are Open-Source <a href="https://github.com/chaulagainrupak/paper-guides" class="pink-highlight">@Github</a></p>
+        <h3>Our Mission</h3>
+        <p>We believe that education should be accessible to everyone, regardless of financial constraints. Our mission is to compile and distribute high-quality study materials that cover a wide range of subjects and topics.</p>
+        
+        <h3>What We Offer</h3>
+        <p>Through our platform, you can find comprehensive study guides, summaries, practice questions, and more. All materials are created and curated by students who have excelled in their studies, ensuring relevance and reliability.</p>
+        
+        <h3>Community-Driven</h3>
+        <p>At the heart of our initiative is a strong sense of community. We encourage collaboration among students by allowing contributions and feedback. This ensures that our resources remain up-to-date and reflective of the current academic curriculum.</p>
+        
+        <h3>How It Works</h3>
+        <p>Using our website is simple and intuitive. Navigate through different subjects or use our search function to find specific topics. Each resource is tagged and categorized for easy browsing.</p>
+        
+        <h3>Get Involved</h3>
+        <p>We welcome students who are passionate about education to join our team. Whether you excel in content creation, editing, or simply want to contribute your notes, there’s a place for you here.</p>
+        
+        <h3>Contact Us</h3>
+
+        
+        <p>Have questions or suggestions? Reach out to us through our contact form or social media channels. Your feedback helps us improve and expand our offerings.</p>
+        
+        <p>Thank you for being part of our community dedicated to making education accessible for all!</p>
+
+        <div class="contact-info">
+            <p>Email: <span class="pink-highlight">contact@paperguides.xyz</span></p>
+            <p>Instagram: <a href="https://instagram.com/paperguides.xyz" class="pink-highlight" target="_blank">@paperguides.xyz</a></p>
+        </div>
+    </div>
+{% endblock %}

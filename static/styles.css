@@ -323,3 +323,8 @@ body {
     display: none;
   }
 }
+
+
+object {
+  height: 100vh;
+}

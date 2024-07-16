@@ -2,12 +2,12 @@
 {% block title %}
  Paper-Guides
 {% endblock %}
-{% block body %}
+{% block section %}
 
 <p id="compressedData" style="display: none;">{{ question[0] }}</p>
 
-<img id="questionImage" alt="Question Image">
-<object id="embedPdf" type="application/pdf" width="100%" height="600px">
+<img id="questionImage" hidden>
+<object id="embedPdf" type="application/pdf" width="70%">
    <p>Your browser doesn't support embedded PDFs. You can <a id="downloadPdf" download="document.pdf">download the PDF</a> instead.</p>
 </object>
 
