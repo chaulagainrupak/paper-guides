@@ -113,7 +113,6 @@ def questionGen():
 
             # Call the getQuestions function
             rows = getQuestionsForGen(subject, level, topics, components, difficulties)
-
             return render_template('qpgen.html', rows = rows)  # Return results to the client
 
         except Exception as e:
@@ -271,7 +270,7 @@ def login():
 @app.route('/rate/<question_UUID>/<int:rating>', methods = ['POST'])
 @login_required
 def rate(question_UUID, rating):
-    
+        
     try:
         user = current_user.id
         if giveRating(user, question_UUID, rating):

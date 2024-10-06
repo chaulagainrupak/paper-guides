@@ -1,28 +1,252 @@
 {% extends 'base.html' %}
 
-{%block section%}
-    <!-- <div class="generated-question">
-        <div class="question-name">
-            {%for row in rows%}
-                <p>{{row[5]}}: {{row[2]}}, {{row[3]}}, Grade: {{row[6]}}, Difficulty: {{row[4]}}, Component: {{row[7]}}</p>
-            {%endfor%}
+{% block section %}
+<style>
+    body {
+        font-family: Arial, sans-serif; /* Use a more common font */
+        background-color: #f8f9fa; /* Light background */
+    }
+
+    .container {
+        display: flex;
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .sidebar {
+        flex: 1;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-right: 20px; /* Space between sidebar and content */
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .page-button {
+        background-color: #007bff; /* Bootstrap Primary Color */
+        color: #ffffff;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin: 0 5px; /* Spacing between buttons */
+        transition: background-color 0.3s;
+    }
+
+    .page-button:hover {
+        background-color: #0056b3; /* Darker shade on hover */
+    }
+
+    .question-list {
+        margin-top: 10px;
+    }
+
+    .question-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        background-color: #e9ecef; /* Light gray background */
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-thumbnail img {
+        width: 60px;
+        height: 60px;
+        border-radius: 5px;
+        margin-right: 15px;
+    }
+
+    .question-info {
+        flex-grow: 1;
+    }
+
+    .question-name {
+        font-weight: bold;
+        color: #333; /* Darker text color */
+    }
+
+    .toggle-solution, .toggle-question {
+        background-color: #28a745; /* Bootstrap Success Color */
+        color: #ffffff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-right: 10px;
+        transition: background-color 0.3s;
+    }
+
+    .toggle-solution:hover, .toggle-question:hover {
+        background-color: #218838; /* Darker green on hover */
+    }
+
+    .rating {
+        display: flex;
+        align-items: center;
+    }
+
+    .star {
+        background: none;
+        border: none;
+        color: #ffc107; /* Gold color for stars */
+        cursor: pointer;
+        font-size: 24px;
+    }
+
+    .content {
+        flex: 2; /* Adjusted for better layout */
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-container {
+        margin-bottom: 20px;
+    }
+
+    .solution-container {
+        display: none;
+        margin-top: 10px;
+        background-color: #f8f9fa; /* Light background for solution */
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .no-solution {
+        color: #dc3545; /* Bootstrap Danger Color */
+        font-style: italic;
+    }
+</style>
+
+<div class="container">
+    <div class="sidebar">
+        <h2>Questions</h2>
+        <div class="pagination">
+            {% for page in pages %}
+            <button class="page-button">{{ page }}</button>
+            {% endfor %}
         </div>
-
-        <div class="question-conatiner">
-            <div class="question-toolbar">
-                tool bar
+        <div class="question-list">
+            {% for row in rows %}
+            <div class="question-item">
+                <div class="question-thumbnail">
+                    <img src="{{ row.thumbnail_url }}" alt="Question Thumbnail">
+                </div>
+                <div class="question-info">
+                    <span class="question-name">{{ row[5] }}</span>
+                    <div>
+                        <button class="toggle-solution" data-question-id="{{ loop.index }}">Show Solution</button>
+                        <div class="rating">
+                            <span>Rate:</span>
+                            <button class="star" data-rating="1">★</button>
+                            <button class="star" data-rating="2">★</button>
+                            <button class="star" data-rating="3">★</button>
+                            <button class="star" data-rating="4">★</button>
+                            <button class="star" data-rating="5">★</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="question-image">
-                question image
+            {% endfor %}
+        </div>
+    </div>
+    <div class="content">
+        {% for row in rows %}
+        <div class="question-container" id="question-container-{{ loop.index }}">
+            <div class="question-image" id="question-image-{{ loop.index }}" data-compressed="{{ row[8] }}">
+                <!-- Question image will be rendered here -->
             </div>
-
-            <div class="solution-image">
-
+            <div class="solution-container" id="solution-container-{{ loop.index }}">
+                <div class="solution-image" id="solution-image-{{ loop.index }}" data-compressed="{{ row[9] }}">
+                    <!-- If no solution, show "no solution found" -->
+                    <p class="no-solution">No solution found</p>
+                </div>
+                <button class="toggle-question" data-question-id="{{ loop.index }}">Show Question</button>
             </div>
         </div>
-    </div> -->
+        {% endfor %}
+    </div>
+</div>
 
-<h1 style="text-align: center;">Development paused due to my exams!</h1>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function renderImageFromElement(element, base64Data) {
+            if (!element || !base64Data) {
+                console.error("Element or data not found");
+                return;
+            }
 
-{%endblock%}
+            try {
+                // Decode the base64 string to binary
+                const binaryString = atob(base64Data);
+                const charData = binaryString.split('').map(char => char.charCodeAt(0));
+                const uint8Array = new Uint8Array(charData);
+
+                // Decompress the data using pako
+                const decompressedData = pako.inflate(uint8Array);
+
+                // Create a Blob from the decompressed data
+                const blob = new Blob([decompressedData], { type: 'image/png' });
+                const imageUrl = URL.createObjectURL(blob);
+                
+                // Create an image element and set the source
+                const imgElement = document.createElement('img');
+                imgElement.src = imageUrl;
+                element.textContent = '';
+                element.appendChild(imgElement);
+            } catch (error) {
+                console.error(`Failed to render image for element ID ${element.id}:`, error);
+            }
+        }
+
+        // Find all question images
+        const questionImages = document.querySelectorAll('.question-image');
+        const solutionImages = document.querySelectorAll('.solution-image');
+
+        // Render images for each question and solution
+        questionImages.forEach((element) => {
+            const base64Data = element.getAttribute('data-compressed');
+            renderImageFromElement(element, base64Data);
+        });
+
+        solutionImages.forEach((element) => {
+            const base64Data = element.getAttribute('data-compressed');
+            renderImageFromElement(element, base64Data);
+        });
+
+        // Toggle solution visibility
+        document.querySelectorAll('.toggle-solution').forEach(button => {
+            button.addEventListener('click', function () {
+                const questionId = this.getAttribute('data-question-id');
+                const solutionContainer = document.getElementById(`solution-container-${questionId}`);
+                const questionContainer = document.getElementById(`question-container-${questionId}`);
+                const isSolutionVisible = solutionContainer.style.display === 'block';
+                
+                solutionContainer.style.display = isSolutionVisible ? 'none' : 'block';
+                questionContainer.style.display = isSolutionVisible ? 'none' : 'block';
+                this.textContent = isSolutionVisible ? 'Show Solution' : 'Show Question';
+            });
+        });
+
+        // Handle rating click
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function () {
+                const ratingValue = this.getAttribute('data-rating');
+                console.log(`Rated ${ratingValue} stars!`);
+                // Handle rating logic here (e.g., AJAX to server)
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -83,16 +83,25 @@ def insertQuestion(board, subject, topic, difficulty, level, component, question
         connection = sqlite3.connect(dbPath)
 
         db = connection.cursor()
+        
+        # Compress the questionFile and solutionFile (assuming they are in bytes)
+        compressedQuestionFile = zlib.compress(questionFile)  # Assuming questionFile is binary data
+        compressedSolutionFile = zlib.compress(solutionFile)  # Assuming solutionFile is binary data
+
+        # Encode the compressed data in base64
+        encodedQuestionFile = base64.b64encode(compressedQuestionFile).decode('utf-8')
+        encodedSolutionFile = base64.b64encode(compressedSolutionFile).decode('utf-8')
+
         db.execute('''INSERT INTO questions
             (uuid, subject, topic, difficulty, board, level, component, questionFile, solutionFile)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-            (uuidStr, subject, topic, difficulty, board, level, component, questionFile, solutionFile))
+            (uuidStr, subject, topic, difficulty, board, level, component, encodedQuestionFile, encodedSolutionFile))
         connection.commit()
         connection.close()
         return True
     except sqlite3.Error as e:
         print(f"Error inserting question into database: {e}")
-        return False
+        return False    
 
 def insertPaper(board, subject, year, level, component, questionFile, solutionFile):
     try:
