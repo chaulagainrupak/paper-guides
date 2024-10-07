@@ -4,6 +4,9 @@ import os
 import zlib
 import json
 import base64
+from logHandler import getCustomLogger
+
+logger = getCustomLogger(__name__)
 
 dbPath = './instance/paper-guides-resources.db'
 
@@ -70,9 +73,9 @@ def createDatabase():
         connection.commit()
 
 
-        print("Database created successfully.")
+        logger.info("Database created successfully.")
     except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"An error occurred while creating database: {e}")
     finally:
         if connection:
             connection.close()
@@ -98,9 +101,10 @@ def insertQuestion(board, subject, topic, difficulty, level, component, question
             (uuidStr, subject, topic, difficulty, board, level, component, encodedQuestionFile, encodedSolutionFile))
         connection.commit()
         connection.close()
+        logger.info(f"Question inserted successfully. UUID: {uuidStr}")
         return True
     except sqlite3.Error as e:
-        print(f"Error inserting question into database: {e}")
+        logger.error(f"Error inserting question into database: {e}")
         return False    
 
 def insertPaper(board, subject, year, level, component, questionFile, solutionFile):
@@ -119,9 +123,10 @@ def insertPaper(board, subject, year, level, component, questionFile, solutionFi
             (uuidStr, subject, year, board, level, component, questionFile, solutionFile))
         connection.commit()
         connection.close()
+        logger.info(f"Paper inserted successfully. UUID: {uuidStr}")
         return True
     except sqlite3.Error as e:
-        print(f"Error inserting paper into database: {e}")
+        logger.error(f"Error inserting paper into database: {e}")
         return False
 
 def insertTopical(board, subject, questionFile, solutionFile):
@@ -141,9 +146,10 @@ def insertTopical(board, subject, questionFile, solutionFile):
             (uuidStr, subject, board, questionFile, solutionFile))
         connection.commit()
         connection.close()
+        logger.info(f"Topical paper inserted successfully. UUID: {uuidStr}")
         return True
     except sqlite3.Error as e:
-        print(f"Error inserting topical paper into database: {e}")
+        logger.error(f"Error inserting topical paper into database: {e}")
         return False
 
 def getYears(level , subjectName):
@@ -166,13 +172,15 @@ def getYears(level , subjectName):
         
 
         if years == []:
+            logger.warning(f"No years found for level {level} and subject {subjectName}")
             return False
         # Print the results for debugging purposes
         print(f"Extracted Years: {years}")
         
+        logger.info(f"Years retrieved successfully for level {level} and subject {subjectName}")
         return years
     except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"An error occurred while getting years: {e}")
         return None
     finally:
         # Close the connection
@@ -197,10 +205,11 @@ def getQuestions(level, subject_name, year):
             question_name.append(f'{subject_name}, {component}, Year: {year} question paper')
 
         # print(question_name)
+        logger.info(f"Questions retrieved successfully for level {level}, subject {subject_name}, year {year}")
         return question_name
 
     except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"An error occurred while getting questions: {e}")
         return None
     finally:
         # Close the connection
@@ -221,6 +230,7 @@ def renderQuestion(level, subject_name, year, component):
         compressedData = [row[0] for row in rows]
         
         if not compressedData:
+            logger.warning(f"No data found for level {level}, subject {subject_name}, year {year}, component {component}")
             print("No data found for the given criteria.")
             return None
         
@@ -228,14 +238,15 @@ def renderQuestion(level, subject_name, year, component):
         encodedData = [base64.b64encode(data).decode('utf-8') for data in compressedData]
         
         print("Data successfully fetched and encoded.")
+        logger.info(f"Question rendered successfully for level {level}, subject {subject_name}, year {year}, component {component}")
         return encodedData
 
     except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"An error occurred while rendering question: {e}")
         return None
     
     except zlib.error as e:
-        print(f"Decompression error: {e}")
+        logger.error(f"Decompression error: {e}")
         return None
 
     finally:
@@ -274,9 +285,10 @@ def giveRating(user_id, question_UUID, rating):
 
         # Commit the changes to the database
         connection.commit()
+        logger.info(f"Rating {rating} given by user {user_id} for question {question_UUID}")
 
     except sqlite3.Error as e:
-        print(f'DB error while updating/inserting rating: {e}')
+        logger.error(f'DB error while updating/inserting rating: {e}')
         return None
     finally:
         connection.close()
@@ -308,9 +320,10 @@ def getComponents(year, subjectName):
         # Print the results for debugging purposes
         print(f"Extracted Components: {components}")
         
+        logger.info(f"Components retrieved successfully for subject {subjectName} and year {year}")
         return components
     except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"An error occurred while getting components: {e}")
         return None
     finally:
         # Close the connection
@@ -357,9 +370,11 @@ def getQuestionsForGen(subject, level, topics, components, difficulties):
         # Close the database connection
         connection.close()
 
+        logger.info(f"Questions for generation retrieved successfully for subject {subject}, level {level}")
         return rows  # Return the fetched results
 
     except sqlite3.Error as e:
+        logger.error(f"An error occurred while getting questions for generation: {e}")
         raise Exception(f"An internal server error occurred: {e}")  # Raise exception to be handled by the route
     finally:
         connection.close()
@@ -405,10 +420,11 @@ def dbDump():
             for name in data:
                 text_file.write(f"{name}\n")
 
+        logger.info("Database dump completed successfully")
         return data
 
     except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"An error occurred during database dump: {e}")
         return None
     finally:
         # Close the connection

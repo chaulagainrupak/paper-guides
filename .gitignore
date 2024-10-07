@@ -163,3 +163,7 @@ cython_debug/
 
 .instance
 .instance/*
+
+.log 
+log 
+.log/*
