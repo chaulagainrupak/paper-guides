@@ -1,8 +1,83 @@
 {% extends 'base.html' %}
 
+{% block title %}Login{% endblock %}
 
-{%block title%}Login{%endblock%}
+{% block section %}
+<div class="container">
+    <h2>Login</h2>
 
-{%block section%}
-<h1 style="text-align: center;">Development paused due to my exams!</h1>
-{%endblock%}
+    <!-- Flash messages for displaying errors or success -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Login Form -->
+    <div id="login-form">
+        <form method="POST" action="{{ url_for('login') }}">
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Login</button>
+
+            <p>Don't have an account? <a href="#" id="show-signup">Sign up here</a>.</p>
+        </form>
+    </div>
+
+    <!-- Signup Form -->
+    <div id="signup-form" style="display:none;">
+        <h2>Sign Up</h2>
+        <form method="POST" action="{{ url_for('signup') }}">
+
+            <div class="form-group">
+                <label for="new-username">Username</label>
+                <input type="text" id="new-username" name="username" class="form-control" placeholder="Choose a username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="new-password">Password</label>
+                <input type="password" id="new-password" name="password" class="form-control" placeholder="Choose a password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+
+            <p>Already have an account? <a href="#" id="show-login">Login here</a>.</p>
+        </form>
+    </div>
+</div>
+
+<!-- Script to toggle between login and signup forms -->
+<script>
+    document.getElementById('show-signup').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('signup-form').style.display = 'block';
+    });
+
+    document.getElementById('show-login').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('signup-form').style.display = 'none';
+        document.getElementById('login-form').style.display = 'block';
+    });
+</script>
+{% endblock %}

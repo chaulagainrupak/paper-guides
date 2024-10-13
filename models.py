@@ -17,5 +17,3 @@ class User(UserMixin, db.Model):
     signup_time = db.Column(db.DateTime, default=datetime.utcnow)
     full_name = db.Column(db.String(150))
     role = db.Column(db.String(50), default='user')
-
-    

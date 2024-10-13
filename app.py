@@ -3,6 +3,7 @@
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash   
 from models import db, User
 from datetime import datetime
 import base64
@@ -40,6 +41,17 @@ configPath = './configs/config.json'
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+@app.before_request
+def setup():
+    # Create tables only once before the first request is processed
+    with app.app_context():
+        db.create_all()  # Ensure tables are created
+        createDatabase()  # If needed, call additional setup functions
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -178,6 +190,7 @@ def contact():
 
 
 @app.route('/submitQuestion', methods=['POST'])
+@login_required
 def submitQuestion():
     logger.info('Question submission initiated', extra={'http_request': True})
     board = request.form.get('board')
@@ -198,6 +211,7 @@ def submitQuestion():
         return "Error occurred while submitting question", 500
 
 @app.route('/submitPaper', methods=['POST'])
+@login_required
 def submitPaper():
     logger.info('Paper submission initiated', extra={'http_request': True})
     try:
@@ -252,13 +266,14 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
 
-    # Handle login form submission
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+
         user = User.query.filter_by(username=username).first()
 
-        if user and user.password == password:
+        # Check if user exists and the password matches
+        if user and check_password_hash(user.password, password):
             login_user(user)
             logger.info(f'User {username} logged in', extra={'http_request': True})
             next_page = request.args.get('next')
@@ -269,37 +284,41 @@ def login():
 
     return render_template('login.html')
 
-# @app.route('/logout')
-# @login_required
-# def logout():
-#     logout_user()
-#     return redirect(url_for('index'))
 
-# @app.route('/signup', methods=['GET', 'POST'])
-# def signup():
-#     if current_user.is_authenticated:
-#         return redirect(url_for('index'))
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
-#     # Handle signup form submission
-#     if request.method == 'POST':
-#         username = request.form.get('username')
-#         password = request.form.get('password')
-#         email = request.form.get('email')
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
 
-#         # Check if username or email already exists
-#         existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
-#         if existing_user:
-#             flash('Username or email already exists. Please choose another.', 'danger')
-#         else:
-#             # Create new user with default role 'user'
-#             new_user = User(username=username, password=password, email=email)
-#             db.session.add(new_user)
-#             db.session.commit()
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        email = request.form.get('email')
 
-#             flash('Account created successfully! You can now log in.', 'success')
-#             return redirect(url_for('login'))
+        # Check if username or email already exists
+        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+        if existing_user:
+            flash('Username or email already exists. Please choose another.', 'danger')
+        else:
+            # Hash the password before storing it
+            hashed_password = generate_password_hash(password)
+            
+            # Create new user with hashed password
+            new_user = User(username=username, password=hashed_password, email=email)
+            db.session.add(new_user)
+            db.session.commit()
 
-#     return render_template('signup.html')
+            flash('Account created successfully! You can now log in.', 'success')
+            return redirect(url_for('login'))
+
+    return render_template('signup.html')
+
 
 
 # Will profiles even be a thing ? Public IDK but chaning the email password will be implemented 

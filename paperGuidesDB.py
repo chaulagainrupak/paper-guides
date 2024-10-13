@@ -259,8 +259,6 @@ def giveRating(user_id, question_UUID, rating):
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
 
-
-        
         # Check if the user has already rated this question
         previousRating = db.execute('SELECT rating FROM ratings WHERE user_id = ? AND question_UUID = ?', (user_id, question_UUID)).fetchall()
 
@@ -277,7 +275,6 @@ def giveRating(user_id, question_UUID, rating):
             # Insert new rating for the user and question
             db.execute('INSERT INTO ratings (user_id, question_UUID, rating) VALUES (?, ?, ?)', (user_id, question_UUID, rating))
 
-        print('got here')
         # Increase the new rating count for the given question
         newRatingStr = convertRatingToString(rating)
         db.execute(f'UPDATE questions SET {newRatingStr} = {newRatingStr} + 1 WHERE uuid = ?', (question_UUID,))
@@ -285,11 +282,12 @@ def giveRating(user_id, question_UUID, rating):
 
         # Commit the changes to the database
         connection.commit()
-        logger.info(f"Rating {rating} given by user {user_id} for question {question_UUID}")
+        logger.info(f"Rating {rating} given by user {user_id} for question {question_UUID}")    
+        return True
 
     except sqlite3.Error as e:
         logger.error(f'DB error while updating/inserting rating: {e}')
-        return None
+        return False
     finally:
         connection.close()
 
