@@ -239,29 +239,6 @@
     }
   }
 
-
-
-
-  .generated-question{
-    display: flex;
-    width: 80%;
-    align-self: center;
-    justify-content: center;
-  }
-
-  .question-image {
-    background-color: rebeccapurple;
-  }
-
-  .question-container {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .solution-image {
-    display: none;
-  }
-
   .hamburger, .hamitems {
     display: none;
   }

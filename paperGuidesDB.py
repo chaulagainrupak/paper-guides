@@ -4,6 +4,8 @@ import os
 import zlib
 import json
 import base64
+import random
+
 from logHandler import getCustomLogger
 
 logger = getCustomLogger(__name__)
@@ -73,7 +75,6 @@ def createDatabase():
         connection.commit()
 
 
-        logger.info("Database created successfully.")
     except sqlite3.Error as e:
         logger.error(f"An error occurred while creating database: {e}")
     finally:
@@ -364,12 +365,13 @@ def getQuestionsForGen(subject, level, topics, components, difficulties):
         # Execute the query
         row = db.execute(query, values)
         rows = row.fetchall()  # Fetch all the results
-
+        random.shuffle(rows)
+        
         # Close the database connection
         connection.close()
 
         logger.info(f"Questions for generation retrieved successfully for subject {subject}, level {level}")
-        return rows  # Return the fetched results
+        return  rows # Return the fetched results
 
     except sqlite3.Error as e:
         logger.error(f"An error occurred while getting questions for generation: {e}")

@@ -24,7 +24,12 @@
         <div class="navright">
           <a href="{{ url_for('about') }}"><span class="pink-highlight">About</span></a>
           <!-- <a href="{{ url_for('contact') }}">Contact</a> -->
-          <a href="{{url_for('login')}}">Login</a>
+
+          {%if not current_user.is_authenticated%}
+            <a href="{{url_for('login')}}">Login</a>
+          {%else%}
+            <a href="{{url_for('logout')}}">Log-Out</a>
+          {%endif%}
         </div>
         <div class="hamburger">
           <input type="checkbox" id="hamburger"/>
