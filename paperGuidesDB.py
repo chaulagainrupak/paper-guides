@@ -159,14 +159,8 @@ def getYears(level , subjectName):
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
         
-        # Debugging: Print the subject name
-        print(f"Subject Name: {subjectName}")
-        
         # Execute the query and fetch all results
         rows = db.execute('SELECT year FROM papers WHERE level = ? AND subject = ?', (level, subjectName)).fetchall()
-        
-        # Debugging: Print the raw query result
-        print(f"Query Result: {rows}")
         
         # Extract the years from the query result
         years = list(set([row[0] for row in rows]))
@@ -175,9 +169,7 @@ def getYears(level , subjectName):
         if years == []:
             logger.warning(f"No years found for level {level} and subject {subjectName}")
             return False
-        # Print the results for debugging purposes
-        print(f"Extracted Years: {years}")
-        
+
         logger.info(f"Years retrieved successfully for level {level} and subject {subjectName}")
         return years
     except sqlite3.Error as e:
@@ -200,12 +192,10 @@ def getQuestions(level, subject_name, year):
         components = [row[0] for row in rows]
 
         question_name = []
-        # print(components)
 
         for component in components:
             question_name.append(f'{subject_name}, {component}, Year: {year} question paper')
 
-        # print(question_name)
         logger.info(f"Questions retrieved successfully for level {level}, subject {subject_name}, year {year}")
         return question_name
 
@@ -232,13 +222,11 @@ def renderQuestion(level, subject_name, year, component):
         
         if not compressedData:
             logger.warning(f"No data found for level {level}, subject {subject_name}, year {year}, component {component}")
-            print("No data found for the given criteria.")
             return None
         
         # Encode the data in base64
         encodedData = [base64.b64encode(data).decode('utf-8') for data in compressedData]
         
-        print("Data successfully fetched and encoded.")
         logger.info(f"Question rendered successfully for level {level}, subject {subject_name}, year {year}, component {component}")
         return encodedData
 
@@ -298,11 +286,6 @@ def getComponents(year, subjectName):
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-
-        
-        # Debugging: Print the subject name
-        print(f"Subject Name: {subjectName}")
-        print(f"Year: {year}")
         
         # Convert year to string if necessary
         year = str(year)
@@ -310,14 +293,10 @@ def getComponents(year, subjectName):
         # Execute the query and fetch all results
         rows = db.execute('SELECT component FROM papers WHERE subject = ? AND year = ?', (subjectName, year)).fetchall()
         
-        # Debugging: Print the raw query result
-        print(f"Query Result: {rows}")
         
         # Extract the components from the query result
         components = [row[0] for row in rows]
         
-        # Print the results for debugging purposes
-        print(f"Extracted Components: {components}")
         
         logger.info(f"Components retrieved successfully for subject {subjectName} and year {year}")
         return components
@@ -358,10 +337,6 @@ def getQuestionsForGen(subject, level, topics, components, difficulties):
             {components_condition}
         '''
 
-        # Print the query and values for debugging
-        print(f"Executing query: {query}")
-        print(f"With values: {values}")
-
         # Execute the query
         row = db.execute(query, values)
         rows = row.fetchall()  # Fetch all the results
@@ -393,10 +368,6 @@ def dbDump():
         rows = db.execute('SELECT id, uuid, subject, year, component, board, level FROM papers').fetchall()
 
         data = [row for row in rows]
-
-        # Print for debugging 
-        print(data)
-
 
         json_data = []
 

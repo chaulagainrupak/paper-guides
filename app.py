@@ -155,7 +155,6 @@ def questionGen():
 
             # Call the getQuestions function
             rows = getQuestionsForGen(subject, level, topics, components, difficulties)
-            print(rows)
             return render_template('qpgen.html', rows = rows)  # Return results to the client
 
         except Exception as e:
