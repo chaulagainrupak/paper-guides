@@ -265,23 +265,26 @@ def login():
         return redirect(url_for('index'))
 
     if request.method == 'POST':
-        username = request.form.get('username')
+        username_or_email = request.form.get('username')
         password = request.form.get('password')
 
-        user = User.query.filter_by(username=username).first()
+        # Check if input is an email
+        if '@' in username_or_email:
+            user = User.query.filter_by(email=username_or_email).first()
+        else:
+            user = User.query.filter_by(username=username_or_email).first()
 
         # Check if user exists and the password matches
         if user and check_password_hash(user.password, password):
             login_user(user)
-            logger.info(f'User {username} logged in', extra={'http_request': True})
+            logger.info(f'User {user.username} logged in', extra={'http_request': True})
             next_page = request.args.get('next')
             return redirect(next_page or url_for('index'))
         else:
-            logger.warning(f'Failed login attempt for user {username}', extra={'http_request': True})
-            flash('Login unsuccessful. Please check username and password.', 'danger')
+            logger.warning(f'Failed login attempt for {username_or_email}', extra={'http_request': True})
+            flash('Login unsuccessful. Please check your credentials.', 'danger')
 
     return render_template('login.html')
-
 
 @app.route('/logout')
 @login_required
@@ -295,9 +298,9 @@ def signup():
         return redirect(url_for('index'))
 
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        email = request.form.get('email')
+        username = request.form.get('new-username')
+        password = request.form.get('new-password')
+        email = request.form.get('new-email')
 
         # Check if username or email already exists
         existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
@@ -316,7 +319,6 @@ def signup():
             return redirect(url_for('login'))
 
     return render_template('signup.html')
-
 
 
 # Will profiles even be a thing ? Public IDK but chaning the email password will be implemented 

@@ -3,9 +3,114 @@
 {% block title %}Login{% endblock %}
 
 {% block section %}
-<div class="container">
-    <h2>Login</h2>
+<style>
+    .container {
+        background-color: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        padding: 2rem;
+        margin: 2rem auto;
+    }
 
+    h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: #0d1b2a;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #0d1b2a;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    .password-container {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .password-strength {
+        height: 5px;
+        margin-top: 5px;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #5d71e0;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #4a5cba;
+    }
+
+    .switch-form {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .switch-form a {
+        color: #5d71e0;
+        text-decoration: none;
+    }
+
+    .flash-messages {
+        margin-bottom: 1rem;
+    }
+
+    .alert {
+        padding: 0.75rem;
+        border-radius: 5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    button:disabled {    
+        cursor: not-allowed;    
+        opacity: 0.6;
+    }
+</style>
+
+<div class="container">
     <!-- Flash messages for displaying errors or success -->
     {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
@@ -21,21 +126,26 @@
 
     <!-- Login Form -->
     <div id="login-form">
+        <h2>Login</h2>
         <form method="POST" action="{{ url_for('login') }}">
-
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required>
+                <label for="username">Username or Email</label>
+                <input type="text" id="username" name="username" class="form-control" placeholder="Enter username or email" required>
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+                    <button type="button" class="toggle-password">👁️</button>
+                </div>
             </div>
 
             <button type="submit" class="btn btn-primary">Login</button>
 
-            <p>Don't have an account? <a href="#" id="show-signup">Sign up here</a>.</p>
+            <div class="switch-form">
+                <p>Don't have an account? <a href="#" id="show-signup">Sign up here</a>.</p>
+            </div>
         </form>
     </div>
 
@@ -43,31 +153,44 @@
     <div id="signup-form" style="display:none;">
         <h2>Sign Up</h2>
         <form method="POST" action="{{ url_for('signup') }}">
-
             <div class="form-group">
                 <label for="new-username">Username</label>
-                <input type="text" id="new-username" name="username" class="form-control" placeholder="Choose a username" required>
+                <input type="text" id="new-username" name="new-username" class="form-control" placeholder="Choose a username" required>
             </div>
 
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+                <label for="new-email">Email</label>
+                <input type="new-email" id="new-email" name="new-email" class="form-control" placeholder="Enter your email" required>
             </div>
 
             <div class="form-group">
                 <label for="new-password">Password</label>
-                <input type="password" id="new-password" name="password" class="form-control" placeholder="Choose a password" required>
+                <div class="password-container">
+                    <input type="password" id="new-password" name="new-password" class="form-control" placeholder="Choose a password" required>
+                    <button type="button" class="toggle-password">👁️</button>
+                </div>
+                <div class="password-strength"></div>
             </div>
 
-            <button type="submit" class="btn btn-primary">Sign Up</button>
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <div class="password-container">
+                    <input type="password" id="confirm-password" name="confirm_password" class="form-control" placeholder="Confirm your password" required>
+                    <button type="button" class="toggle-password">👁️</button>
+                </div>
+            </div>
 
-            <p>Already have an account? <a href="#" id="show-login">Login here</a>.</p>
+            <button type="submit" class="btn btn-primary" id="signup-button" disabled>Sign Up</button>
+
+            <div class="switch-form">
+                <p>Already have an account? <a href="#" id="show-login">Login here</a>.</p>
+            </div>
         </form>
     </div>
 </div>
 
-<!-- Script to toggle between login and signup forms -->
 <script>
+    // Toggle between login and signup forms
     document.getElementById('show-signup').addEventListener('click', function(e) {
         e.preventDefault();
         document.getElementById('login-form').style.display = 'none';
@@ -79,5 +202,56 @@
         document.getElementById('signup-form').style.display = 'none';
         document.getElementById('login-form').style.display = 'block';
     });
+
+    // Toggle password visibility
+    document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            if (input.type === 'password') {
+                input.type = 'text';
+                this.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                this.textContent = '👁️';
+            }
+        });
+    });
+
+    // Password strength checker
+    const newPasswordInput = document.getElementById('new-password');
+    const signupButton = document.getElementById('signup-button');
+
+    newPasswordInput.addEventListener('input', function() {
+        const password = this.value;
+        const strength = checkPasswordStrength(password);
+        const strengthBar = document.querySelector('.password-strength');
+        
+        strengthBar.style.width = `${strength}%`;
+        
+        if (strength < 33) {
+            strengthBar.style.backgroundColor = '#ff4d4d';
+        } else if (strength < 66) {
+            strengthBar.style.backgroundColor = '#ffd700';
+        } else {
+            strengthBar.style.backgroundColor = '#00cc00';
+        }
+
+        // Enable or disable the signup button based on password length
+        if (password.length < 8) {
+            signupButton.disabled = true;
+        } else {
+            signupButton.disabled = false;
+        }
+    });
+
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength += 25;
+        if (password.match(/[a-z]+/)) strength += 25;
+        if (password.match(/[A-Z]+/)) strength += 25;
+        if (password.match(/[0-9]+/)) strength += 25;
+        if (password.match(/[$@#&!]+/)) strength += 25;
+        return Math.min(100, strength);
+    }
 </script>
 {% endblock %}
