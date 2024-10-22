@@ -1,3 +1,19 @@
+  
+  
+  /* 
+  
+    TO-DO: Remove the redunednt css that has been moved over to the respective 
+           File as managing one huge file is a headache.
+
+
+           Anybody that takes on this, thank you for your service and help.
+
+           Im too lazy to do this.
+  
+  */
+  
+  
+  
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
     :root {
@@ -66,31 +82,145 @@
   }
 
 
-  .sections {
-      margin-top: 1rem;
-      margin-left: 80px;
+  .content-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 5rem; /* Adjust based on your navbar height */
+  }
+  
+
+
+
+
+/*  
+
+
+This is for the links for the link sections 
+
+
+*/
+
+
+/* General layout */
+.content-wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem;
+  width: 100%;
+}
+
+/* Section styles */
+.section {
+  flex: 1;
+  padding: 2rem;
+  background-color: var(--baby-powder);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.section h1 {
+  margin-bottom: 1.5rem;
+}
+
+.section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.section li {
+  margin-bottom: 1rem;
+}
+
+.section a {
+  font-size: 1.5rem;
+  display: block;
+  padding: 1rem 1rem 1rem 1.5rem; /* Increased left padding for the highlight bar */
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: var(--rich-black);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin: 1rem 0;
+  position: relative; /* For positioning the highlight bar */
+  overflow: hidden; /* To hide the overflowing part of the highlight bar */
+}
+
+.section a::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 5px; /* Width of the highlight bar */
+  background-color: var(--blue-highlight); /* Color of the highlight bar */
+  transform: translateX(-100%); /* Hide the bar initially */
+  transition: transform 0.3s ease;
+}
+
+.section a:hover {
+  background-color: #e9ecef;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.section a:hover::before {
+  transform: translateX(0); /* Show the bar on hover */
+}
+/* Ad space */
+.ad-space {
+  width: 20%;
+  padding: 2rem;
+  background-color: #f0f0f0;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  color: #888;
+  margin-left: 2rem;
+}
+
+/* Styles for qp.html (when ad space is not present) */
+.qp-container {
+  width: auto;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.qp-main-content {
+  width: auto;
+}
+#embedPdf {
+  width: 100%;
+}
+/* Responsive design */
+@media screen and (max-width: 768px) {
+  .content-wrapper {
+    flex-direction: column;
   }
 
-  .section {
-      display: flex;
-      flex-direction: column;
-      height: 90vh;
+  .section, .ad-space {
+    width: 100%;
+    margin-left: 0;
+    margin-bottom: 1rem;
   }
 
-  .section > a {
-
-      text-decoration: none;
-      margin: 0 10px;
-
-      color: var(--rich-black);
-
-      border-radius: 20px;
-      margin-block-start: 20px;
-      background-color: var(--baby-powder);
-      width: 35rem;
-      font-size: 2rem;
-      padding: 1rem;
+  .qp-container {
+    width: 100%;
+    padding: 1rem;
   }
+
+  .qp-main-content {
+    padding: 1rem;
+  }
+}
+
+/* 
+
+ --------------------------------------------------------------
+
+*/
+
 
   .sidebar {
     height: 100%;

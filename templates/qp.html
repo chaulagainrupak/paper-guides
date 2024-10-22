@@ -4,61 +4,63 @@
 {% endblock %}
 {% block section %}
 
-<p id="compressedData" style="display: none;">{{ question[0] }}</p>
-
-<img id="questionImage" hidden>
-<object id="embedPdf" type="application/pdf" width="70%">
-   <p>Your browser doesn't support embedded PDFs. You can <a id="downloadPdf" download="document.pdf">download the PDF</a> instead.</p>
-</object>
+<div class="qp-container">
+    <div class="qp-main-content">
+      <h1 class="paper-title">{{file_data}}</h1>
+      <p id="compressedData" style="display: none;">{{ question[0] }}</p>
+      <img id="questionImage" hidden>
+      <object id="embedPdf" type="application/pdf">
+        <p>Your browser doesn't support embedded PDFs. You can <a id="downloadPdf" download="document.pdf">download the PDF</a> instead.</p>
+      </object>
+    </div>
+  </div>
 
 <script>
-       function base64ToUint8Array(base64) {
-        var binaryString = atob(base64);
-        var len = binaryString.length;
-        var bytes = new Uint8Array(len);
-        for (var i = 0; i < len; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-        }
-        return bytes;
+  function base64ToUint8Array(base64) {
+    var binaryString = atob(base64);
+    var len = binaryString.length;
+    var bytes = new Uint8Array(len);
+    for (var i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
     }
+    return bytes;
+  }
 
-    function decompressData(compressedData) {
-        var data = base64ToUint8Array(compressedData);
-        var decompressedData = pako.inflate(data);
-        return decompressedData;
+  function decompressData(compressedData) {
+    var data = base64ToUint8Array(compressedData);
+    var decompressedData = pako.inflate(data);
+    return decompressedData;
+  }
+
+  function uint8ArrayToBase64(uint8Array) {
+    var binary = '';
+    var len = uint8Array.byteLength;
+    for (var i = 0; i < len; i++) {
+      binary += String.fromCharCode(uint8Array[i]);
     }
+    return btoa(binary);
+  }
 
-    function uint8ArrayToBase64(uint8Array) {
-        var binary = '';
-        var len = uint8Array.byteLength;
-        for (var i = 0; i < len; i++) {
-            binary += String.fromCharCode(uint8Array[i]);
-        }
-        return btoa(binary);
+  document.addEventListener("DOMContentLoaded", function() {
+    var compressedData = document.getElementById('compressedData').textContent;
+
+    try {
+      var decompressedData = decompressData(compressedData);
+      var base64DecompressedData = uint8ArrayToBase64(decompressedData);
+
+      var imgElement = document.getElementById('questionImage');
+      imgElement.src = "data:image/png;base64," + base64DecompressedData;
+
+      var pdfElement = document.getElementById('embedPdf');
+      pdfElement.data = "data:application/pdf;base64," + base64DecompressedData;
+
+      var downloadLink = document.getElementById('downloadPdf');
+      downloadLink.href = "data:application/pdf;base64," + base64DecompressedData;
+
+    } catch (e) {
+      console.error("Decompression error: ", e);
     }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        var compressedData = document.getElementById('compressedData').textContent;
-
-        try {
-            var decompressedData = decompressData(compressedData);
-            var base64DecompressedData = uint8ArrayToBase64(decompressedData);
-
-            var imgElement = document.getElementById('questionImage');
-            imgElement.src = "data:image/png;base64," + base64DecompressedData;
-
-            var pdfElement = document.getElementById('embedPdf');
-            pdfElement.data = "data:application/pdf;base64," + base64DecompressedData;
-
-            var downloadLink = document.getElementById('downloadPdf');
-            downloadLink.href = "data:application/pdf;base64," + base64DecompressedData;
-
-        } catch (e) {
-            console.error("Decompression error: ", e);
-        }
-    });
+  });
 </script>
-
-<a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
 
 {% endblock %}

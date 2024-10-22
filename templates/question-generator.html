@@ -4,105 +4,259 @@
 
 {% block section %}
 
-<h1 style="text-align: center;">Development paused due to my exams!</h1>
+<style>
 
- 
-  <div id="config" style="display: none;">{{ config | tojson | safe }}</div>
-<form id="questionForm" action="/question-gen" method="post" enctype="multipart/form-data">
-    <div>
-        <label for="subject">Subject:</label>
-        <select id="subject" name="subject" required>
-            <option value="" disabled selected>Select Subject</option>
-            {% for subject in config.NEB.subjects %}
-                <option value="{{ subject.name }}">{{ subject.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="multiselect">
-        <div class="selectBox" onclick="showCheckboxes('topicCheckboxes')">
-            <select>
-                <option value="" disabled selected>Select Topic(s)</option>
-            </select>
-            <div class="overSelect"></div>
-        </div>
-        <div id="topicCheckboxes" class="checkboxes" required>
-        </div>
-    </div>
-    <div class="multiselect">
-        <div class="selectBox" onclick="showCheckboxes('difficultyCheckboxes')">
-            <select>
-                <option value="" disabled selected>Select Difficulty</option>
-            </select>
-            <div class="overSelect"></div>
-        </div>
-        <div id="difficultyCheckboxes" class="checkboxes" required>
-            {% for i in range(1, 6) %}
-                <label><input type="checkbox" name="difficulty" value="{{ i }}" />{{ i }}</label>
-            {% endfor %}
-        </div>
-    </div>
-    <div>
-        <label for="level">Level:</label>
-        <select id="level" name="level" required>
-            <option value="" disabled selected>Select Level</option>
-            {% for level in config.NEB.levels %}
-                <option value="{{ level }}">{{ level }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="multiselect">
-        <div class="selectBox" onclick="showCheckboxes('componentCheckboxes')">
-            <select>
-                <option value="" disabled selected>Select Component(s)</option>
-            </select>
-            <div class="overSelect"></div>
-        </div>
-        <div id="componentCheckboxes" class="checkboxes" required>
-            <label><input type="checkbox" name="component" value="ALL" checked />ALL</label>
-            {% for component in config.NEB.components %}
-                <label><input type="checkbox" name="component" value="{{ component }}" />{{ component }}</label>
-            {% endfor %}
-        </div>
-    </div>
-    <button type="submit">Generate Question</button>
-</form>
-<a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const config = JSON.parse(document.getElementById('config').textContent);
-    
-    function populateTopics(subjectName) {
-        const topicCheckboxes = document.getElementById('topicCheckboxes');
-        if (!topicCheckboxes) return;
-        topicCheckboxes.innerHTML = '';
-        const subject = config.NEB.subjects.find(s => s.name === subjectName);
-        if (subject) {
-            subject.topics.forEach(topic => {
-                let label = document.createElement('label');
-                let checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.name = 'topic';
-                checkbox.value = topic;
-                label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(topic));
-                topicCheckboxes.appendChild(label);
-            });
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", sans-serif;
     }
 
-    const subjectSelect = document.getElementById('subject');
-    if (subjectSelect) {
+    #questionForm {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: var(--baby-powder);
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      flex: 1;
+    }
+
+    .subject-group {
+      flex: 2;
+    }
+
+    #questionForm label {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: var(--rich-black);
+      display: block;
+    }
+
+    #questionForm select,
+    .selectBox {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      background-color: var(--font-white);
+    }
+
+    #questionForm select:focus,
+    #questionForm input[type="checkbox"]:focus {
+      outline: none;
+      border-color: var(--blue-highlight);
+    }
+
+    #questionForm button[type="submit"] {
+      padding: 0.75rem 1.5rem;
+      background-color: var(--blue-highlight);
+      color: var(--font-white);
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #questionForm button[type="submit"]:hover {
+      background-color: #4a5cba;
+    }
+
+    .multiselect {
+      position: relative;
+      width: 100%;
+    }
+
+    .selectBox {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .selectBox select {
+      width: 100%;
+      border: none;
+      background: transparent;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    .overSelect {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    .checkboxes {
+      display: none;
+      border: 1px solid #ccc;
+      background-color: var(--font-white);
+      max-height: 300px;
+      overflow-y: auto;
+      position: absolute;
+      width: 100%;
+      z-index: 1;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .checkboxes label {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .checkboxes label:last-child {
+      border-bottom: none;
+    }
+
+    .checkboxes label:hover {
+      background-color: var(--background);
+    }
+
+    .checkboxes input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    .close-button {
+      position: absolute;
+      right: 10px;
+      top: 5px;
+      cursor: pointer;
+      font-size: 20px;
+      color: var(--rich-black);
+    }
+
+    .no-subject-message {
+      color: var(--rich-black);
+      font-style: italic;
+      padding: 0.5rem;
+    }
+  </style>
+
+  <div id="config" style="display: none;">{{ config | tojson | safe }}</div>
+  <form id="questionForm" action="/question-gen" method="post" enctype="multipart/form-data">
+    <div class="form-row">
+      <div class="form-group subject-group">
+        <label for="subject">Subject:</label>
+        <select id="subject" name="subject" required>
+          <option value="" disabled selected>Select Subject</option>
+          {% for subject in config.NEB.subjects %}
+            <option value="{{ subject.name }}">{{ subject.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="level">Level:</label>
+        <select id="level" name="level" required>
+          <option value="" disabled selected>Select Level</option>
+          {% for level in config.NEB.levels %}
+            <option value="{{ level }}">{{ level }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="multiselect">
+      <div class="selectBox" onclick="toggleCheckboxes('topicCheckboxes')">
+        <select>
+          <option>Select Topic(s)</option>
+        </select>
+        <div class="overSelect"></div>
+      </div>
+      <div id="topicCheckboxes" class="checkboxes" required>
+        <span class="close-button" onclick="closeCheckboxes('topicCheckboxes')">×</span>
+      </div>
+    </div>
+    <div class="multiselect">
+      <div class="selectBox" onclick="toggleCheckboxes('difficultyCheckboxes')">
+        <select>
+          <option>Select Difficulty</option>
+        </select>
+        <div class="overSelect"></div>
+      </div>
+      <div id="difficultyCheckboxes" class="checkboxes" required>
+        <span class="close-button" onclick="closeCheckboxes('difficultyCheckboxes')">×</span>
+        {% for i in range(1, 6) %}
+          <label><input type="checkbox" name="difficulty" value="{{ i }}" /><span>{{ i }}</span></label>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="multiselect">
+      <div class="selectBox" onclick="toggleCheckboxes('componentCheckboxes')">
+        <select>
+          <option>Select Component(s)</option>
+        </select>
+        <div class="overSelect"></div>
+      </div>
+      <div id="componentCheckboxes" class="checkboxes" required>
+        <span class="close-button" onclick="closeCheckboxes('componentCheckboxes')">×</span>
+        <label><input type="checkbox" name="component" value="ALL" checked /><span>ALL</span></label>
+        {% for component in config.NEB.components %}
+          <label><input type="checkbox" name="component" value="{{ component }}" /><span>{{ component }}</span></label>
+        {% endfor %}
+      </div>
+    </div>
+    <button type="submit">Generate Questions</button>
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const config = JSON.parse(document.getElementById('config').textContent);
+      
+      function populateTopics(subjectName) {
+        const topicCheckboxes = document.getElementById('topicCheckboxes');
+        if (!topicCheckboxes) return;
+        topicCheckboxes.innerHTML = '<span class="close-button" onclick="closeCheckboxes(\'topicCheckboxes\')">×</span>';
+        if (!subjectName) {
+          topicCheckboxes.innerHTML += '<p class="no-subject-message">Select a subject first</p>';
+          return;
+        }
+        const subject = config.NEB.subjects.find(s => s.name === subjectName);
+        if (subject) {
+          subject.topics.forEach(topic => {
+            let label = document.createElement('label');
+            let checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'topic';
+            checkbox.value = topic;
+            label.appendChild(checkbox);
+            let span = document.createElement('span');
+            span.textContent = topic;
+            label.appendChild(span);
+            topicCheckboxes.appendChild(label);
+          });
+        }
+      }
+
+      const subjectSelect = document.getElementById('subject');
+      if (subjectSelect) {
         subjectSelect.addEventListener('change', function () {
-            populateTopics(this.value);
+          populateTopics(this.value);
         });
         // Initialize topics for the default selected subject
         populateTopics(subjectSelect.value);
-    }
+      }
 
-    // Add validation for checkboxes (all checkboxes required)
-    const form = document.querySelector('#questionForm');
-    form.addEventListener('submit', function (event) {
+      // Add validation for checkboxes (all checkboxes required)
+      const form = document.querySelector('#questionForm');
+      form.addEventListener('submit', function (event) {
         const subject = document.getElementById('subject').value;
         const topicCheckboxes = document.querySelectorAll('input[name="topic"]');
         const difficultyCheckboxes = document.querySelectorAll('input[name="difficulty"]');
@@ -110,87 +264,64 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Check if a subject is selected
         if (!subject) {
-            alert('Please select a subject.');
-            event.preventDefault();
-            return;
+          alert('Please select a subject.');
+          event.preventDefault();
+          return;
         }
         
         // Check if at least one topic is selected
         const isTopicChecked = Array.from(topicCheckboxes).some(cb => cb.checked);
         if (!isTopicChecked) {
-            alert('Please select at least one topic.');
-            event.preventDefault();
-            return;
+          alert('Please select at least one topic.');
+          event.preventDefault();
+          return;
         }
 
         // Check if at least one difficulty level is selected
         const isDifficultyChecked = Array.from(difficultyCheckboxes).some(cb => cb.checked);
         if (!isDifficultyChecked) {
-            alert('Please select at least one difficulty level.');
-            event.preventDefault();
-            return;
+          alert('Please select at least one difficulty level.');
+          event.preventDefault();
+          return;
         }
 
         // Check if at least one component is selected
         const isComponentChecked = Array.from(componentCheckboxes).some(cb => cb.checked);
         if (!isComponentChecked) {
-            alert('Please select at least one component.');
-            event.preventDefault();
-            return;
+          alert('Please select at least one component.');
+          event.preventDefault();
+          return;
         }
+      });
     });
-});
 
-var expanded = {};
-
-function showCheckboxes(checkboxesId) {
-    var checkboxes = document.getElementById(checkboxesId);
-    if (!expanded[checkboxesId]) {
+    function toggleCheckboxes(checkboxesId) {
+      var checkboxes = document.getElementById(checkboxesId);
+      if (checkboxes.style.display === "none" || checkboxes.style.display === "") {
         checkboxes.style.display = "block";
-        expanded[checkboxesId] = true;
-    } else {
+        document.querySelectorAll('.checkboxes').forEach(function(el) {
+          if (el.id !== checkboxesId) {
+            el.style.display = "none";
+          }
+        });
+      } else {
         checkboxes.style.display = "none";
-        expanded[checkboxesId] = false;
+      }
     }
-}
-</script>
 
-<style>
-.multiselect {
-    width: 200px;
-    position: relative;
-}
+    function closeCheckboxes(checkboxesId) {
+      var checkboxes = document.getElementById(checkboxesId);
+      checkboxes.style.display = "none";
+    }
 
-.selectBox {
-    position: relative;
-}
-
-.selectBox select {
-    width: 100%;
-    font-weight: bold;
-}
-
-.overSelect {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-}
-
-.checkboxes {
-    display: none;
-    border: 1px #dadada solid;
-    max-height: 150px;
-    overflow-y: scroll;
-}
-
-.checkboxes label {
-    display: block;
-}
-
-.checkboxes label:hover {
-    background-color: #1e90ff;
-}
-</style> 
+    // Close checkboxes when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('.multiselect')) {
+        var allCheckboxes = document.querySelectorAll('.checkboxes');
+        allCheckboxes.forEach(function(checkbox) {
+          checkbox.style.display = 'none';
+        });
+      }
+    });
+  </script>
 {% endblock %}

@@ -2,11 +2,40 @@
 
 {% block title %}Topicals{% endblock %}
 
-
 {% block section %}
 
+<h1 style="text-align: center;" class="blue-highlight">Coming Soon!</h1>
+<h3 style="text-align: center;">Till then enjoy this gif!</h3>
 
-<h1 style="text-align: center;">Development paused due to my exams!</h1>
-<a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
+<div class="gif" style="text-align: center;">
+    <!-- Random GIF will be inserted here -->
+</div>
+
+<script>
+    // Array of GIF URLs
+    const gifs = [
+        "https://media.giphy.com/media/tHIRLHtNwxpjIFqPdV/giphy.gif", 
+        "https://media.giphy.com/media/l0Exk8EUzSLsrErEQ/giphy.gif",
+        "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGtncW8zM3Nidnl1MmlieXBobHAyM3ZuMXljOThsOGhxYjMxMmRvYiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3vRlT2k2L35Cnn5C/giphy.gif",
+        "https://media.giphy.com/media/l41lHDSvmwnQGDUD6/giphy.gif?cid=790b7611l0d6d0vvr5czvdyr4o4ckcgvuyq3s1nt9tn6xjo1&ep=v1_gifs_search&rid=giphy.gif&ct=g",
+        "https://media.giphy.com/media/l0HlS6yEDc4eUM4E0/giphy.gif?cid=790b7611l0d6d0vvr5czvdyr4o4ckcgvuyq3s1nt9tn6xjo1&ep=v1_gifs_search&rid=giphy.gif&ct=g",
+        "https://media.giphy.com/media/xThuWu82QD3pj4wvEQ/giphy.gif?cid=790b7611l0d6d0vvr5czvdyr4o4ckcgvuyq3s1nt9tn6xjo1&ep=v1_gifs_search&rid=giphy.gif&ct=g",
+        "https://media.giphy.com/media/S0dlRVeqjpoTC/giphy.gif?cid=790b7611l0d6d0vvr5czvdyr4o4ckcgvuyq3s1nt9tn6xjo1&ep=v1_gifs_search&rid=giphy.gif&ct=g",
+          
+    ];
+
+    // Function to load a random GIF
+    function loadRandomGif() {
+        const randomIndex = Math.floor(Math.random() * gifs.length); // Select a random index
+        const gifUrl = gifs[randomIndex]; // Get the GIF URL
+        const gifContainer = document.querySelector('.gif'); // Get the container element
+        gifContainer.innerHTML = `<img src="${gifUrl}" alt="Random GIF" style="max-width: 100%; height: auto;" />`; // Insert the image
+    }
+
+    // Wait for DOM to load, then load a random GIF
+    document.addEventListener('DOMContentLoaded', function () {
+        loadRandomGif();
+    });
+</script>
 
 {% endblock %}

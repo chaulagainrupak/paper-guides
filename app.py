@@ -108,7 +108,7 @@ def renderSubjectQuestion(level ,subject_name, year, file_data):
     question  = renderQuestion(level, subject_name, year, component)
 
     # print(question)
-    return render_template('qp.html', question = question )
+    return render_template('qp.html', question = question, file_data = file_data )
 
 
 # Reders the about page. Duh

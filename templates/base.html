@@ -13,6 +13,24 @@
 
     
 </head>
+
+<style>
+      :root {
+      --rich-black: #0d1b2aff;
+      --plum: #92498fff;
+      --baby-powder: #fffffaff;
+      --picton-blue: #3eafe4ff;
+      --tickle-me-pink: #f08caeff;
+      --font-white: #ffffff;
+      --font-dark: #000000;
+      --nav-background: #fafcff;
+      --background: #e3f2fd;
+      --pink-highlight: #F25C6A;
+      --blue-highlight: #5d71e0;
+      --green-highlight: #3CB371;
+    }
+
+</style>
 <body>
     <div class="navbar">
         <a href="{{ url_for('index')}}">Paper-<span class="blue-highlight">Guides</span></a>
@@ -20,10 +38,11 @@
           <a href="{{ url_for('getLevels') }}">Past Papers</a>
           <a href="{{ url_for('modelQuestions') }}">Model Questions</a>
           <a href="{{ url_for('questionGenerator') }}">Question Generator</a>
+          <a href="{{ url_for('submit') }}">Submit</a>
+
         </div>
         <div class="navright">
           <a href="{{ url_for('about') }}"><span class="pink-highlight">About</span></a>
-          <!-- <a href="{{ url_for('contact') }}">Contact</a> -->
 
           {%if not current_user.is_authenticated%}
             <a href="{{url_for('login')}}">Login</a>
@@ -38,20 +57,32 @@
             <a href="{{ url_for('getLevels') }}">Past Papers</a>
             <a href="{{ url_for('modelQuestions') }}">Model Questions</a>
             <a href="{{ url_for('questionGenerator') }}">Question Generator</a>
+            <a href="{{ url_for('submit') }}">Submit</a>
+
             <a href="{{ url_for('about') }}"><span class="pink-highlight">About</span></a>
-            <!-- <a href="{{ url_for('contact') }}">Contact</a> -->
             <a href="{{url_for('login')}}">Login</a>
           </div>
         </div>
       </div>
 
     {% block body %}
-    <div class="section">
-        {% block section %}
-            
-        {% endblock %}
 
+    {% block content %}
+    <div class="content-wrapper">
+        <div class="section">
+            {% block section %}
+            {% endblock %}
+        </div>
+        {% if request.path.startswith('/level') or request.path.startswith('/subjects') %}
+        <div class="ad-space">
+            Advertisement Space
+        </div>
+        {% endif %}
     </div>
+
+    
+    {% endblock %}
+
     {% endblock %}
 </body>
 
