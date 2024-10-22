@@ -73,6 +73,10 @@
             {% block section %}
             {% endblock %}
         </div>
+
+        {% block prompt %}
+        {% endblock %}
+
         {% if request.path.startswith('/level') or request.path.startswith('/subjects') %}
         <div class="ad-space">
             Advertisement Space

@@ -7,60 +7,102 @@
 <div class="qp-container">
     <div class="qp-main-content">
       <h1 class="paper-title">{{file_data}}</h1>
-      <p id="compressedData" style="display: none;">{{ question[0] }}</p>
-      <img id="questionImage" hidden>
-      <object id="embedPdf" type="application/pdf">
-        <p>Your browser doesn't support embedded PDFs. You can <a id="downloadPdf" download="document.pdf">download the PDF</a> instead.</p>
-      </object>
+      <div class="pdf-container">
+        <div class="paper-pdf" data-compressed="{{ question }}">
+            <object type="application/pdf" width="100%" height="600px">
+                <p>Your browser doesn't support embedded PDFs. You can <a class="pdf-download" download="document.pdf">download the PDF</a> instead.</p>
+            </object>
+        </div>
+    </div>
     </div>
   </div>
 
 <script>
-  function base64ToUint8Array(base64) {
-    var binaryString = atob(base64);
-    var len = binaryString.length;
-    var bytes = new Uint8Array(len);
-    for (var i = 0; i < len; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
+         // Utility function to clean and validate base64 data
+         function cleanBase64(str) {
+            // Remove any non-base64 characters and whitespace
+            str = str.replace(/[^A-Za-z0-9+/=]/g, '');
+            
+            // Check if the string is actually base64 encoded
+            if (str.length % 4 !== 0) {
+                // Add padding if necessary
+                str = str.padEnd(str.length + (4 - str.length % 4), '=');
+            }
+            
+            return str;
+        }
+
+
+                // Function to convert compressed base64 to binary data
+                function base64ToUint8Array(base64String) {
+            try {
+                // First, try to decode potential URL encoding
+                const decoded = decodeURIComponent(base64String);
+                // Clean the base64 string
+                const cleaned = cleanBase64(decoded);
+                
+                // Convert base64 to binary string
+                const binaryString = atob(cleaned);
+                
+                // Convert binary string to Uint8Array
+                return new Uint8Array(binaryString.split('').map(char => char.charCodeAt(0)));
+            } catch (error) {
+                console.error('Error converting base64:', error);
+                throw new Error('Invalid data encoding');
+            }
+        }
+
+        function renderPDFElement(element, base64Data) {
+        if (!element || !base64Data) {
+        element.innerHTML = '<p class="error">No PDF data available</p>';
+        return;
     }
-    return bytes;
-  }
-
-  function decompressData(compressedData) {
-    var data = base64ToUint8Array(compressedData);
-    var decompressedData = pako.inflate(data);
-    return decompressedData;
-  }
-
-  function uint8ArrayToBase64(uint8Array) {
-    var binary = '';
-    var len = uint8Array.byteLength;
-    for (var i = 0; i < len; i++) {
-      binary += String.fromCharCode(uint8Array[i]);
-    }
-    return btoa(binary);
-  }
-
-  document.addEventListener("DOMContentLoaded", function() {
-    var compressedData = document.getElementById('compressedData').textContent;
 
     try {
-      var decompressedData = decompressData(compressedData);
-      var base64DecompressedData = uint8ArrayToBase64(decompressedData);
+        // The data is already in base64 format, just need to decompress it
+        const binaryData = atob(base64Data);
+        const uint8Array = new Uint8Array(binaryData.split('').map(char => char.charCodeAt(0)));
+        
+        // Decompress the data
+        const decompressedData = pako.inflate(uint8Array);
+        
+        // Convert back to base64 for PDF viewing
+        let binary = '';
+        decompressedData.forEach(byte => {
+            binary += String.fromCharCode(byte);
+        });
+        
+        // Create base64 PDF data
+        const base64PDF = btoa(binary);
+        const pdfDataUrl = `data:application/pdf;base64,${base64PDF}`;
 
-      var imgElement = document.getElementById('questionImage');
-      imgElement.src = "data:image/png;base64," + base64DecompressedData;
+        // Create the PDF viewer elements
+        const container = document.createElement('div');
+        container.innerHTML = `
+            <object type="application/pdf" width="100%" height="600px" data="${pdfDataUrl}">
+                <p>Your browser doesn't support embedded PDFs. 
+                   <a href="${pdfDataUrl}" class="pdf-download" download="document.pdf">Download the PDF</a> instead.
+                </p>
+            </object>`;
 
-      var pdfElement = document.getElementById('embedPdf');
-      pdfElement.data = "data:application/pdf;base64," + base64DecompressedData;
-
-      var downloadLink = document.getElementById('downloadPdf');
-      downloadLink.href = "data:application/pdf;base64," + base64DecompressedData;
-
-    } catch (e) {
-      console.error("Decompression error: ", e);
+        // Replace the existing content
+        element.innerHTML = '';
+        element.appendChild(container);
+    } catch (error) {
+        console.error("Failed to render PDF:", error);
+        element.innerHTML = '<p class="error">Error loading PDF. The data may be corrupted.</p>';
     }
-  });
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize PDF viewers
+    document.querySelectorAll('.paper-pdf').forEach(element => {
+        const base64Data = element.getAttribute('data-compressed');
+        renderPDFElement(element, base64Data);
+    });
+});
+
 </script>
 
 {% endblock %}

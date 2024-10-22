@@ -1,5 +1,5 @@
-# app.py
-
+import os
+from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
@@ -9,7 +9,6 @@ from datetime import datetime
 import base64
 import jsonify
 
-
 # We are importing all the required functions from the following files inorder to make a huge app file?
 
 # Not the best way to put everything in one single file but, whaterver
@@ -17,14 +16,17 @@ from paperGuidesDB import *
 from config import *
 from logHandler import getCustomLogger
 
+# Load environment variables from .env file
 
-# This needs to be replaced using a .env file for but current building and testing hardcoded non-essential values are fine 
-# They do their job alright.
+load_dotenv('.env')
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key_here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///paper-guides.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Replace hardcoded values with environment variables
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS', default=False)
+
 
 db.init_app(app)
 
@@ -80,7 +82,6 @@ def getLevels():
 @app.route('/subjects/<int:level>')
 def getLevelSubjects(level):
     logger.info(f'Subjects page accessed for level {level}', extra={'http_request': True})
-    print(level)
     config = loadConfig(configPath)
     return render_template('subject.html', config = config, level = level)
 
@@ -106,9 +107,7 @@ def renderSubjectQuestion(level ,subject_name, year, file_data):
 
     component = component[1]
     question  = renderQuestion(level, subject_name, year, component)
-
-    # print(question)
-    return render_template('qp.html', question = question, file_data = file_data )
+    return render_template('qp.html', question = question, file_data = file_data)
 
 
 # Reders the about page. Duh
@@ -224,7 +223,6 @@ def submitPaper():
 
         paper_type = request.form.get('paper_type')
 
-        print(f"Received paper submission: {paper_type}, {subject}, {year}")  # Debug print
 
         if not all([board, subject, level, component, questionFile, paper_type]):
             raise ValueError("Missing required fields")
@@ -346,16 +344,99 @@ def rate(question_UUID, rating):
         return False
 
 
-# @app.route('/admin')
-# @login_required
-# def admin():
-#     if current_user.role != 'admin':
-#         flash('You do not have permission to access this page.', 'danger')
-#         return redirect(url_for('index'))
-    
-#     # Logic for admin-only functionality
-#     return render_template('admin.html')
 
+
+@app.route('/admin')
+@login_required
+def admin_dashboard():
+
+    if current_user.role != 'admin':
+        return redirect (url_for('index'))
+    questions = get_unapproved_questions()
+    papers = get_unapproved_papers()
+    return render_template('admin.html', questions = questions, papers = papers)
+
+@app.route('/approve_question/<uuid>' , methods=["POST"])
+@login_required
+def approve(uuid):
+    if current_user.role != 'admin':
+        flash('Access denied. Administrator privileges required.', 'error')
+        return redirect(url_for('index'))
+        
+    if approve_question(uuid):
+        flash('Question approved successfully!')
+    else:
+        flash('Error approving question', 'error')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/approve_paper/<uuid>', methods=["POST"])
+@login_required
+def approvePaper(uuid):
+    if current_user.role != 'admin':
+        flash('Access denied. Administrator privileges required.', 'error')
+        return redirect(url_for('index'))
+        
+    if approve_paper(uuid):
+        flash('Paper approved successfully!')
+    else:
+        flash('Error approving paper', 'error')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/delete_question/<uuid>', methods=["POST"])
+@login_required
+def deleteQuestion(uuid):
+    if current_user.role != 'admin':
+        flash('Access denied. Administrator privileges required.', 'error')
+        return redirect(url_for('index'))
+        
+    if delete_question(uuid):
+        flash('Question deleted successfully!')
+    else:
+        flash('Error deleting question', 'error')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/delete_paper/<uuid>', methods=["POST"])
+@login_required
+def deletePaper(uuid):
+    if current_user.role != 'admin':
+        flash('Access denied. Administrator privileges required.', 'error')
+        return redirect(url_for('index'))
+        
+    if delete_paper(uuid):
+        flash('Paper deleted successfully!')
+    else:
+        flash('Error deleting paper', 'error')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/edit_question/<uuid>', methods=['GET', 'POST'])
+@login_required
+def editQuestion    (uuid):
+    if current_user.role != 'admin':
+        flash('Access denied. Administrator privileges required.', 'error')
+        return redirect(url_for('index'))
+        
+    if request.method == 'POST':
+        data = {
+            'subject': request.form['subject'],
+            'topic': request.form['topic'],
+            'difficulty': request.form['difficulty'],
+            'board': request.form['board'],
+            'level': request.form['level'],
+            'component': request.form['component']
+        }
+        
+        if update_question(uuid, data):
+            flash('Question updated successfully!')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Error updating question', 'error')
+    
+    question = get_question(uuid)
+    if not question:
+        flash('Question not found', 'error')
+        return redirect(url_for('admin_dashboard'))
+        
+    return render_template('admin.html', question=question)
 
 
 

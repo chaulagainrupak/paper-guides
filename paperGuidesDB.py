@@ -108,25 +108,46 @@ def insertQuestion(board, subject, topic, difficulty, level, component, question
         logger.error(f"Error inserting question into database: {e}")
         return False    
 
-def insertPaper(board, subject, year, level, component, questionFile, solutionFile):
+def insertPaper(board: str, subject: str, year: str, level: str, 
+                component: str, questionFile: bytes, solutionFile: bytes) -> bool:
+    """
+    Insert a paper into the database with proper compression and encoding.
+    
+    Args:
+        board: Exam board
+        subject: Subject name
+        year: Year of paper
+        level: Education level
+        component: Paper component
+        questionFile: Raw bytes of the question paper PDF
+        solutionFile: Raw bytes of the solution paper PDF
+    
+    Returns:
+        bool: True if insertion was successful, False otherwise
+    """
     try:
         uuidStr = str(uuid.uuid4())
         connection = sqlite3.connect(dbPath)
 
-        questionFile = zlib.compress(questionFile)
-        solutionFile = zlib.compress(solutionFile)
+        # Compress the files
+        questionFile_compressed = zlib.compress(questionFile)
+        solutionFile_compressed = zlib.compress(solutionFile)
 
+        # Convert compressed binary to base64 for storage
+        questionFile_b64 = base64.b64encode(questionFile_compressed).decode('utf-8')
+        solutionFile_b64 = base64.b64encode(solutionFile_compressed).decode('utf-8')
         
         db = connection.cursor()
         db.execute('''INSERT INTO papers
             (uuid, subject, year, board, level, component, questionFile, solutionFile)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-            (uuidStr, subject, year, board, level, component, questionFile, solutionFile))
+            (uuidStr, subject, year, board, level, component, 
+             questionFile_b64, solutionFile_b64))
         connection.commit()
         connection.close()
         logger.info(f"Paper inserted successfully. UUID: {uuidStr}")
         return True
-    except sqlite3.Error as e:
+    except Exception as e:
         logger.error(f"Error inserting paper into database: {e}")
         return False
 
@@ -160,7 +181,7 @@ def getYears(level , subjectName):
         db = connection.cursor()
         
         # Execute the query and fetch all results
-        rows = db.execute('SELECT year FROM papers WHERE level = ? AND subject = ?', (level, subjectName)).fetchall()
+        rows = db.execute('SELECT year FROM papers WHERE level = ? AND subject = ? AND approved = 1', (level, subjectName)).fetchall()
         
         # Extract the years from the query result
         years = list(set([row[0] for row in rows]))
@@ -187,7 +208,7 @@ def getQuestions(level, subject_name, year):
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
                 
-        rows = db.execute('SELECT component FROM papers WHERE level = ? AND subject = ? AND year = ? ', (level,subject_name,year)).fetchall()
+        rows = db.execute('SELECT component FROM papers WHERE level = ? AND subject = ? AND year = ? AND approved = 1', (level,subject_name,year)).fetchall()
 
         components = [row[0] for row in rows]
 
@@ -213,22 +234,19 @@ def renderQuestion(level, subject_name, year, component):
         db = connection.cursor()
         
         # Execute the query
-        rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ?', 
+        rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ? AND approved = 1', 
                           (level, subject_name, year, component)).fetchall()
         
 
+
         # Extract the compressed data from the query result
         compressedData = [row[0] for row in rows]
-        
         if not compressedData:
             logger.warning(f"No data found for level {level}, subject {subject_name}, year {year}, component {component}")
             return None
         
-        # Encode the data in base64
-        encodedData = [base64.b64encode(data).decode('utf-8') for data in compressedData]
-        
         logger.info(f"Question rendered successfully for level {level}, subject {subject_name}, year {year}, component {component}")
-        return encodedData
+        return compressedData[0]
 
     except sqlite3.Error as e:
         logger.error(f"An error occurred while rendering question: {e}")
@@ -335,15 +353,17 @@ def getQuestionsForGen(subject, level, topics, components, difficulties):
             AND topic IN ({topics_placeholder}) 
             AND difficulty IN ({difficulties_placeholder}) 
             {components_condition}
+            AND approved = 1
         '''
 
         # Execute the query
         row = db.execute(query, values)
         rows = row.fetchall()  # Fetch all the results
-        random.shuffle(rows)
-        
-        # Close the database connection
-        connection.close()
+
+        # Check if the result has more than 18 rows
+        if len(rows) > 18:
+            # If more than 18 rows, select 18 random rows
+            rows = random.sample(rows, 18)
 
         logger.info(f"Questions for generation retrieved successfully for subject {subject}, level {level}")
         return  rows # Return the fetched results
@@ -401,6 +421,176 @@ def dbDump():
         # Close the connection
         if connection:
             connection.close()
+
+
+
+# ADMIN USAGE
+
+
+def dict_factory(cursor, row):
+    """Convert database row objects into a dict"""
+    fields = [column[0] for column in cursor.description]
+    return {key: value for key, value in zip(fields, row)}
+
+def get_unapproved_questions():
+    """Get all unapproved questions from the database"""
+    try:
+        connection = sqlite3.connect(dbPath)
+        connection.row_factory = dict_factory
+        db = connection.cursor()
+        
+        questions = db.execute('''
+            SELECT id, uuid, subject, topic, difficulty, board, level, component, 
+                   questionFile, solutionFile
+            FROM questions 
+            WHERE approved = False
+        ''').fetchall()
+        
+        return questions
+    except sqlite3.Error as e:
+        logger.error(f"Error fetching unapproved questions: {e}")
+        return []
+    finally:
+        if connection:
+            connection.close()
+
+def get_unapproved_papers():
+    """Get all unapproved papers from the database"""
+    try:
+        connection = sqlite3.connect(dbPath)
+        connection.row_factory = dict_factory
+        db = connection.cursor()
+        
+        papers = db.execute('''
+            SELECT id, uuid, subject, year, component, board, level, 
+                   questionFile, solutionFile
+            FROM papers 
+            WHERE approved = False
+        ''').fetchall()
+        
+        return papers
+    except sqlite3.Error as e:
+        logger.error(f"Error fetching unapproved papers: {e}")
+        return []
+    finally:
+        if connection:
+            connection.close()
+
+def approve_question(uuid: str) -> bool:
+    """Approve a question by UUID"""
+    try:
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+        
+        db.execute('UPDATE questions SET approved = 1    WHERE uuid = ?', (uuid,))
+        connection.commit()
+        return True
+    except sqlite3.Error as e:
+        logger.error(f"Error approving question {uuid}: {e}")
+        return False
+    finally:
+        if connection:
+            connection.close()
+
+def approve_paper(uuid: str) -> bool:
+    """Approve a paper by UUID"""
+    try:
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+        
+        db.execute('UPDATE papers SET approved = True WHERE uuid = ?', (uuid,))
+        connection.commit()
+        return True
+    except sqlite3.Error as e:
+        logger.error(f"Error approving paper {uuid}: {e}")
+        return False
+    finally:
+        if connection:
+            connection.close()
+
+def delete_question(uuid: str) -> bool:
+    """Delete a question by UUID"""
+    try:
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+        
+        db.execute('DELETE FROM questions WHERE uuid = ?', (uuid,))
+        connection.commit()
+        return True
+    except sqlite3.Error as e:
+        logger.error(f"Error deleting question {uuid}: {e}")
+        return False
+    finally:
+        if connection:
+            connection.close()
+
+def delete_paper(uuid: str) -> bool:
+    """Delete a paper by UUID"""
+    try:
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+        
+        db.execute('DELETE FROM papers WHERE uuid = ?', (uuid,))
+        connection.commit()
+        return True
+    except sqlite3.Error as e:
+        logger.error(f"Error deleting paper {uuid}: {e}")
+        return False
+    finally:
+        if connection:
+            connection.close()
+
+def get_question(uuid: str):
+    """Get a single question by UUID"""
+    try:
+        connection = sqlite3.connect(dbPath)
+        connection.row_factory = dict_factory
+        db = connection.cursor()
+        
+        question = db.execute('''
+            SELECT * FROM questions WHERE uuid = ?
+        ''', (uuid,)).fetchone()
+        
+        return question
+    except sqlite3.Error as e:
+        logger.error(f"Error fetching question {uuid}: {e}")
+        return None
+    finally:
+        if connection:
+            connection.close()
+
+def update_question(uuid: str, data) -> bool:
+    """Update a question's details"""
+    try:
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+        
+        db.execute('''
+            UPDATE questions 
+            SET subject = ?, topic = ?, difficulty = ?, board = ?, 
+                level = ?, component = ?
+            WHERE uuid = ?
+        ''', (
+            data['subject'],
+            data['topic'],
+            data['difficulty'],
+            data['board'],
+            data['level'],
+            data['component'],
+            uuid
+        ))
+        connection.commit()
+        return True
+    except sqlite3.Error as e:
+        logger.error(f"Error updating question {uuid}: {e}")
+        return False
+    finally:
+        if connection:
+            connection.close()
+
+
+
+
 
 
 

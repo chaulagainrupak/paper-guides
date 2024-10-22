@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <style>
+        .card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .image-container {
+            max-width: 500px;
+            margin: 10px 0;
+        }
+        .image-container img {
+            max-width: 100%;
+        }
+        .actions {
+            margin-top: 10px;
+        }
+        .button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            border: none;
+        }
+        .approve { background-color: #4CAF50; color: white; }
+        .delete { background-color: #f44336; color: white; }
+        .edit { background-color: #2196F3; color: white; }
+        .error { color: #f44336; }
+    </style>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <h2>Pending Questions</h2>
+    {% for question in questions %}
+        <div class="card">
+            <h3>Question Details</h3>
+            <p>Subject: {{ question.subject }}</p>
+            <p>Topic: {{ question.topic }}</p>
+            <p>Difficulty: {{ question.difficulty }}/5</p>
+            <p>Board: {{ question.board }}</p>
+            <p>Level: {{ question.level }}</p>
+            <p>Component: {{ question.component }}</p>
+            
+            <div class="image-container">
+                <h4>Question:</h4>
+                <div class="question-image" data-compressed="{{ question.questionFile }}"></div>
+            </div>
+            
+            <div class="image-container">
+                <h4>Solution:</h4>
+                <div class="solution-image" data-compressed="{{ question.solutionFile }}"></div>
+            </div>
+
+            <div class="actions">
+                <button onclick="handleAction('approve_question', '{{ question.uuid }}')" 
+                        class="button approve">Approve</button>
+                <button onclick="handleAction('edit_question', '{{ question.uuid }}')" 
+                        class="button edit">Edit</button>
+                <button onclick="handleAction('delete_question', '{{ question.uuid }}')" 
+                        class="button delete">Delete</button>
+            </div>
+        </div>
+    {% endfor %}
+
+    <h2>Pending Papers</h2>
+    {% for paper in papers %}
+        <div class="card">
+            <h3>Paper Details</h3>
+            <p>Subject: {{ paper.subject }}</p>
+            <p>Year: {{ paper.year }}</p>
+            <p>Component: {{ paper.component }}</p>
+            <p>Board: {{ paper.board }}</p>
+            <p>Level: {{ paper.level }}</p>
+
+            <div class="pdf-container">
+                <h4>Question Paper:</h4>
+                <div class="paper-pdf" data-compressed="{{ paper.questionFile }}">
+                    <object type="application/pdf" width="100%" height="600px">
+                        <p>Your browser doesn't support embedded PDFs. You can <a class="pdf-download" download="document.pdf">download the PDF</a> instead.</p>
+                    </object>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button onclick="handleAction('approve_paper', '{{ paper.uuid }}')" 
+                        class="button approve">Approve</button>
+                <button onclick="handleAction('delete_paper', '{{ paper.uuid }}')" 
+                        class="button delete">Delete</button>
+            </div>
+        </div>
+    {% endfor %}
+
+    <script>
+        // Utility function to clean and validate base64 data
+        function cleanBase64(str) {
+            // Remove any non-base64 characters and whitespace
+            str = str.replace(/[^A-Za-z0-9+/=]/g, '');
+            
+            // Check if the string is actually base64 encoded
+            if (str.length % 4 !== 0) {
+                // Add padding if necessary
+                str = str.padEnd(str.length + (4 - str.length % 4), '=');
+            }
+            
+            return str;
+        }
+
+        // Function to convert compressed base64 to binary data
+        function base64ToUint8Array(base64String) {
+            try {
+                // First, try to decode potential URL encoding
+                const decoded = decodeURIComponent(base64String);
+                // Clean the base64 string
+                const cleaned = cleanBase64(decoded);
+                
+                // Convert base64 to binary string
+                const binaryString = atob(cleaned);
+                
+                // Convert binary string to Uint8Array
+                return new Uint8Array(binaryString.split('').map(char => char.charCodeAt(0)));
+            } catch (error) {
+                console.error('Error converting base64:', error);
+                throw new Error('Invalid data encoding');
+            }
+        }
+
+        // Handle all actions (approve, edit, delete) for both questions and papers
+        async function handleAction(action, uuid) {
+            if (action.startsWith('delete') && !confirm('Are you sure you want to delete this item?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/${action}/${uuid}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.redirected) {
+                    window.location.href = '/admin';
+                } else {
+                    window.location.href = response.url;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing your request');
+            }
+        }
+
+        // Image rendering function for questions
+        function renderImageFromElement(element, base64Data) {
+            if (!element || !base64Data) {
+                element.innerHTML = '<p class="error">No image data available</p>';
+                return;
+            }
+
+            try {
+                // Convert base64 to binary data
+                const uint8Array = base64ToUint8Array(base64Data);
+                
+                // Decompress the data
+                const decompressedData = pako.inflate(uint8Array);
+                
+                // Create blob and URL
+                const blob = new Blob([decompressedData], { type: 'image/png' });
+                const imageUrl = URL.createObjectURL(blob);
+
+                // Create and append image element
+                const imgElement = document.createElement('img');
+                imgElement.src = imageUrl;
+                element.textContent = '';
+                element.appendChild(imgElement);
+
+                // Clean up the object URL when the image loads
+                imgElement.onload = () => URL.revokeObjectURL(imageUrl);
+            } catch (error) {
+                console.error(`Failed to render image:`, error);
+                element.innerHTML = '<p class="error">Error loading image. The data may be corrupted.</p>';
+            }
+        }
+
+        function renderPDFElement(element, base64Data) {
+        if (!element || !base64Data) {
+        element.innerHTML = '<p class="error">No PDF data available</p>';
+        return;
+    }
+
+    try {
+        // The data is already in base64 format, just need to decompress it
+        const binaryData = atob(base64Data);
+        const uint8Array = new Uint8Array(binaryData.split('').map(char => char.charCodeAt(0)));
+        
+        // Decompress the data
+        const decompressedData = pako.inflate(uint8Array);
+        
+        // Convert back to base64 for PDF viewing
+        let binary = '';
+        decompressedData.forEach(byte => {
+            binary += String.fromCharCode(byte);
+        });
+        
+        // Create base64 PDF data
+        const base64PDF = btoa(binary);
+        const pdfDataUrl = `data:application/pdf;base64,${base64PDF}`;
+
+        // Create the PDF viewer elements
+        const container = document.createElement('div');
+        container.innerHTML = `
+            <object type="application/pdf" width="100%" height="600px" data="${pdfDataUrl}">
+                <p>Your browser doesn't support embedded PDFs. 
+                   <a href="${pdfDataUrl}" class="pdf-download" download="document.pdf">Download the PDF</a> instead.
+                </p>
+            </object>`;
+
+        // Replace the existing content
+        element.innerHTML = '';
+        element.appendChild(container);
+    } catch (error) {
+        console.error("Failed to render PDF:", error);
+        element.innerHTML = '<p class="error">Error loading PDF. The data may be corrupted.</p>';
+    }
+}
+
+        // Initialize elements when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize question and solution images
+            document.querySelectorAll('.question-image, .solution-image').forEach((element) => {
+                const base64Data = element.getAttribute('data-compressed');
+                renderImageFromElement(element, base64Data);
+            });
+
+            // Initialize PDF viewers
+            document.querySelectorAll('.paper-pdf').forEach(element => {
+                const base64Data = element.getAttribute('data-compressed');
+                renderPDFElement(element, base64Data);
+            });
+        });
+
+    </script>
+</body>
+</html>
