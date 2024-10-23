@@ -6,6 +6,7 @@
 {% block prompt %}
 
 <style>
+
     .section {
         display: none;
     }
@@ -86,7 +87,7 @@
 
     .top-bar {
         display: flex;
-        justify-content: space-between;
+        justify-content: space-between; 
         align-items: center;
         background-color: #f0f0f0;
         padding: 15px;
@@ -171,6 +172,12 @@
         font-size: 1.5rem;
         color: #666;
     }
+
+    .right-top-bar {
+        display: flex;
+        width: 30%;
+        justify-content: space-between;
+    }
 </style>        
 
 <h2 style="position: absolute; z-index: -20;"><span class="blue-highlight">{{ rows|length }}</span>  Questions Generated from, <span class="blue-highlight">{{ rows|length }}</span>  amount of questions that are present in the database. Refresh to get more random questions.</h2>
@@ -209,7 +216,17 @@
                     <span class="detail-item">Difficulty: <strong>{{row.4}}</strong></span>
                     <span class="detail-item">Component: <strong>{{row.7}}</strong></span>
                 </div>
-                <button class="toggle-solution-btn" data-id="{{row.1}}">Show Solution</button>
+
+                <div class="right-top-bar">
+                    <div class="rating" id="{{row.1}}">
+                        1
+                        2
+                        3
+                        4
+                        5
+                    </div>
+                    <button class="toggle-solution-btn" data-id="{{row.1}}">Show Solution</button>
+                </div>
             </div>
             <div class="image-container question-image" data-id="{{row.1}}" data-compressed="{{ row[8] }}"></div>
 
