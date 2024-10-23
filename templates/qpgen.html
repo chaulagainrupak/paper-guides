@@ -173,11 +173,11 @@
         color: #666;
     }
 
-    .right-top-bar {
+    /* .right-top-bar {
         display: flex;
         width: 30%;
         justify-content: space-between;
-    }
+    } */
 </style>        
 
 <h2 style="position: absolute; z-index: -20;"><span class="blue-highlight">{{ rows|length }}</span>  Questions Generated from, <span class="blue-highlight">{{ rows|length }}</span>  amount of questions that are present in the database. Refresh to get more random questions.</h2>
@@ -218,13 +218,13 @@
                 </div>
 
                 <div class="right-top-bar">
-                    <div class="rating" id="{{row.1}}">
+                    <!-- <div class="rating" id="{{row.1}}">
                         1
                         2
                         3
                         4
                         5
-                    </div>
+                    </div> -->
                     <button class="toggle-solution-btn" data-id="{{row.1}}">Show Solution</button>
                 </div>
             </div>
