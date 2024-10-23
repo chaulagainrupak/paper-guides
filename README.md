@@ -16,6 +16,16 @@ Open-source project providing free educational materials for Nepal Education Boa
 - Question submission by the users.
 
 
+## Example `.env` file
+
+```
+
+SECRET_KEY=your_secret_key_here
+SQLALCHEMY_DATABASE_URI=sqlite:///paper-guides.db
+SQLALCHEMY_TRACK_MODIFICATIONS=False
+
+```
+
 ## License
 
 This project is licensed under the  GPL-3.0 license  - see the [LICENSE](LICENSE) file for details.
