@@ -6,12 +6,13 @@
 {% block prompt %}
 
 <style>
-
     .section {
         display: none;
     }
 
     .container {
+        width: auto;
+        height: auto;
         width: 100dvw;
         background-color: var(--baby-powder);
         display: flex;
@@ -119,24 +120,28 @@
     }
 
     .image-container {
-        flex-grow: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-        width: 100%;
-        height: calc(100% - 70px); /* Subtracting top-bar height */
-    }
+    width: auto;
+    height: auto;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+    width: 100%;
+    height: calc(100% - 70px); /* Subtracting top-bar height */
+}
 
-    .image-container img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
+.image-container img {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+}
 
     .solution-container {
         display: none;
+        height: 100%;
+        width: 100%;
     }
 
     .pagination {
@@ -166,7 +171,7 @@
         font-size: 1.5rem;
         color: #666;
     }
-</style>
+</style>        
 
 <h2 style="position: absolute; z-index: -20;"><span class="blue-highlight">{{ rows|length }}</span>  Questions Generated from, <span class="blue-highlight">{{ rows|length }}</span>  amount of questions that are present in the database. Refresh to get more random questions.</h2>
 <div class="container">
