@@ -237,16 +237,19 @@ def renderQuestion(level, subject_name, year, component):
         rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ? AND approved = 1', 
                           (level, subject_name, year, component)).fetchall()
         
-
-
+        id = db.execute('SELECT uuid FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ? AND approved = 1', 
+                    (level, subject_name, year, component)).fetchall()
+        
         # Extract the compressed data from the query result
         compressedData = [row[0] for row in rows]
+
+        compressedData.append(id)
         if not compressedData:
             logger.warning(f"No data found for level {level}, subject {subject_name}, year {year}, component {component}")
             return None
         
         logger.info(f"Question rendered successfully for level {level}, subject {subject_name}, year {year}, component {component}")
-        return compressedData[0]
+        return compressedData
 
     except sqlite3.Error as e:
         logger.error(f"An error occurred while rendering question: {e}")
@@ -364,6 +367,8 @@ def getQuestionsForGen(subject, level, topics, components, difficulties):
         if len(rows) > 18:
             # If more than 18 rows, select 18 random rows
             rows = random.sample(rows, 18)
+        else:
+            random.shuffle(rows)
 
         logger.info(f"Questions for generation retrieved successfully for subject {subject}, level {level}")
         return  rows # Return the fetched results
