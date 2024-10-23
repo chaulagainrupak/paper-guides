@@ -107,7 +107,7 @@ def renderSubjectQuestion(level ,subject_name, year, file_data):
 
     component = component[1]
     question  = renderQuestion(level, subject_name, year, component)
-    return render_template('qp.html', question = question, file_data = file_data)
+    return render_template('qp.html', question = question[0], file_data = file_data, id = question[1][0][0]) # we are extracting the id from the tuple in a array that is in the main array.
 
 
 # Reders the about page. Duh

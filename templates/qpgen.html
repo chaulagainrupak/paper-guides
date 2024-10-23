@@ -3,11 +3,16 @@
 {% block title %}Generated Questions{% endblock %}
 
 
-{% block section %}
+{% block prompt %}
 
 <style>
 
+    .section {
+        display: none;
+    }
+
     .container {
+        width: 100dvw;
         background-color: var(--baby-powder);
         display: flex;
         height: 90vh;
@@ -163,7 +168,7 @@
     }
 </style>
 
-<h2><span class="blue-highlight">{{ rows|length }}</span> Questions Generated from, <span class="blue-highlight">{{ rows|length }}</span> amount of questions that are present in the database. Refresh to get more questions.</h2>
+<h2 style="position: absolute; z-index: -20;"><span class="blue-highlight">{{ rows|length }}</span>  Questions Generated from, <span class="blue-highlight">{{ rows|length }}</span>  amount of questions that are present in the database. Refresh to get more random questions.</h2>
 <div class="container">
     <div class="container-sidebar">
         <h2 style="margin-bottom: 20px; font-size: 2rem;">
