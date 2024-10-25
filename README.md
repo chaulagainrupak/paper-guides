@@ -23,7 +23,7 @@ Open-source project providing free educational materials for Nepal Education Boa
 SECRET_KEY=your_secret_key_here
 SQLALCHEMY_DATABASE_URI=sqlite:///paper-guides.db
 SQLALCHEMY_TRACK_MODIFICATIONS=False
-
+DISCORD_WEBHOOK_URL=urlhere
 ```
 
 ## License

@@ -440,7 +440,6 @@ def editQuestion    (uuid):
 
 
 
-
 @app.template_filter('b64encode')
 def b64encode_filter(s):
     return base64.b64encode(s).decode('utf-8') if s else ''
