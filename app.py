@@ -344,37 +344,47 @@ def rate(question_UUID, rating):
 
 
 
-
+# Update /admin route to send only UUIDs and hashes
 @app.route('/admin')
 @login_required
 def admin_dashboard():
     if current_user.role != 'admin':
         return redirect(url_for('index'))
 
-    # Fetch unapproved questions and papers
     questions = get_unapproved_questions()
     papers = get_unapproved_papers()
 
-    return render_template('admin.html', questions=questions, papers=papers)
+    # Send UUIDs and hashes for each question/paper without the files
+    question_hashes = [{"uuid": q["uuid"], "questionFileHash": getHash(q["questionFile"]), "solutionFileHash": getHash(q["solutionFile"])} for q in questions]
+    paper_hashes = [{"uuid": p["uuid"], "questionFileHash": getHash(p["questionFile"]), "solutionFileHash": getHash(p["solutionFile"])} for p in papers]
 
+    return render_template('admin.html', questionHashes=question_hashes, paperHashes=paper_hashes)
 
-
-@app.route('/fetchNewData', methods=['POST'])
-def fetch_new_data():
-    cachedUuids = request.json.get('cachedUuids', [])
-    newQuestions = get_questions_not_in_cache(cachedUuids)
-    newPapers = get_papers_not_in_cache(cachedUuids)
-
-    # Encode files to base64 format for JSON transfer
-    for question in newQuestions:
-        question["questionFile"] = base64.b64encode(question["questionFile"]).decode("utf-8")
-        question["solutionFile"] = base64.b64encode(question["solutionFile"]).decode("utf-8")
+# New route to handle updates to the cache
+@app.route('/updateCache', methods=['POST'])
+def update_cache():
+    cached_data = request.json.get('cachedData', [])
     
-    for paper in newPapers:
-        paper["questionFile"] = base64.b64encode(paper["questionFile"]).decode("utf-8")
-        paper["solutionFile"] = base64.b64encode(paper["solutionFile"]).decode("utf-8")
+    # Logic to check for new questions and papers based on cached UUIDs and hashes
+    new_questions = []
+    new_papers = []
     
-    return jsonify({"questions": newQuestions, "papers": newPapers})
+    for item in cached_data:
+        uuid = item['uuid']
+        question_hash = item.get('questionFileHash')
+        solution_hash = item.get('solutionFileHash')
+        
+        # Check if the UUID exists and if the hashes match
+        if not check_if_data_exists(uuid, question_hash, solution_hash):
+            new_data = get_data_by_uuid(uuid)
+            if new_data:
+                if 'question' in new_data:
+                    new_questions.append(new_data['question'])
+                if 'paper' in new_data:
+                    new_papers.append(new_data['paper'])
+
+    return jsonify({"questions": new_questions, "papers": new_papers})
+
 
 @app.route('/approve_question/<uuid>' , methods=["POST"])
 @login_required
