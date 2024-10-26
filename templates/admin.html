@@ -1,665 +1,591 @@
 <!DOCTYPE html>
-
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
-
     <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        background-color: #f5f5f5;
-        padding: 20px;
-      }
-
-      .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding: 20px;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      .delete-existing {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        margin-bottom: 30px;
-      }
-
-      .delete-form {
-        display: flex;
-        gap: 15px;
-        align-items: flex-end;
-      }
-
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-      }
-
-      .form-group label {
-        font-weight: bold;
-        color: #333;
-      }
-
-      .form-group input {
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-      }
-
-      .dashboard-content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
-      }
-
-      .section {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      .card {
-        border: 1px solid #ddd;
-        padding: 20px;
-        margin: 15px 0;
-        border-radius: 8px;
-        background-color: #f8f9fa;
-      }
-
-      .image-container {
-        max-width: 100%;
-        margin: 15px 0;
-      }
-
-      .image-container img {
-        max-width: 100%;
-        border-radius: 4px;
-      }
-
-      .actions {
-        margin-top: 15px;
-        display: flex;
-        gap: 10px;
-      }
-
-      .button {
-        padding: 8px 16px;
-        border-radius: 4px;
-        cursor: pointer;
-        border: none;
-        font-size: 14px;
-        transition: all 0.2s ease;
-      }
-
-      .button:hover {
-        opacity: 0.9;
-        transform: translateY(-1px);
-      }
-
-      .approve {
-        background-color: #4caf50;
-        color: white;
-      }
-
-      .delete {
-        background-color: #f44336;
-        color: white;
-      }
-
-      .edit {
-        background-color: #2196f3;
-        color: white;
-      }
-
-      .error {
-        color: #f44336;
-        padding: 10px;
-        background-color: #ffebee;
-        border-radius: 4px;
-        margin: 10px 0;
-      }
-
-      .alert {
-        padding: 15px;
-        margin: 10px 0;
-        border-radius: 4px;
-        background-color: #e3f2fd;
-        border: 1px solid #bbdefb;
-      }
-
-      .pdf-container {
-        margin: 15px 0;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 10px;
-      }
-
-      @media (max-width: 1024px) {
-        .dashboard-content {
-          grid-template-columns: 1fr;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-      }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .delete-existing {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .delete-form {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        .image-container {
+            max-width: 100%;
+            margin: 15px 0;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            border-radius: 4px;
+        }
+
+        .actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .approve { background-color: #4CAF50; color: white; }
+        .delete { background-color: #f44336; color: white; }
+        .edit { background-color: #2196F3; color: white; }
+
+        .error { 
+            color: #f44336;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            background-color: #e3f2fd;
+            border: 1px solid #bbdefb;
+        }
+
+        .pdf-container {
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .json-data{
+            display: none;
+        }
     </style>
-  </head>
+</head>
+<body>
 
-  <body>
-    <div class="hashes">
-      {% for hash in hashes %}
-
-      <div class="hash" id="{{ hash }}"></div>
-
-      {% endfor %}
-    </div>
-
+    <div class="json-data" id="json-data">{{ data | tojson }}</div>
+    
     <div class="dashboard-header">
-      <h1>Admin Dashboard</h1>
+        <h1>Admin Dashboard</h1>
     </div>
 
     <div class="delete-existing">
-      <h2>Delete Existing Items</h2>
-
-      <div class="delete-form">
-        <div class="form-group">
-          <label for="itemType">Item Type:</label>
-
-          <select id="itemType" class="button">
-            <option value="question">Question</option>
-
-            <option value="paper">Paper</option>
-          </select>
+        <h2>Delete Existing Items</h2>
+        <div class="delete-form">
+            <div class="form-group">
+                <label for="itemType">Item Type:</label>
+                <select id="itemType" class="button">
+                    <option value="question">Question</option>
+                    <option value="paper">Paper</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="uuid">Item UUID:</label>
+                <input type="text" id="uuid" placeholder="Enter UUID">
+            </div>
+            <button onclick="deleteExistingItem()" class="button delete">Delete Item</button>
         </div>
-
-        <div class="form-group">
-          <label for="uuid">Item UUID:</label>
-
-          <input type="text" id="uuid" placeholder="Enter UUID" />
-        </div>
-
-        <button onclick="deleteExistingItem()" class="button delete">
-          Delete Item
-        </button>
-      </div>
     </div>
-
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %}
-
-    <div class="alert {{ category }}">{{ message }}</div>
-
-    {% endfor %} {% endif %} {% endwith %}
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
     <div class="dashboard-content">
-      <!-- Questions Section -->
-
-      <div class="section">
-        <h2>Pending Questions</h2>
-
-        {% for question in questions %}
-
-        <div class="card">
-          <h3>Question Details</h3>
-
-          <p><strong>Subject:</strong> {{ question.subject }}</p>
-
-          <p><strong>Topic:</strong> {{ question.topic }}</p>
-
-          <p><strong>Difficulty:</strong> {{ question.difficulty }}/5</p>
-
-          <p><strong>Board:</strong> {{ question.board }}</p>
-
-          <p><strong>Level:</strong> {{ question.level }}</p>
-
-          <p><strong>Component:</strong> {{ question.component }}</p>
-
-          <div class="image-container">
-            <h4>Question:</h4>
-
-            <div
-              class="question-image"
-              data-compressed="{{ question.questionFile }}"
-            ></div>
-          </div>
-
-          <div class="image-container">
-            <h4>Solution:</h4>
-
-            <div
-              class="solution-image"
-              data-compressed="{{ question.solutionFile }}"
-            ></div>
-          </div>
-
-          <div class="actions">
-            <button
-              onclick="handleAction('approve', 'question', '{{ question.uuid }}')"
-              class="button approve"
-            >
-              Approve
-            </button>
-
-            <button
-              onclick="handleAction('edit', 'question', '{{ question.uuid }}')"
-              class="button edit"
-            >
-              Edit
-            </button>
-
-            <button
-              onclick="deleteItem('question', '{{ question.uuid }}')"
-              class="button delete"
-            >
-              Delete
-            </button>
-          </div>
+        <!-- Questions Section -->
+        <div class="section">
+            <h2>Pending Questions</h2>
         </div>
 
-        {% endfor %}
-      </div>
+        <!-- Papers Section -->
+        <div class="section">
+            <h2>Pending Papers</h2>
 
-      <!-- Papers Section -->
-
-      <div class="section">
-        <h2>Pending Papers</h2>
-
-        {% for paper in papers %}
-
-        <div class="card">
-          <h3>Paper Details</h3>
-
-          <p><strong>Subject:</strong> {{ paper.subject }}</p>
-
-          <p><strong>Year:</strong> {{ paper.year }}</p>
-
-          <p><strong>Component:</strong> {{ paper.component }}</p>
-
-          <p><strong>Board:</strong> {{ paper.board }}</p>
-
-          <p><strong>Level:</strong> {{ paper.level }}</p>
-
-          <div class="pdf-container">
-            <h4>Question Paper:</h4>
-
-            <div class="paper-pdf" data-compressed="{{ paper.questionFile }}">
-              <object type="application/pdf" width="100%" height="600px">
-                <p>
-                  Your browser doesn't support embedded PDFs.
-
-                  <a class="pdf-download" download="document.pdf"
-                    >Download the PDF</a
-                  >
-                  instead.
-                </p>
-              </object>
-            </div>
-          </div>
-
-          <div class="actions">
-            <button
-              onclick="handleAction('approve', 'paper', '{{ paper.uuid }}')"
-              class="button approve"
-            >
-              Approve
-            </button>
-
-            <button
-              onclick="deleteItem('paper', '{{ paper.uuid }}')"
-              class="button delete"
-            >
-              Delete
-            </button>
-          </div>
         </div>
-
-        {% endfor %}
-      </div>
     </div>
 
     <script>
-      // Delete existing item function
+        // Delete existing item function
+        function deleteExistingItem() {
+            const itemType = document.getElementById('itemType').value;
+            const uuid = document.getElementById('uuid').value.trim();
+            
+            if (!uuid) {
+                alert('Please enter a UUID');
+                return;
+            }
 
-      function deleteExistingItem() {
-        const itemType = document.getElementById("itemType").value;
-
-        const uuid = document.getElementById("uuid").value.trim();
-
-        if (!uuid) {
-          alert("Please enter a UUID");
-
-          return;
+            if (confirm(`Are you sure you want to delete this ${itemType}?`)) {
+                fetch(`/delete_${itemType}/${uuid}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert(`${itemType} deleted successfully`);
+                        document.getElementById('uuid').value = '';
+                    } else {
+                        throw new Error('Failed to delete item');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the item');
+                });
+            }
         }
 
-        if (confirm(`Are you sure you want to delete this ${itemType}?`)) {
-          fetch(`/delete_${itemType}/${uuid}`, {
-            method: "POST",
+        // Regular delete function
+        function deleteItem(type, uuid) {
+            if (confirm(`Are you sure you want to delete this ${type}?`)) {
+                fetch(`/delete_${type}/${uuid}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        throw new Error('Failed to delete item');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the item');
+                });
+            }
+        }
+        // Utility function for base64 handling
+        function cleanBase64(str) {
+            str = str.replace(/[^A-Za-z0-9+/=]/g, '');
+            if (str.length % 4 !== 0) {
+                str = str.padEnd(str.length + (4 - str.length % 4), '=');
+            }
+            return str;
+        }
 
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-            .then((response) => {
-              if (response.ok) {
-                alert(`${itemType} deleted successfully`);
+        // Delete function
+        function deleteItem(type, uuid) {
+            if (confirm(`Are you sure you want to delete this ${type}?`)) {
+                fetch(`/delete_${type}/${uuid}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        throw new Error('Failed to delete item');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the item');
+                });
+            }
+        }
 
-                document.getElementById("uuid").value = "";
-              } else {
-                throw new Error("Failed to delete item");
-              }
+        // Handle other actions (approve, edit)
+        function handleAction(action, type, uuid) {
+            fetch(`/${action}_${type}/${uuid}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             })
-
-            .catch((error) => {
-              console.error("Error:", error);
-
-              alert("An error occurred while deleting the item");
-            });
-        }
-      }
-
-      // Regular delete function
-
-      function deleteItem(type, uuid) {
-        if (confirm(`Are you sure you want to delete this ${type}?`)) {
-          fetch(`/delete_${type}/${uuid}`, {
-            method: "POST",
-
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-            .then((response) => {
-              if (response.ok) {
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
                 window.location.reload();
-              } else {
-                throw new Error("Failed to delete item");
-              }
             })
-
-            .catch((error) => {
-              console.error("Error:", error);
-
-              alert("An error occurred while deleting the item");
+            .catch(error => {
+                console.error('Error:', error);
+                alert(`An error occurred while processing your request: ${error.message}`);
             });
         }
-      }
 
-      // Utility function for base64 handling
+        // Image rendering function
+        function renderImageFromElement(element, base64Data) {
+            if (!element || !base64Data) {
+                element.innerHTML = '<p class="error">No image data available</p>';
+                return;
+            }
 
-      function cleanBase64(str) {
-        str = str.replace(/[^A-Za-z0-9+/=]/g, "");
+            try {
+                const decoded = decodeURIComponent(base64Data);
+                const cleaned = cleanBase64(decoded);
+                const binaryString = atob(cleaned);
+                const uint8Array = new Uint8Array(binaryString.split('').map(char => char.charCodeAt(0)));
+                const decompressedData = pako.inflate(uint8Array);
+                const blob = new Blob([decompressedData], { type: 'image/png' });
+                const imageUrl = URL.createObjectURL(blob);
 
-        if (str.length % 4 !== 0) {
-          str = str.padEnd(str.length + (4 - (str.length % 4)), "=");
+                const imgElement = document.createElement('img');
+                imgElement.src = imageUrl;
+                element.textContent = '';
+                element.appendChild(imgElement);
+
+                imgElement.onload = () => URL.revokeObjectURL(imageUrl);
+            } catch (error) {
+                console.error('Failed to render image:', error);
+                element.innerHTML = '<p class="error">Error loading image. The data may be corrupted.</p>';
+            }
         }
 
-        return str;
-      }
+        // PDF rendering function
+        function renderPDFElement(element, base64Data) {
+            if (!element || !base64Data) {
+                element.innerHTML = '<p class="error">No PDF data available</p>';
+                return;
+            }
 
-      // Delete function
+            try {
+                const binaryData = atob(base64Data);
+                const uint8Array = new Uint8Array(binaryData.split('').map(char => char.charCodeAt(0)));
+                const decompressedData = pako.inflate(uint8Array);
+                
+                let binary = '';
+                decompressedData.forEach(byte => {
+                    binary += String.fromCharCode(byte);
+                });
+                
+                const base64PDF = btoa(binary);
+                const pdfDataUrl = `data:application/pdf;base64,${base64PDF}`;
 
-      function deleteItem(type, uuid) {
-        if (confirm(`Are you sure you want to delete this ${type}?`)) {
-          fetch(`/delete_${type}/${uuid}`, {
-            method: "POST",
-
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
-            .then((response) => {
-              if (response.ok) {
-                window.location.reload();
-              } else {
-                throw new Error("Failed to delete item");
-              }
-            })
-
-            .catch((error) => {
-              console.error("Error:", error);
-
-              alert("An error occurred while deleting the item");
-            });
-        }
-      }
-
-      // Handle other actions (approve, edit)
-
-      function handleAction(action, type, uuid) {
-        fetch(`/${action}_${type}/${uuid}`, {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-          .then((response) => {
-            if (!response.ok) throw new Error("Network response was not ok");
-
-            window.location.reload();
-          })
-
-          .catch((error) => {
-            console.error("Error:", error);
-
-            alert(
-              `An error occurred while processing your request: ${error.message}`
-            );
-          });
-      }
-
-      // Image rendering function
-
-      function renderImageFromElement(element, base64Data) {
-        if (!element || !base64Data) {
-          element.innerHTML = '<p class="error">No image data available</p>';
-
-          return;
-        }
-
-        try {
-          const decoded = decodeURIComponent(base64Data);
-
-          const cleaned = cleanBase64(decoded);
-
-          const binaryString = atob(cleaned);
-
-          const uint8Array = new Uint8Array(
-            binaryString.split("").map((char) => char.charCodeAt(0))
-          );
-
-          const decompressedData = pako.inflate(uint8Array);
-
-          const blob = new Blob([decompressedData], { type: "image/png" });
-
-          const imageUrl = URL.createObjectURL(blob);
-
-          const imgElement = document.createElement("img");
-
-          imgElement.src = imageUrl;
-
-          element.textContent = "";
-
-          element.appendChild(imgElement);
-
-          imgElement.onload = () => URL.revokeObjectURL(imageUrl);
-        } catch (error) {
-          console.error("Failed to render image:", error);
-
-          element.innerHTML =
-            '<p class="error">Error loading image. The data may be corrupted.</p>';
-        }
-      }
-
-      // PDF rendering function
-
-      function renderPDFElement(element, base64Data) {
-        if (!element || !base64Data) {
-          element.innerHTML = '<p class="error">No PDF data available</p>';
-
-          return;
-        }
-
-        try {
-          const binaryData = atob(base64Data);
-
-          const uint8Array = new Uint8Array(
-            binaryData.split("").map((char) => char.charCodeAt(0))
-          );
-
-          const decompressedData = pako.inflate(uint8Array);
-
-          let binary = "";
-
-          decompressedData.forEach((byte) => {
-            binary += String.fromCharCode(byte);
-          });
-
-          const base64PDF = btoa(binary);
-
-          const pdfDataUrl = `data:application/pdf;base64,${base64PDF}`;
-
-          const container = document.createElement("div");
-
-          container.innerHTML = `
-
+                const container = document.createElement('div');
+                container.innerHTML = `
                     <object type="application/pdf" width="100%" height="600px" data="${pdfDataUrl}">
-
                         <p>Your browser doesn't support embedded PDFs. 
-
                            <a href="${pdfDataUrl}" class="pdf-download" download="document.pdf">Download the PDF</a> instead.
-
                         </p>
-
                     </object>`;
 
-          element.innerHTML = "";
-
-          element.appendChild(container);
-        } catch (error) {
-          console.error("Failed to render PDF:", error);
-
-          element.innerHTML =
-            '<p class="error">Error loading PDF. The data may be corrupted.</p>';
+                element.innerHTML = '';
+                element.appendChild(container);
+            } catch (error) {
+                console.error("Failed to render PDF:", error);
+                element.innerHTML = '<p class="error">Error loading PDF. The data may be corrupted.</p>';
+            }
         }
-      }
 
-      // Initialize elements when DOM is loaded
-
-      document.addEventListener("DOMContentLoaded", () => {
-        // Initialize images
-
-        document
-          .querySelectorAll(".question-image, .solution-image")
-          .forEach((element) => {
-            const base64Data = element.getAttribute("data-compressed");
-
-            renderImageFromElement(element, base64Data);
-          });
-
-        // Initialize PDFs
-
-        document.querySelectorAll(".paper-pdf").forEach((element) => {
-          const base64Data = element.getAttribute("data-compressed");
-
-          renderPDFElement(element, base64Data);
-        });
-      });
-
-      // Store cached UUIDs and hashes locally
-
-      const cachedData = JSON.parse(localStorage.getItem("cachedData")) || [];
-
-      // Function to update cached data
-
-      function updateCachedData(newData) {
-        newData.questions.forEach((q) => {
-          if (!cachedData.some((item) => item.uuid === q.uuid)) {
-            cachedData.push({
-              uuid: q.uuid,
-
-              questionFileHash: q.questionFileHash,
-
-              solutionFileHash: q.solutionFileHash,
-
-              questionFile: q.questionFile, // Store binary data if necessary
-
-              solutionFile: q.solutionFile,
+        // Initialize elements when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize images
+            document.querySelectorAll('.question-image, .solution-image').forEach(element => {
+                const base64Data = element.getAttribute('data-compressed');
+                renderImageFromElement(element, base64Data);
             });
-          }
-        });
 
-        newData.papers.forEach((p) => {
-          if (!cachedData.some((item) => item.uuid === p.uuid)) {
-            cachedData.push({
-              uuid: p.uuid,
-
-              questionFileHash: p.questionFileHash,
-
-              solutionFileHash: p.solutionFileHash,
-
-              questionFile: p.questionFile, // Store binary data if necessary
-
-              solutionFile: p.solutionFile,
+            // Initialize PDFs
+            document.querySelectorAll('.paper-pdf').forEach(element => {
+                const base64Data = element.getAttribute('data-compressed');
+                renderPDFElement(element, base64Data);
             });
-          }
         });
-
-        // Update cached data in localStorage
-
-        localStorage.setItem("cachedData", JSON.stringify(cachedData));
-      }
-
-      // Fetch new data from server
-
-      function fetchNewData() {
-        const dataToSend = cachedData.map((item) => ({
-          uuid: item.uuid,
-
-          questionFileHash: item.questionFileHash,
-
-          solutionFileHash: item.solutionFileHash,
-        }));
-
-        $.ajax({
-          url: "/updateCache",
-
-          method: "POST",
-
-          contentType: "application/json",
-
-          data: JSON.stringify({ cachedData: dataToSend }),
-
-          success: (data) => {
-            updateCachedData(data);
-          },
-        });
-      }
-
-      // Initial fetch on page load
-
-      document.addEventListener("DOMContentLoaded", () => {
-        fetchNewData();
-      });
     </script>
-  </body>
+
+
+<script>
+// Initial fetch on page load
+document.addEventListener('DOMContentLoaded', () => {
+    var jsonData = document.getElementById('json-data').textContent;
+    var data = JSON.parse(jsonData);
+
+    const storedJsonData = localStorage.getItem('json-data');
+    
+    if(storedJsonData){
+        const parsedJsonData = JSON.parse(storedJsonData);
+
+        // Find the missing hashes
+        const missingHashes = [];
+        data.questions.forEach(question => {
+            if (!parsedJsonData.questions.find(q => q.questionFileHash === question.questionFileHash)) {
+                missingHashes.push(question.questionFileHash);
+            }
+        });
+        data.papers.forEach(paper => {
+            if (!parsedJsonData.papers.find(p => p.questionFileHash === paper.questionFileHash)) {
+                missingHashes.push(paper.questionFileHash);
+            }
+        });
+
+// Send a request to the server with the missing hashes
+if (missingHashes.length > 0) {
+    fetch('/getNewData', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ hashes: missingHashes })
+    })
+    .then(response => response.json())
+    .then(newData => {
+        // Retrieve the existing data from local storage
+        const existingData = JSON.parse(localStorage.getItem('json-data')) || { questions: [], papers: [] };
+
+        // Merge the new data with the existing data
+        const mergedData = {
+            questions: [...existingData.questions, ...newData.questions],
+            papers: [...existingData.papers, ...newData.papers]
+        };
+
+        // Update the local storage with the merged data
+        localStorage.setItem('json-data', JSON.stringify(mergedData));
+
+        // Render the new data
+        renderNewData(mergedData);
+    })
+    .catch(error => console.error('Error:', error));
+} else {
+    // Render the existing data
+    renderData(parsedJsonData);
+}
+
+    } else {
+        // Send a request to the server with the message 'all'
+        fetch('/getNewData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: 'all' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Store the data in local storage
+            localStorage.setItem('json-data', JSON.stringify(data));
+
+            // Render the data
+            renderData(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+});
+
+// Function to render the data
+function renderData(data) {
+    // Get the existing question and paper sections
+    const questionSection = document.querySelector('.section:first-of-type');
+    const paperSection = document.querySelector('.section:last-of-type');
+
+    // Clear the existing question and paper sections
+    questionSection.innerHTML = '';
+    paperSection.innerHTML = '';
+
+    // Render the questions
+    data.questions.forEach(question => {
+        const questionCard = createQuestionCard(question);
+        questionSection.appendChild(questionCard);
+    });
+
+    // Render the papers
+    data.papers.forEach(paper => {
+        const paperCard = createPaperCard(paper);
+        paperSection.appendChild(paperCard);
+    });
+
+    // Render the images and PDFs
+    document.querySelectorAll('.question-image, .solution-image').forEach(element => {
+        const base64Data = element.getAttribute('data-compressed');
+        renderImageFromElement(element, base64Data);
+    });
+    document.querySelectorAll('.paper-pdf').forEach(element => {
+        const base64Data = element.getAttribute('data-compressed');
+        renderPDFElement(element, base64Data);
+    });
+}
+
+
+
+
+
+// Function to create a question card
+function createQuestionCard(question) {
+    const card = document.createElement('div');
+    card.classList.add('card');
+    card.setAttribute('data-compressed', JSON.stringify(question));
+
+    const questionDetailsDiv = document.createElement('div');
+    questionDetailsDiv.innerHTML = `
+        <h3>Question Details</h3>
+        <p><strong>Subject:</strong> ${question.subject}</p>
+        <p><strong>Topic:</strong> ${question.topic}</p>
+        <p><strong>Difficulty:</strong> ${question.difficulty}/5</p>
+        <p><strong>Board:</strong> ${question.board}</p>
+        <p><strong>Level:</strong> ${question.level}</p>
+        <p><strong>Component:</strong> ${question.component}</p>
+    `;
+    card.appendChild(questionDetailsDiv);
+
+    const questionImageDiv = document.createElement('div');
+    questionImageDiv.classList.add('image-container');
+    questionImageDiv.innerHTML = `
+        <h4>Question:</h4>
+        <div class="question-image" data-compressed="${question.questionBlob}"></div>
+    `;
+    card.appendChild(questionImageDiv);
+
+    const solutionImageDiv = document.createElement('div');
+    solutionImageDiv.classList.add('image-container');
+    solutionImageDiv.innerHTML = `
+        <h4>Solution:</h4>
+        <div class="solution-image" data-compressed="${question.solutionBlob}"></div>
+    `;
+    card.appendChild(solutionImageDiv);
+
+    const actionsDiv = document.createElement('div');
+    actionsDiv.classList.add('actions');
+    actionsDiv.innerHTML = `
+        <button onclick="handleAction('approve', 'question', '${question.uuid}')" class="button approve">Approve</button>
+        <button onclick="handleAction('edit', 'question', '${question.uuid}')" class="button edit">Edit</button>
+        <button onclick="deleteItem('question', '${question.uuid}')" class="button delete">Delete</button>
+    `;
+    card.appendChild(actionsDiv);
+
+    return card;
+}
+
+// Function to create a paper card
+function createPaperCard(paper) {
+    const card = document.createElement('div');
+    card.classList.add('card');
+
+    const paperDetailsDiv = document.createElement('div');
+    paperDetailsDiv.innerHTML = `
+        <h3>Paper Details</h3>
+        <p><strong>Subject:</strong> ${paper.subject}</p>
+        <p><strong>Year:</strong> ${paper.year}</p>
+        <p><strong>Component:</strong> ${paper.component}</p>
+        <p><strong>Board:</strong> ${paper.board}</p>
+        <p><strong>Level:</strong> ${paper.level}</p>
+    `;
+    card.appendChild(paperDetailsDiv);
+
+    const pdfDiv = document.createElement('div');
+    pdfDiv.classList.add('pdf-container');
+    pdfDiv.innerHTML = `
+        <h4>Question Paper:</h4>
+        <div class="paper-pdf" data-compressed="${paper.questionBlob}">
+            <object type="application/pdf" width="100%" height="600px">
+                <p>Your browser doesn't support embedded PDFs. 
+                   <a class="pdf-download" download="document.pdf">Download the PDF</a> instead.</p>
+            </object>
+        </div>
+    `;
+    card.appendChild(pdfDiv);
+
+    const actionsDiv = document.createElement('div');
+    actionsDiv.classList.add('actions');
+    actionsDiv.innerHTML = `
+        <button onclick="handleAction('approve', 'paper', '${paper.uuid}')" class="button approve">Approve</button>
+        <button onclick="deleteItem('paper', '${paper.uuid}')" class="button delete">Delete</button>
+    `;
+    card.appendChild(actionsDiv);
+
+    return card;
+}
+
+
+</script>
+
+</body>
 </html>
