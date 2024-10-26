@@ -8,7 +8,7 @@ import random
 import requests
 from datetime import datetime
 from dotenv import load_dotenv
-
+import hashlib
 
 load_dotenv()
 from logHandler import getCustomLogger
@@ -727,6 +727,16 @@ def get_item_data(connection: sqlite3.Connection, item_type: str, uuid: str) -> 
         }
 
 
+
+
+
+def getHash(encodedData):
+    # Decode base64 to get compressed binary data
+    compressedData = base64.b64decode(encodedData)
+    # Decompress to get the original file data
+    originalData = zlib.decompress(compressedData)
+    # Return the SHA-256 hash
+    return hashlib.sha256(originalData).hexdigest()
 
 def convertRatingToString(rating):
     # Convert integer rating to string representation ('one', 'two', etc.)

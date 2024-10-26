@@ -1,13 +1,12 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash   
 from models import db, User
 from datetime import datetime
 import base64
-import jsonify
 
 # We are importing all the required functions from the following files inorder to make a huge app file?
 
@@ -349,12 +348,59 @@ def rate(question_UUID, rating):
 @app.route('/admin')
 @login_required
 def admin_dashboard():
-
     if current_user.role != 'admin':
-        return redirect (url_for('index'))
+        return redirect(url_for('index'))
+
     questions = get_unapproved_questions()
     papers = get_unapproved_papers()
-    return render_template('admin.html', questions = questions, papers = papers)
+    hashes = []
+
+    # Collect hashes for questions
+    for question in questions:
+        hashes.append(getHash(question["questionFile"]))
+        hashes.append(getHash(question["solutionFile"]))
+
+    # Collect hashes for papers (fix: use paper instead of question)
+    for paper in papers:
+        hashes.append(getHash(paper["questionFile"]))
+        hashes.append(getHash(paper["solutionFile"]))
+
+    return render_template('admin.html', questions=questions, papers=papers, hashes=hashes)
+
+
+@app.route('/load_data', methods=['POST'])
+@login_required
+def load_data():
+    # Retrieve cached hashes sent by the client
+    clientHashes = request.json.get('hashes', [])
+
+    # Fetch all questions and papers
+    questions = get_unapproved_questions()
+    papers = get_unapproved_papers()
+
+    # Filter questions and papers to only those that aren't cached on the client
+    responseData = {
+        "questions": [
+            {
+                "uuid": question["uuid"],
+                "hash": getHash(question["questionFile"]),
+                "fileData": question["questionFile"]
+            }
+            for question in questions if getHash(question["questionFile"]) not in clientHashes or getHash(question["solutionFile"]) not in clientHashes
+        ],
+        "papers": [
+            {
+                "uuid": paper["uuid"],
+                "hash": getHash(paper["questionFile"]),
+                "fileData": paper["questionFile"]
+            }
+            for paper in papers if getHash(paper["questionFile"]) not in clientHashes or getHash(paper["solutionFile"]) not in clientHashes
+        ]
+    }
+
+    # Send only uncached data back to client
+    return jsonify(responseData)
+
 
 @app.route('/approve_question/<uuid>' , methods=["POST"])
 @login_required

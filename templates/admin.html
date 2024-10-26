@@ -148,6 +148,13 @@
     </style>
 </head>
 <body>
+
+    <div class="hashes">
+        {%for hash in hashes%}
+            <div class="hash" id="{{hash}}"></div>
+        {%endfor%}
+    </div>
+    
     <div class="dashboard-header">
         <h1>Admin Dashboard</h1>
     </div>
@@ -431,5 +438,60 @@
             });
         });
     </script>
+
+
+<script>
+    // Helper: Retrieve or initialize cached hashes in localStorage
+    function getCachedHashes() {
+        const cachedHashes = localStorage.getItem('cachedHashes');
+        return cachedHashes ? JSON.parse(cachedHashes) : [];
+    }
+
+    // Helper: Update cached hashes in localStorage
+    function updateCachedHashes(newHashes) {
+        const currentHashes = getCachedHashes();
+        const updatedHashes = [...new Set([...currentHashes, ...newHashes])]; // Deduplicate
+        localStorage.setItem('cachedHashes', JSON.stringify(updatedHashes));
+    }
+
+    // On DOMContentLoaded, send cached hashes to server to load only necessary data
+    document.addEventListener('DOMContentLoaded', () => {
+        const cachedHashes = getCachedHashes();
+
+        fetch('/load_data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ hashes: cachedHashes })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const newHashes = [];
+
+            // Render question images
+            data.questions.forEach(question => {
+                const element = document.querySelector(`.question-image[data-uuid="${question.uuid}"]`);
+                if (element) {
+                    renderImageFromElement(element, question.fileData);
+                    newHashes.push(question.hash);
+                }
+            });
+
+            // Render paper PDFs
+            data.papers.forEach(paper => {
+                const element = document.querySelector(`.paper-pdf[data-uuid="${paper.uuid}"]`);
+                if (element) {
+                    renderPDFElement(element, paper.fileData);
+                    newHashes.push(paper.hash);
+                }
+            });
+
+            // Update cached hashes in localStorage
+            updateCachedHashes(newHashes);
+        })
+        .catch(error => console.error('Error loading data:', error));
+    });
+
+</script>
+
 </body>
 </html>
