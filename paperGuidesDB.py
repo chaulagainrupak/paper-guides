@@ -5,7 +5,12 @@ import zlib
 import json
 import base64
 import random
+import requests
+from datetime import datetime
+from dotenv import load_dotenv
 
+
+load_dotenv()
 from logHandler import getCustomLogger
 
 logger = getCustomLogger(__name__)
@@ -237,16 +242,19 @@ def renderQuestion(level, subject_name, year, component):
         rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ? AND approved = 1', 
                           (level, subject_name, year, component)).fetchall()
         
-
-
+        id = db.execute('SELECT uuid FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ? AND approved = 1', 
+                    (level, subject_name, year, component)).fetchall()
+        
         # Extract the compressed data from the query result
         compressedData = [row[0] for row in rows]
+
+        compressedData.append(id)
         if not compressedData:
             logger.warning(f"No data found for level {level}, subject {subject_name}, year {year}, component {component}")
             return None
         
         logger.info(f"Question rendered successfully for level {level}, subject {subject_name}, year {year}, component {component}")
-        return compressedData[0]
+        return compressedData
 
     except sqlite3.Error as e:
         logger.error(f"An error occurred while rendering question: {e}")
@@ -364,6 +372,8 @@ def getQuestionsForGen(subject, level, topics, components, difficulties):
         if len(rows) > 18:
             # If more than 18 rows, select 18 random rows
             rows = random.sample(rows, 18)
+        else:
+            random.shuffle(rows)
 
         logger.info(f"Questions for generation retrieved successfully for subject {subject}, level {level}")
         return  rows # Return the fetched results
@@ -478,15 +488,32 @@ def get_unapproved_papers():
 
 def approve_question(uuid: str) -> bool:
     """Approve a question by UUID"""
+    connection = None
     try:
+        logger.info(
+            f"Starting approval process for question UUID: {uuid}",
+            extra={'http_request': True}
+        )
         connection = sqlite3.connect(dbPath)
-        db = connection.cursor()
         
-        db.execute('UPDATE questions SET approved = 1    WHERE uuid = ?', (uuid,))
+        # Get question data before updating
+        question_data = get_item_data(connection, "question", uuid)
+        if not question_data:
+            logger.error(f"Question {uuid} not found", extra={'http_request': True})
+            return False
+            
+        # Update approval status
+        cursor = connection.cursor()
+        cursor.execute('UPDATE questions SET approved = 1 WHERE uuid = ?', (uuid,))
         connection.commit()
+        
+        # Send webhook notification
+        send_to_discord("question", question_data)
+        
         return True
     except sqlite3.Error as e:
-        logger.error(f"Error approving question {uuid}: {e}")
+        logger.error(f"Error approving question {uuid}: {e}", 
+                    extra={'http_request': True})
         return False
     finally:
         if connection:
@@ -494,15 +521,32 @@ def approve_question(uuid: str) -> bool:
 
 def approve_paper(uuid: str) -> bool:
     """Approve a paper by UUID"""
+    connection = None
     try:
+        logger.info(
+            f"Starting approval process for paper UUID: {uuid}",
+            extra={'http_request': True}
+        )
         connection = sqlite3.connect(dbPath)
-        db = connection.cursor()
         
-        db.execute('UPDATE papers SET approved = True WHERE uuid = ?', (uuid,))
+        # Get paper data before updating
+        paper_data = get_item_data(connection, "paper", uuid)
+        if not paper_data:
+            logger.error(f"Paper {uuid} not found", extra={'http_request': True})
+            return False
+            
+        # Update approval status
+        cursor = connection.cursor()
+        cursor.execute('UPDATE papers SET approved = True WHERE uuid = ?', (uuid,))
         connection.commit()
+        
+        # Send webhook notification
+        send_to_discord("paper", paper_data)
+        
         return True
     except sqlite3.Error as e:
-        logger.error(f"Error approving paper {uuid}: {e}")
+        logger.error(f"Error approving paper {uuid}: {e}", 
+                    extra={'http_request': True})
         return False
     finally:
         if connection:
@@ -591,6 +635,96 @@ def update_question(uuid: str, data) -> bool:
 
 
 
+# Discord web hook so the users are notified when a question is approved 
+
+def send_to_discord(item_type: str, data: dict) -> bool:
+    """Send approval notification to Discord"""
+    webhook_url = os.getenv('DISCORD_WEBHOOK_URL')
+    if not webhook_url:
+        logger.error("Discord webhook URL not found", extra={'http_request': True})
+        return False
+        
+    if item_type == "question":
+        embed = {
+            "title": "✅ New Question Approved!",
+            "color": 3066993,  # Green
+            "fields": [
+                {"name": "Subject", "value": data.get('subject', 'N/A'), "inline": True},
+                {"name": "Topic", "value": data.get('topic', 'N/A'), "inline": True},
+                {"name": "Difficulty", "value": f"{data.get('difficulty', 'N/A')}/5", "inline": True},
+                {"name": "Board", "value": data.get('board', 'N/A'), "inline": True},
+                {"name": "Level", "value": data.get('level', 'N/A'), "inline": True},
+                {"name": "Component", "value": data.get('component', 'N/A'), "inline": True}
+            ],
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    else:  # paper
+        embed = {
+            "title": "📝 New Past Paper Approved!",
+            "color": 3447003,  # Blue
+            "fields": [
+                {"name": "Subject", "value": data.get('subject', 'N/A'), "inline": True},
+                {"name": "Year", "value": str(data.get('year', 'N/A')), "inline": True},
+                {"name": "Board", "value": data.get('board', 'N/A'), "inline": True},
+                {"name": "Level", "value": data.get('level', 'N/A'), "inline": True},
+                {"name": "Component", "value": data.get('component', 'N/A'), "inline": True}
+            ],
+            "timestamp": datetime.utcnow().isoformat()
+        }
+
+    try:
+        response = requests.post(webhook_url, json={"embeds": [embed]})
+        response.raise_for_status()
+        logger.info(f"Discord webhook sent successfully for {item_type} {data.get('uuid')}", 
+                   extra={'http_request': True})
+        return True
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Failed to send Discord webhook: {str(e)}", 
+                    extra={'http_request': True})
+        return False
+    
+
+    
+def get_item_data(connection: sqlite3.Connection, item_type: str, uuid: str) -> dict:
+    """Get question or paper data before approval"""
+    cursor = connection.cursor()
+    if item_type == "question":
+        cursor.execute('''
+            SELECT uuid, subject, topic, difficulty, board, level, component 
+            FROM questions 
+            WHERE uuid = ?
+        ''', (uuid,))
+    else:  # paper
+        cursor.execute('''
+            SELECT uuid, subject, year, board, level, component 
+            FROM papers 
+            WHERE uuid = ?
+        ''', (uuid,))
+    
+    row = cursor.fetchone()
+    if not row:
+        return {}
+    
+    # Convert row to dictionary based on item type
+    if item_type == "question":
+        return {
+            'uuid': row[0],
+            'subject': row[1],
+            'topic': row[2],
+            'difficulty': row[3],
+            'board': row[4],
+            'level': row[5],
+            'component': row[6]
+        }
+    else:  # paper
+        return {
+            'uuid': row[0],
+            'subject': row[1],
+            'year': row[2],
+            'board': row[3],
+            'level': row[4],
+            'component': row[5]
+        }
 
 
 
