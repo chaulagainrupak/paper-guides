@@ -385,83 +385,141 @@
 
 
 <script>
-// Initial fetch on page load
-document.addEventListener('DOMContentLoaded', () => {
-    var jsonData = document.getElementById('json-data').textContent;
-    var data = JSON.parse(jsonData);
 
-    const storedJsonData = localStorage.getItem('json-data');
-    
-    if(storedJsonData){
-        const parsedJsonData = JSON.parse(storedJsonData);
+// Initialize IndexedDB
+const dbName = 'paperGuidesJsonStorage';
+const storeName = 'jsonData';
+const version = 1;
 
-        // Find the missing hashes
-        const missingHashes = [];
-        data.questions.forEach(question => {
-            if (!parsedJsonData.questions.find(q => q.questionFileHash === question.questionFileHash)) {
-                missingHashes.push(question.questionFileHash);
+// Function to open database connection
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, version);
+
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(storeName)) {
+                db.createObjectStore(storeName, { keyPath: 'id' });
             }
-        });
-        data.papers.forEach(paper => {
-            if (!parsedJsonData.papers.find(p => p.questionFileHash === paper.questionFileHash)) {
-                missingHashes.push(paper.questionFileHash);
-            }
-        });
-
-// Send a request to the server with the missing hashes
-if (missingHashes.length > 0) {
-    fetch('/getNewData', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ hashes: missingHashes })
-    })
-    .then(response => response.json())
-    .then(newData => {
-        // Retrieve the existing data from local storage
-        const existingData = JSON.parse(localStorage.getItem('json-data')) || { questions: [], papers: [] };
-
-        // Merge the new data with the existing data
-        const mergedData = {
-            questions: [...existingData.questions, ...newData.questions],
-            papers: [...existingData.papers, ...newData.papers]
         };
-
-        // Update the local storage with the merged data
-        localStorage.setItem('json-data', JSON.stringify(mergedData));
-
-        // Render the new data
-        renderNewData(mergedData);
-    })
-    .catch(error => console.error('Error:', error));
-} else {
-    // Render the existing data
-    renderData(parsedJsonData);
+    });
 }
 
-    } else {
-        // Send a request to the server with the message 'all'
-        fetch('/getNewData', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ message: 'all' })
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Store the data in local storage
-            localStorage.setItem('json-data', JSON.stringify(data));
+// Function to save data to IndexedDB
+async function saveJsonData(data) {
+    try {
+        const db = await openDB();
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
 
-            // Render the data
-            renderData(data);
-        })
-        .catch(error => console.error('Error:', error));
+        return new Promise((resolve, reject) => {
+            const request = store.put({ id: 'jsonData', data: data });
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    } catch (error) {
+        console.error('Error saving data:', error);
+        throw error;
+    }
+}
+
+// Function to retrieve data from IndexedDB
+async function getJsonData() {
+    try {
+        const db = await openDB();
+        const transaction = db.transaction(storeName, 'readonly');
+        const store = transaction.objectStore(storeName);
+
+        return new Promise((resolve, reject) => {
+            const request = store.get('jsonData');
+            request.onsuccess = () => resolve(request.result ? request.result.data : null);
+            request.onerror = () => reject(request.error);
+        });
+    } catch (error) {
+        console.error('Error retrieving data:', error);
+        throw error;
+    }
+}
+
+// Initial fetch on page load
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const jsonData = document.getElementById('json-data').textContent;
+        const currentData = JSON.parse(jsonData);
+        
+        // Get stored data from IndexedDB
+        const storedData = await getJsonData();
+        
+        if (storedData) {
+            // Find missing hashes
+            const missingHashes = [];
+            currentData.questions.forEach(question => {
+                if (!storedData.questions.find(q => q.questionFileHash === question.questionFileHash)) {
+                    missingHashes.push(question.questionFileHash);
+                }
+            });
+            currentData.papers.forEach(paper => {
+                if (!storedData.papers.find(p => p.questionFileHash === paper.questionFileHash)) {
+                    missingHashes.push(paper.questionFileHash);
+                }
+            });
+
+            // If there are missing hashes, fetch new data
+            if (missingHashes.length > 0) {
+                fetch('/getNewData', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ hashes: missingHashes })
+                })
+                .then(response => response.json())
+                .then(async newData => {
+                    // Merge the new data with existing data
+                    const mergedData = {
+                        questions: [...storedData.questions, ...newData.questions],
+                        papers: [...storedData.papers, ...newData.papers]
+                    };
+
+                    // Save merged data to IndexedDB
+                    await saveJsonData(mergedData);
+
+                    // Render the merged data
+                    renderData(mergedData);
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                // Render existing data if no missing hashes
+                renderData(storedData);
+            }
+        } else {
+            // If no stored data exists, fetch all data
+            fetch('/getNewData', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: 'all' })
+            })
+            .then(response => response.json())
+            .then(async data => {
+                // Store the data in IndexedDB
+                await saveJsonData(data);
+
+                // Render the data
+                renderData(data);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    } catch (error) {
+        console.error('Error during initialization:', error);
     }
 });
 
-// Function to render the data
+// Function to render the data (unchanged)
 function renderData(data) {
     // Get the existing question and paper sections
     const questionSection = document.querySelector('.section:first-of-type');
@@ -494,11 +552,7 @@ function renderData(data) {
     });
 }
 
-
-
-
-
-// Function to create a question card
+// Function to create a question card (unchanged)
 function createQuestionCard(question) {
     const card = document.createElement('div');
     card.classList.add('card');
@@ -544,7 +598,7 @@ function createQuestionCard(question) {
     return card;
 }
 
-// Function to create a paper card
+// Function to create a paper card (unchanged)
 function createPaperCard(paper) {
     const card = document.createElement('div');
     card.classList.add('card');
@@ -583,8 +637,6 @@ function createPaperCard(paper) {
 
     return card;
 }
-
-
 </script>
 
 </body>
