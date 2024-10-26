@@ -4,89 +4,171 @@
             {
                 "name": "Compulsory Maths",
                 "topics": [
-                    "Algebra",
-                    "Geometry",
-                    "Trigonometry",
-                    "Calculus"
+                    "Sets and Functions",
+                    "Algebra and Matrices",
+                    "Geometry and Coordinate Geometry",
+                    "Trigonometry and Its Applications",
+                    "Calculus (Differentiation & Integration)",
+                    "Vectors and 3D Geometry",
+                    "Statistics and Probability",
+                    "Linear Programming",
+                    "Sequences and Series",
+                    "Complex Numbers",
+                    "Indices and Logarithms",
+                    "Permutation and Combination"
                 ]
             },
             {
                 "name": "Optional Maths",
                 "topics": [
-                    "Statistics",
-                    "Probability",
-                    "Discrete Mathematics"
+                    "Advanced Statistics",
+                    "Advanced Probability",
+                    "Discrete Mathematics",
+                    "Mathematical Reasoning",
+                    "Graph Theory",
+                    "Number Theory",
+                    "Advanced Calculus",
+                    "Mathematical Modelling",
+                    "Numerical Methods",
+                    "Boolean Algebra",
+                    "Groups and Rings",
+                    "Differential Equations"
                 ]
             },
             {
                 "name": "Physics",
                 "topics": [
-                    "Mechanics",
-                    "Thermodynamics",
+                    "Mechanics and Properties of Matter",
+                    "Heat and Thermodynamics",
+                    "Wave Motion and Sound",
+                    "Optics and Optical Instruments",
                     "Electricity and Magnetism",
-                    "Optics"
+                    "Modern Physics",
+                    "Electronics",
+                    "Nuclear Physics",
+                    "Quantum Physics",
+                    "Relativity",
+                    "Solid State Physics",
+                    "Astronomy and Cosmology"
                 ]
             },
             {
                 "name": "Chemistry",
                 "topics": [
-                    "Inorganic Chemistry",
-                    "Organic Chemistry",
-                    "Physical Chemistry",
-                    "Analytical Chemistry"
+                    "Atomic Structure and Chemical Bonding",
+                    "States of Matter",
+                    "Redox Reactions and Electrochemistry",
+                    "Chemical Equilibrium",
+                    "Chemical Kinetics",
+                    "Periodic Table and Elements",
+                    "Organic Chemistry and Functional Groups",
+                    "Polymers and Biomolecules",
+                    "Environmental Chemistry",
+                    "Industrial Chemistry",
+                    "Coordination Compounds",
+                    "Surface Chemistry and Catalysis"
                 ]
             },
             {
                 "name": "Biology",
                 "topics": [
-                    "Cell Biology",
-                    "Genetics",
-                    "Ecology",
-                    "Anatomy and Physiology"
+                    "Cell Biology and Biomolecules",
+                    "Genetics and Evolution",
+                    "Ecology and Environment",
+                    "Human Anatomy and Physiology",
+                    "Plant Anatomy and Physiology",
+                    "Biodiversity and Conservation",
+                    "Biotechnology and Its Applications",
+                    "Microbiology",
+                    "Developmental Biology",
+                    "Applied Biology",
+                    "Animal Behavior",
+                    "Molecular Biology"
                 ]
             },
             {
                 "name": "English",
                 "topics": [
-                    "Grammar",
-                    "Literature",
-                    "Writing Skills",
-                    "Reading Comprehension"
+                    "Reading Comprehension",
+                    "Writing Skills and Essays",
+                    "Grammar and Usage",
+                    "Literature and Poetry",
+                    "Short Stories and Drama",
+                    "Business Communication",
+                    "Technical Writing",
+                    "Speaking and Listening",
+                    "Critical Analysis",
+                    "Academic Writing",
+                    "Creative Writing",
+                    "Research Writing"
                 ]
             },
             {
                 "name": "Nepali",
                 "topics": [
-                    "Grammar",
-                    "Literature",
-                    "Writing Skills",
-                    "Reading Comprehension"
+                    "Vyakaran (Grammar)",
+                    "Sahitya (Literature)",
+                    "Kabita (Poetry)",
+                    "Katha (Stories)",
+                    "Upanyas (Novel)",
+                    "Nibandha (Essays)",
+                    "Nataka (Drama)",
+                    "Rachana (Composition)",
+                    "Byabaharik Lekhan (Practical Writing)",
+                    "Bhasa Vigyan (Linguistics)",
+                    "Lok Sahitya (Folk Literature)",
+                    "Aalochana (Literary Criticism)"
                 ]
             },
             {
                 "name": "Computer",
                 "topics": [
-                    "Programming",
-                    "Database Management",
+                    "Programming Fundamentals",
+                    "Object-Oriented Programming",
+                    "Database Management Systems",
                     "Web Development",
-                    "Algorithms"
+                    "Data Structures and Algorithms",
+                    "Computer Networks",
+                    "Operating Systems",
+                    "Software Engineering",
+                    "Computer Architecture",
+                    "Cyber Security",
+                    "Mobile Application Development",
+                    "Artificial Intelligence Basics"
                 ]
             },
             {
                 "name": "Accounts",
                 "topics": [
+                    "Basic Accounting Concepts",
                     "Financial Accounting",
                     "Cost Accounting",
-                    "Management Accounting"
+                    "Management Accounting",
+                    "Company Accounts",
+                    "Partnership Accounts",
+                    "Taxation",
+                    "Auditing",
+                    "Financial Statement Analysis",
+                    "Budgeting and Forecasting",
+                    "Banking Transactions",
+                    "Computerized Accounting"
                 ]
             },
             {
                 "name": "Economics",
                 "topics": [
+                    "Basic Economic Concepts",
                     "Microeconomics",
                     "Macroeconomics",
                     "International Economics",
-                    "Development Economics"
+                    "Development Economics",
+                    "Public Finance",
+                    "Money and Banking",
+                    "Statistical Methods",
+                    "Nepalese Economy",
+                    "Environmental Economics",
+                    "Labor Economics",
+                    "Agricultural Economics"
                 ]
             }
         ],
