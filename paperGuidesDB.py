@@ -727,6 +727,13 @@ def get_item_data(connection: sqlite3.Connection, item_type: str, uuid: str) -> 
         }
 
 
+def get_questions_not_in_cache(cachedUuids):
+    # Filter out questions where UUID is in cachedUuids
+    return [q for q in get_unapproved_questions() if q["uuid"] not in cachedUuids]
+
+def get_papers_not_in_cache(cachedUuids):
+    # Filter out papers where UUID is in cachedUuids
+    return [p for p in get_unapproved_papers() if p["uuid"] not in cachedUuids]
 
 
 

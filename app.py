@@ -351,56 +351,30 @@ def admin_dashboard():
     if current_user.role != 'admin':
         return redirect(url_for('index'))
 
-    questions = get_unapproved_questions()
-    papers = get_unapproved_papers()
-    hashes = []
-
-    # Collect hashes for questions
-    for question in questions:
-        hashes.append(getHash(question["questionFile"]))
-        hashes.append(getHash(question["solutionFile"]))
-
-    # Collect hashes for papers (fix: use paper instead of question)
-    for paper in papers:
-        hashes.append(getHash(paper["questionFile"]))
-        hashes.append(getHash(paper["solutionFile"]))
-
-    return render_template('admin.html', questions=questions, papers=papers, hashes=hashes)
-
-
-@app.route('/load_data', methods=['POST'])
-@login_required
-def load_data():
-    # Retrieve cached hashes sent by the client
-    clientHashes = request.json.get('hashes', [])
-
-    # Fetch all questions and papers
+    # Fetch unapproved questions and papers
     questions = get_unapproved_questions()
     papers = get_unapproved_papers()
 
-    # Filter questions and papers to only those that aren't cached on the client
-    responseData = {
-        "questions": [
-            {
-                "uuid": question["uuid"],
-                "hash": getHash(question["questionFile"]),
-                "fileData": question["questionFile"]
-            }
-            for question in questions if getHash(question["questionFile"]) not in clientHashes or getHash(question["solutionFile"]) not in clientHashes
-        ],
-        "papers": [
-            {
-                "uuid": paper["uuid"],
-                "hash": getHash(paper["questionFile"]),
-                "fileData": paper["questionFile"]
-            }
-            for paper in papers if getHash(paper["questionFile"]) not in clientHashes or getHash(paper["solutionFile"]) not in clientHashes
-        ]
-    }
+    return render_template('admin.html', questions=questions, papers=papers)c
 
-    # Send only uncached data back to client
-    return jsonify(responseData)
 
+
+@app.route('/fetchNewData', methods=['POST'])
+def fetch_new_data():
+    cachedUuids = request.json.get('cachedUuids', [])
+    newQuestions = get_questions_not_in_cache(cachedUuids)
+    newPapers = get_papers_not_in_cache(cachedUuids)
+
+    # Encode files to base64 format for JSON transfer
+    for question in newQuestions:
+        question["questionFile"] = base64.b64encode(question["questionFile"]).decode("utf-8")
+        question["solutionFile"] = base64.b64encode(question["solutionFile"]).decode("utf-8")
+    
+    for paper in newPapers:
+        paper["questionFile"] = base64.b64encode(paper["questionFile"]).decode("utf-8")
+        paper["solutionFile"] = base64.b64encode(paper["solutionFile"]).decode("utf-8")
+    
+    return jsonify({"questions": newQuestions, "papers": newPapers})
 
 @app.route('/approve_question/<uuid>' , methods=["POST"])
 @login_required

@@ -441,56 +441,65 @@
 
 
 <script>
-    // Helper: Retrieve or initialize cached hashes in localStorage
-    function getCachedHashes() {
-        const cachedHashes = localStorage.getItem('cachedHashes');
-        return cachedHashes ? JSON.parse(cachedHashes) : [];
+    // Store cached UUIDs locally
+    const cachedUuids = JSON.parse(localStorage.getItem("cachedUuids")) || [];
+
+    // Function to update cached UUIDs
+    function updateCachedUuids(newData) {
+        newData.questions.forEach(q => {
+            if (!cachedUuids.includes(q.uuid)) {
+                cachedUuids.push(q.uuid);
+                displayQuestion(q);
+            }
+        });
+
+        newData.papers.forEach(p => {
+            if (!cachedUuids.includes(p.uuid)) {
+                cachedUuids.push(p.uuid);
+                displayPaper(p);
+            }
+        });
+
+        // Update cached UUIDs in localStorage
+        localStorage.setItem("cachedUuids", JSON.stringify(cachedUuids));
     }
 
-    // Helper: Update cached hashes in localStorage
-    function updateCachedHashes(newHashes) {
-        const currentHashes = getCachedHashes();
-        const updatedHashes = [...new Set([...currentHashes, ...newHashes])]; // Deduplicate
-        localStorage.setItem('cachedHashes', JSON.stringify(updatedHashes));
+    // Display functions
+    function displayQuestion(question) {
+        const questionElement = document.createElement('div');
+        questionElement.innerHTML = `
+            <h2>Question ${question.uuid}</h2>
+            <img src="data:image/png;base64,${question.questionFile}" alt="Question Image">
+            <img src="data:image/png;base64,${question.solutionFile}" alt="Solution Image">
+        `;
+        document.getElementById('questions').appendChild(questionElement);
     }
 
-    // On DOMContentLoaded, send cached hashes to server to load only necessary data
-    document.addEventListener('DOMContentLoaded', () => {
-        const cachedHashes = getCachedHashes();
+    function displayPaper(paper) {
+        const paperElement = document.createElement('div');
+        paperElement.innerHTML = `
+            <h2>Paper ${paper.uuid}</h2>
+            <img src="data:image/png;base64,${paper.questionFile}" alt="Question Image">
+            <img src="data:image/png;base64,${paper.solutionFile}" alt="Solution Image">
+        `;
+        document.getElementById('papers').appendChild(paperElement);
+    }
 
-        fetch('/load_data', {
+    // Fetch new data from server
+    function fetchNewData() {
+        $.ajax({
+            url: '/fetchNewData',
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ hashes: cachedHashes })
-        })
-        .then(response => response.json())
-        .then(data => {
-            const newHashes = [];
+            contentType: 'application/json',
+            data: JSON.stringify({ cachedUuids: cachedUuids }),
+            success: (data) => {
+                updateCachedUuids(data);
+            }
+        });
+    }
 
-            // Render question images
-            data.questions.forEach(question => {
-                const element = document.querySelector(`.question-image[data-uuid="${question.uuid}"]`);
-                if (element) {
-                    renderImageFromElement(element, question.fileData);
-                    newHashes.push(question.hash);
-                }
-            });
-
-            // Render paper PDFs
-            data.papers.forEach(paper => {
-                const element = document.querySelector(`.paper-pdf[data-uuid="${paper.uuid}"]`);
-                if (element) {
-                    renderPDFElement(element, paper.fileData);
-                    newHashes.push(paper.hash);
-                }
-            });
-
-            // Update cached hashes in localStorage
-            updateCachedHashes(newHashes);
-        })
-        .catch(error => console.error('Error loading data:', error));
-    });
-
+    // Initial fetch
+    fetchNewData();
 </script>
 
 </body>
