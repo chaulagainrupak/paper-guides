@@ -355,7 +355,7 @@ def admin_dashboard():
     questions = get_unapproved_questions()
     papers = get_unapproved_papers()
 
-    return render_template('admin.html', questions=questions, papers=papers)c
+    return render_template('admin.html', questions=questions, papers=papers)
 
 
 
