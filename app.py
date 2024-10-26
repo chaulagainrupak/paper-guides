@@ -1,13 +1,12 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash   
 from models import db, User
 from datetime import datetime
 import base64
-import jsonify
 
 # We are importing all the required functions from the following files inorder to make a huge app file?
 
@@ -345,17 +344,155 @@ def rate(question_UUID, rating):
 
 
 
+# Update /admin route to send only UUIDs and hashes
 
 @app.route('/admin')
 @login_required
 def admin_dashboard():
-
     if current_user.role != 'admin':
-        return redirect (url_for('index'))
-    questions = get_unapproved_questions()
-    papers = get_unapproved_papers()
-    return render_template('admin.html', questions = questions, papers = papers)
+        logger.warning(f'Unauthorized access attempt by user: {current_user.username}')
+        return redirect(url_for('index'))
 
+    try:
+        questions = get_unapproved_questions()
+        papers = get_unapproved_papers()
+
+        data = {
+            "questions": [],
+            "papers": []
+        }
+
+        for question in questions:
+            data["questions"].append({
+                "id": question["id"],
+                "uuid": question["uuid"],
+                "questionFileHash": getHash(question["questionFile"]),
+                "solutionFileHash": getHash(question["solutionFile"]),
+                "questionBlob": "none",
+                "solutionBlob": "none",
+            })
+
+        for paper in papers:
+            data["papers"].append({
+                "id": paper["id"],
+                "uuid": paper["uuid"],
+                "questionFileHash": getHash(paper["questionFile"]),
+                "solutionFileHash": getHash(paper["solutionFile"]),
+                "questionBlob": "none",
+                "solutionBlob": "none",
+            })
+
+        logger.info('Data sent to the admin page successfully')
+        return render_template('admin.html', data=data)
+
+    except Exception as e:
+        logger.error(f'Error retrieving unapproved questions or papers: {e}')
+        return render_template('admin.html', data={"error": "An error occurred while retrieving data."})
+
+
+@app.route('/getNewData', methods=["POST"])
+@login_required
+def getNewData():
+    if current_user.role != 'admin':
+        logger.warning(f'Unauthorized access attempt by user: {current_user.username}')
+        return redirect(url_for('index'))
+
+    try:
+        received_data = request.get_json()
+        logger.info(f'Server received the following data: {received_data}')
+        
+        if received_data.get('message') == 'all':
+            questions = get_unapproved_questions()
+            papers = get_unapproved_papers()
+
+            data = {
+                "questions": [],
+                "papers": []
+            }
+
+            for question in questions:
+                data["questions"].append({
+                    "id": question["id"],
+                    "uuid": question["uuid"],
+                    "subject": question["subject"],
+                    "topic": question["topic"],
+                    "difficulty": question["difficulty"],
+                    "board": question["board"],
+                    "level": question["level"],
+                    "component": question["component"],
+                    "questionFileHash": getHash(question["questionFile"]),
+                    "solutionFileHash": getHash(question["solutionFile"]),
+                    "questionBlob": question["questionFile"],
+                    "solutionBlob": question["solutionFile"],
+                })
+
+            for paper in papers:
+                data["papers"].append({
+                    "id": paper["id"],
+                    "uuid": paper["uuid"],
+                    "subject": paper["subject"],
+                    "year": paper["year"],
+                    "board": paper["board"],
+                    "level": paper["level"],
+                    "component": paper["component"],
+                    "questionFileHash": getHash(paper["questionFile"]),
+                    "solutionFileHash": getHash(paper["solutionFile"]),
+                    "questionBlob": paper["questionFile"],
+                    "solutionBlob": paper["solutionFile"],
+                })
+
+            return jsonify(data)
+
+        else:
+            questions = get_unapproved_questions()
+            papers = get_unapproved_papers()
+
+            data = {
+                "questions": [],
+                "papers": []
+            }
+
+            for hash_value in received_data["hashes"]:
+                for question in questions:
+                    if hash_value == getHash(question["questionFile"]):
+                        data["questions"].append({
+                            "id": question["id"],
+                            "uuid": question["uuid"],
+                            "subject": question["subject"],
+                            "topic": question["topic"],
+                            "difficulty": question["difficulty"],
+                            "board": question["board"],
+                            "level": question["level"],
+                            "component": question["component"],
+                            "questionFileHash": getHash(question["questionFile"]),
+                            "solutionFileHash": getHash(question["solutionFile"]),
+                            "questionBlob": question["questionFile"],
+                            "solutionBlob": question["solutionFile"],
+                        })
+                        break
+                for paper in papers:
+                    if hash_value == getHash(paper["questionFile"]):
+                        data["papers"].append({
+                            "id": paper["id"],
+                            "uuid": paper["uuid"],
+                            "subject": paper["subject"],
+                            "year": paper["year"],
+                            "board": paper["board"],
+                            "level": paper["level"],
+                            "component": paper["component"],
+                            "questionFileHash": getHash(paper["questionFile"]),
+                            "solutionFileHash": getHash(paper["solutionFile"]),
+                            "questionBlob": paper["questionFile"],
+                            "solutionBlob": paper["solutionFile"],
+                        })
+                        break
+
+            return jsonify(data)
+
+    except Exception as e:
+        logger.error(f'Error processing getNewData: {e}')
+        return jsonify({"error": "An error occurred while processing the request."}), 
+    
 @app.route('/approve_question/<uuid>' , methods=["POST"])
 @login_required
 def approve(uuid):

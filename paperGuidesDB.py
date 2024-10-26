@@ -8,7 +8,7 @@ import random
 import requests
 from datetime import datetime
 from dotenv import load_dotenv
-
+import hashlib
 
 load_dotenv()
 from logHandler import getCustomLogger
@@ -727,6 +727,23 @@ def get_item_data(connection: sqlite3.Connection, item_type: str, uuid: str) -> 
         }
 
 
+def get_questions_not_in_cache(cachedUuids):
+    # Filter out questions where UUID is in cachedUuids
+    return [q for q in get_unapproved_questions() if q["uuid"] not in cachedUuids]
+
+def get_papers_not_in_cache(cachedUuids):
+    # Filter out papers where UUID is in cachedUuids
+    return [p for p in get_unapproved_papers() if p["uuid"] not in cachedUuids]
+
+
+
+def getHash(encodedData):
+    # Decode base64 to get compressed binary data
+    compressedData = base64.b64decode(encodedData)
+    # Decompress to get the original file data
+    originalData = zlib.decompress(compressedData)
+    # Return the SHA-256 hash
+    return hashlib.sha256(originalData).hexdigest()
 
 def convertRatingToString(rating):
     # Convert integer rating to string representation ('one', 'two', etc.)
