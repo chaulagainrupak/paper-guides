@@ -33,7 +33,7 @@ def createDatabase():
         board TEXT,
         level INTEGER,
         questionFile BLOB,
-        solutionFile BLOB , 
+        solutionFile BLOB ,
         approved DEFAULT False)''')
 
 
@@ -48,7 +48,7 @@ def createDatabase():
         level INTEGER,
         component TEXT,
         questionFile BLOB,
-        solutionFile BLOB, 
+        solutionFile BLOB,
         approved DEFAULT False,
         one INTEGER DEFAULT 0,
         two INTEGER DEFAULT 0,
@@ -56,7 +56,7 @@ def createDatabase():
         four INTEGER DEFAULT 0,
         five INTEGER DEFAULT 0)''')
 
-        # Create the topicals table 
+        # Create the topicals table
 
         db.execute(''' CREATE TABLE IF NOT EXISTS topicals
         (id INTEGER PRIMARY KEY,
@@ -76,7 +76,7 @@ def createDatabase():
                 rating INTEGER
             )
         ''')
-        
+
         connection.commit()
 
 
@@ -92,10 +92,10 @@ def insertQuestion(board, subject, topic, difficulty, level, component, question
         connection = sqlite3.connect(dbPath)
 
         db = connection.cursor()
-        
-        # Compress the questionFile and solutionFile (assuming they are in bytes)
-        compressedQuestionFile = zlib.compress(questionFile)  # Assuming questionFile is binary data
-        compressedSolutionFile = zlib.compress(solutionFile)  # Assuming solutionFile is binary data
+
+        # Compress the questionFile and solutionFile
+        compressedQuestionFile = zlib.compress(questionFile, level=9)
+        compressedSolutionFile = zlib.compress(solutionFile, level=9)
 
         # Encode the compressed data in base64
         encodedQuestionFile = base64.b64encode(compressedQuestionFile).decode('utf-8')
@@ -111,13 +111,13 @@ def insertQuestion(board, subject, topic, difficulty, level, component, question
         return True
     except sqlite3.Error as e:
         logger.error(f"Error inserting question into database: {e}")
-        return False    
+        return False
 
-def insertPaper(board: str, subject: str, year: str, level: str, 
+def insertPaper(board: str, subject: str, year: str, level: str,
                 component: str, questionFile: bytes, solutionFile: bytes) -> bool:
     """
     Insert a paper into the database with proper compression and encoding.
-    
+
     Args:
         board: Exam board
         subject: Subject name
@@ -126,7 +126,7 @@ def insertPaper(board: str, subject: str, year: str, level: str,
         component: Paper component
         questionFile: Raw bytes of the question paper PDF
         solutionFile: Raw bytes of the solution paper PDF
-    
+
     Returns:
         bool: True if insertion was successful, False otherwise
     """
@@ -135,18 +135,18 @@ def insertPaper(board: str, subject: str, year: str, level: str,
         connection = sqlite3.connect(dbPath)
 
         # Compress the files
-        questionFile_compressed = zlib.compress(questionFile)
-        solutionFile_compressed = zlib.compress(solutionFile)
+        questionFile_compressed = zlib.compress(questionFile, level=9)
+        solutionFile_compressed = zlib.compress(solutionFile, level=9)
 
         # Convert compressed binary to base64 for storage
         questionFile_b64 = base64.b64encode(questionFile_compressed).decode('utf-8')
         solutionFile_b64 = base64.b64encode(solutionFile_compressed).decode('utf-8')
-        
+
         db = connection.cursor()
         db.execute('''INSERT INTO papers
             (uuid, subject, year, board, level, component, questionFile, solutionFile)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-            (uuidStr, subject, year, board, level, component, 
+            (uuidStr, subject, year, board, level, component,
              questionFile_b64, solutionFile_b64))
         connection.commit()
         connection.close()
@@ -167,9 +167,9 @@ def insertTopical(board, subject, questionFile, solutionFile):
 
 
         db = connection.cursor()
-        db.execute('''INSERT INTO topicals 
-            (uuid, subject, board, questionFile, solutionFile) 
-            VALUES (?, ?, ?, ?, ?)''', 
+        db.execute('''INSERT INTO topicals
+            (uuid, subject, board, questionFile, solutionFile)
+            VALUES (?, ?, ?, ?, ?)''',
             (uuidStr, subject, board, questionFile, solutionFile))
         connection.commit()
         connection.close()
@@ -184,13 +184,13 @@ def getYears(level , subjectName):
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-        
+
         # Execute the query and fetch all results
         rows = db.execute('SELECT year FROM papers WHERE level = ? AND subject = ? AND approved = 1', (level, subjectName)).fetchall()
-        
+
         # Extract the years from the query result
         years = list(set([row[0] for row in rows]))
-        
+
 
         if years == []:
             logger.warning(f"No years found for level {level} and subject {subjectName}")
@@ -207,12 +207,12 @@ def getYears(level , subjectName):
 
 
 def getQuestions(level, subject_name, year):
-    
+
     try:
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-                
+
         rows = db.execute('SELECT component FROM papers WHERE level = ? AND subject = ? AND year = ? AND approved = 1', (level,subject_name,year)).fetchall()
 
         components = [row[0] for row in rows]
@@ -237,14 +237,14 @@ def renderQuestion(level, subject_name, year, component):
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-        
+
         # Execute the query
-        rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ? AND approved = 1', 
+        rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ? AND approved = 1',
                           (level, subject_name, year, component)).fetchall()
-        
-        id = db.execute('SELECT uuid FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ? AND approved = 1', 
+
+        id = db.execute('SELECT uuid FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ? AND approved = 1',
                     (level, subject_name, year, component)).fetchall()
-        
+
         # Extract the compressed data from the query result
         compressedData = [row[0] for row in rows]
 
@@ -252,16 +252,12 @@ def renderQuestion(level, subject_name, year, component):
         if not compressedData:
             logger.warning(f"No data found for level {level}, subject {subject_name}, year {year}, component {component}")
             return None
-        
+
         logger.info(f"Question rendered successfully for level {level}, subject {subject_name}, year {year}, component {component}")
         return compressedData
 
     except sqlite3.Error as e:
         logger.error(f"An error occurred while rendering question: {e}")
-        return None
-    
-    except zlib.error as e:
-        logger.error(f"Decompression error: {e}")
         return None
 
     finally:
@@ -297,7 +293,7 @@ def giveRating(user_id, question_UUID, rating):
 
         # Commit the changes to the database
         connection.commit()
-        logger.info(f"Rating {rating} given by user {user_id} for question {question_UUID}")    
+        logger.info(f"Rating {rating} given by user {user_id} for question {question_UUID}")
         return True
 
     except sqlite3.Error as e:
@@ -312,18 +308,18 @@ def getComponents(year, subjectName):
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-        
+
         # Convert year to string if necessary
         year = str(year)
-        
+
         # Execute the query and fetch all results
         rows = db.execute('SELECT component FROM papers WHERE subject = ? AND year = ?', (subjectName, year)).fetchall()
-        
-        
+
+
         # Extract the components from the query result
         components = [row[0] for row in rows]
-        
-        
+
+
         logger.info(f"Components retrieved successfully for subject {subjectName} and year {year}")
         return components
     except sqlite3.Error as e:
@@ -356,10 +352,10 @@ def getQuestionsForGen(subject, level, topics, components, difficulties):
 
         # Create the query string with the appropriate conditions
         query = f'''
-            SELECT * FROM questions 
-            WHERE subject = ? AND level = ? 
-            AND topic IN ({topics_placeholder}) 
-            AND difficulty IN ({difficulties_placeholder}) 
+            SELECT * FROM questions
+            WHERE subject = ? AND level = ?
+            AND topic IN ({topics_placeholder})
+            AND difficulty IN ({difficulties_placeholder})
             {components_condition}
             AND approved = 1
         '''
@@ -383,12 +379,12 @@ def getQuestionsForGen(subject, level, topics, components, difficulties):
         raise Exception(f"An internal server error occurred: {e}")  # Raise exception to be handled by the route
     finally:
         connection.close()
-    
+
 
 def dbDump():
     output_json_file = './instance/db-dump.json'
     output_text_file = './instance/db-dump.txt'
-    
+
     try:
         # Connect to the database
         connection = sqlite3.connect(dbPath)
@@ -448,14 +444,14 @@ def get_unapproved_questions():
         connection = sqlite3.connect(dbPath)
         connection.row_factory = dict_factory
         db = connection.cursor()
-        
+
         questions = db.execute('''
-            SELECT id, uuid, subject, topic, difficulty, board, level, component, 
+            SELECT id, uuid, subject, topic, difficulty, board, level, component,
                    questionFile, solutionFile
-            FROM questions 
+            FROM questions
             WHERE approved = False
         ''').fetchall()
-        
+
         return questions
     except sqlite3.Error as e:
         logger.error(f"Error fetching unapproved questions: {e}")
@@ -470,14 +466,14 @@ def get_unapproved_papers():
         connection = sqlite3.connect(dbPath)
         connection.row_factory = dict_factory
         db = connection.cursor()
-        
+
         papers = db.execute('''
-            SELECT id, uuid, subject, year, component, board, level, 
+            SELECT id, uuid, subject, year, component, board, level,
                    questionFile, solutionFile
-            FROM papers 
+            FROM papers
             WHERE approved = False
         ''').fetchall()
-        
+
         return papers
     except sqlite3.Error as e:
         logger.error(f"Error fetching unapproved papers: {e}")
@@ -495,24 +491,24 @@ def approve_question(uuid: str) -> bool:
             extra={'http_request': True}
         )
         connection = sqlite3.connect(dbPath)
-        
+
         # Get question data before updating
         question_data = get_item_data(connection, "question", uuid)
         if not question_data:
             logger.error(f"Question {uuid} not found", extra={'http_request': True})
             return False
-            
+
         # Update approval status
         cursor = connection.cursor()
         cursor.execute('UPDATE questions SET approved = 1 WHERE uuid = ?', (uuid,))
         connection.commit()
-        
+
         # Send webhook notification
         send_to_discord("question", question_data)
-        
+
         return True
     except sqlite3.Error as e:
-        logger.error(f"Error approving question {uuid}: {e}", 
+        logger.error(f"Error approving question {uuid}: {e}",
                     extra={'http_request': True})
         return False
     finally:
@@ -528,24 +524,24 @@ def approve_paper(uuid: str) -> bool:
             extra={'http_request': True}
         )
         connection = sqlite3.connect(dbPath)
-        
+
         # Get paper data before updating
         paper_data = get_item_data(connection, "paper", uuid)
         if not paper_data:
             logger.error(f"Paper {uuid} not found", extra={'http_request': True})
             return False
-            
+
         # Update approval status
         cursor = connection.cursor()
         cursor.execute('UPDATE papers SET approved = True WHERE uuid = ?', (uuid,))
         connection.commit()
-        
+
         # Send webhook notification
         send_to_discord("paper", paper_data)
-        
+
         return True
     except sqlite3.Error as e:
-        logger.error(f"Error approving paper {uuid}: {e}", 
+        logger.error(f"Error approving paper {uuid}: {e}",
                     extra={'http_request': True})
         return False
     finally:
@@ -557,7 +553,7 @@ def delete_question(uuid: str) -> bool:
     try:
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-        
+
         db.execute('DELETE FROM questions WHERE uuid = ?', (uuid,))
         connection.commit()
         return True
@@ -573,7 +569,7 @@ def delete_paper(uuid: str) -> bool:
     try:
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-        
+
         db.execute('DELETE FROM papers WHERE uuid = ?', (uuid,))
         connection.commit()
         return True
@@ -590,11 +586,11 @@ def get_question(uuid: str):
         connection = sqlite3.connect(dbPath)
         connection.row_factory = dict_factory
         db = connection.cursor()
-        
+
         question = db.execute('''
             SELECT * FROM questions WHERE uuid = ?
         ''', (uuid,)).fetchone()
-        
+
         return question
     except sqlite3.Error as e:
         logger.error(f"Error fetching question {uuid}: {e}")
@@ -608,10 +604,10 @@ def update_question(uuid: str, data) -> bool:
     try:
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-        
+
         db.execute('''
-            UPDATE questions 
-            SET subject = ?, topic = ?, difficulty = ?, board = ?, 
+            UPDATE questions
+            SET subject = ?, topic = ?, difficulty = ?, board = ?,
                 level = ?, component = ?
             WHERE uuid = ?
         ''', (
@@ -635,7 +631,7 @@ def update_question(uuid: str, data) -> bool:
 
 
 
-# Discord web hook so the users are notified when a question is approved 
+# Discord web hook so the users are notified when a question is approved
 
 def send_to_discord(item_type: str, data: dict) -> bool:
     """Send approval notification to Discord"""
@@ -643,7 +639,7 @@ def send_to_discord(item_type: str, data: dict) -> bool:
     if not webhook_url:
         logger.error("Discord webhook URL not found", extra={'http_request': True})
         return False
-        
+
     if item_type == "question":
         embed = {
             "title": "✅ New Question Approved!",
@@ -675,36 +671,36 @@ def send_to_discord(item_type: str, data: dict) -> bool:
     try:
         response = requests.post(webhook_url, json={"embeds": [embed]})
         response.raise_for_status()
-        logger.info(f"Discord webhook sent successfully for {item_type} {data.get('uuid')}", 
+        logger.info(f"Discord webhook sent successfully for {item_type} {data.get('uuid')}",
                    extra={'http_request': True})
         return True
     except requests.exceptions.RequestException as e:
-        logger.error(f"Failed to send Discord webhook: {str(e)}", 
+        logger.error(f"Failed to send Discord webhook: {str(e)}",
                     extra={'http_request': True})
         return False
-    
 
-    
+
+
 def get_item_data(connection: sqlite3.Connection, item_type: str, uuid: str) -> dict:
     """Get question or paper data before approval"""
     cursor = connection.cursor()
     if item_type == "question":
         cursor.execute('''
-            SELECT uuid, subject, topic, difficulty, board, level, component 
-            FROM questions 
+            SELECT uuid, subject, topic, difficulty, board, level, component
+            FROM questions
             WHERE uuid = ?
         ''', (uuid,))
     else:  # paper
         cursor.execute('''
-            SELECT uuid, subject, year, board, level, component 
-            FROM papers 
+            SELECT uuid, subject, year, board, level, component
+            FROM papers
             WHERE uuid = ?
         ''', (uuid,))
-    
+
     row = cursor.fetchone()
     if not row:
         return {}
-    
+
     # Convert row to dictionary based on item type
     if item_type == "question":
         return {
@@ -726,14 +722,6 @@ def get_item_data(connection: sqlite3.Connection, item_type: str, uuid: str) -> 
             'component': row[5]
         }
 
-
-def get_questions_not_in_cache(cachedUuids):
-    # Filter out questions where UUID is in cachedUuids
-    return [q for q in get_unapproved_questions() if q["uuid"] not in cachedUuids]
-
-def get_papers_not_in_cache(cachedUuids):
-    # Filter out papers where UUID is in cachedUuids
-    return [p for p in get_unapproved_papers() if p["uuid"] not in cachedUuids]
 
 
 
