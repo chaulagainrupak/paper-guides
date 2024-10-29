@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash   
+from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
 from datetime import datetime
 import base64
@@ -63,13 +63,13 @@ def index():
 
 
 """
-These routes handle the question papers list and link all the questions in a neat way 
+These routes handle the question papers list and link all the questions in a neat way
 
-allows papole that run wget / curl to spider the site easily and get the data 
+allows papole that run wget / curl to spider the site easily and get the data
 
-Maybe in the future there will be a API endpoint to get the data or maybe even database dump torrent? 
+Maybe in the future there will be a API endpoint to get the data or maybe even database dump torrent?
 
-This part may not require rewrites 
+This part may not require rewrites
 """
 
 @app.route('/levels')
@@ -118,7 +118,7 @@ def about():
 
 
 
-# This is the route to the question genreation page where the user selects their desired questions 
+# This is the route to the question genreation page where the user selects their desired questions
 
 @app.route('/question-generator')
 def questionGenerator():
@@ -126,7 +126,7 @@ def questionGenerator():
     config = loadConfig(configPath)
     return render_template('question-generator.html', config = config)
 
-# This route displays the questions the uppper route genetated a diffrent page and route 
+# This route displays the questions the uppper route genetated a diffrent page and route
 
 @app.route('/question-gen', methods=['POST', 'GET'])
 def questionGen():
@@ -251,7 +251,7 @@ def submitPaper():
 """
 This functionality for the user login and authentication will be implemented later so this part of the code has been commented.
 
-This allows for more functionalities for uploading user submitted data and allowing users to post ratings for the questions. 
+This allows for more functionalities for uploading user submitted data and allowing users to post ratings for the questions.
 
 """
 
@@ -306,7 +306,7 @@ def signup():
         else:
             # Hash the password before storing it
             hashed_password = generate_password_hash(password)
-            
+
             # Create new user with hashed password
             new_user = User(username=username, password=hashed_password, email=email)
             db.session.add(new_user)
@@ -318,7 +318,7 @@ def signup():
     return render_template('signup.html')
 
 
-# Will profiles even be a thing ? Public IDK but chaning the email password will be implemented 
+# Will profiles even be a thing ? Public IDK but chaning the email password will be implemented
 
 # @app.route('/profile')
 # @login_required
@@ -334,7 +334,7 @@ def rate(question_UUID, rating):
         if giveRating(user, question_UUID, rating):
             logger.info(f'User {user} rated question {question_UUID} with {rating}', extra={'http_request': True})
             return True
-        else: 
+        else:
             logger.warning(f'Failed to rate question {question_UUID}', extra={'http_request': True})
             return False
     except Exception as e:
@@ -400,7 +400,7 @@ def getNewData():
     try:
         received_data = request.get_json()
         logger.info(f'Server received the following data: {received_data}')
-        
+
         if received_data.get('message') == 'all':
             questions = get_unapproved_questions()
             papers = get_unapproved_papers()
@@ -491,19 +491,19 @@ def getNewData():
 
     except Exception as e:
         logger.error(f'Error processing getNewData: {e}')
-        return jsonify({"error": "An error occurred while processing the request."}), 
-    
+        return jsonify({"error": "An error occurred while processing the request."}),
+
 @app.route('/approve_question/<uuid>' , methods=["POST"])
 @login_required
 def approve(uuid):
     if current_user.role != 'admin':
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
-        
+
     if approve_question(uuid):
-        flash('Question approved successfully!')
+        return jsonify({"succss": "Your request was processed successfully"})
     else:
-        flash('Error approving question', 'error')
+        return jsonify({"erroe": "Your request was not processed successfully"})
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/approve_paper/<uuid>', methods=["POST"])
@@ -512,11 +512,11 @@ def approvePaper(uuid):
     if current_user.role != 'admin':
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
-        
+
     if approve_paper(uuid):
-        flash('Paper approved successfully!')
+        return jsonify({"succss": "Your request was processed successfully"})
     else:
-        flash('Error approving paper', 'error')
+        return jsonify({"erroe": "Your request was not processed successfully"})
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/delete_question/<uuid>', methods=["POST"])
@@ -525,7 +525,7 @@ def deleteQuestion(uuid):
     if current_user.role != 'admin':
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
-        
+
     if delete_question(uuid):
         flash('Question deleted successfully!')
     else:
@@ -538,7 +538,7 @@ def deletePaper(uuid):
     if current_user.role != 'admin':
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
-        
+
     if delete_paper(uuid):
         flash('Paper deleted successfully!')
     else:
@@ -551,7 +551,7 @@ def editQuestion    (uuid):
     if current_user.role != 'admin':
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
-        
+
     if request.method == 'POST':
         data = {
             'subject': request.form['subject'],
@@ -561,18 +561,18 @@ def editQuestion    (uuid):
             'level': request.form['level'],
             'component': request.form['component']
         }
-        
+
         if update_question(uuid, data):
             flash('Question updated successfully!')
             return redirect(url_for('admin_dashboard'))
         else:
             flash('Error updating question', 'error')
-    
+
     question = get_question(uuid)
     if not question:
         flash('Question not found', 'error')
         return redirect(url_for('admin_dashboard'))
-        
+
     return render_template('admin.html', question=question)
 
 
