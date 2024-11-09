@@ -1,101 +1,118 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}base{% endblock %}</title>
-    <meta name="description" content="Discover free, high-quality study materials and past papers for the NEB (Nepal Education Board) on Paper-Guides. Join our community-driven platform to access comprehensive guides, summaries, and practice questions. Visit us now!">
-    <meta name="keywords" content="NEB, Nepal Education Board, study materials, past papers, model questions, question generator, free education resources, student guides, academic support">
-    <meta name="author" content="Paper-Guides">
-    <meta name="robots" content="index, follow">
-    <link rel="icon" type="image/png" href="/static/images/logo.svg" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}base{% endblock %}</title>
+        <meta
+            name="description"
+            content="Discover free, high-quality study materials and past papers for the NEB (Nepal Education Board) on Paper-Guides. Join our community-driven platform to access comprehensive guides, summaries, and practice questions. Visit us now!"
+        />
+        <meta
+            name="keywords"
+            content="NEB, Nepal Education Board, study materials, past papers, model questions, question generator, free education resources, student guides, academic support"
+        />
+        <meta name="author" content="Paper-Guides" />
+        <meta name="robots" content="index, follow" />
+        <link rel="icon" type="image/png" href="/static/images/logo.svg" />
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='styles.css') }}"
+        />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
+
+        <!-- Google tag (gtag.js) -->
+        <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=G-SZDFC8YDWK"
+        ></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+
+            gtag("config", "G-SZDFC8YDWK");
+        </script>
+    </head>
+
+    <style>
+        :root {
+            --rich-black: #0d1b2aff;
+            --plum: #92498fff;
+            --baby-powder: #fffffaff;
+            --picton-blue: #3eafe4ff;
+            --tickle-me-pink: #f08caeff;
+            --font-white: #ffffff;
+            --font-dark: #000000;
+            --nav-background: #fafcff;
+            --background: #e3f2fd;
+            --pink-highlight: #f25c6a;
+            --blue-highlight: #5d71e0;
+            --green-highlight: #3cb371;
+        }
+    </style>
+    <body>
+        <div class="navbar">
+            <a href="{{ url_for('index')}}"
+                >Paper-<span class="blue-highlight">Guides</span></a
+            >
+            <div class="navlinks">
+                <a href="{{ url_for('getLevels') }}">Past Papers</a>
+                <a href="{{ url_for('modelQuestions') }}">Model Questions</a>
+                <a href="{{ url_for('questionGenerator') }}"
+                    >Question Generator</a
+                >
+                <a href="{{ url_for('submit') }}">Submit</a>
+            </div>
+            <div class="navright">
+                <a href="{{ url_for('about') }}"
+                    ><span class="pink-highlight">About</span></a
+                >
+
+                {%if not current_user.is_authenticated%}
+                <a href="{{url_for('login')}}">Login</a>
+                {%else%}
+                <a href="{{url_for('logout')}}">Log-Out</a>
+                {%endif%}
+            </div>
+            <div class="hamburger">
+                <input type="checkbox" id="hamburger" />
+                <label for="hamburger">&#9776;</label>
+                <div class="hamitems">
+                    <a href="{{ url_for('getLevels') }}">Past Papers</a>
+                    <a href="{{ url_for('modelQuestions') }}"
+                        >Model Questions</a
+                    >
+                    <a href="{{ url_for('questionGenerator') }}"
+                        >Question Generator</a
+                    >
+                    <a href="{{ url_for('submit') }}">Submit</a>
+
+                    <a href="{{ url_for('about') }}"
+                        ><span class="pink-highlight">About</span></a
+                    >
+                    <a href="{{url_for('login')}}">Login</a>
+                </div>
+            </div>
+        </div>
+
+        {% block body %} {% block content %}
+        <div class="content-wrapper">
+            <div class="section">{% block section %} {% endblock %}</div>
+
+            {% block prompt %} {% endblock %} {% if
+            request.path.startswith('/level') or
+            request.path.startswith('/subjects') %}
+            <div class="promo-space">"Advertisement Space"</div>
+            {% endif %}
+        </div>
+
+        {% endblock %} {% endblock %}
+    </body>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
 
-      <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SZDFC8YDWK"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-SZDFC8YDWK');
-  </script>
-</head>
-
-<style>
-      :root {
-      --rich-black: #0d1b2aff;
-      --plum: #92498fff;
-      --baby-powder: #fffffaff;
-      --picton-blue: #3eafe4ff;
-      --tickle-me-pink: #f08caeff;
-      --font-white: #ffffff;
-      --font-dark: #000000;
-      --nav-background: #fafcff;
-      --background: #e3f2fd;
-      --pink-highlight: #F25C6A;
-      --blue-highlight: #5d71e0;
-      --green-highlight: #3CB371;
-    }
-
-</style>
-<body>
-    <div class="navbar">
-        <a href="{{ url_for('index')}}">Paper-<span class="blue-highlight">Guides</span></a>
-        <div class="navlinks">
-          <a href="{{ url_for('getLevels') }}">Past Papers</a>
-          <a href="{{ url_for('modelQuestions') }}">Model Questions</a>
-          <a href="{{ url_for('questionGenerator') }}">Question Generator</a>
-          <a href="{{ url_for('submit') }}">Submit</a>
-
-        </div>
-        <div class="navright">
-          <a href="{{ url_for('about') }}"><span class="pink-highlight">About</span></a>
-
-          {%if not current_user.is_authenticated%}
-            <a href="{{url_for('login')}}">Login</a>
-          {%else%}
-            <a href="{{url_for('logout')}}">Log-Out</a>
-          {%endif%}
-        </div>
-        <div class="hamburger">
-          <input type="checkbox" id="hamburger"/>
-          <label for="hamburger">&#9776;</label>
-          <div class="hamitems">
-            <a href="{{ url_for('getLevels') }}">Past Papers</a>
-            <a href="{{ url_for('modelQuestions') }}">Model Questions</a>
-            <a href="{{ url_for('questionGenerator') }}">Question Generator</a>
-            <a href="{{ url_for('submit') }}">Submit</a>
-
-            <a href="{{ url_for('about') }}"><span class="pink-highlight">About</span></a>
-            <a href="{{url_for('login')}}">Login</a>
-          </div>
-        </div>
-      </div>
-
-    {% block body %}
-
-    {% block content %}
-    <div class="content-wrapper">
-        <div class="section">
-            {% block section %}
-            {% endblock %}
-        </div>
-
-        {% block prompt %}
-        {% endblock %}
-
-        {% if request.path.startswith('/level') or request.path.startswith('/subjects') %}
-        <div class="promo-space">
-            "Advertisement Space"
-        </div>
-        {% endif %}
-    </div>
-
-    
-    {% endblock %}
-
-    {% endblock %}
-</body>
-
+    <script src="{{ url_for('static', filename='image-renderer.js') }}"></script>
+    <script src="{{ url_for('static', filename='pdf-image-renderer.js') }}"></script>
 </html>
