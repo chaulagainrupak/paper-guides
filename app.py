@@ -58,7 +58,7 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    logger.info('Home page accessed', extra={'http_request': True})
+    logger.info('Home page accessed' + ' IP: ' + str(getClientIp()))
     return render_template('index.html')
 
 
@@ -74,34 +74,34 @@ This part may not require rewrites
 
 @app.route('/levels')
 def getLevels():
-    logger.info('Levels page accessed', extra={'http_request': True})
+    logger.info('Levels page accessed' + ' IP: ' + str(getClientIp()))
     config = loadConfig(configPath)
     return render_template('levels.html',config=config )
 
 @app.route('/subjects/<int:level>')
 def getLevelSubjects(level):
-    logger.info(f'Subjects page accessed for level {level}', extra={'http_request': True})
+    logger.info(f'Subjects page accessed for level {level}' + ' IP: ' + str(getClientIp()))
     config = loadConfig(configPath)
     return render_template('subject.html', config = config, level = level)
 
 
 @app.route('/subjects/<int:level>/<subject_name>')
 def getSubjectYears(level, subject_name):
-    logger.info(f'Years page accessed for level {level}, subject {subject_name}', extra={'http_request': True})
+    logger.info(f'Years page accessed for level {level}, subject {subject_name}' + ' IP: ' + str(getClientIp()))
     years = getYears(level,subject_name)
     return render_template('years.html', subject_name = subject_name, level = level, years = years)
 
 
 @app.route('/subjects/<int:level>/<subject_name>/<int:year>')
 def getSubjectQuestions(level ,subject_name, year):
-    logger.info(f'Questions page accessed for level {level}, subject {subject_name}, year {year}', extra={'http_request': True})
+    logger.info(f'Questions page accessed for level {level}, subject {subject_name}, year {year}' + ' IP: ' + str(getClientIp()))
     question_name = getQuestions(level, subject_name, year)
     return render_template('questions.html', questions_name = question_name, year = year)
 
 
 @app.route('/subjects/<int:level>/<subject_name>/<int:year>/<file_data>')
 def renderSubjectQuestion(level ,subject_name, year, file_data):
-    logger.info(f'Question rendered for level {level}, subject {subject_name}, year {year}, file {file_data}', extra={'http_request': True})
+    logger.info(f'Question rendered for level {level}, subject {subject_name}, year {year}, file {file_data}' + ' IP: ' + str(getClientIp()))
     component  = file_data.split(', ')
 
     component = component[1]
@@ -113,7 +113,7 @@ def renderSubjectQuestion(level ,subject_name, year, file_data):
 
 @app.route('/about')
 def about():
-    logger.info('About page accessed', extra={'http_request': True})
+    logger.info('About page accessed' + ' IP: ' + str(getClientIp()))
     return render_template('about.html')
 
 
@@ -122,7 +122,7 @@ def about():
 
 @app.route('/question-generator')
 def questionGenerator():
-    logger.info('Question generator page accessed', extra={'http_request': True})
+    logger.info('Question generator page accessed' + ' IP: ' + str(getClientIp()))
     config = loadConfig(configPath)
     return render_template('question-generator.html', config = config)
 
@@ -130,7 +130,7 @@ def questionGenerator():
 
 @app.route('/question-gen', methods=['POST', 'GET'])
 def questionGen():
-    logger.info('Question generation initiated', extra={'http_request': True})
+    logger.info('Question generation initiated' + ' IP: ' + str(getClientIp()))
     if request.method == 'POST':
         try:
             # Extract form data
@@ -156,13 +156,13 @@ def questionGen():
             return render_template('qpgen.html', rows = rows)  # Return results to the client
 
         except Exception as e:
-            logger.error(f'Error in question generation: {str(e)}', extra={'http_request': True})
+            logger.error(f'Error in question generation: {str(e)}' + ' IP: ' + str(getClientIp()))
             return f"Some error occurred server-side, no reason to panic. Error: {e}", 500
 
 
 @app.route('/submit')
 def submit():
-    logger.info('Submit page accessed', extra={'http_request': True})
+    logger.info('Submit page accessed' + ' IP: ' + str(getClientIp()))
     config = loadConfig(configPath)
 
     return render_template('submit.html', config = config)
@@ -170,17 +170,17 @@ def submit():
 
 @app.route('/model-questions')
 def modelQuestions():
-    logger.info('Model questions page accessed', extra={'http_request': True})
+    logger.info('Model questions page accessed' + ' IP: ' + str(getClientIp()))
     return render_template('model-questions.html')
 
 @app.route('/support')
 def support():
-    logger.info('Support page accessed', extra={'http_request': True})
+    logger.info('Support page accessed' + ' IP: ' + str(getClientIp()))
     return render_template('support.html')
 
 @app.route('/contact')
 def contact():
-    logger.info('Contact page accessed', extra={'http_request': True})
+    logger.info('Contact page accessed' + ' IP: ' + str(getClientIp()))
     return render_template('contact.html')
 
 
@@ -188,7 +188,7 @@ def contact():
 @app.route('/submitQuestion', methods=['POST'])
 @login_required
 def submitQuestion():
-    logger.info('Question submission initiated', extra={'http_request': True})
+    logger.info('Question submission initiated' + ' IP: ' + str(getClientIp()))
     board = request.form.get('board')
     subject = request.form.get('subject')
     topic = request.form.get('topic')
@@ -200,16 +200,16 @@ def submitQuestion():
 
 
     if insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile):
-        logger.info('Question submitted successfully', extra={'http_request': True})
+        logger.info('Question submitted successfully' + ' IP: ' + str(getClientIp()))
         return redirect(url_for('index'))
     else:
-        logger.error('Error occurred while submitting question', extra={'http_request': True})
+        logger.error('Error occurred while submitting question' + ' IP: ' + str(getClientIp()))
         return "Error occurred while submitting question", 500
 
 @app.route('/submitPaper', methods=['POST'])
 @login_required
 def submitPaper():
-    logger.info('Paper submission initiated', extra={'http_request': True})
+    logger.info('Paper submission initiated' + ' IP: ' + str(getClientIp()))
     try:
         board = request.form.get('board')
         subject = request.form.get('subject')
@@ -236,13 +236,13 @@ def submitPaper():
             raise ValueError(f"Invalid paper type: {paper_type}")
 
         if result:
-            logger.info('Paper submitted successfully', extra={'http_request': True})
+            logger.info('Paper submitted successfully' + ' IP: ' + str(getClientIp()))
             return redirect(url_for('index'))
         else:
             raise Exception("Insert operation failed")
 
     except Exception as e:
-        logger.error(f'Error in paper submission: {str(e)}', extra={'http_request': True})
+        logger.error(f'Error in paper submission: {str(e)}' + ' IP: ' + str(getClientIp()))
         print(f"Error in submitPaper: {str(e)}")  # Debug print
         return f"Error occurred while submitting paper: {str(e)}", 500
 
@@ -274,11 +274,11 @@ def login():
         # Check if user exists and the password matches
         if user and check_password_hash(user.password, password):
             login_user(user)
-            logger.info(f'User {user.username} logged in', extra={'http_request': True})
+            logger.info(f'User {user.username} logged in' + ' IP: ' + str(getClientIp()))
             next_page = request.args.get('next')
             return redirect(next_page or url_for('index'))
         else:
-            logger.warning(f'Failed login attempt for {username_or_email}', extra={'http_request': True})
+            logger.warning(f'Failed login attempt for {username_or_email}' + ' IP: ' + str(getClientIp()))
             flash('Login unsuccessful. Please check your credentials.', 'danger')
 
     return render_template('login.html')
@@ -332,13 +332,13 @@ def rate(question_UUID, rating):
     try:
         user = current_user.id
         if giveRating(user, question_UUID, rating):
-            logger.info(f'User {user} rated question {question_UUID} with {rating}', extra={'http_request': True})
+            logger.info(f'User {user} rated question {question_UUID} with {rating}' + ' IP: ' + str(getClientIp()))
             return True
         else:
-            logger.warning(f'Failed to rate question {question_UUID}', extra={'http_request': True})
+            logger.warning(f'Failed to rate question {question_UUID}' + ' IP: ' + str(getClientIp()))
             return False
     except Exception as e:
-        logger.error(f'Error in rating: {str(e)}', extra={'http_request': True})
+        logger.error(f'Error in rating: {str(e)}' + ' IP: ' + str(getClientIp()))
         print(f'Something went wrong while giving a rating: {e}')
         return False
 
@@ -517,7 +517,6 @@ def approvePaper(uuid):
         return jsonify({"succss": "Your request was processed successfully"})
     else:
         return jsonify({"erroe": "Your request was not processed successfully"})
-    return redirect(url_for('admin_dashboard'))
 
 @app.route('/delete_question/<uuid>', methods=["POST"])
 @login_required
@@ -580,6 +579,12 @@ def editQuestion    (uuid):
 @app.template_filter('b64encode')
 def b64encode_filter(s):
     return base64.b64encode(s).decode('utf-8') if s else ''
+
+
+# Define a reusable function to get the client's IP address
+def getClientIp():
+    # Try to get the IP from the 'X-Forwarded-For' header (Cloudflare/proxy header)
+    return request.headers.get('X-Forwarded-For', request.remote_addr)
 
 
 if __name__ == '__main__':
