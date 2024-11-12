@@ -723,6 +723,93 @@ def get_item_data(connection: sqlite3.Connection, item_type: str, uuid: str) -> 
         }
 
 
+def getStat(config):
+    try:
+        # Connect to the SQLite database
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+
+        # Overall counts
+        approvedQuestionsCount = db.execute(
+            "SELECT COUNT(*) FROM questions WHERE approved = TRUE"
+        ).fetchone()[0]
+        
+        unapprovedQuestionsCount = db.execute(
+            "SELECT COUNT(*) FROM questions WHERE approved = FALSE"
+        ).fetchone()[0]
+        
+        approvedPapersCount = db.execute(
+            "SELECT COUNT(*) FROM papers WHERE approved = TRUE"
+        ).fetchone()[0]
+        
+        unapprovedPapersCount = db.execute(
+            "SELECT COUNT(*) FROM papers WHERE approved = FALSE"
+        ).fetchone()[0]
+
+        # Counts by grade level and subject/topic breakdown
+        gradeLevels = ["10", "11", "12"]
+        levelStats = {}
+        
+        for level in gradeLevels:
+            levelStats[level] = {
+                "approvedQuestions": db.execute(
+                    "SELECT COUNT(*) FROM questions WHERE level = ? AND approved = TRUE", (level,)
+                ).fetchone()[0],
+                "unapprovedQuestions": db.execute(
+                    "SELECT COUNT(*) FROM questions WHERE level = ? AND approved = FALSE", (level,)
+                ).fetchone()[0],
+                "subjects": {}
+            }
+            
+            for subject in config["NEB"]["subjects"]:
+                subjectName = subject["name"]
+                levelStats[level]["subjects"][subjectName] = {
+                    "approved": db.execute(
+                        "SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = TRUE", 
+                        (level, subjectName)
+                    ).fetchone()[0],
+                    "unapproved": db.execute(
+                        "SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = FALSE", 
+                        (level, subjectName)
+                    ).fetchone()[0],
+                    "topics": {}
+                }
+                
+                for topicName in subject["topics"]:
+                    levelStats[level]["subjects"][subjectName]["topics"][topicName] = {
+                        "approved": db.execute(
+                            "SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND topic = ? AND approved = TRUE", 
+                            (level, subjectName, topicName)
+                        ).fetchone()[0],
+                        "unapproved": db.execute(
+                            "SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND topic = ? AND approved = FALSE", 
+                            (level, subjectName, topicName)
+                        ).fetchone()[0]
+                    }
+
+        # Format the stats as a JSON object
+        stats = {
+            "overall": {
+                "questions": {
+                    "approved": approvedQuestionsCount,
+                    "unapproved": unapprovedQuestionsCount
+                },
+                "papers": {
+                    "approved": approvedPapersCount,
+                    "unapproved": unapprovedPapersCount
+                }
+            },
+            "byLevel": levelStats
+        }
+
+        # Close the connection
+        connection.close()
+
+        return stats
+
+    except sqlite3.Error as e:
+        logger.error(f"Error gathering stats: {e}")
+        return {"error": "Failed to retrieve stats"}
 
 
 def getHash(encodedData):

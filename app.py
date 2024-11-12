@@ -34,6 +34,7 @@ logger = getCustomLogger(__name__)
 
 # path for the config
 configPath = './configs/config.json'
+config = loadConfig(configPath)
 
 
 # Initialize Flask-Login
@@ -503,7 +504,7 @@ def approve(uuid):
     if approve_question(uuid):
         return jsonify({"succss": "Your request was processed successfully"})
     else:
-        return jsonify({"erroe": "Your request was not processed successfully"})
+        return jsonify({"error": "Your request was not processed successfully"})
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/approve_paper/<uuid>', methods=["POST"])
@@ -516,7 +517,7 @@ def approvePaper(uuid):
     if approve_paper(uuid):
         return jsonify({"succss": "Your request was processed successfully"})
     else:
-        return jsonify({"erroe": "Your request was not processed successfully"})
+        return jsonify({"error": "Your request was not processed successfully"})
 
 @app.route('/delete_question/<uuid>', methods=["POST"])
 @login_required
@@ -579,6 +580,12 @@ def editQuestion    (uuid):
 @app.template_filter('b64encode')
 def b64encode_filter(s):
     return base64.b64encode(s).decode('utf-8') if s else ''
+
+
+@app.route('/stats')
+def stats():
+    statsData = getStat(config)
+    return render_template('stats_page.html', statsData=statsData)
 
 
 # Define a reusable function to get the client's IP address
