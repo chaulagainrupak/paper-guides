@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Statistics
+{% endblock %}
+
+{% block section %}
+    <h1>Statistics Overview</h1>
+
+    <!-- Hidden div containing stats data as JSON -->
+    <div id="chart-data" style="display: none;">{{ statsData | tojson }}</div>
+
+    <!-- Overall Stats Container -->
+    <div class="overall-stats-container" style="margin-bottom: 3rem;">
+        <h2>Overall Statistics</h2>
+        <div style="height: 300px;">
+            <canvas id="overallChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Level-wise Stats Container -->
+    <div class="charts-container">
+        {% raw %}
+        <!-- Level charts will be dynamically inserted here -->
+        {% endraw %}
+    </div>
+
+    <script src="{{ url_for('static', filename='stats-page.js') }}"></script>
+
+{% endblock %}
