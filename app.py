@@ -547,7 +547,7 @@ def deletePaper(uuid):
 
 @app.route('/edit_question/<uuid>', methods=['GET', 'POST'])
 @login_required
-def editQuestion    (uuid):
+def editQuestion(uuid):
     if current_user.role != 'admin':
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
@@ -583,11 +583,13 @@ def b64encode_filter(s):
 
 @app.route('/robots.txt')
 def robotsTxt():
+    logger.info('robots.txt accessed from' + ' IP: ' + str(getClientIp()))
     return send_from_directory(app.static_folder, 'robots.txt')
 
 @app.route('/stats')
 def stats():
     statsData = getStat(config)
+    logger.info('Stats page accessed' + ' IP: ' + str(getClientIp()))
     return render_template('stats_page.html', statsData=statsData)
 
 
