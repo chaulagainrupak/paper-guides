@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, send_from_directory
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -581,6 +581,9 @@ def editQuestion    (uuid):
 def b64encode_filter(s):
     return base64.b64encode(s).decode('utf-8') if s else ''
 
+@app.route('/robots.txt')
+def robotsTxt():
+    return send_from_directory(app.static_folder, 'robots.txt')
 
 @app.route('/stats')
 def stats():
