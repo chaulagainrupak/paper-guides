@@ -395,6 +395,7 @@ def admin_dashboard():
 @login_required
 def getNewData():
     if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         logger.warning(f'Unauthorized access attempt by user: {current_user.username}')
         return redirect(url_for('index'))
 
@@ -498,6 +499,7 @@ def getNewData():
 @login_required
 def approve(uuid):
     if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
@@ -511,6 +513,7 @@ def approve(uuid):
 @login_required
 def approvePaper(uuid):
     if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
@@ -523,6 +526,7 @@ def approvePaper(uuid):
 @login_required
 def deleteQuestion(uuid):
     if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
@@ -536,6 +540,7 @@ def deleteQuestion(uuid):
 @login_required
 def deletePaper(uuid):
     if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
@@ -549,6 +554,7 @@ def deletePaper(uuid):
 @login_required
 def editQuestion(uuid):
     if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
