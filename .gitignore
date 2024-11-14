@@ -170,3 +170,4 @@ log
 *.zip
 
 .vscode
+test.py

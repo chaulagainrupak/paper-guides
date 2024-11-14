@@ -596,7 +596,7 @@ def robotsTxt():
 def stats():
     statsData = getStat(config)
     logger.info('Stats page accessed' + ' IP: ' + str(getClientIp()))
-    return render_template('stats_page.html', statsData=statsData)
+    return render_template('stats-page.html', statsData=statsData)
 
 
 # Define a reusable function to get the client's IP address

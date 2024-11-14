@@ -746,8 +746,12 @@ def getStat(config):
             "SELECT COUNT(*) FROM papers WHERE approved = FALSE"
         ).fetchone()[0]
 
+
+        gradeLevels = []
         # Counts by grade level and subject/topic breakdown
-        gradeLevels = ["10", "11", "12"]
+        for board in config:
+            gradeLevels.extend(config[board]["levels"])
+
         levelStats = {}
         
         for level in gradeLevels:

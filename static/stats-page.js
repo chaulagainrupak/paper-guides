@@ -148,6 +148,11 @@
             const levelData = statsData.byLevel[level];
             const subjects = Object.keys(levelData.subjects);
             
+            // Allows adding `Level 10` to the front of the string so `Level A levels` is not seen on the stats page. 
+            if (level != 'A level' && level != 'As level') {
+                level = "Level " + String(level);
+            }
+            
             new Chart(canvas, {
                 type: 'bar',
                 data: {
@@ -175,7 +180,7 @@
                         ...commonOptions.plugins,
                         title: {
                             ...commonOptions.plugins.title,
-                            text: `Level ${level} Subject Distribution`
+                            text: `${level} Subject Distribution`
                         }
                     },
                     scales: {

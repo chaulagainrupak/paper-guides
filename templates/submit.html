@@ -2,536 +2,500 @@
 %}
 
 <style>
-    .submit-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 2rem;
-    }
+  .submit-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+  }
 
-    .submit-header {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
+  .submit-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
 
-    .submit-header h2 {
-        color: var(--rich-black);
-        font-size: 2.5rem;
-        margin-bottom: 0.5rem;
-    }
+  .submit-header h2 {
+    color: var(--rich-black);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
 
-    .submission-cards {
-        display: flex;
-        gap: 2rem;
-        justify-content: center;
-        margin-bottom: 3rem;
-    }
+  .submission-cards {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+  }
 
-    .submission-card {
-        background: var(--baby-powder);
-        padding: 2rem;
-        border-radius: 20px;
-        width: 300px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+  .submission-card {
+    background: var(--baby-powder);
+    padding: 2rem;
+    border-radius: 20px;
+    width: 300px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
 
-    .submission-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-    }
+  .submission-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
 
-    .card-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
+  .card-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
 
-    .submission-card h3 {
-        color: var(--rich-black);
-        margin-bottom: 0.5rem;
-    }
+  .submission-card h3 {
+    color: var(--rich-black);
+    margin-bottom: 0.5rem;
+  }
 
-    .submission-card p {
-        color: #666;
-    }
+  .submission-card p {
+    color: #666;
+  }
 
-    .animated-form {
-        display: none;
-        background: var(--baby-powder);
-        padding: 2rem;
-        border-radius: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        animation: slideIn 0.3s ease;
-    }
+  .animated-form {
+    display: none;
+    background: var(--baby-powder);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease;
+  }
 
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
     }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-    .form-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-    }
+  .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
 
-    .back-btn {
-        padding: 0.5rem 1rem;
-        background: none;
-        border: none;
-        color: var(--blue-highlight);
-        cursor: pointer;
-        font-size: 1rem;
-        transition: transform 0.2s ease;
-    }
+  .back-btn {
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    color: var(--blue-highlight);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+  }
 
-    .back-btn:hover {
-        transform: translateX(-5px);
-    }
+  .back-btn:hover {
+    transform: translateX(-5px);
+  }
 
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
 
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: var(--rich-black);
-        font-weight: 500;
-    }
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--rich-black);
+    font-weight: 500;
+  }
 
-    .select-wrapper {
-        position: relative;
-    }
+  .select-wrapper {
+    position: relative;
+  }
 
-    .select-wrapper::after {
-        content: "▼";
-        position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        pointer-events: none;
-        color: #666;
-    }
+  .select-wrapper::after {
+    content: "▼";
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #666;
+  }
 
-    select {
-        width: 100%;
-        padding: 0.8rem;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        appearance: none;
-        background: white;
-        font-size: 1rem;
-        transition: border-color 0.3s ease;
-    }
+  select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    appearance: none;
+    background: white;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
 
-    select:focus {
-        border-color: var(--picton-blue);
-        outline: none;
-    }
+  select:focus {
+    border-color: var(--picton-blue);
+    outline: none;
+  }
 
-    .difficulty-select {
-        display: flex;
-        gap: 0.5rem;
-    }
+  .difficulty-select {
+    display: flex;
+    gap: 0.5rem;
+  }
 
-    .difficulty-select input[type="radio"] {
-        display: none;
-    }
+  .difficulty-select input[type="radio"] {
+    display: none;
+  }
 
-    .difficulty-label {
-        padding: 0.5rem 1rem;
-        border: 2px solid #e0e0e0;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
+  .difficulty-label {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
 
-    .difficulty-select input[type="radio"]:checked + .difficulty-label {
-        background: var(--blue-highlight);
-        color: white;
-        border-color: var(--blue-highlight);
-    }
+  .difficulty-select input[type="radio"]:checked + .difficulty-label {
+    background: var(--blue-highlight);
+    color: white;
+    border-color: var(--blue-highlight);
+  }
 
-    .file-upload-section {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
+  .file-upload-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
 
-    .file-upload-box {
-        position: relative;
-    }
+  .file-upload-box {
+    position: relative;
+  }
 
-    .file-label {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 2rem;
-        border: 2px dashed #e0e0e0;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
+  .file-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    border: 2px dashed #e0e0e0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
 
-    .file-label:hover {
-        border-color: var(--picton-blue);
-        background: rgba(62, 175, 228, 0.05);
-    }
+  .file-label:hover {
+    border-color: var(--picton-blue);
+    background: rgba(62, 175, 228, 0.05);
+  }
 
-    .upload-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-    }
+  .upload-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
 
-    .file-label span {
-        font-size: 1.1rem;
-        margin-bottom: 0.5rem;
-        color: var(--rich-black);
-    }
+  .file-label span {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--rich-black);
+  }
 
-    .file-label small {
-        color: #666;
-    }
+  .file-label small {
+    color: #666;
+  }
 
-    input[type="file"] {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        opacity: 0;
-        cursor: pointer;
-    }
+  input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
 
-    .submit-btn {
-        width: 100%;
-        padding: 1rem;
-        background: var(--blue-highlight);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
+  .submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--blue-highlight);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
 
-    .submit-btn:hover {
-        background: var(--picton-blue);
-        transform: translateY(-2px);
-    }
+  .submit-btn:hover {
+    background: var(--picton-blue);
+    transform: translateY(-2px);
+  }
 
-    .custom-year {
-        display: none;
-    }
+  .custom-year {
+    display: none;
+  }
 
-    .custom-input {
-        width: 100%;
-        padding: 0.8rem;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        font-size: 1rem;
-        transition: border-color 0.3s ease;
-    }
+  .custom-input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
 
-    .custom-input:focus {
-        border-color: var(--picton-blue);
-        outline: none;
-    }
+  .custom-input:focus {
+    border-color: var(--picton-blue);
+    outline: none;
+  }
 </style>
 
 <div id="config" style="display: none">{{ config | tojson | safe }}</div>
 
 <div class="submit-container">
-    <div class="submit-header">
-        <h2>Submit a Question or Paper</h2>
-        <p class="blue-highlight">Please login before submitting anything</p>
+  <div class="submit-header">
+    <h2>Submit a Question or Paper</h2>
+    <p class="blue-highlight">Please login before submitting anything</p>
+  </div>
+
+  <div class="submission-cards">
+    <div class="submission-card" id="question_card">
+      <div class="card-icon">📝</div>
+      <h3>Submit Question</h3>
+      <p>Upload individual questions with solutions</p>
     </div>
 
-    <div class="submission-cards">
-        <div class="submission-card" id="question_card">
-            <div class="card-icon">📝</div>
-            <h3>Submit Question</h3>
-            <p>Upload individual questions with solutions</p>
-        </div>
+    <div class="submission-card" id="paper_card">
+      <div class="card-icon">📄</div>
+      <h3>Submit Paper</h3>
+      <p>Upload complete exam papers with solutions</p>
+    </div>
+  </div>
 
-        <div class="submission-card" id="paper_card">
-            <div class="card-icon">📄</div>
-            <h3>Submit Paper</h3>
-            <p>Upload complete exam papers with solutions</p>
-        </div>
+  <form
+    id="question_form"
+    action="/submitQuestion"
+    method="post"
+    enctype="multipart/form-data"
+    class="animated-form"
+  >
+    <div class="form-header">
+      <h3>Question Submission</h3>
+      <button type="button" class="back-btn">← Back</button>
     </div>
 
-    <form
-        id="question_form"
-        action="/submitQuestion"
-        method="post"
-        enctype="multipart/form-data"
-        class="animated-form"
-    >
-        <div class="form-header">
-            <h3>Question Submission</h3>
-            <button
-                type="button"
-                class="back-btn"
-                onclick="showSubmissionCards()"
-            >
-                ← Back
-            </button>
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="board">Board</label>
+        <div class="select-wrapper">
+          <select id="board" name="board">
+          </select>
         </div>
+      </div>
 
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="board">Board</label>
-                <div class="select-wrapper">
-                    <select id="board" name="board">
-                        <option value="NEB">NEB</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="subject">Subject</label>
-                <div class="select-wrapper">
-                    <select id="subject" name="subject">
-                        {% for subject in config.NEB.subjects %}
-                        <option value="{{ subject.name }}">
-                            {{ subject.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group" id="topic_div">
-                <label for="topic">Topic</label>
-                <div class="select-wrapper">
-                    <select id="topic" name="topic"></select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="level">Level</label>
-                <div class="select-wrapper">
-                    <select id="level" name="level">
-                        {% for level in config.NEB.levels %}
-                        <option value="{{ level }}">{{ level }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="difficulty">Difficulty</label>
-                <div class="difficulty-select">
-                    {% for i in range(5) %}
-                    <input
-                        type="radio"
-                        id="diff_{{i+1}}"
-                        name="difficulty"
-                        value="{{i+1}}"
-                    />
-                    <label for="diff_{{i+1}}" class="difficulty-label"
-                        >{{i+1}}</label
-                    >
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="component">Component</label>
-                <div class="select-wrapper">
-                    <select id="component" name="component">
-                        {% for component in config.NEB.components %}
-                        <option value="{{ component }}">{{ component }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <div class="select-wrapper">
+          <select id="subject" name="subject">
+          </select>
         </div>
+      </div>
 
-        <div class="file-upload-section">
-            <div class="file-upload-box">
-                <label for="questionFile" class="file-label">
-                    <div class="upload-icon">📷</div>
-                    <span>Question Image</span>
-                    <small>Click to upload or drag and drop</small>
-                </label>
-                <input
-                    type="file"
-                    id="questionFile"
-                    name="questionFile"
-                    accept="image/*"
-                    required
-                />
-            </div>
-
-            <div class="file-upload-box">
-                <label for="solutionFile" class="file-label">
-                    <div class="upload-icon">✍️</div>
-                    <span>Solution Image</span>
-                    <small>Click to upload or drag and drop</small>
-                </label>
-                <input
-                    type="file"
-                    id="solutionFile"
-                    name="solutionFile"
-                    accept="image/*"
-                />
-            </div>
+      <div class="form-group" id="topic_div">
+        <label for="topic">Topic</label>
+        <div class="select-wrapper">
+          <select id="topic" name="topic"></select>
         </div>
+      </div>
 
-        <button type="submit" class="submit-btn">Submit Question</button>
-    </form>
-
-    <form
-        id="paper_form"
-        action="/submitPaper"
-        method="post"
-        enctype="multipart/form-data"
-        class="animated-form"
-    >
-        <div class="form-header">
-            <h3>Paper Submission</h3>
-            <button
-                type="button"
-                class="back-btn"
-                onclick="showSubmissionCards()"
-            >
-                ← Back
-            </button>
+      <div class="form-group">
+        <label for="level">Level</label>
+        <div class="select-wrapper">
+          <select id="level" name="level">
+          </select>
         </div>
+      </div>
 
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="board">Board</label>
-                <div class="select-wrapper">
-                    <select id="board" name="board">
-                        <option value="NEB">NEB</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="subject">Subject</label>
-                <div class="select-wrapper">
-                    <select id="subject" name="subject">
-                        {% for subject in config.NEB.subjects %}
-                        <option value="{{ subject.name }}">
-                            {{ subject.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="paper_type">Paper Type</label>
-                <div class="select-wrapper">
-                    <select id="paper_type" name="paper_type">
-                        <option value="yearly">Yearly Paper</option>
-                        <option value="topical">Topical Paper</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group" id="year_div">
-                <label for="year">Year</label>
-                <div class="select-wrapper">
-                    <select id="year" name="year">
-                        {% set current_year = 2024 %} {% for i in range(10) %}
-                        {% set year = current_year + 57 - i %}
-                        <option value="{{ year }}">{{ year }}</option>
-                        {% endfor %}
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group custom-year" id="other_year_div">
-                <label for="other_year">Specify Year</label>
-                <input
-                    type="number"
-                    id="other_year"
-                    name="year"
-                    min="1900"
-                    max="2100"
-                    class="custom-input"
-                />
-            </div>
-
-            <div class="form-group">
-                <label for="level">Level</label>
-                <div class="select-wrapper">
-                    <select id="level" name="level">
-                        {% for level in config.NEB.levels %}
-                        <option value="{{ level }}">{{ level }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="component">Component</label>
-                <div class="select-wrapper">
-                    <select id="component" name="component">
-                        {% for component in config.NEB.components %}
-                        <option value="{{ component }}">{{ component }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
+      <div class="form-group">
+        <label for="difficulty">Difficulty</label>
+        <div class="difficulty-select">
+          {% for i in range(5) %}
+          <input
+            type="radio"
+            id="diff_{{i+1}}"
+            name="difficulty"
+            value="{{i+1}}"
+          />
+          <label for="diff_{{i+1}}" class="difficulty-label">{{i+1}}</label>
+          {% endfor %}
         </div>
+      </div>
 
-        <div class="file-upload-section">
-            <div class="file-upload-box">
-                <label for="paperFile" class="file-label">
-                    <div class="upload-icon">📄</div>
-                    <span>Paper PDF</span>
-                    <small>Click to upload or drag and drop</small>
-                </label>
-                <input
-                    type="file"
-                    id="paperFile"
-                    name="questionFile"
-                    accept="application/pdf"
-                    required
-                />
-            </div>
-
-            <div class="file-upload-box">
-                <label for="paperSolutionFile" class="file-label">
-                    <div class="upload-icon">✅</div>
-                    <span>Solution PDF</span>
-                    <small>Click to upload or drag and drop</small>
-                </label>
-                <input
-                    type="file"
-                    id="paperSolutionFile"
-                    name="solutionFile"
-                    accept="application/pdf"
-                />
-            </div>
+      <div class="form-group">
+        <label for="component">Component</label>
+        <div class="select-wrapper">
+          <select id="component" name="component">
+          </select>
         </div>
+      </div>
+    </div>
 
-        <button type="submit" class="submit-btn">Submit Paper</button>
-    </form>
+    <div class="file-upload-section">
+      <div class="file-upload-box">
+        <label for="questionFile" class="file-label">
+          <div class="upload-icon">📷</div>
+          <span>Question Image</span>
+          <small>Click to upload or drag and drop</small>
+        </label>
+        <input
+          type="file"
+          id="questionFile"
+          name="questionFile"
+          accept="image/*"
+          required
+        />
+      </div>
+
+      <div class="file-upload-box">
+        <label for="solutionFile" class="file-label">
+          <div class="upload-icon">✍️</div>
+          <span>Solution Image</span>
+          <small>Click to upload or drag and drop</small>
+        </label>
+        <input
+          type="file"
+          id="solutionFile"
+          name="solutionFile"
+          accept="image/*"
+        />
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Submit Question</button>
+  </form>
+
+  <form
+    id="paper_form"
+    action="/submitPaper"
+    method="post"
+    enctype="multipart/form-data"
+    class="animated-form"
+  >
+    <div class="form-header">
+      <h3>Paper Submission</h3>
+      <button type="button" class="back-btn">← Back</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="board">Board</label>
+        <div class="select-wrapper">
+          <select id="board" name="board">
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <div class="select-wrapper">
+          <select id="subject" name="subject">
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="paper_type">Paper Type</label>
+        <div class="select-wrapper">
+          <select id="paper_type" name="paper_type">
+            <option value="yearly">Yearly Paper</option>
+            <option value="topical">Topical Paper</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" id="year_div">
+        <label for="year">Year</label>
+        <div class="select-wrapper">
+          <select id="year" name="year">
+            {% set current_year = 2024 %} 
+            {% for i in range(10) %} 
+                {% set year = current_year - i %}
+                <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+            <option value="other">Other</option>
+
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group custom-year" id="other_year_div">
+        <label for="other_year">Specify Year</label>
+        <input
+          type="number"
+          id="other_year"
+          name="year"
+          min="1900"
+          max="2100"
+          class="custom-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="level">Level</label>
+        <div class="select-wrapper">
+          <select id="level" name="level">
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="component">Component</label>
+        <div class="select-wrapper">
+          <select id="component" name="component">
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="file-upload-section">
+      <div class="file-upload-box">
+        <label for="paperFile" class="file-label">
+          <div class="upload-icon">📄</div>
+          <span>Paper PDF</span>
+          <small>Click to upload or drag and drop</small>
+        </label>
+        <input
+          type="file"
+          id="paperFile"
+          name="questionFile"
+          accept="application/pdf"
+          required
+        />
+      </div>
+
+      <div class="file-upload-box">
+        <label for="paperSolutionFile" class="file-label">
+          <div class="upload-icon">✅</div>
+          <span>Solution PDF</span>
+          <small>Click to upload or drag and drop</small>
+        </label>
+        <input
+          type="file"
+          id="paperSolutionFile"
+          name="solutionFile"
+          accept="application/pdf"
+        />
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Submit Paper</button>
+  </form>
 </div>
 
 <script src="{{ url_for('static', filename='submit.js')}}"></script>
