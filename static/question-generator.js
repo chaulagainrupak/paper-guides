@@ -1,116 +1,158 @@
 document.addEventListener("DOMContentLoaded", function () {
   const config = JSON.parse(document.getElementById("config").textContent);
-
-  function populateTopics(subjectName) {
-    const topicCheckboxes = document.getElementById("topicCheckboxes");
-    if (!topicCheckboxes) return;
-    topicCheckboxes.innerHTML =
-      '<span class="close-button" onclick="closeCheckboxes(\'topicCheckboxes\')">×</span>';
-    if (!subjectName) {
-      topicCheckboxes.innerHTML +=
-        '<p class="no-subject-message">Select a subject first</p>';
-      return;
-    }
-    const subject = config.NEB.subjects.find((s) => s.name === subjectName);
-    if (subject) {
-      subject.topics.forEach((topic) => {
-        let label = document.createElement("label");
-        let checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.name = "topic";
-        checkbox.value = topic;
-        label.appendChild(checkbox);
-        let span = document.createElement("span");
-        span.textContent = topic;
-        label.appendChild(span);
-        topicCheckboxes.appendChild(label);
-      });
-    }
+  
+  // Track current education system
+  let currentSystem = "NEB"; // Default to NEB
+  
+  // Add education system selector
+  function initializeEducationSystem() {
+      const boardSelect = document.getElementById("board");
+      if (boardSelect) {
+          boardSelect.addEventListener("change", function() {
+              currentSystem = this.value;
+              updateFormForSystem(currentSystem);
+          });
+      }
   }
-
+  
+  function updateFormForSystem(system) {
+      // Update levels
+      const levelSelect = document.getElementById("level");
+      levelSelect.innerHTML = '<option value="" disabled selected>Select Level</option>';
+      config[system].levels.forEach(level => {
+          const option = document.createElement("option");
+          option.value = level;
+          option.textContent = level;
+          levelSelect.appendChild(option);
+      });
+      
+      // Update subjects
+      const subjectSelect = document.getElementById("subject");
+      subjectSelect.innerHTML = '<option value="" disabled selected>Select Subject</option>';
+      config[system].subjects.forEach(subject => {
+          const option = document.createElement("option");
+          option.value = subject.name;
+          option.textContent = subject.name;
+          subjectSelect.appendChild(option);
+      });
+      
+      // Clear topics
+      populateTopics("");
+      
+      // Update components
+      updateComponents(system);
+  }
+  
+  function updateComponents(system) {
+      const componentCheckboxes = document.getElementById("componentCheckboxes");
+      componentCheckboxes.innerHTML = '<span class="close-button" onclick="closeCheckboxes(\'componentCheckboxes\')">×</span>';
+      
+      // Add ALL option
+      let allLabel = document.createElement("label");
+      let allCheckbox = document.createElement("input");
+      allCheckbox.type = "checkbox";
+      allCheckbox.name = "component";
+      allCheckbox.value = "ALL";
+      allCheckbox.addEventListener("change", function() {
+          const otherCheckboxes = componentCheckboxes.querySelectorAll('input[name="component"]:not([value="ALL"])');
+          otherCheckboxes.forEach(cb => {
+              cb.checked = false;
+              cb.disabled = this.checked;
+          });
+      });
+      allLabel.appendChild(allCheckbox);
+      allLabel.appendChild(document.createTextNode("ALL"));
+      componentCheckboxes.appendChild(allLabel);
+      
+      // Add individual components
+      config[system].components.forEach(component => {
+          let label = document.createElement("label");
+          let checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.name = "component";
+          checkbox.value = component;
+          checkbox.addEventListener("change", function() {
+              const allCheckbox = componentCheckboxes.querySelector('input[value="ALL"]');
+              if (this.checked) {
+                  allCheckbox.checked = false;
+              }
+          });
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(component));
+          componentCheckboxes.appendChild(label);
+      });
+  }
+  
+  function populateTopics(subjectName) {
+      const topicCheckboxes = document.getElementById("topicCheckboxes");
+      if (!topicCheckboxes) return;
+      
+      topicCheckboxes.innerHTML = '<span class="close-button" onclick="closeCheckboxes(\'topicCheckboxes\')">×</span>';
+      
+      if (!subjectName) {
+          topicCheckboxes.innerHTML += '<p class="no-subject-message">Select a subject first</p>';
+          return;
+      }
+      
+      const subject = config[currentSystem].subjects.find(s => s.name === subjectName);
+      if (subject) {
+          subject.topics.forEach(topic => {
+              let label = document.createElement("label");
+              let checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.name = "topic";
+              checkbox.value = topic;
+              label.appendChild(checkbox);
+              label.appendChild(document.createTextNode(topic));
+              topicCheckboxes.appendChild(label);
+          });
+      }
+  }
+  
+  // Initialize subject change listener
   const subjectSelect = document.getElementById("subject");
   if (subjectSelect) {
-    subjectSelect.addEventListener("change", function () {
-      populateTopics(this.value);
-    });
-    // Initialize topics for the default selected subject
-    populateTopics(subjectSelect.value);
+      subjectSelect.addEventListener("change", function() {
+          populateTopics(this.value);
+      });
   }
-
-  // Add validation for checkboxes (all checkboxes required)
-  const form = document.querySelector("#questionForm");
-  form.addEventListener("submit", function (event) {
-    const subject = document.getElementById("subject").value;
-    const topicCheckboxes = document.querySelectorAll('input[name="topic"]');
-    const difficultyCheckboxes = document.querySelectorAll(
-      'input[name="difficulty"]',
-    );
-    const componentCheckboxes = document.querySelectorAll(
-      'input[name="component"]',
-    );
-
-    // Check if a subject is selected
-    if (!subject) {
-      alert("Please select a subject.");
-      event.preventDefault();
-      return;
-    }
-
-    // Check if at least one topic is selected
-    const isTopicChecked = Array.from(topicCheckboxes).some((cb) => cb.checked);
-    if (!isTopicChecked) {
-      alert("Please select at least one topic.");
-      event.preventDefault();
-      return;
-    }
-
-    // Check if at least one difficulty level is selected
-    const isDifficultyChecked = Array.from(difficultyCheckboxes).some(
-      (cb) => cb.checked,
-    );
-    if (!isDifficultyChecked) {
-      alert("Please select at least one difficulty level.");
-      event.preventDefault();
-      return;
-    }
-
-    // Check if at least one component is selected
-    const isComponentChecked = Array.from(componentCheckboxes).some(
-      (cb) => cb.checked,
-    );
-    if (!isComponentChecked) {
-      alert("Please select at least one component.");
-      event.preventDefault();
-      return;
-    }
-  });
-});
-
-function toggleCheckboxes(checkboxesId) {
-  var checkboxes = document.getElementById(checkboxesId);
-  if (checkboxes.style.display === "none" || checkboxes.style.display === "") {
-    checkboxes.style.display = "block";
-    document.querySelectorAll(".checkboxes").forEach(function (el) {
-      if (el.id !== checkboxesId) {
-        el.style.display = "none";
+  
+  // Initialize board change listener
+  const boardSelect = document.getElementById("board");
+  if (boardSelect) {
+      boardSelect.addEventListener("change", function() {
+          updateFormForSystem(this.value);
+      });
+  }
+  
+  // Initialize the form with default system
+  initializeEducationSystem();
+  updateFormForSystem(currentSystem);
+  
+  // Make functions globally available
+  window.toggleCheckboxes = function(checkboxesId) {
+      const checkboxes = document.getElementById(checkboxesId);
+      const isCurrentlyHidden = checkboxes.style.display === "none" || checkboxes.style.display === "";
+      
+      document.querySelectorAll(".checkboxes").forEach(el => {
+          el.style.display = "none";
+      });
+      
+      if (isCurrentlyHidden) {
+          checkboxes.style.display = "block";
       }
-    });
-  } else {
-    checkboxes.style.display = "none";
-  }
-}
-
-function closeCheckboxes(checkboxesId) {
-  var checkboxes = document.getElementById(checkboxesId);
-  checkboxes.style.display = "none";
-}
-
-// Close checkboxes when clicking outside
-document.addEventListener("click", function (event) {
-  if (!event.target.closest(".multiselect")) {
-    var allCheckboxes = document.querySelectorAll(".checkboxes");
-    allCheckboxes.forEach(function (checkbox) {
-      checkbox.style.display = "none";
-    });
-  }
+  };
+  
+  window.closeCheckboxes = function(checkboxesId) {
+      document.getElementById(checkboxesId).style.display = "none";
+  };
+  
+  // Close checkboxes when clicking outside
+  document.addEventListener("click", function(event) {
+      if (!event.target.closest(".multiselect")) {
+          document.querySelectorAll(".checkboxes").forEach(checkbox => {
+              checkbox.style.display = "none";
+          });
+      }
+  });
 });

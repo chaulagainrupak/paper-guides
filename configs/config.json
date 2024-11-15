@@ -280,6 +280,42 @@
                     "Programming",
                     "Software Development"
                 ]
+            },
+            {
+                "name": "Economics (9708)",
+                "topics": [
+                    "Basic Economic Principles",
+                    "Demand and Supply Analysis",
+                    "Elasticity of Demand and Supply",
+                    "Market Structures and Types",
+                    "Consumer and Producer Surplus",
+                    "Labor Market",
+                    "Macroeconomic Indicators",
+                    "National Income Accounting",
+                    "Fiscal and Monetary Policy",
+                    "Inflation, Unemployment, and Growth",
+                    "International Trade and Balance of Payments",
+                    "Economic Development and Sustainability",
+                    "Market Failure and Government Intervention"
+                ]
+            },
+            {
+                "name": "Accounting (9706)",
+                "topics": [
+                    "Basic Accounting Principles",
+                    "Double-Entry Bookkeeping",
+                    "Preparation of Financial Statements",
+                    "Non-current Assets",
+                    "Inventory Valuation",
+                    "Financial Ratios",
+                    "Bank Reconciliation",
+                    "Depreciation and Amortization",
+                    "Control Accounts",
+                    "Incorporated Business Accounts",
+                    "Partnership Accounts",
+                    "Costing and Budgeting",
+                    "Introduction to Auditing"
+                ]
             }
         ],
         "components": [

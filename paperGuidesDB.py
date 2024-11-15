@@ -330,55 +330,92 @@ def getComponents(year, subjectName):
         connection.close()
 
 
-def getQuestionsForGen(subject, level, topics, components, difficulties):
-    rowsList = []
+def getQuestionsForGen(board, subject, level, topics, components, difficulties):
+    """
+    Get questions based on selected criteria from the questions table.
+    
+    Args:
+        board (str): Board name (e.g., "Board1")
+        subject (str): Subject name
+        level (int): Education level
+        topics (list): List of selected topics
+        components (str|list): 'ALL' or list of specific components
+        difficulties (list): List of difficulty levels
+    
+    Returns:
+        list: List of question rows matching the criteria
+    """
+    connection = None
     try:
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
+        
+        # Base query parts
+        query = """
+            SELECT *
+            FROM questions
+            WHERE
+            board = ? 
+            AND subject = ? 
+            AND level = ?
+            AND approved = True
+        """
+        
+        # Build difficulty condition
+        difficultyCondition = " OR ".join([f"difficulty = ?" for _ in difficulties]) if difficulties else ""
+        
+        # Build topic condition
+        topicCondition = " OR ".join([f"topic = ?" for _ in topics]) if topics else ""
+        
+        # Build the query and parameters dynamically
+        params = [board, subject, level] 
 
-        # Convert lists to comma-separated placeholders
-        topics_placeholder = ', '.join('?' for _ in topics)
-        difficulties_placeholder = ', '.join('?' for _ in difficulties)
+        # Add difficulty condition
+        if difficulties:
+            query += f" AND ({difficultyCondition})"
+            params.extend(difficulties)
 
-        # Prepare the components placeholder and value
-        if components == 'ALL':
-            components_condition = ''  # No additional condition for components
-            values = [subject, level] + topics + difficulties
-        else:
-            components_placeholder = ', '.join('?' for _ in components)
-            components_condition = f'AND component IN ({components_placeholder})'
-            values = [subject, level] + topics + difficulties + components
+        # Add topic condition
+        if topics:
+            query += f" AND ({topicCondition})"
+            params.extend(topics)
 
-        # Create the query string with the appropriate conditions
-        query = f'''
-            SELECT * FROM questions
-            WHERE subject = ? AND level = ?
-            AND topic IN ({topics_placeholder})
-            AND difficulty IN ({difficulties_placeholder})
-            {components_condition}
-            AND approved = 1
-        '''
-
+        # Add components condition
+        if components != 'ALL':
+            componentCondition = " OR ".join([f"component = ?" for _ in components]) if components else ""
+            query += f" AND ({componentCondition})"
+            params.extend(components)
+        
         # Execute the query
-        row = db.execute(query, values)
-        rows = row.fetchall()  # Fetch all the results
-
-        # Check if the result has more than 18 rows
-        if len(rows) > 18:
-            # If more than 18 rows, select 18 random rows
-            rows = random.sample(rows, 18)
+        cursor = db.execute(query, params)
+        rows = cursor.fetchall()
+        
+        # Process results
+        if rows:
+            # If more than 12 questions, randomly select 12
+            if len(rows) > 12:
+                rows = random.sample(rows, 12)
+            else:
+                random.shuffle(rows)
+            
+            # Example processed rows, you can customize this part
+            processed_rows = rows
+            logger.info(f"Successfully retrieved {len(processed_rows)} questions for {subject} level {level}")
+            return processed_rows
         else:
-            random.shuffle(rows)
-
-        logger.info(f"Questions for generation retrieved successfully for subject {subject}, level {level}")
-        return  rows # Return the fetched results
-
+            logger.warning(f"No questions found for {subject} level {level}")
+            return []
+            
     except sqlite3.Error as e:
-        logger.error(f"An error occurred while getting questions for generation: {e}")
-        raise Exception(f"An internal server error occurred: {e}")  # Raise exception to be handled by the route
+        logger.error(f"Database error in getQuestionsForGen: {str(e)}")
+        raise Exception(f"Database error occurred: {str(e)}")
+    except Exception as e:
+        logger.error(f"General error in getQuestionsForGen: {str(e)}")
+        raise Exception(f"An error occurred while retrieving questions: {str(e)}")
     finally:
-        connection.close()
+        if connection:
+            connection.close()
 
 
 def dbDump():

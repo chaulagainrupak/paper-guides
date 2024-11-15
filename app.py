@@ -128,34 +128,32 @@ def questionGenerator():
     return render_template('question-generator.html', config = config)
 
 # This route displays the questions the uppper route genetated a diffrent page and route
-
 @app.route('/question-gen', methods=['POST', 'GET'])
 def questionGen():
     logger.info('Question generation initiated' + ' IP: ' + str(getClientIp()))
     if request.method == 'POST':
         try:
             # Extract form data
+            board = request.form.get('board')
             subject = request.form.get('subject')
-            level = request.form.get('level')
+            level = request.form.get('level')  
             topics = request.form.getlist('topic')
             difficulties = request.form.getlist('difficulty')
             components = request.form.getlist('component')
-
-            # Convert lists to correct format for SQL placeholders
-            # No need to add single quotes around list items here
-            # Example: ['Algebra', 'Geometry'] stays as is
-            # Example: ['1', '2', '3'] stays as is
-
-            # Convert components to correct format for SQL placeholders
+            
+            # Handle components
             if 'ALL' in components:
                 components = 'ALL'
             else:
                 components = [component for component in components]
-
-            # Call the getQuestions function
-            rows = getQuestionsForGen(subject, level, topics, components, difficulties)
-            return render_template('qpgen.html', rows = rows)  # Return results to the client
-
+                
+            # Get questions
+            rows = getQuestionsForGen(board, subject, level, topics, components, difficulties)
+            return render_template('qpgen.html', rows=rows)
+            
+        except Exception as e:
+            logger.error(f'Error in question generation: {str(e)}' + ' IP: ' + str(getClientIp()))
+            return f"Some error occurred server-side, no reason to panic. Error: {e}", 500
         except Exception as e:
             logger.error(f'Error in question generation: {str(e)}' + ' IP: ' + str(getClientIp()))
             return f"Some error occurred server-side, no reason to panic. Error: {e}", 500
