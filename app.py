@@ -165,8 +165,7 @@ def questionGen():
 def submit():
     logger.info('Submit page accessed' + ' IP: ' + str(getClientIp()))
     config = loadConfig(configPath)
-
-    return render_template('submit.html', config = config)
+    return render_template('submit.html', config = config, year = int(datetime.now().year))
 
 
 @app.route('/model-questions')

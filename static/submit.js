@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
   populateBoards(questionSelects.board);
   populateBoards(paperSelects.board);
   
-  yearSelect.value = 2024;
+  yearSelect.value = new Date().getFullYear();
   // Year select handling
     if (yearSelect) {
       yearSelect.addEventListener("change", function () {
