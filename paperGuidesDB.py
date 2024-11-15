@@ -446,8 +446,7 @@ def get_unapproved_questions():
         db = connection.cursor()
 
         questions = db.execute('''
-            SELECT id, uuid, subject, topic, difficulty, board, level, component,
-                   questionFile, solutionFile
+            SELECT (*)
             FROM questions
             WHERE approved = False
         ''').fetchall()
@@ -468,8 +467,7 @@ def get_unapproved_papers():
         db = connection.cursor()
 
         papers = db.execute('''
-            SELECT id, uuid, subject, year, component, board, level,
-                   questionFile, solutionFile
+            SELECT (*)
             FROM papers
             WHERE approved = False
         ''').fetchall()
