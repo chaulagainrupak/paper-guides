@@ -424,6 +424,7 @@
         <div class="select-wrapper">
           <select id="year" name="year">
             {% set currentYear = year %}
+            <!-- HUH? Works on my machine -->
             {% for i in range(10) %}
                 <option value="{{ currentYear - i  }}">{{ currentYear  - i }}</option>
             {% endfor %}
