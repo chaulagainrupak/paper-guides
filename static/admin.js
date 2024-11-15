@@ -60,7 +60,6 @@ async function getJsonData() {
   }
 }
 
-// Initial fetch on page load
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     const jsonData = document.getElementById("json-data").textContent;
@@ -70,15 +69,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     const storedData = await getJsonData();
 
     if (storedData) {
-      // Find missing hashes
+      // Identify missing and removed hashes
       const missingHashes = [];
-      const removedHashes = [];
+      const removedHashes = {
+        questions: [],
+        papers: [],
+      };
 
       // Check for missing hashes
       currentData.questions.forEach((question) => {
         if (
           !storedData.questions.find(
-            (q) => q.questionFileHash === question.questionFileHash,
+            (q) => q.questionFileHash === question.questionFileHash
           )
         ) {
           missingHashes.push(question.questionFileHash);
@@ -87,7 +89,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       currentData.papers.forEach((paper) => {
         if (
           !storedData.papers.find(
-            (p) => p.questionFileHash === paper.questionFileHash,
+            (p) => p.questionFileHash === paper.questionFileHash
           )
         ) {
           missingHashes.push(paper.questionFileHash);
@@ -98,39 +100,43 @@ document.addEventListener("DOMContentLoaded", async () => {
       storedData.questions.forEach((question) => {
         if (
           !currentData.questions.find(
-            (q) => q.questionFileHash === question.questionFileHash,
+            (q) => q.questionFileHash === question.questionFileHash
           )
         ) {
-          removedHashes.push(question.questionFileHash);
+          removedHashes.questions.push(question.questionFileHash);
         }
       });
-
-      // Update IndexedDB by removing data for hashes that are no longer present on the server
-      if (removedHashes.length > 0) {
-        const updatedData = {
-          questions: storedData.questions.filter(
-            (q) => !removedHashes.includes(q.questionFileHash),
-          ),
-          papers: storedData.papers.filter(
-            (p) => !removedHashes.includes(p.questionFileHash),
-          ),
-        };
-        await saveJsonData(updatedData);
-
-        location.reload(true);
-      }
-
       storedData.papers.forEach((paper) => {
         if (
           !currentData.papers.find(
-            (p) => p.questionFileHash === paper.questionFileHash,
+            (p) => p.questionFileHash === paper.questionFileHash
           )
         ) {
-          removedHashes.push(paper.questionFileHash);
+          removedHashes.papers.push(paper.questionFileHash);
         }
       });
 
-      // If there are missing hashes, fetch new data
+      // Update IndexedDB by removing removed hashes
+      if (
+        removedHashes.questions.length > 0 ||
+        removedHashes.papers.length > 0
+      ) {
+        const updatedData = {
+          questions: storedData.questions.filter(
+            (q) => !removedHashes.questions.includes(q.questionFileHash)
+          ),
+          papers: storedData.papers.filter(
+            (p) => !removedHashes.papers.includes(p.questionFileHash)
+          ),
+        };
+        await saveJsonData(updatedData);
+        console.log("Removed hashes from IndexedDB:", removedHashes);
+
+        // Reload to reflect changes
+        location.reload(true);
+      }
+
+      // Fetch missing data if necessary
       if (missingHashes.length > 0) {
         fetch("/getNewData", {
           method: "POST",
@@ -141,7 +147,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         })
           .then((response) => response.json())
           .then(async (newData) => {
-            // Merge the new data with existing data
+            // Merge new data with existing data
             const mergedData = {
               questions: [...storedData.questions, ...newData.questions],
               papers: [...storedData.papers, ...newData.papers],
@@ -153,7 +159,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Render the merged data
             renderData(mergedData);
           })
-          .catch((error) => console.error("Error:", error));
+          .catch((error) => console.error("Error fetching new data:", error));
       } else {
         // Render existing data if no missing hashes
         renderData(storedData);
@@ -175,12 +181,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           // Render the data
           renderData(data);
         })
-        .catch((error) => console.error("Error:", error));
+        .catch((error) => console.error("Error fetching all data:", error));
     }
   } catch (error) {
     console.error("Error during initialization:", error);
   }
 });
+
 
 // Function to render the data (unchanged)
 function renderData(data) {
