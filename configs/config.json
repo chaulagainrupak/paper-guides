@@ -1,5 +1,10 @@
-{
+{   
     "NEB": {
+        "levels": [
+            "10",
+            "11",
+            "12"
+        ],
         "subjects": [
             {
                 "name": "Compulsory Maths",
@@ -172,11 +177,6 @@
                 ]
             }
         ],
-        "levels": [
-            "10",
-            "11",
-            "12"
-        ],
         "components": [
             "Province 1",
             "Province 2",
@@ -185,6 +185,149 @@
             "Lumbini Province",
             "Karnali Province",
             "Sudurpashchim Province"
+        ]
+    },
+
+    "A Levels": {
+        "levels": [
+            "AS level",
+            "A level"
+        ],
+        "subjects": [
+            {
+                "name": "English General Paper (8021)",
+                "topics": [
+                    "Economic, historical, moral, political, and social issues",
+                    "Science, including its history, philosophy, ethics, general principles, and applications",
+                    "Environmental issues",
+                    "Technology and mathematics",
+                    "Literature, language, arts, crafts, and the media"
+                ]
+            },
+            {
+                "name": "Mathematics (9709)",
+                "topics": [
+                    "Quadratics",
+                    "Functions",
+                    "Coordinate Geometry",
+                    "Circular Measure",
+                    "Trigonometry",
+                    "Series",
+                    "Differentiation",
+                    "Integration",
+                    "Representation of Data",
+                    "Permutations and Combinations",
+                    "Probability",
+                    "Discrete Random Variables",
+                    "The Normal Distribution"
+                ]
+            },
+            {
+                "name": "Physics (9702)",
+                "topics": [
+                    "Physical Quantities and Units",
+                    "Kinematics",
+                    "Dynamics",
+                    "Forces, Density, and Pressure",
+                    "Work, Energy, and Power",
+                    "Deformation of Solids",
+                    "Waves",
+                    "Superposition",
+                    "Electricity",
+                    "D.C. Circuits",
+                    "Particle Physics"
+                ]
+            },
+            {
+                "name": "Chemistry (9701)",
+                "topics": [
+                    "Atomic Structure",
+                    "Atoms, Molecules, and Stoichiometry",
+                    "Chemical Bonding",
+                    "States of Matter",
+                    "Chemical Energetics",
+                    "Electrochemistry",
+                    "Equilibria",
+                    "Reaction Kinetics",
+                    "The Periodic Table: Chemical Periodicity",
+                    "Group 2",
+                    "Group 17",
+                    "Nitrogen and Sulfur",
+                    "Introduction to AS Level Organic Chemistry",
+                    "Hydrocarbons",
+                    "Halogen Compounds",
+                    "Hydroxy Compounds",
+                    "Carbonyl Compounds",
+                    "Carboxylic Acids and Derivatives",
+                    "Nitrogen Compounds",
+                    "Polymerisation",
+                    "Organic Synthesis"
+                ]
+            },
+            {
+                "name": "Computer Science (9618)",
+                "topics": [
+                    "Information Representation",
+                    "Communication",
+                    "Hardware",
+                    "Processor Fundamentals",
+                    "System Software",
+                    "Security, Privacy, and Data Integrity",
+                    "Ethics and Ownership",
+                    "Databases",
+                    "Algorithm Design and Problem-solving",
+                    "Data Types and Structures",
+                    "Programming",
+                    "Software Development"
+                ]
+            },
+            {
+                "name": "Economics (9708)",
+                "topics": [
+                    "Basic Economic Principles",
+                    "Demand and Supply Analysis",
+                    "Elasticity of Demand and Supply",
+                    "Market Structures and Types",
+                    "Consumer and Producer Surplus",
+                    "Labor Market",
+                    "Macroeconomic Indicators",
+                    "National Income Accounting",
+                    "Fiscal and Monetary Policy",
+                    "Inflation, Unemployment, and Growth",
+                    "International Trade and Balance of Payments",
+                    "Economic Development and Sustainability",
+                    "Market Failure and Government Intervention"
+                ]
+            },
+            {
+                "name": "Accounting (9706)",
+                "topics": [
+                    "Basic Accounting Principles",
+                    "Double-Entry Bookkeeping",
+                    "Preparation of Financial Statements",
+                    "Non-current Assets",
+                    "Inventory Valuation",
+                    "Financial Ratios",
+                    "Bank Reconciliation",
+                    "Depreciation and Amortization",
+                    "Control Accounts",
+                    "Incorporated Business Accounts",
+                    "Partnership Accounts",
+                    "Costing and Budgeting",
+                    "Introduction to Auditing"
+                ]
+            }
+        ],
+        "components": [
+            "11",
+            "12",
+            "13",
+            "21",
+            "22",
+            "23",
+            "31",
+            "32",
+            "33"
         ]
     }
 }

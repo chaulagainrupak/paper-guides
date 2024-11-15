@@ -330,55 +330,92 @@ def getComponents(year, subjectName):
         connection.close()
 
 
-def getQuestionsForGen(subject, level, topics, components, difficulties):
-    rowsList = []
+def getQuestionsForGen(board, subject, level, topics, components, difficulties):
+    """
+    Get questions based on selected criteria from the questions table.
+    
+    Args:
+        board (str): Board name (e.g., "Board1")
+        subject (str): Subject name
+        level (int): Education level
+        topics (list): List of selected topics
+        components (str|list): 'ALL' or list of specific components
+        difficulties (list): List of difficulty levels
+    
+    Returns:
+        list: List of question rows matching the criteria
+    """
+    connection = None
     try:
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
+        
+        # Base query parts
+        query = """
+            SELECT *
+            FROM questions
+            WHERE
+            board = ? 
+            AND subject = ? 
+            AND level = ?
+            AND approved = True
+        """
+        
+        # Build difficulty condition
+        difficultyCondition = " OR ".join([f"difficulty = ?" for _ in difficulties]) if difficulties else ""
+        
+        # Build topic condition
+        topicCondition = " OR ".join([f"topic = ?" for _ in topics]) if topics else ""
+        
+        # Build the query and parameters dynamically
+        params = [board, subject, level] 
 
-        # Convert lists to comma-separated placeholders
-        topics_placeholder = ', '.join('?' for _ in topics)
-        difficulties_placeholder = ', '.join('?' for _ in difficulties)
+        # Add difficulty condition
+        if difficulties:
+            query += f" AND ({difficultyCondition})"
+            params.extend(difficulties)
 
-        # Prepare the components placeholder and value
-        if components == 'ALL':
-            components_condition = ''  # No additional condition for components
-            values = [subject, level] + topics + difficulties
-        else:
-            components_placeholder = ', '.join('?' for _ in components)
-            components_condition = f'AND component IN ({components_placeholder})'
-            values = [subject, level] + topics + difficulties + components
+        # Add topic condition
+        if topics:
+            query += f" AND ({topicCondition})"
+            params.extend(topics)
 
-        # Create the query string with the appropriate conditions
-        query = f'''
-            SELECT * FROM questions
-            WHERE subject = ? AND level = ?
-            AND topic IN ({topics_placeholder})
-            AND difficulty IN ({difficulties_placeholder})
-            {components_condition}
-            AND approved = 1
-        '''
-
+        # Add components condition
+        if components != 'ALL':
+            componentCondition = " OR ".join([f"component = ?" for _ in components]) if components else ""
+            query += f" AND ({componentCondition})"
+            params.extend(components)
+        
         # Execute the query
-        row = db.execute(query, values)
-        rows = row.fetchall()  # Fetch all the results
-
-        # Check if the result has more than 18 rows
-        if len(rows) > 18:
-            # If more than 18 rows, select 18 random rows
-            rows = random.sample(rows, 18)
+        cursor = db.execute(query, params)
+        rows = cursor.fetchall()
+        
+        # Process results
+        if rows:
+            # If more than 12 questions, randomly select 12
+            if len(rows) > 12:
+                rows = random.sample(rows, 12)
+            else:
+                random.shuffle(rows)
+            
+            # Example processed rows, you can customize this part
+            processed_rows = rows
+            logger.info(f"Successfully retrieved {len(processed_rows)} questions for {subject} level {level}")
+            return processed_rows
         else:
-            random.shuffle(rows)
-
-        logger.info(f"Questions for generation retrieved successfully for subject {subject}, level {level}")
-        return  rows # Return the fetched results
-
+            logger.warning(f"No questions found for {subject} level {level}")
+            return []
+            
     except sqlite3.Error as e:
-        logger.error(f"An error occurred while getting questions for generation: {e}")
-        raise Exception(f"An internal server error occurred: {e}")  # Raise exception to be handled by the route
+        logger.error(f"Database error in getQuestionsForGen: {str(e)}")
+        raise Exception(f"Database error occurred: {str(e)}")
+    except Exception as e:
+        logger.error(f"General error in getQuestionsForGen: {str(e)}")
+        raise Exception(f"An error occurred while retrieving questions: {str(e)}")
     finally:
-        connection.close()
+        if connection:
+            connection.close()
 
 
 def dbDump():
@@ -723,85 +760,82 @@ def get_item_data(connection: sqlite3.Connection, item_type: str, uuid: str) -> 
         }
 
 
+import sqlite3
+
 def getStat(config):
     try:
         # Connect to the SQLite database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
 
-        # Overall counts
-        approvedQuestionsCount = db.execute(
-            "SELECT COUNT(*) FROM questions WHERE approved = TRUE"
-        ).fetchone()[0]
-        
-        unapprovedQuestionsCount = db.execute(
-            "SELECT COUNT(*) FROM questions WHERE approved = FALSE"
-        ).fetchone()[0]
-        
-        approvedPapersCount = db.execute(
-            "SELECT COUNT(*) FROM papers WHERE approved = TRUE"
-        ).fetchone()[0]
-        
-        unapprovedPapersCount = db.execute(
-            "SELECT COUNT(*) FROM papers WHERE approved = FALSE"
-        ).fetchone()[0]
-
-        # Counts by grade level and subject/topic breakdown
-        gradeLevels = ["10", "11", "12"]
-        levelStats = {}
-        
-        for level in gradeLevels:
-            levelStats[level] = {
-                "approvedQuestions": db.execute(
-                    "SELECT COUNT(*) FROM questions WHERE level = ? AND approved = TRUE", (level,)
-                ).fetchone()[0],
-                "unapprovedQuestions": db.execute(
-                    "SELECT COUNT(*) FROM questions WHERE level = ? AND approved = FALSE", (level,)
-                ).fetchone()[0],
-                "subjects": {}
-            }
-            
-            for subject in config["NEB"]["subjects"]:
-                subjectName = subject["name"]
-                levelStats[level]["subjects"][subjectName] = {
-                    "approved": db.execute(
-                        "SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = TRUE", 
-                        (level, subjectName)
-                    ).fetchone()[0],
-                    "unapproved": db.execute(
-                        "SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = FALSE", 
-                        (level, subjectName)
-                    ).fetchone()[0],
-                    "topics": {}
-                }
-                
-                for topicName in subject["topics"]:
-                    levelStats[level]["subjects"][subjectName]["topics"][topicName] = {
-                        "approved": db.execute(
-                            "SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND topic = ? AND approved = TRUE", 
-                            (level, subjectName, topicName)
-                        ).fetchone()[0],
-                        "unapproved": db.execute(
-                            "SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND topic = ? AND approved = FALSE", 
-                            (level, subjectName, topicName)
-                        ).fetchone()[0]
-                    }
-
-        # Format the stats as a JSON object
+        # Initialize the stats dictionary
         stats = {
             "overall": {
                 "questions": {
-                    "approved": approvedQuestionsCount,
-                    "unapproved": unapprovedQuestionsCount
+                    "approved": 0,
+                    "unapproved": 0
                 },
                 "papers": {
-                    "approved": approvedPapersCount,
-                    "unapproved": unapprovedPapersCount
+                    "approved": 0,
+                    "unapproved": 0
                 }
             },
-            "byLevel": levelStats
+            "byBoard": {}
         }
 
+        # Loop through each board in the config
+        for boardName, boardConfig in config.items():
+            boardStats = {
+                "levels": {},
+                "subjects": {}
+            }
+            stats["byBoard"][boardName] = boardStats
+
+            # Handle overall approved/unapproved question count for this board
+            for level in boardConfig["levels"]:
+                boardStats["levels"][level] = {
+                    "approvedQuestions": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND approved = ?", (level, True)).fetchone()[0],
+                    "unapprovedQuestions": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND approved = ?", (level, False)).fetchone()[0],
+                    "subjects": {}
+                }
+
+                # Loop through each subject in the board
+                for subject in boardConfig["subjects"]:
+                    subjectName = subject["name"]
+                    boardStats["levels"][level]["subjects"][subjectName] = {
+                        "approved": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, True)).fetchone()[0],
+                        "unapproved": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, False)).fetchone()[0],
+                    }
+
+
+            # Why are we doing this twice when we could have added the count directly to the json? 
+            # Because I can and makes the code a bit more redable
+
+            # Update overall board-level stats
+            approvedQuestionsCount = db.execute(
+                "SELECT COUNT(*) FROM questions WHERE approved = ?", (True,)
+            ).fetchone()[0]
+            unapprovedQuestionsCount = db.execute(
+                "SELECT COUNT(*) FROM questions WHERE approved = ?", (False,)
+            ).fetchone()[0]
+
+            # Update the JSON
+            stats["overall"]["questions"]["approved"] = approvedQuestionsCount
+            stats["overall"]["questions"]["unapproved"] = unapprovedQuestionsCount
+
+            approvedPapersCount = db.execute(
+                "SELECT COUNT(*) FROM papers WHERE approved = ?", (True,)
+            ).fetchone()[0]
+            unapprovedPapersCount = db.execute(
+                "SELECT COUNT(*) FROM papers WHERE approved = ?", (False,)
+            ).fetchone()[0]
+
+            # Update the JSON
+            stats["overall"]["papers"]["approved"] = approvedPapersCount
+            stats["overall"]["papers"]["unapproved"] = unapprovedPapersCount
+
+
+ 
         # Close the connection
         connection.close()
 

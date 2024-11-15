@@ -117,6 +117,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
 
-    <script src="{{ url_for('static', filename='image-renderer.js') }}"></script>
+
+    {% if request.path.startswith('/question-gen') %}
+        <script src="{{ url_for('static', filename='image-renderer.js') }}"></script>
+   {% endif %}
     <script src="{{ url_for('static', filename='pdf-image-renderer.js') }}"></script>
 </html>

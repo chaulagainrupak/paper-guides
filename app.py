@@ -128,34 +128,32 @@ def questionGenerator():
     return render_template('question-generator.html', config = config)
 
 # This route displays the questions the uppper route genetated a diffrent page and route
-
 @app.route('/question-gen', methods=['POST', 'GET'])
 def questionGen():
     logger.info('Question generation initiated' + ' IP: ' + str(getClientIp()))
     if request.method == 'POST':
         try:
             # Extract form data
+            board = request.form.get('board')
             subject = request.form.get('subject')
-            level = request.form.get('level')
+            level = request.form.get('level')  
             topics = request.form.getlist('topic')
             difficulties = request.form.getlist('difficulty')
             components = request.form.getlist('component')
-
-            # Convert lists to correct format for SQL placeholders
-            # No need to add single quotes around list items here
-            # Example: ['Algebra', 'Geometry'] stays as is
-            # Example: ['1', '2', '3'] stays as is
-
-            # Convert components to correct format for SQL placeholders
+            
+            # Handle components
             if 'ALL' in components:
                 components = 'ALL'
             else:
                 components = [component for component in components]
-
-            # Call the getQuestions function
-            rows = getQuestionsForGen(subject, level, topics, components, difficulties)
-            return render_template('qpgen.html', rows = rows)  # Return results to the client
-
+                
+            # Get questions
+            rows = getQuestionsForGen(board, subject, level, topics, components, difficulties)
+            return render_template('qpgen.html', rows=rows)
+            
+        except Exception as e:
+            logger.error(f'Error in question generation: {str(e)}' + ' IP: ' + str(getClientIp()))
+            return f"Some error occurred server-side, no reason to panic. Error: {e}", 500
         except Exception as e:
             logger.error(f'Error in question generation: {str(e)}' + ' IP: ' + str(getClientIp()))
             return f"Some error occurred server-side, no reason to panic. Error: {e}", 500
@@ -165,8 +163,7 @@ def questionGen():
 def submit():
     logger.info('Submit page accessed' + ' IP: ' + str(getClientIp()))
     config = loadConfig(configPath)
-
-    return render_template('submit.html', config = config)
+    return render_template('submit.html', config = config, year = int(datetime.now().year))
 
 
 @app.route('/model-questions')
@@ -395,6 +392,7 @@ def admin_dashboard():
 @login_required
 def getNewData():
     if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         logger.warning(f'Unauthorized access attempt by user: {current_user.username}')
         return redirect(url_for('index'))
 
@@ -498,6 +496,7 @@ def getNewData():
 @login_required
 def approve(uuid):
     if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
@@ -511,6 +510,7 @@ def approve(uuid):
 @login_required
 def approvePaper(uuid):
     if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
@@ -523,6 +523,7 @@ def approvePaper(uuid):
 @login_required
 def deleteQuestion(uuid):
     if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
@@ -536,6 +537,7 @@ def deleteQuestion(uuid):
 @login_required
 def deletePaper(uuid):
     if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
@@ -547,8 +549,9 @@ def deletePaper(uuid):
 
 @app.route('/edit_question/<uuid>', methods=['GET', 'POST'])
 @login_required
-def editQuestion    (uuid):
+def editQuestion(uuid):
     if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
@@ -583,12 +586,14 @@ def b64encode_filter(s):
 
 @app.route('/robots.txt')
 def robotsTxt():
+    logger.info('robots.txt accessed from' + ' IP: ' + str(getClientIp()))
     return send_from_directory(app.static_folder, 'robots.txt')
 
 @app.route('/stats')
 def stats():
     statsData = getStat(config)
-    return render_template('stats_page.html', statsData=statsData)
+    logger.info('Stats page accessed' + ' IP: ' + str(getClientIp()))
+    return render_template('stats-page.html', statsData=statsData)
 
 
 # Define a reusable function to get the client's IP address
