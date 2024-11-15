@@ -1,2 +1,39 @@
 User-agent: *
+Disallow: /private/
+Disallow: /admin/
+Disallow: /login/
+Disallow: /register/
+Disallow: /search
+Disallow: /cgi-bin/
+Disallow: /tmp/
+Disallow: /test/
+Disallow: /*.php$
+
+# Allow specific bots
+User-agent: Googlebot
+Disallow:
+
+User-agent: Bingbot
+Disallow:
+
+User-agent: DuckDuckBot
+Disallow:
+
+User-agent: facebookexternalhit
+Disallow:
+
+# Block known spammy bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: YandexBot
 Disallow: /
