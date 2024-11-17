@@ -79,28 +79,28 @@ def getLevels():
     config = loadConfig(configPath)
     return render_template('levels.html',config=config )
 
-@app.route('/subjects/<int:level>')
+@app.route('/subjects/<level>')
 def getLevelSubjects(level):
     logger.info(f'Subjects page accessed for level {level}' + ' IP: ' + str(getClientIp()))
     config = loadConfig(configPath)
     return render_template('subject.html', config = config, level = level)
 
 
-@app.route('/subjects/<int:level>/<subject_name>')
+@app.route('/subjects/<level>/<subject_name>')
 def getSubjectYears(level, subject_name):
     logger.info(f'Years page accessed for level {level}, subject {subject_name}' + ' IP: ' + str(getClientIp()))
     years = getYears(level,subject_name)
     return render_template('years.html', subject_name = subject_name, level = level, years = years)
 
 
-@app.route('/subjects/<int:level>/<subject_name>/<int:year>')
+@app.route('/subjects/<level>/<subject_name>/<int:year>')
 def getSubjectQuestions(level ,subject_name, year):
     logger.info(f'Questions page accessed for level {level}, subject {subject_name}, year {year}' + ' IP: ' + str(getClientIp()))
     question_name = getQuestions(level, subject_name, year)
     return render_template('questions.html', questions_name = question_name, year = year)
 
 
-@app.route('/subjects/<int:level>/<subject_name>/<int:year>/<file_data>')
+@app.route('/subjects/<level>/<subject_name>/<int:year>/<file_data>')
 def renderSubjectQuestion(level ,subject_name, year, file_data):
     logger.info(f'Question rendered for level {level}, subject {subject_name}, year {year}, file {file_data}' + ' IP: ' + str(getClientIp()))
     component  = file_data.split(', ')
@@ -313,7 +313,7 @@ def signup():
             flash('Account created successfully! You can now log in.', 'success')
             return redirect(url_for('login'))
 
-    return render_template('signup.html')
+    return render_template('login.html')
 
 
 # Will profiles even be a thing ? Public IDK but chaning the email password will be implemented

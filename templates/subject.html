@@ -1,16 +1,21 @@
 {% extends 'base.html' %}
 
-
 {% block title %}
-    Paper-Guides
+    Subjects for {{ level }}
 {% endblock %}
 
-
 {% block section %}
-    <h1>Choose The Subject</h1>
-    {% for subject in config.NEB.subjects%}
-        <a href="/subjects/{{level}}/{{subject.name}}">{{subject.name}}</a>
-    {%endfor%}
-    <a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
+    <h1>Choose The Subject for {{ level }}</h1>
 
+    {% for board, boardData in config.items() %}
+        {% if level in boardData.levels %}
+            {% for subject in boardData.subjects %}
+                <a href="/subjects/{{ level }}/{{ subject.name}}">
+                    {{ subject.name }}
+                </a>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+
+    <a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
 {% endblock %}
