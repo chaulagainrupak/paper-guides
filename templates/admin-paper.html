@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paper Card</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="{{ url_for('static', filename='pdf-image-renderer.js') }}"></script>
+    <script src="{{ url_for('static', filename='admin.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
+    <title>{% if paper.approved == 1 %}Approved Paper{% else %}Unapproved Paper{% endif %}</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
             background-color: #f5f5f5;
             padding: 20px;
         }
+
         .card {
             border: 1px solid #ddd;
             padding: 20px;
@@ -24,6 +29,7 @@
             border-radius: 8px;
             background-color: #f8f9fa;
         }
+
         .pdf-container {
             max-width: 100%;
             margin: 15px 0;
@@ -31,16 +37,19 @@
             border-radius: 4px;
             overflow: hidden;
         }
+
         .pdf-container object {
             width: 100%;
             height: 600px;
             border: none;
         }
+
         .actions {
             margin-top: 15px;
             display: flex;
             gap: 10px;
         }
+
         .button {
             padding: 8px 16px;
             border-radius: 4px;
@@ -49,22 +58,33 @@
             font-size: 14px;
             transition: all 0.2s ease;
         }
+
         .button:hover {
             opacity: 0.9;
             transform: translateY(-1px);
         }
+
         .approve {
             background-color: #4caf50;
             color: white;
         }
+
         .delete {
             background-color: #f44336;
             color: white;
         }
+
+        .edit {
+            background-color: #2196f3;
+            color: white;
+        }
     </style>
 </head>
+
 <body>
-    <button onclick="history.back()" class="button delete">Back to Dashboard</button>
+    <button class="button" onclick="history.back()" style="background-color: #f44336; color: white;">
+      Back to Dashboard
+    </button>
     <div class="card">
         <div>
             <h3>Paper Details</h3>
@@ -77,21 +97,31 @@
 
         <div class="pdf-container">
             <h4>Question Paper:</h4>
-            <object data-da="{{ paper.questionFile }}" type="application/pdf" class=".paper-pdf">
-                <p>Your browser doesn't support embedded PDFs. 
+            <object data-compressed="{{paper.questionFile}}" type="application/pdf" class="paper-pdf">
+                <p>Your browser doesn't support embedded PDFs. Download it
+                    <a href="{{ paper.questionFile }}">here</a>.
+                </p>
             </object>
         </div>
 
         <div class="pdf-container">
             <h4>Solution Paper:</h4>
-            <object data-da="{{ paper.solutionFile }}" type="application/pdf" class=".paper-pdf">
-                <p>Your browser doesn't support embedded PDFs.
+            <object data-compressed="{{ paper.solutionFile }}" type="application/pdf" class="paper-pdf">
+                <p>Your browser doesn't support embedded PDFs. Download it
+                    <a href="{{ paper.solutionFile }}">here</a>.
+                </p>
             </object>
         </div>
-        
+
         <div class="actions">
-            <button onclick="alert('Approve {{ paper.uuid }}')" class="button approve">Approve</button>
-            <button onclick="alert('Delete {{ paper.uuid }}')" class="button delete">Delete</button>
+            {% if paper.approved == 0 %}
+            <button onclick="approveItem('paper','{{ paper.uuid }}')" class="button approve">
+                Approve
+            </button>
+            {% endif %}
+            <button onclick="deleteItem('paper','{{ paper.uuid }}')" class="button delete">
+                Delete
+            </button>
         </div>
     </div>
 </body>
