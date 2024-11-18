@@ -400,7 +400,7 @@
           </select>
         </div>
       </div>
-
+    
       <div class="form-group">
         <label for="subject">Subject</label>
         <div class="select-wrapper">
@@ -408,7 +408,7 @@
           </select>
         </div>
       </div>
-
+    
       <div class="form-group">
         <label for="paper_type">Paper Type</label>
         <div class="select-wrapper">
@@ -418,7 +418,7 @@
           </select>
         </div>
       </div>
-
+    
       <div class="form-group" id="year_div">
         <label for="year">Year</label>
         <div class="select-wrapper">
@@ -432,7 +432,7 @@
           </select>
         </div>
       </div>
-
+    
       <div class="form-group custom-year" id="other_year_div">
         <label for="other_year">Specify Year</label>
         <input
@@ -444,7 +444,7 @@
           class="custom-input"
         />
       </div>
-
+    
       <div class="form-group">
         <label for="level">Level</label>
         <div class="select-wrapper">
@@ -452,7 +452,7 @@
           </select>
         </div>
       </div>
-
+    
       <div class="form-group">
         <label for="component">Component</label>
         <div class="select-wrapper">
@@ -460,8 +460,21 @@
           </select>
         </div>
       </div>
+    
+      <div class="form-group" id="session_div">
+        <label for="session">Session</label>
+        <div class="select-wrapper">
+          <select id="session" name="session" required>
+            <option value="specimen">Specimen</option>
+            <option value="feb">Feb</option>
+            <option value="may-june" selected>May / June</option>
+            <option value="oct-nov">Oct / Nov</option>
+          </select>
+        </div>
+      </div>
     </div>
 
+  
     <div class="file-upload-section">
       <div class="file-upload-box">
         <label for="paperFile" class="file-label">

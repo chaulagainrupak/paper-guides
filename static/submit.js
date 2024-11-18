@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const paperCard = document.getElementById("paper_card");
   const yearSelect = document.getElementById("year");
   const otherYearDiv = document.getElementById("other_year_div");
+  const sessionDiv = document.getElementById("session_div");
+  const sessionSelect = document.getElementById("session");
 
   const questionSelects = {
     board: document.getElementById("board"),
@@ -151,6 +153,13 @@ document.addEventListener("DOMContentLoaded", function () {
     populateSubjects(paperSelects.subject, selectedBoard);
     populateLevels(paperSelects.level, selectedBoard);
     populateComponents(paperSelects.component, selectedBoard);
+    
+    if (selectedBoard === "A Levels") {
+      sessionDiv.style.display = "block";
+    } else {
+      sessionDiv.style.display = "none";
+    }
+
   });
 
   // Initial population for both forms
@@ -159,17 +168,18 @@ document.addEventListener("DOMContentLoaded", function () {
   
   yearSelect.value = new Date().getFullYear();
   // Year select handling
-    if (yearSelect) {
-      yearSelect.addEventListener("change", function () {
-        if (this.value === "other") {
-          otherYearDiv.style.display = "block";
-        } else {
-          otherYearDiv.style.display = "none";
-        }
-      });
-    }
-
-
+  if (yearSelect) {
+    yearSelect.addEventListener("change", function () {
+      if (this.value === "other") {
+        otherYearDiv.style.display = "block";
+        otherYearDiv.querySelector("input").setAttribute("required", "true");
+      } else {
+        otherYearDiv.style.display = "none";
+        otherYearDiv.querySelector("input").removeAttribute("required");
+      }
+    });
+    
+  }
 
   // File upload visual feedback
   const fileInputs = document.querySelectorAll('input[type="file"]');
@@ -206,12 +216,13 @@ document.addEventListener("DOMContentLoaded", function () {
       let isValid = true;
 
       requiredInputs.forEach((input) => {
-        if (!input.value) {
-          isValid = false;
-          input.style.borderColor = "red";
-        }
+        input.addEventListener("input", function () {
+          if (this.value) {
+            this.style.borderColor = "";
+          }
+        });
       });
-
+      
       if (!isValid) {
         e.preventDefault();
         alert("Please fill in all required fields");
