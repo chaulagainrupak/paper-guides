@@ -181,6 +181,7 @@ def insertTopical(board, subject, questionFile, solutionFile):
 
 def getYears(level , subjectName):
     try:
+        total_years = []
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
@@ -191,13 +192,15 @@ def getYears(level , subjectName):
         # Extract the years from the query result
         years = list(set([row[0] for row in rows]))
 
+        for year in years:
+            total_years.append(str(year)[:4])
 
-        if years == []:
+        if total_years == []:
             logger.warning(f"No years found for level {level} and subject {subjectName}")
             return False
 
         logger.info(f"Years retrieved successfully for level {level} and subject {subjectName}")
-        return years
+        return total_years
     except sqlite3.Error as e:
         logger.error(f"An error occurred while getting years: {e}")
         return None
@@ -207,59 +210,82 @@ def getYears(level , subjectName):
 
 
 def getQuestions(level, subject_name, year):
-
     try:
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-
-        rows = db.execute('SELECT component FROM papers WHERE level = ? AND subject = ? AND year = ? AND approved = 1', (level,subject_name,year)).fetchall()
-
+        
+        # Get rows where the first 4 characters match, but retrieve the full year string
+        rows = db.execute('''
+            SELECT component, year 
+            FROM papers 
+            WHERE level = ? 
+            AND subject = ? 
+            AND substr(year, 1, 4) = ? 
+            AND approved = 1
+        ''', (level, subject_name, str(year))).fetchall()
+        
         components = [row[0] for row in rows]
-
+        full_years = [row[1] for row in rows]  # Get the full year strings from database
         question_name = []
-
-        for component in components:
-            question_name.append(f'{subject_name}, {component}, Year: {year} question paper')
-
+        
+        for component, full_year in zip(components, full_years):
+            question_name.append(f'{subject_name}, {component}, Year: {full_year} question paper')
+            
         logger.info(f"Questions retrieved successfully for level {level}, subject {subject_name}, year {year}")
         return question_name
-
+        
     except sqlite3.Error as e:
         logger.error(f"An error occurred while getting questions: {e}")
         return None
+        
     finally:
         # Close the connection
         connection.close()
+
 
 def renderQuestion(level, subject_name, year, component):
     try:
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-
-        # Execute the query
-        rows = db.execute('SELECT questionFile FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ? AND approved = 1',
-                          (level, subject_name, year, component)).fetchall()
-
-        id = db.execute('SELECT uuid FROM papers WHERE level = ? AND subject = ? AND year = ? AND component = ? AND approved = 1',
-                    (level, subject_name, year, component)).fetchall()
-
+        
+        # Modified queries to use substr for year comparison
+        rows = db.execute('''
+            SELECT questionFile 
+            FROM papers 
+            WHERE level = ? 
+            AND subject = ? 
+            AND year = ? 
+            AND component = ? 
+            AND approved = 1
+        ''', (level, subject_name, year, component)).fetchall()
+        
+        id = db.execute('''
+            SELECT uuid 
+            FROM papers 
+            WHERE level = ? 
+            AND subject = ? 
+            AND year = ? 
+            AND component = ? 
+            AND approved = 1
+        ''', (level, subject_name, year, component)).fetchall()
+        
         # Extract the compressed data from the query result
         compressedData = [row[0] for row in rows]
-
         compressedData.append(id)
+        
         if not compressedData:
             logger.warning(f"No data found for level {level}, subject {subject_name}, year {year}, component {component}")
             return None
-
+            
         logger.info(f"Question rendered successfully for level {level}, subject {subject_name}, year {year}, component {component}")
         return compressedData
-
+        
     except sqlite3.Error as e:
         logger.error(f"An error occurred while rendering question: {e}")
         return None
-
+        
     finally:
         connection.close()
 

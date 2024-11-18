@@ -93,21 +93,25 @@ def getSubjectYears(level, subject_name):
     return render_template('years.html', subject_name = subject_name, level = level, years = years)
 
 
-@app.route('/subjects/<level>/<subject_name>/<int:year>')
+@app.route('/subjects/<level>/<subject_name>/<year>')
 def getSubjectQuestions(level ,subject_name, year):
     logger.info(f'Questions page accessed for level {level}, subject {subject_name}, year {year}' + ' IP: ' + str(getClientIp()))
     question_name = getQuestions(level, subject_name, year)
     return render_template('questions.html', questions_name = question_name, year = year)
 
 
-@app.route('/subjects/<level>/<subject_name>/<int:year>/<file_data>')
-def renderSubjectQuestion(level ,subject_name, year, file_data):
+@app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
+@app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
+def renderSubjectQuestion(level, subject_name, year, file_data):
+    print("here")
     logger.info(f'Question rendered for level {level}, subject {subject_name}, year {year}, file {file_data}' + ' IP: ' + str(getClientIp()))
-    component  = file_data.split(', ')
+    
+    # Ensure `file_data` is properly decoded
+    component = file_data.split(', ')[1]
+    full_year = file_data.split('Year: ')[1].split(' question')[0]
+    question = renderQuestion(level, subject_name, full_year, component)
+    return render_template('qp.html', question=question[0], file_data=file_data, id=question[1][0][0])
 
-    component = component[1]
-    question  = renderQuestion(level, subject_name, year, component)
-    return render_template('qp.html', question = question[0], file_data = file_data, id = question[1][0][0]) # we are extracting the id from the tuple in a array that is in the main array.
 
 
 # Reders the about page. Duh
@@ -212,22 +216,33 @@ def submitPaper():
         board = request.form.get('board')
         subject = request.form.get('subject')
         year = request.form.get('year')
+        session = request.form.get('session')
         level = request.form.get('level')
         component = request.form.get('component')
         questionFile = request.files['questionFile'].read()
         solutionFile = request.files['solutionFile'].read()
-
-
         paper_type = request.form.get('paper_type')
-
 
         if not all([board, subject, level, component, questionFile, paper_type]):
             raise ValueError("Missing required fields")
 
+        # Format year with session for A Levels
+        if board == "A Levels" and session:
+            # Convert session values to display format
+            session_display = {
+                "specimen": "Specimen",
+                "feb": "Feb",
+                "may-june": "May / June",
+                "oct-nov": "Oct / Nov"
+            }
+            formatted_year = f"{year} ({session_display.get(session, session)})"
+        else:
+            formatted_year = year
+
         if paper_type == 'yearly':
             if not year:
                 raise ValueError("Year is required for yearly papers")
-            result = insertPaper(board, subject, year, level, component, questionFile, solutionFile)
+            result = insertPaper(board, subject, formatted_year, level, component, questionFile, solutionFile)
         elif paper_type == 'topical':
             result = insertTopical(board, subject, questionFile, solutionFile)
         else:
@@ -238,10 +253,8 @@ def submitPaper():
             return redirect(url_for('index'))
         else:
             raise Exception("Insert operation failed")
-
     except Exception as e:
         logger.error(f'Error in paper submission: {str(e)}' + ' IP: ' + str(getClientIp()))
-        print(f"Error in submitPaper: {str(e)}")  # Debug print
         return f"Error occurred while submitting paper: {str(e)}", 500
 
 
