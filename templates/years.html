@@ -7,7 +7,12 @@
 
 
 {% block section %}
+
+<div class="section-title" style="display: flex; justify-content: space-between;">
     <h1>Choose The Year</h1>
+    <button onclick="goBack()" style="background: none; border: none; color: #5d71e0; font-size: 1.5rem; cursor: pointer;">← Back</button>
+</div>
+
     {%if years %}
         {% for year in years%}
             <a href="/subjects/{{level}}/{{subject_name}}/{{year}}">Year: {{year}}</a>
