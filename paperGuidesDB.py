@@ -661,6 +661,24 @@ def get_question(uuid: str):
     finally:
         if connection:
             connection.close()
+def get_paper(uuid: str):
+    """Get a single paper by UUID"""
+    try:
+        connection = sqlite3.connect(dbPath)
+        connection.row_factory = dict_factory
+        db = connection.cursor()
+
+        paper = db.execute('''
+            SELECT * FROM papers WHERE uuid = ?
+        ''', (uuid,)).fetchone()
+        print(paper)
+        return paper
+    except sqlite3.Error as e:
+        logger.error(f"Error fetching paper {uuid}: {e}")
+        return None
+    finally:
+        if connection:
+            connection.close()
 
 def update_question(uuid: str, data) -> bool:
     """Update a question's details"""

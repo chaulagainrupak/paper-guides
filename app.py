@@ -400,6 +400,26 @@ def admin_dashboard():
         logger.error(f'Error retrieving unapproved questions or papers: {e}')
         return render_template('admin.html', data={"error": "An error occurred while retrieving data."})
 
+@app.route('/admin/question/<uuid>', methods=['GET'])
+def adminShowQuestion(uuid):
+    if current_user.role != 'admin':
+        logger.warning(f'Unauthorized access attempt by user: {current_user.username} from IP: ', getClientIp())
+        return redirect(url_for('index'))
+    
+    try:
+        return render_template('admin-question.html', question=get_question(uuid))
+    except Exception as e:
+        logger.warning("Error retrieving question: " + str(e))
+
+@app.route('/admin/paper/<uuid>', methods=['GET'])
+def adminShowPaper(uuid):
+    if current_user.role != 'admin':
+        logger.warning(f'Unauthorized access attempt by user: {current_user.username} from IP: ', getClientIp())
+        return redirect(url_for('index'))
+    try:
+        return render_template('admin-paper.html', paper=get_paper(uuid))
+    except Exception as e:
+        logger.warning("Error retrieving paper: " + str(e))
 
 @app.route('/getNewData', methods=["POST"])
 @login_required
