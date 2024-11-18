@@ -25,9 +25,6 @@
         />
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
-
-        <!-- Google tag (gtag.js) -->
         <script
             async
             src="https://www.googletagmanager.com/gtag/js?id=G-SZDFC8YDWK"
@@ -119,9 +116,6 @@
 
         {% endblock %} {% endblock %}
     </body>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
-
 
     {% if request.path.startswith('/question-gen') %}
         <script src="{{ url_for('static', filename='image-renderer.js') }}"></script>

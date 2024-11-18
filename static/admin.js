@@ -1,188 +1,17 @@
-// Initialize IndexedDB
-const dbName = "paperGuidesJsonStorage";
-const storeName = "jsonData";
-const version = 1;
-
-// Function to open database connection
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(dbName, version);
-
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
-
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains(storeName)) {
-        db.createObjectStore(storeName, { keyPath: "id" });
-      }
-    };
-  });
-}
-
-// Function to save data to IndexedDB
-async function saveJsonData(data) {
-  try {
-    const db = await openDB();
-    const transaction = db.transaction(storeName, "readwrite");
-    const store = transaction.objectStore(storeName);
-
-    return new Promise((resolve, reject) => {
-      const request = store.put({
-        id: "jsonData",
-        data: data,
-      });
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-    });
-  } catch (error) {
-    console.error("Error saving data:", error);
-    throw error;
-  }
-}
-
-// Function to retrieve data from IndexedDB
-async function getJsonData() {
-  try {
-    const db = await openDB();
-    const transaction = db.transaction(storeName, "readonly");
-    const store = transaction.objectStore(storeName);
-
-    return new Promise((resolve, reject) => {
-      const request = store.get("jsonData");
-      request.onsuccess = () =>
-        resolve(request.result ? request.result.data : null);
-      request.onerror = () => reject(request.error);
-    });
-  } catch (error) {
-    console.error("Error retrieving data:", error);
-    throw error;
-  }
-}
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const jsonData = document.getElementById("json-data").textContent;
-    const currentData = JSON.parse(jsonData);
-
-    // Get stored data from IndexedDB
-    const storedData = await getJsonData();
-
-    if (storedData) {
-      // Identify missing and removed hashes
-      const missingHashes = [];
-      const removedHashes = {
-        questions: [],
-        papers: [],
-      };
-
-      // Check for missing hashes
-      currentData.questions.forEach((question) => {
-        if (
-          !storedData.questions.find(
-            (q) => q.questionFileHash === question.questionFileHash
-          )
-        ) {
-          missingHashes.push(question.questionFileHash);
-        }
-      });
-      currentData.papers.forEach((paper) => {
-        if (
-          !storedData.papers.find(
-            (p) => p.questionFileHash === paper.questionFileHash
-          )
-        ) {
-          missingHashes.push(paper.questionFileHash);
-        }
-      });
-
-      // Check for removed hashes
-      storedData.questions.forEach((question) => {
-        if (
-          !currentData.questions.find(
-            (q) => q.questionFileHash === question.questionFileHash
-          )
-        ) {
-          removedHashes.questions.push(question.questionFileHash);
-        }
-      });
-      storedData.papers.forEach((paper) => {
-        if (
-          !currentData.papers.find(
-            (p) => p.questionFileHash === paper.questionFileHash
-          )
-        ) {
-          removedHashes.papers.push(paper.questionFileHash);
-        }
-      });
-
-      // Update IndexedDB by removing removed hashes
-      if (
-        removedHashes.questions.length > 0 ||
-        removedHashes.papers.length > 0
-      ) {
-        const updatedData = {
-          questions: storedData.questions.filter(
-            (q) => !removedHashes.questions.includes(q.questionFileHash)
-          ),
-          papers: storedData.papers.filter(
-            (p) => !removedHashes.papers.includes(p.questionFileHash)
-          ),
-        };
-        await saveJsonData(updatedData);
-        console.log("Removed hashes from IndexedDB:", removedHashes);
-
-        // Reload to reflect changes
-        location.reload(true);
-      }
-
-      // Fetch missing data if necessary
-      if (missingHashes.length > 0) {
         fetch("/getNewData", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ hashes: missingHashes }),
+          }
         })
           .then((response) => response.json())
           .then(async (newData) => {
-            // Merge new data with existing data
-            const mergedData = {
-              questions: [...storedData.questions, ...newData.questions],
-              papers: [...storedData.papers, ...newData.papers],
-            };
-
-            // Save merged data to IndexedDB
-            await saveJsonData(mergedData);
-
-            // Render the merged data
-            renderData(mergedData);
+            renderData(newData);
           })
           .catch((error) => console.error("Error fetching new data:", error));
-      } else {
-        // Render existing data if no missing hashes
-        renderData(storedData);
-      }
-    } else {
-      // If no stored data exists, fetch all data
-      fetch("/getNewData", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ message: "all" }),
-      })
-        .then((response) => response.json())
-        .then(async (data) => {
-          // Store the data in IndexedDB
-          await saveJsonData(data);
-
-          // Render the data
-          renderData(data);
-        })
-        .catch((error) => console.error("Error fetching all data:", error));
-    }
   } catch (error) {
     console.error("Error during initialization:", error);
   }
@@ -195,9 +24,9 @@ function renderData(data) {
   const questionSection = document.querySelector(".section:first-of-type");
   const paperSection = document.querySelector(".section:last-of-type");
 
-  // Clear the existing question and paper sections
-  questionSection.innerHTML = "";
-  paperSection.innerHTML = "";
+  if (!questionSection || !paperSection) {
+    return;
+  }
 
   // Render the questions
   data.questions.forEach((question) => {
@@ -211,17 +40,6 @@ function renderData(data) {
     paperSection.appendChild(paperCard);
   });
 
-  // Render the images and PDFs
-  document
-    .querySelectorAll(".question-image, .solution-image")
-    .forEach((element) => {
-      const base64Data = element.getAttribute("data-compressed");
-      renderImageFromElement(element, base64Data);
-    });
-  document.querySelectorAll(".paper-pdf").forEach((element) => {
-    const base64Data = element.getAttribute("data-compressed");
-    renderPDFElement(element, base64Data);
-  });
 }
 
 // Function to create a question card (unchanged)
@@ -232,6 +50,7 @@ function createQuestionCard(question) {
 
   const questionDetailsDiv = document.createElement("div");
   questionDetailsDiv.innerHTML = `
+                    <a href='/admin/question/${question.uuid}' style='text-decoration: none; color: #5d71e0;'>
                     <h3>Question Details</h3>
                     <p><strong>Subject:</strong> ${question.subject}</p>
                     <p><strong>Topic:</strong> ${question.topic}</p>
@@ -239,34 +58,9 @@ function createQuestionCard(question) {
                     <p><strong>Board:</strong> ${question.board}</p>
                     <p><strong>Level:</strong> ${question.level}</p>
                     <p><strong>Component:</strong> ${question.component}</p>
+                    </a>
                 `;
   card.appendChild(questionDetailsDiv);
-
-  const questionImageDiv = document.createElement("div");
-  questionImageDiv.classList.add("image-container");
-  questionImageDiv.innerHTML = `
-                    <h4>Question:</h4>
-                    <div class="question-image" data-compressed="${question.questionBlob}"></div>
-                `;
-  card.appendChild(questionImageDiv);
-
-  const solutionImageDiv = document.createElement("div");
-  solutionImageDiv.classList.add("image-container");
-  solutionImageDiv.innerHTML = `
-                    <h4>Solution:</h4>
-                    <div class="solution-image" data-compressed="${question.solutionBlob}"></div>
-                `;
-  card.appendChild(solutionImageDiv);
-
-  const actionsDiv = document.createElement("div");
-  actionsDiv.classList.add("actions");
-  actionsDiv.innerHTML = `
-                    <button onclick="handleAction('approve', 'question', '${question.uuid}')" class="button approve">Approve</button>
-                    <button onclick="handleAction('edit', 'question', '${question.uuid}')" class="button edit">Edit</button>
-                    <button onclick="deleteItem('question', '${question.uuid}')" class="button delete">Delete</button>
-                `;
-  card.appendChild(actionsDiv);
-
   return card;
 }
 
@@ -277,36 +71,16 @@ function createPaperCard(paper) {
 
   const paperDetailsDiv = document.createElement("div");
   paperDetailsDiv.innerHTML = `
+                    <a href='/admin/paper/${paper.uuid}' style='text-decoration: none; color: #F25C6A;'>
                     <h3>Paper Details</h3>
                     <p><strong>Subject:</strong> ${paper.subject}</p>
                     <p><strong>Year:</strong> ${paper.year}</p>
                     <p><strong>Component:</strong> ${paper.component}</p>
                     <p><strong>Board:</strong> ${paper.board}</p>
                     <p><strong>Level:</strong> ${paper.level}</p>
+                    </a>
                 `;
   card.appendChild(paperDetailsDiv);
-
-  const pdfDiv = document.createElement("div");
-  pdfDiv.classList.add("pdf-container");
-  pdfDiv.innerHTML = `
-                    <h4>Question Paper:</h4>
-                    <div class="paper-pdf" data-compressed="${paper.questionBlob}">
-                        <object type="application/pdf" width="100%" height="600px">
-                            <p>Your browser doesn't support embedded PDFs.
-                               <a class="pdf-download" download="document.pdf">Download the PDF</a> instead.</p>
-                        </object>
-                    </div>
-                `;
-  card.appendChild(pdfDiv);
-
-  const actionsDiv = document.createElement("div");
-  actionsDiv.classList.add("actions");
-  actionsDiv.innerHTML = `
-                    <button onclick="handleAction('approve', 'paper', '${paper.uuid}')" class="button approve">Approve</button>
-                    <button onclick="deleteItem('paper', '${paper.uuid}')" class="button delete">Delete</button>
-                `;
-  card.appendChild(actionsDiv);
-
   return card;
 }
 
@@ -350,10 +124,10 @@ function deleteItem(type, uuid) {
       headers: {
         "Content-Type": "application/json",
       },
-    })
-      .then((response) => {
+    }).then((response) => {
         if (response.ok) {
           window.location.reload();
+          window.location.href = '/admin';
         } else {
           throw new Error("Failed to delete item");
         }
@@ -365,45 +139,24 @@ function deleteItem(type, uuid) {
   }
 }
 
-// Delete function
-function deleteItem(type, uuid) {
-  if (confirm(`Are you sure you want to delete this ${type}?`)) {
-    fetch(`/delete_${type}/${uuid}`, {
-      method: "POST",
+function approveItem(type, uuid) {
+  if (confirm(`Are you sure you want to approve this ${type}?`)) {
+    fetch(`/approve_${type}/${uuid}`, {
+      method: "POST", 
       headers: {
         "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          window.location.reload();
-        } else {
-          throw new Error("Failed to delete item");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("An error occurred while deleting the item");
-      });
-  }
-}
-
-// Handle other actions (approve, edit)
-function handleAction(action, type, uuid) {
-  fetch(`/${action}_${type}/${uuid}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => {
-      if (!response.ok) throw new Error("Network response was not ok");
-      window.location.reload();
+      }   
+    }).then((response) => {
+      if (response.ok) {
+        window.location.reload();
+        window.location.href = '/admin';
+      } else {
+        throw new Error("Failed to delete item");
+      }
     })
     .catch((error) => {
       console.error("Error:", error);
-      alert(
-        `An error occurred while processing your request: ${error.message}`,
-      );
+      alert("An error occurred while deleting the item");
     });
+  }
 }

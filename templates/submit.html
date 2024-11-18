@@ -326,12 +326,22 @@
         <label for="difficulty">Difficulty</label>
         <div class="difficulty-select">
           {% for i in range(5) %}
-          <input
-            type="radio"
-            id="diff_{{i+1}}"
-            name="difficulty"
-            value="{{i+1}}"
-          />
+            {%if i == 0%}
+            <input
+              type="radio"
+              id="diff_{{i+1}}"
+              name="difficulty"
+              value="{{i+1}}"
+              checked
+            />
+            {%else %}
+              <input
+              type="radio"
+              id="diff_{{i+1}}"
+              name="difficulty"
+              value="{{i+1}}"
+            />
+            {%endif%}
           <label for="diff_{{i+1}}" class="difficulty-label">{{i+1}}</label>
           {% endfor %}
         </div>

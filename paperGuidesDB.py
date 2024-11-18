@@ -468,7 +468,6 @@ def dbDump():
             board = data[5]
 
             json_data.append(f'Grade: {level}, Subject: {subject_name}, Province: {component}, Year: {year} question paper. ({board})')
-            print(f'Grade: {level}, Subject: {subject_name}, Province: {component}, Year: {year} question paper. ({board})')
 
 
         # Write to JSON file
@@ -509,8 +508,7 @@ def get_unapproved_questions():
         db = connection.cursor()
 
         questions = db.execute('''
-            SELECT id, uuid, subject, topic, difficulty, board, level, component,
-                   questionFile, solutionFile
+            SELECT id, uuid, subject, topic, difficulty, board, level, component
             FROM questions
             WHERE approved = False
         ''').fetchall()
@@ -531,8 +529,7 @@ def get_unapproved_papers():
         db = connection.cursor()
 
         papers = db.execute('''
-            SELECT id, uuid, subject, year, component, board, level,
-                   questionFile, solutionFile
+            SELECT id, uuid, subject, year, component, board, level
             FROM papers
             WHERE approved = False
         ''').fetchall()
@@ -671,7 +668,6 @@ def get_paper(uuid: str):
         paper = db.execute('''
             SELECT * FROM papers WHERE uuid = ?
         ''', (uuid,)).fetchone()
-        print(paper)
         return paper
     except sqlite3.Error as e:
         logger.error(f"Error fetching paper {uuid}: {e}")

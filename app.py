@@ -103,7 +103,6 @@ def getSubjectQuestions(level ,subject_name, year):
 @app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
 @app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
 def renderSubjectQuestion(level, subject_name, year, file_data):
-    print("here")
     logger.info(f'Question rendered for level {level}, subject {subject_name}, year {year}, file {file_data}' + ' IP: ' + str(getClientIp()))
     
     # Ensure `file_data` is properly decoded
@@ -350,7 +349,6 @@ def rate(question_UUID, rating):
             return False
     except Exception as e:
         logger.error(f'Error in rating: {str(e)}' + ' IP: ' + str(getClientIp()))
-        print(f'Something went wrong while giving a rating: {e}')
         return False
 
 
@@ -407,6 +405,7 @@ def adminShowQuestion(uuid):
         return redirect(url_for('index'))
     
     try:
+        logger.info(f'Question page addessed for paper {uuid} By: {current_user.username} with role: {current_user.role} IP: ' + str(getClientIp()))
         return render_template('admin-question.html', question=get_question(uuid))
     except Exception as e:
         logger.warning("Error retrieving question: " + str(e))
@@ -417,6 +416,7 @@ def adminShowPaper(uuid):
         logger.warning(f'Unauthorized access attempt by user: {current_user.username} from IP: ', getClientIp())
         return redirect(url_for('index'))
     try:
+        logger.info(f'Paper page addessed for paper {uuid} By: {current_user.username} with role: {current_user.role} IP: ' + str(getClientIp()))
         return render_template('admin-paper.html', paper=get_paper(uuid))
     except Exception as e:
         logger.warning("Error retrieving paper: " + str(e))
@@ -430,10 +430,6 @@ def getNewData():
         return redirect(url_for('index'))
 
     try:
-        received_data = request.get_json()
-        logger.info(f'Server received the following data: {received_data}')
-
-        if received_data.get('message') == 'all':
             questions = get_unapproved_questions()
             papers = get_unapproved_papers()
 
@@ -452,10 +448,6 @@ def getNewData():
                     "board": question["board"],
                     "level": question["level"],
                     "component": question["component"],
-                    "questionFileHash": getHash(question["questionFile"]),
-                    "solutionFileHash": getHash(question["solutionFile"]),
-                    "questionBlob": question["questionFile"],
-                    "solutionBlob": question["solutionFile"],
                 })
 
             for paper in papers:
@@ -467,60 +459,9 @@ def getNewData():
                     "board": paper["board"],
                     "level": paper["level"],
                     "component": paper["component"],
-                    "questionFileHash": getHash(paper["questionFile"]),
-                    "solutionFileHash": getHash(paper["solutionFile"]),
-                    "questionBlob": paper["questionFile"],
-                    "solutionBlob": paper["solutionFile"],
                 })
 
             return jsonify(data)
-
-        else:
-            questions = get_unapproved_questions()
-            papers = get_unapproved_papers()
-
-            data = {
-                "questions": [],
-                "papers": []
-            }
-
-            for hash_value in received_data["hashes"]:
-                for question in questions:
-                    if hash_value == getHash(question["questionFile"]):
-                        data["questions"].append({
-                            "id": question["id"],
-                            "uuid": question["uuid"],
-                            "subject": question["subject"],
-                            "topic": question["topic"],
-                            "difficulty": question["difficulty"],
-                            "board": question["board"],
-                            "level": question["level"],
-                            "component": question["component"],
-                            "questionFileHash": getHash(question["questionFile"]),
-                            "solutionFileHash": getHash(question["solutionFile"]),
-                            "questionBlob": question["questionFile"],
-                            "solutionBlob": question["solutionFile"],
-                        })
-                        break
-                for paper in papers:
-                    if hash_value == getHash(paper["questionFile"]):
-                        data["papers"].append({
-                            "id": paper["id"],
-                            "uuid": paper["uuid"],
-                            "subject": paper["subject"],
-                            "year": paper["year"],
-                            "board": paper["board"],
-                            "level": paper["level"],
-                            "component": paper["component"],
-                            "questionFileHash": getHash(paper["questionFile"]),
-                            "solutionFileHash": getHash(paper["solutionFile"]),
-                            "questionBlob": paper["questionFile"],
-                            "solutionBlob": paper["solutionFile"],
-                        })
-                        break
-
-            return jsonify(data)
-
     except Exception as e:
         logger.error(f'Error processing getNewData: {e}')
         return jsonify({"error": "An error occurred while processing the request."}),
