@@ -15,7 +15,6 @@ import subprocess
 from paperGuidesDB import *
 from config import *
 from logHandler import getCustomLogger
-from sitemapper import generate_sitemap_xml
 
 # Load environment variables from .env file
 
@@ -574,8 +573,8 @@ def stats():
 
 @app.route('/sitemap.xml')
 def sitemap():
-    xml_content = generate_sitemap_xml('https://paperguides.xyz')
-    return Response(xml_content, mimetype='application/xml')
+    logger.info(f'Sitemap accessed' + ' IP: ' + str(getClientIp()))
+    return send_from_directory(os.path.expanduser('~/paper-guides/static'), 'sitemap.xml', mimetype='application/xml')
 
 # Define a reusable function to get the client's IP address
 def getClientIp():
