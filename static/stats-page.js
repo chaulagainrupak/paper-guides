@@ -7,7 +7,6 @@ function randomNum(val){
     return Math.floor(Math.random() * val);
 }
 
-console.log(randomNum(255), getRandomColor())
 // Parse the JSON data from the hidden div
 const chartDataDiv = document.getElementById('chart-data').innerText;
 const statsData = JSON.parse(chartDataDiv);
@@ -117,14 +116,14 @@ Object.keys(statsData.byBoard).forEach(board => {
                 labels: subjects,
                 datasets: [
                     {
-                        label: 'Approved Questions',
+                        label: 'Approved Questions And Papers',
                         data: subjects.map(subject => levelData.subjects[subject].approved),
                         backgroundColor: subjects.map(() => getRandomColor()),
                         borderColor: subjects.map(() => getRandomColor()),
                         borderWidth: 1
                     },
                     {
-                        label: 'Unapproved Questions',
+                        label: 'Unapproved Questions And Papers',
                         data: subjects.map(subject => levelData.subjects[subject].unapproved),
                         backgroundColor: subjects.map(() => 'rgba(255, 99, 132, 0.2)'), // Light red
                         borderColor: subjects.map(() => 'rgb(255, 99, 132)'), // Red
@@ -138,7 +137,7 @@ Object.keys(statsData.byBoard).forEach(board => {
                     ...commonOptions.plugins,
                     title: {
                         ...commonOptions.plugins.title,
-                        text: `${levelLabel} - ${board} Subject Distribution`
+                        text: `${levelLabel} - ${board} Subject Distribution For Approved & Unapproved: Questions & Papers`
                     }
                 },
                 scales: {
