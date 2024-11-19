@@ -1,12 +1,13 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, send_from_directory
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, send_from_directory, Response
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
 from datetime import datetime
 import base64
+import subprocess
 
 # We are importing all the required functions from the following files inorder to make a huge app file?
 
@@ -14,12 +15,14 @@ import base64
 from paperGuidesDB import *
 from config import *
 from logHandler import getCustomLogger
+from sitemapper import generate_sitemap_xml
 
 # Load environment variables from .env file
 
 load_dotenv('.env')
 
 app = Flask(__name__)
+
 
 # Replace hardcoded values with environment variables
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -569,6 +572,10 @@ def stats():
     logger.info('Stats page accessed' + ' IP: ' + str(getClientIp()))
     return render_template('stats-page.html', statsData=statsData)
 
+@app.route('/sitemap.xml')
+def sitemap():
+    xml_content = generate_sitemap_xml('https://paperguides.xyz')
+    return Response(xml_content, mimetype='application/xml')
 
 # Define a reusable function to get the client's IP address
 def getClientIp():
