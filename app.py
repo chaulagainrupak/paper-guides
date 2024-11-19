@@ -574,7 +574,7 @@ def stats():
 @app.route('/sitemap.xml')
 def sitemap():
     logger.info(f'Sitemap accessed' + ' IP: ' + str(getClientIp()))
-    return send_from_directory(os.path.expanduser('~/paper-guides/static'), 'sitemap.xml', mimetype='application/xml')
+    return send_from_directory(os.path.expanduser('~/paper-guides/static'), 'sitemap.xml', mimetype='application/xml'), 200
 
 # Define a reusable function to get the client's IP address
 def getClientIp():
