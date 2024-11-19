@@ -37,3 +37,5 @@ Disallow: /
 
 User-agent: YandexBot
 Disallow: /
+
+Sitemap: https://paperguides.xyz/sitemap.xml
