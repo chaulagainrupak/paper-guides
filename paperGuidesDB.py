@@ -18,75 +18,98 @@ logger = getCustomLogger(__name__)
 dbPath = './instance/paper-guides-resources.db'
 
 def createDatabase():
+    """
+    Creates and synchronizes the database schema in one unified function.
+    The table schemas are hardcoded within this function.
+    """
+
+    # Define table schemas directly inside the function
+    tableSchemas = {
+        "papers": {
+            "id": "INTEGER PRIMARY KEY",
+            "uuid": "TEXT UNIQUE",
+            "subject": "TEXT",
+            "year": "INTEGER",
+            "component": "TEXT",
+            "board": "TEXT",
+            "level": "INTEGER",
+            "questionFile": "BLOB",
+            "solutionFile": "BLOB",
+            "approved": "DEFAULT False",
+            "submittedBy": "TEXT",
+            "submittedFrom": "TEXT"
+        },
+        "questions": {
+            "id": "INTEGER PRIMARY KEY",
+            "uuid": "TEXT UNIQUE",
+            "subject": "TEXT",
+            "topic": "TEXT",
+            "difficulty": "INTEGER",
+            "board": "TEXT",
+            "level": "INTEGER",
+            "component": "TEXT",
+            "questionFile": "BLOB",
+            "solutionFile": "BLOB",
+            "approved": "DEFAULT False",
+            "one": "INTEGER DEFAULT 0",
+            "two": "INTEGER DEFAULT 0",
+            "three": "INTEGER DEFAULT 0",
+            "four": "INTEGER DEFAULT 0",
+            "five": "INTEGER DEFAULT 0",
+            "submittedBy": "TEXT",
+            "submittedFrom": "TEXT"
+        },
+        "topicals": {
+            "id": "INTEGER PRIMARY KEY",
+            "uuid": "TEXT UNIQUE",
+            "subject": "TEXT",
+            "board": "TEXT",
+            "questionFile": "BLOB",
+            "solutionFile": "BLOB",
+            "submittedBy": "TEXT",
+            "submittedFrom": "TEXT"
+        },
+        "ratings": {
+            "id": "INTEGER PRIMARY KEY",
+            "user_id": "TEXT",
+            "question_UUID": "TEXT",
+            "rating": "INTEGER"
+        }
+    }
+
     try:
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
 
+        for tableName, schema in tableSchemas.items():
+            # Create table if it doesn't exist
+            columns = ", ".join(f"{name} {type_}" for name, type_ in schema.items())
+            db.execute(f"CREATE TABLE IF NOT EXISTS {tableName} ({columns})")
 
-        # Create papers table
-        db.execute('''CREATE TABLE IF NOT EXISTS papers
-        (id INTEGER PRIMARY KEY,
-        uuid TEXT UNIQUE,
-        subject TEXT,
-        year INTEGER,
-        component TEXT,
-        board TEXT,
-        level INTEGER,
-        questionFile BLOB,
-        solutionFile BLOB ,
-        approved DEFAULT False)''')
+            # Sync columns for the table
+            try:
+                # Get existing columns
+                existingColumns = db.execute(f"PRAGMA table_info({tableName})").fetchall()
+                existingColumnNames = [col[1] for col in existingColumns]
 
-
-        # Create questions table
-        db.execute('''CREATE TABLE IF NOT EXISTS questions
-        (id INTEGER PRIMARY KEY,
-        uuid TEXT UNIQUE,
-        subject TEXT,
-        topic TEXT,
-        difficulty INTEGER,
-        board TEXT,
-        level INTEGER,
-        component TEXT,
-        questionFile BLOB,
-        solutionFile BLOB,
-        approved DEFAULT False,
-        one INTEGER DEFAULT 0,
-        two INTEGER DEFAULT 0,
-        three INTEGER DEFAULT 0,
-        four INTEGER DEFAULT 0,
-        five INTEGER DEFAULT 0)''')
-
-        # Create the topicals table
-
-        db.execute(''' CREATE TABLE IF NOT EXISTS topicals
-        (id INTEGER PRIMARY KEY,
-        uuid TEXT UNIQUE,
-        subject TEXT,
-        board TEXT,
-        questionFile BLOB,
-        solutionFile BLOB )''')
-
-
-        # Create the ratings table
-        db.execute('''
-            CREATE TABLE IF NOT EXISTS ratings (
-                id INTEGER PRIMARY KEY,
-                user_id TEXT,
-                question_UUID TEXT,
-                rating INTEGER
-            )
-        ''')
+                # Add missing columns
+                for column, columnType in schema.items():
+                    if column not in existingColumnNames:
+                        db.execute(f"ALTER TABLE {tableName} ADD COLUMN {column} {columnType}")
+                        logger.info(f"Added column: {column} {columnType} to table: {tableName}")
+            except sqlite3.Error as e:
+                logger.error(f"Error syncing schema for {tableName}: {e}")
 
         connection.commit()
 
-
     except sqlite3.Error as e:
-        logger.error(f"An error occurred while creating database: {e}")
+        logger.error(f"An error occurred while managing the database: {e}")
     finally:
         if connection:
             connection.close()
 
-def insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile):
+
+def insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile, user, ip):
     try:
         uuidStr = str(uuid.uuid4())
         connection = sqlite3.connect(dbPath)
@@ -102,9 +125,9 @@ def insertQuestion(board, subject, topic, difficulty, level, component, question
         encodedSolutionFile = base64.b64encode(compressedSolutionFile).decode('utf-8')
 
         db.execute('''INSERT INTO questions
-            (uuid, subject, topic, difficulty, board, level, component, questionFile, solutionFile)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-            (uuidStr, subject, topic, difficulty, board, level, component, encodedQuestionFile, encodedSolutionFile))
+            (uuid, subject, topic, difficulty, board, level, component, questionFile, solutionFile, submittedBy, submittedFrom)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            (uuidStr, subject, topic, difficulty, board, level, component, encodedQuestionFile, encodedSolutionFile, user, ip))
         connection.commit()
         connection.close()
         logger.info(f"Question inserted successfully. UUID: {uuidStr}")
@@ -114,7 +137,7 @@ def insertQuestion(board, subject, topic, difficulty, level, component, question
         return False
 
 def insertPaper(board: str, subject: str, year: str, level: str,
-                component: str, questionFile: bytes, solutionFile: bytes) -> bool:
+                component: str, questionFile: bytes, solutionFile: bytes, user, ip) -> bool:
     """
     Insert a paper into the database with proper compression and encoding.
 
@@ -144,10 +167,10 @@ def insertPaper(board: str, subject: str, year: str, level: str,
 
         db = connection.cursor()
         db.execute('''INSERT INTO papers
-            (uuid, subject, year, board, level, component, questionFile, solutionFile)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+            (uuid, subject, year, board, level, component, questionFile, solutionFile, submittedBy, submittedFrom)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
             (uuidStr, subject, year, board, level, component,
-             questionFile_b64, solutionFile_b64))
+             questionFile_b64, solutionFile_b64, user, ip))
         connection.commit()
         connection.close()
         logger.info(f"Paper inserted successfully. UUID: {uuidStr}")
@@ -156,21 +179,23 @@ def insertPaper(board: str, subject: str, year: str, level: str,
         logger.error(f"Error inserting paper into database: {e}")
         return False
 
-def insertTopical(board, subject, questionFile, solutionFile):
+def insertTopical(board, subject, questionFile, solutionFile, user, ip):
     try:
         uuidStr = str(uuid.uuid4())
         connection = sqlite3.connect(dbPath)
 
 
-        questionFile = zlib.compress(questionFile)
-        solutionFile = zlib.compress(solutionFile)
+        questionFile = zlib.compress(questionFile, level=9)
+        solutionFile = zlib.compress(solutionFile, level=9)
 
+        questionFile = base64.b64encode(questionFile).decode('utf-8')
+        solutionFile = base64.b64encode(solutionFile).decode('utf-8')
 
         db = connection.cursor()
         db.execute('''INSERT INTO topicals
-            (uuid, subject, board, questionFile, solutionFile)
-            VALUES (?, ?, ?, ?, ?)''',
-            (uuidStr, subject, board, questionFile, solutionFile))
+            (uuid, subject, board, questionFile, solutionFile, submittedBy, submittedFrom)
+            VALUES (?, ?, ?, ?, ?, ?, ?)''',
+            (uuidStr, subject, board, questionFile, solutionFile, user, ip))
         connection.commit()
         connection.close()
         logger.info(f"Topical paper inserted successfully. UUID: {uuidStr}")
@@ -508,7 +533,7 @@ def get_unapproved_questions():
         db = connection.cursor()
 
         questions = db.execute('''
-            SELECT id, uuid, subject, topic, difficulty, board, level, component
+            SELECT *
             FROM questions
             WHERE approved = False
         ''').fetchall()
@@ -529,7 +554,7 @@ def get_unapproved_papers():
         db = connection.cursor()
 
         papers = db.execute('''
-            SELECT id, uuid, subject, year, component, board, level
+            SELECT *
             FROM papers
             WHERE approved = False
         ''').fetchall()
@@ -833,7 +858,7 @@ def getStat(config):
 
             # Handle overall approved/unapproved question count for this board
             for level in boardConfig["levels"]:
-                boardStats["levels"][level] = {
+                boardStats[ "levels"][level] = {
                     "approvedQuestions": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND approved = ?", (level, True)).fetchone()[0],
                     "unapprovedQuestions": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND approved = ?", (level, False)).fetchone()[0],
                     "subjects": {}
@@ -843,8 +868,11 @@ def getStat(config):
                 for subject in boardConfig["subjects"]:
                     subjectName = subject["name"]
                     boardStats["levels"][level]["subjects"][subjectName] = {
-                        "approved": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, True)).fetchone()[0],
-                        "unapproved": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, False)).fetchone()[0],
+                        "approved": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, True)).fetchone()[0]
+                                    + db.execute("SELECT COUNT(*) FROM papers WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, True)).fetchone()[0],
+                        "unapproved": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, False)).fetchone()[0]
+                                    + db.execute("SELECT COUNT(*) FROM papers WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, False)).fetchone()[0],
+
                     }
 
 

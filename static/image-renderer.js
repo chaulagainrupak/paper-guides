@@ -1,43 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  function renderImageFromElement(element, base64Data) {
-    if (!element || !base64Data) {
-      console.error("Element or data not found");
-      return;
-    }
-
-    try {
-      const binaryString = atob(base64Data);
-      const charData = binaryString.split("").map((char) => char.charCodeAt(0));
-      const uint8Array = new Uint8Array(charData);
-      const decompressedData = pako.inflate(uint8Array);
-      const blob = new Blob([decompressedData], { type: "image/png" });
-      const imageUrl = URL.createObjectURL(blob);
-
-      const imgElement = document.createElement("img");
-      imgElement.src = imageUrl;
-      element.textContent = "";
-      element.appendChild(imgElement);
-    } catch (error) {
-      console.error(
-        `Failed to render image for element ID ${element.id}:`,
-        error,
-      );
-    }
-  }
-
-  const questionImages = document.querySelectorAll(".question-image");
-  const solutionImages = document.querySelectorAll(".solution-image");
-
-  questionImages.forEach((element) => {
-    const base64Data = element.getAttribute("data-compressed");
-    renderImageFromElement(element, base64Data);
-  });
-
-  solutionImages.forEach((element) => {
-    const base64Data = element.getAttribute("data-compressed");
-    renderImageFromElement(element, base64Data);
-  });
-
+  
   const questionItems = document.querySelectorAll(".question-item");
   const questionContainers = document.querySelectorAll(".question-container");
 
@@ -80,6 +42,12 @@ document.addEventListener("DOMContentLoaded", function () {
   // Toggling question containers
   questionItems.forEach((item) => {
     item.addEventListener("click", () => {
+      // Remove 'active' class from all question items
+      questionItems.forEach((otherItem) => {
+        otherItem.classList.remove("active");
+      });
+      // Add 'active' class to the clicked item
+      item.classList.add("active");
       const questionId = item.getAttribute("data-id");
       const questionContainer = document.querySelector(
         `#question-container-${questionId}`,
@@ -136,4 +104,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Initialize pagination
   showPage(currentPage);
+
+
+  document.querySelectorAll(".difficulty").forEach((item) => {
+    var diff = item.getAttribute("difficulty");
+
+    if (diff == 1) {
+    }
+  })
 });

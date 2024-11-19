@@ -44,16 +44,11 @@ login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
-@app.before_request
-def setup():
-    # Create tables only once before the first request is processed
-    with app.app_context():
-        db.create_all()  # Ensure tables are created
-        createDatabase()  # If needed, call additional setup functions
+# Create the database 
+createDatabase()
+with app.app_context():
+    db.create_all()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -202,7 +197,7 @@ def submitQuestion():
     solutionFile = request.files['solutionFile'].read()
 
 
-    if insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile):
+    if insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile, current_user.username, getClientIp()):
         logger.info('Question submitted successfully' + ' IP: ' + str(getClientIp()))
         return redirect(url_for('index'))
     else:
@@ -232,7 +227,7 @@ def submitPaper():
             # Convert session values to display format
             session_display = {
                 "specimen": "Specimen",
-                "feb": "Feb",
+                "feb-mar": "Feb / Mar",
                 "may-june": "May / June",
                 "oct-nov": "Oct / Nov"
             }
@@ -243,9 +238,9 @@ def submitPaper():
         if paper_type == 'yearly':
             if not year:
                 raise ValueError("Year is required for yearly papers")
-            result = insertPaper(board, subject, formatted_year, level, component, questionFile, solutionFile)
+            result = insertPaper(board, subject, formatted_year, level, component, questionFile, solutionFile, current_user.username, getClientIp())
         elif paper_type == 'topical':
-            result = insertTopical(board, subject, questionFile, solutionFile)
+            result = insertTopical(board, subject, questionFile, solutionFile, current_user.username, getClientIp())
         else:
             raise ValueError(f"Invalid paper type: {paper_type}")
 
@@ -450,6 +445,7 @@ def getNewData():
                     "board": question["board"],
                     "level": question["level"],
                     "component": question["component"],
+                    "submittedBy": question["submittedBy"]
                 })
 
             for paper in papers:
@@ -461,6 +457,7 @@ def getNewData():
                     "board": paper["board"],
                     "level": paper["level"],
                     "component": paper["component"],
+                    "submittedBy": paper["submittedBy"]
                 })
 
             return jsonify(data)

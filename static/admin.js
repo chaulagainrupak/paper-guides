@@ -29,35 +29,37 @@ function renderData(data) {
   }
 
   // Render the questions
-  data.questions.forEach((question) => {
-    const questionCard = createQuestionCard(question);
+  data.questions.forEach((question, count) => {
+    const questionCard = createQuestionCard(question, count + 1);
     questionSection.appendChild(questionCard);
   });
 
   // Render the papers
-  data.papers.forEach((paper) => {
-    const paperCard = createPaperCard(paper);
+  data.papers.forEach((paper, count) => {
+    const paperCard = createPaperCard(paper, count + 1);
     paperSection.appendChild(paperCard);
   });
 
 }
 
 // Function to create a question card (unchanged)
-function createQuestionCard(question) {
+function createQuestionCard(question, count) {
   const card = document.createElement("div");
   card.classList.add("card");
   card.setAttribute("data-compressed", JSON.stringify(question));
 
   const questionDetailsDiv = document.createElement("div");
   questionDetailsDiv.innerHTML = `
-                    <a href='/admin/question/${question.uuid}' style='text-decoration: none; color: #5d71e0;'>
-                    <h3>Question Details</h3>
-                    <p><strong>Subject:</strong> ${question.subject}</p>
-                    <p><strong>Topic:</strong> ${question.topic}</p>
-                    <p><strong>Difficulty:</strong> ${question.difficulty}/5</p>
-                    <p><strong>Board:</strong> ${question.board}</p>
-                    <p><strong>Level:</strong> ${question.level}</p>
-                    <p><strong>Component:</strong> ${question.component}</p>
+                    <a href='/admin/question/${question.uuid}' style='text-decoration: none; color: black;'>
+                    <h1>${count}) Question Details</h1>
+                    <h2 style='color: #5d71e0;'><strong>Subject:</strong> ${question.subject}</h2>
+                    <h2><strong>Topic:</strong> ${question.topic}</h2>
+                    <h2><strong>Difficulty:</strong> ${question.difficulty}/5</h2>
+                    <h2><strong>Board:</strong> ${question.board}</h2>
+                    <h2><strong>Level:</strong> ${question.level}</h2>
+                    <h2><strong>Component:</strong> ${question.component}</h2>
+                    <h2 style='color: #5d71e0;'><strong>Submitted by:</strong> ${question.submittedBy}</h2>
+                    <h2><strong>UUID:</strong> ${question.uuid}</h2>
                     </a>
                 `;
   card.appendChild(questionDetailsDiv);
@@ -65,19 +67,21 @@ function createQuestionCard(question) {
 }
 
 // Function to create a paper card (unchanged)
-function createPaperCard(paper) {
+function createPaperCard(paper, count) {
   const card = document.createElement("div");
   card.classList.add("card");
 
   const paperDetailsDiv = document.createElement("div");
   paperDetailsDiv.innerHTML = `
-                    <a href='/admin/paper/${paper.uuid}' style='text-decoration: none; color: #F25C6A;'>
-                    <h3>Paper Details</h3>
-                    <p><strong>Subject:</strong> ${paper.subject}</p>
-                    <p><strong>Year:</strong> ${paper.year}</p>
-                    <p><strong>Component:</strong> ${paper.component}</p>
-                    <p><strong>Board:</strong> ${paper.board}</p>
-                    <p><strong>Level:</strong> ${paper.level}</p>
+                    <a href='/admin/paper/${paper.uuid}' style='text-decoration: none; color: black;'>
+                    <h1 style='color: #F25C6A;'>${count}) Paper Details</h1>
+                    <h2><strong>Subject:</strong> ${paper.subject}</h2>
+                    <h2><strong>Year:</strong> ${paper.year}</h2>
+                    <h2><strong>Component:</strong> ${paper.component}</h2>
+                    <h2><strong>Board:</strong> ${paper.board}</h2>
+                    <h2><strong>Level:</strong> ${paper.level}</h2>
+                    <h2 style='color: #F25C6A;'><strong>Submitted by:</strong> ${paper.submittedBy}</h2>
+                    <h2><strong>UUID:</strong> ${paper.uuid}</h2>
                     </a>
                 `;
   card.appendChild(paperDetailsDiv);
