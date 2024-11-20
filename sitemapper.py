@@ -5,14 +5,18 @@ import re
 
 def generate_sitemap(website_url):
     try:
-        # Ensure ./logs and ./static directories exist
-        os.makedirs('./logs', exist_ok=True)
-        os.makedirs('./static', exist_ok=True)
+        # Base directory path
+        basePath = os.path.expanduser('~/paper-guides')
+        
+        # Ensure logs and static directories exist
+        os.makedirs(os.path.join(basePath, 'logs'), exist_ok=True)
+        os.makedirs(os.path.join(basePath, 'static'), exist_ok=True)
 
-        output_file = './static/sitemap.xml'
+        outputFile = os.path.join(basePath, 'static', 'sitemap.xml')
 
         # Wget command to crawl the website
-        wget_command = [
+        wgetOutputFile = os.path.join(basePath, 'logs', 'wget_output.txt')
+        wgetCommand = [
             'wget',
             '--spider',  # Spider mode (do not download)
             '--recursive',  # Recursively follow links
@@ -21,49 +25,49 @@ def generate_sitemap(website_url):
             '--level=inf',  # Follow links to any depth
             '--no-directories',  # Do not create directories
             '--reject=jpg,jpeg,png,gif,svg,css,js,ico,pdf,zip,xml,mp4,mp3',  # Reject unnecessary file types
-            '--output-file=wget_output.txt',  # Log file for wget output
+            '--output-file', wgetOutputFile,  # Log file for wget output
             website_url
         ]
 
         # Run wget command
-        subprocess.run(wget_command, capture_output=True, text=True)
+        subprocess.run(wgetCommand, capture_output=True, text=True)
 
         # Parse URLs from wget output
         urls = set()
-        url_pattern = re.compile(r'URL:(https?://[^\s]+)\s')
+        urlPattern = re.compile(r'URL:(https?://[^\s]+)\s')
         
-        with open('wget_output.txt', 'r') as f:
+        with open(wgetOutputFile, 'r') as f:
             for line in f:
-                matches = url_pattern.findall(line)
+                matches = urlPattern.findall(line)
                 urls.update(matches)
 
         # Create XML sitemap
-        current_date = datetime.now().strftime('%Y-%m-%d')
+        currentDate = datetime.now().strftime('%Y-%m-%d')
         
-        xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
-        xml_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n'
+        xmlContent += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         
         for url in sorted(urls):
-            xml_content += f' <url>\n'
-            xml_content += f'   <loc>{url}</loc>\n'
-            xml_content += f'   <lastmod>{current_date}</lastmod>\n'
-            xml_content += f'   <changefreq>daily</changefreq>\n'
-            xml_content += f'   <priority>0.8</priority>\n'
-            xml_content += f' </url>\n'
+            xmlContent += f' <url>\n'
+            xmlContent += f'   <loc>{url}</loc>\n'
+            xmlContent += f'   <lastmod>{currentDate}</lastmod>\n'
+            xmlContent += f'   <changefreq>daily</changefreq>\n'
+            xmlContent += f'   <priority>0.8</priority>\n'
+            xmlContent += f' </url>\n'
         
-        xml_content += '</urlset>'
+        xmlContent += '</urlset>'
 
         # Write sitemap
-        with open(output_file, 'w') as f:
-            f.write(xml_content)
+        with open(outputFile, 'w') as f:
+            f.write(xmlContent)
 
         # Create log file
-        log_file = './logs/sitemap_generator.log'
-        with open(log_file, 'a') as log:
+        logFile = os.path.join(basePath, 'logs', 'sitemap_generator.log')
+        with open(logFile, 'a') as log:
             log.write(f"{datetime.now()} - Sitemap generated for {website_url} with {len(urls)} URLs\n")
 
         # Clean up temporary output file
-        os.remove('wget_output.txt')
+        os.remove(wgetOutputFile)
 
         return f'Sitemap generated successfully with {len(urls)} URLs.'
     
@@ -72,7 +76,7 @@ def generate_sitemap(website_url):
 
 if __name__ == '__main__':
     # Configuration
-    website_url = 'https://paperguides.xyz'
+    websiteUrl = 'https://paperguides.xyz'
     
     # Generate sitemap
-    generate_sitemap(website_url)
+    print(generate_sitemap(websiteUrl))

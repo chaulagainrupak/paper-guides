@@ -1,10 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-  
   const questionItems = document.querySelectorAll(".question-item");
   const questionContainers = document.querySelectorAll(".question-container");
-  const difficultyIcons = document.querySelectorAll(".difficulty-icon");
 
-  // Pagination
+  // Pagination variables
   const itemsPerPage = 6;
   let currentPage = 1;
   const totalPages = Math.ceil(questionItems.length / itemsPerPage);
@@ -13,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const nextPageBtn = document.getElementById("nextPage");
   const pageInfo = document.getElementById("pageInfo");
 
+  // Pagination logic
   function showPage(page) {
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage;
@@ -40,60 +39,62 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Toggling question containers
+  // Set up toggling logic for questions
   questionItems.forEach((item) => {
     item.addEventListener("click", () => {
-      // Remove 'active' class from all question items
-      questionItems.forEach((otherItem) => {
-        otherItem.classList.remove("active");
-      });
-      // Add 'active' class to the clicked item
+      questionItems.forEach((otherItem) => otherItem.classList.remove("active"));
       item.classList.add("active");
-      const questionId = item.getAttribute("data-id");
-      const questionContainer = document.querySelector(
-        `#question-container-${questionId}`,
-      );
 
-      questionContainers.forEach(
-        (container) => (container.style.display = "none"),
-      );
-      questionContainer.style.display = "flex";
+      const questionId = item.getAttribute("data-id");
+      const questionContainer = document.querySelector(`#question-container-${questionId}`);
+
+      questionContainers.forEach((container) => (container.style.display = "none"));
+      if (questionContainer) questionContainer.style.display = "flex";
     });
   });
 
-  // Click on the first question
-  const firstQuestionItem = document.querySelector(".question-item");
-  if (firstQuestionItem) {
-    firstQuestionItem.click();
-  }
+  // Assign difficulty colors
+  questionItems.forEach((item) => {
+    const difficulty = item.getAttribute("data-difficulty");
+    switch (difficulty) {
+      case "1":
+        item.style.borderRight = "10px solid #177245"; // Dark Green
+        break;
+      case "2":
+        item.style.borderRight = "10px solid #3CB371"; // Medium Sea Green
+        break;
+      case "3":
+        item.style.borderRight = "10px solid #FFD700"; // Gold
+        break;
+      case "4":
+        item.style.borderRight = "10px solid #FF5800"; // Orange
+        break;
+      case "5":
+        item.style.borderRight = "10px solid #DC143C"; // Crimson
+        break;
+      default:
+        item.style.borderRight = "10px solid #ccc"; // Default Grey
+        break;
+    }
+  });
 
-  // Toggling solution containers
+  // Solution toggling logic
   const solutionButtons = document.querySelectorAll(".toggle-solution-btn");
-
   solutionButtons.forEach((button) => {
     button.addEventListener("click", function () {
       const buttonId = button.getAttribute("data-id");
-      const solutionContainer = document.querySelector(
-        `#solution-container-${buttonId}`,
-      );
-      const questionImage = document.querySelector(
-        `.question-image[data-id="${buttonId}"]`,
-      );
+      const solutionContainer = document.querySelector(`#solution-container-${buttonId}`);
+      const questionImage = document.querySelector(`.question-image[data-id="${buttonId}"]`);
 
-      if (
-        solutionContainer.style.display === "none" ||
-        !solutionContainer.style.display
-      ) {
+      if (!solutionContainer.style.display || solutionContainer.style.display === "none") {
         solutionContainer.style.display = "flex";
         questionImage.style.display = "none";
         button.textContent = "Hide Solution";
 
-        // Check if solution is not found
-        const solutionImage =
-          solutionContainer.querySelector(".solution-image");
+        // Check if solution is missing
+        const solutionImage = solutionContainer.querySelector(".solution-image");
         if (solutionImage && !solutionImage.querySelector("img")) {
-          solutionImage.innerHTML =
-            '<div class="solution-not-found">Solution not found!</div>';
+          solutionImage.innerHTML = '<div class="solution-not-found">Solution not found!</div>';
         }
       } else {
         solutionContainer.style.display = "none";
@@ -103,14 +104,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Initialize pagination
-  showPage(currentPage);
-
-  difficultyIcons.forEach((icon) => {
-    const difficulty = icon.getAttribute("difficulty");  
-    
-    if(difficulty === "1"){
-      icon.setAttribute("style", "background-color: #ff0000; padding: 0.2rem; border-radius: 50%; color: white; height: auto;");
-    }
-  });
+  // Initial setup: Click first question item and show the first page
+  const firstQuestionItem = document.querySelector(".question-item");
+  if (firstQuestionItem) {
+    showPage(currentPage);
+    firstQuestionItem.click();
+  }
 });

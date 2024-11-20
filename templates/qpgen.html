@@ -108,7 +108,7 @@ body{
     background-color: #5d71e0;
     cursor: pointer;
     color: #ffffff;
-    font-size: 0.9rem;
+    font-size: 1rem;
     border: none;
     border-radius: 5px;
     transition: background-color 0.3s ease;
@@ -165,9 +165,13 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 16px;
+    margin-bottom: 16px;
 }
 
+#pageInfo {
+    font-size: 1.2rem;
+}
 .pagination button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
@@ -261,6 +265,13 @@ transform: translateX(0);
             <span class="blue-highlight">{{ rows|length }}</span> Questions
             Generated
         </h2>
+
+        <div class="pagination">
+            <button id="prevPage" disabled>Previous</button>
+            <span id="pageInfo">Page 1 of 1</span>
+            <button id="nextPage">Next</button>
+        </div>
+
         <div class="question-list">
             {% for row in rows %}
             <div
@@ -284,21 +295,13 @@ transform: translateX(0);
                             {{row.3}}
                         </h4>
                         
-                        <div style="display: flex; justify-content: space-between; width: 12%;">
-                            <h5 class="pink-highlight" style="font-size: 1rem">
-                                {{row.7}}
-                            </h5>
-                            <h5 style="font-size: 1rem;" class="difficulty-icon" difficulty="{{row.4}}">{{row.4}}</h5>
-                        </div>
+                        <h5 class="pink-highlight" style="font-size: 1rem">
+                            {{row.7}}
+                        </h5>
                     </div>
                 </div>
             </div>
             {% endfor %}
-        </div>
-        <div class="pagination">
-            <button id="prevPage" disabled>Previous</button>
-            <span id="pageInfo">Page 1 of 1</span>
-            <button id="nextPage">Next</button>
         </div>
     </div>
     <div class="content">
