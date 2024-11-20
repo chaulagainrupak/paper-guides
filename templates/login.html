@@ -1,275 +1,345 @@
-{% extends 'base.html' %}
-
-{% block title %}Login{% endblock %}
-
-{% block prompt %}
+{% extends 'base.html' %} {% block title %}Login{% endblock %} {% block prompt
+%}
 <style>
+  :root {
+    --rich-black: #0d1b2aff;
+    --plum: #92498fff;
+    --baby-powder: #fffffaff;
+    --picton-blue: #3eafe4ff;
+    --tickle-me-pink: #f08caeff;
+    --font-white: #ffffff;
+    --font-dark: #000000;
+    --nav-background: #fafcff;
+    --background: #e3f2fd;
+    --pink-highlight: #f25c6a;
+    --blue-highlight: #5d71e0;
+    --green-highlight: #3cb371;
+  }
+  .section {
+    display: none;
+  }
+  .container {
+    background-color: var(--baby-powder);
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    padding: 2rem;
+    margin: 2rem auto;
+  }
 
-    :root {
-        --rich-black: #0d1b2aff;
-        --plum: #92498fff;
-        --baby-powder: #fffffaff;
-        --picton-blue: #3eafe4ff;
-        --tickle-me-pink: #f08caeff;
-        --font-white: #ffffff;
-        --font-dark: #000000;
-        --nav-background: #fafcff;
-        --background: #e3f2fd;
-        --pink-highlight: #F25C6A;
-        --blue-highlight: #5d71e0;
-        --green-highlight: #3CB371;
-    }
-    .section {
-        display: none;
-    }
-    .container {
-        background-color: var(--baby-powder);
-        border-radius: 20px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        width: 400px;
-        padding: 2rem;
-        margin: 2rem auto;
-    }
+  h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #0d1b2a;
+  }
 
-    h1 {
-        text-align: center;
-        margin-bottom: 1.5rem;
-        color: #0d1b2a;
-    }
+  .form-group {
+    margin-bottom: 1rem;
+  }
 
-    .form-group {
-        margin-bottom: 1rem;
-    }
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #0d1b2a;
+  }
 
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: #0d1b2a;
-    }
+  .form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
 
-    .form-control {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #e0e0e0;
-        border-radius: 5px;
-        font-size: 1rem;
-    }
+  .password-container {
+    position: relative;
+  }
 
-    .password-container {
-        position: relative;
-    }
+  .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
 
-    .toggle-password {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        cursor: pointer;
-    }
+  .password-strength {
+    height: 5px;
+    margin-top: 5px;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
 
-    .password-strength {
-        height: 5px;
-        margin-top: 5px;
-        border-radius: 2px;
-        transition: all 0.3s ease;
-    }
+  .btn-primary {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #5d71e0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
 
-    .btn-primary {
-        width: 100%;
-        padding: 0.75rem;
-        background-color: #5d71e0;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
+  .btn-primary:hover {
+    background-color: #4a5cba;
+  }
 
-    .btn-primary:hover {
-        background-color: #4a5cba;
-    }
+  .switch-form {
+    text-align: center;
+    margin-top: 1rem;
+  }
 
-    .switch-form {
-        text-align: center;
-        margin-top: 1rem;
-    }
+  .switch-form a {
+    color: #5d71e0;
+    text-decoration: none;
+  }
 
-    .switch-form a {
-        color: #5d71e0;
-        text-decoration: none;
-    }
+  .flash-messages {
+    margin-bottom: 1rem;
+  }
 
-    .flash-messages {
-        margin-bottom: 1rem;
-    }
+  .alert {
+    padding: 0.75rem;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+  }
 
-    .alert {
-        padding: 0.75rem;
-        border-radius: 5px;
-        margin-bottom: 0.5rem;
-    }
+  .alert-success {
+    background-color: #d4edda;
+    color: #155724;
+  }
 
-    .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-    }
+  .alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
 
-    .alert-danger {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-
-    button:disabled {    
-        cursor: not-allowed;    
-        opacity: 0.6;
-    }
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 </style>
 
 <div class="container">
-    <!-- Flash messages for displaying errors or success -->
-    {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
+  <!-- Flash messages for displaying errors or success -->
+  {% with messages = get_flashed_messages(with_categories=True) %} {% if
+  messages %}
+  <div class="flash-messages">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %} {% endwith %}
 
-    <!-- Login Form -->
-    <div id="login-form">
-        <h1>Login</h1>
-        <form method="POST" action="{{ url_for('login') }}">
-            <div class="form-group">
-                <label for="username">Username or Email</label>
-                <input type="text" id="username" name="username" class="form-control" placeholder="eg: example@paperguides.xyz" required>
-            </div>
+  <!-- Login Form -->
+  <div id="login-form">
+    <h1>Login</h1>
+    <form method="POST" action="{{ url_for('login') }}">
+      <div class="form-group">
+        <label for="username">Username or Email</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          class="form-control"
+          placeholder="eg: example@paperguides.xyz"
+          required
+        />
+      </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <div class="password-container">
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
-                    <button type="button" class="toggle-password">👁️</button>
-                </div>
-            </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-container">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-control"
+            placeholder="Enter your password"
+            required
+          />
+          <button type="button" class="toggle-password">👁️</button>
+        </div>
+      </div>
 
-            <button type="submit" class="btn btn-primary">Login</button>
+      <button type="submit" class="btn btn-primary">Login</button>
 
-            <div class="switch-form">
-                <p>Don't have an account? <a href="#" id="show-signup">Sign up here</a>.</p>
-            </div>
-        </form>
-    </div>
+      <div class="switch-form">
+        <p>
+          Don't have an account? <a href="#" id="show-signup">Sign up here</a>.
+        </p>
+      </div>
+    </form>
+  </div>
 
-    <!-- Signup Form -->
-    <div id="signup-form" style="display:none;">
-        <h1>Sign Up</h1>
-        <form method="POST" action="{{ url_for('signup') }}">
-            <div class="form-group">
-                <label for="new-username">Username</label>
-                <input type="text" id="new-username" name="new-username" class="form-control" placeholder="eg: PaperBoy024" required>
-            </div>
+  <!-- Signup Form -->
+  <div id="signup-form" style="display: none">
+    <h1>Sign Up</h1>
+    <form method="POST" action="{{ url_for('signup') }}">
+      <div class="form-group">
+        <label for="new-username">Username</label>
+        <input
+          type="text"
+          id="new-username"
+          name="new-username"
+          class="form-control"
+          placeholder="eg: PaperBoy024"
+          required
+        />
+      </div>
 
-            <div class="form-group">
-                <label for="new-email">Email</label>
-                <input type="new-email" id="new-email" name="new-email" class="form-control" placeholder="eg: paperboy@paperguides.xyz" required>
-            </div>
+      <div class="form-group">
+        <label for="new-email">Email</label>
+        <input
+          type="new-email"
+          id="new-email"
+          name="new-email"
+          class="form-control"
+          placeholder="eg: paperboy@paperguides.xyz"
+          required
+        />
+      </div>
 
-            <div class="form-group">
-                <label for="new-password">Password</label>
-                <div class="password-container">
-                    <input type="password" id="new-password" name="new-password" class="form-control" placeholder="Choose a strong password" required>
-                    <button type="button" class="toggle-password">👁️</button>
-                </div>
-                <div class="password-strength"></div>
-            </div>
+      <div class="form-group">
+        <label for="new-password">Password</label>
+        <div class="password-container">
+          <input
+            type="password"
+            id="new-password"
+            name="new-password"
+            class="form-control"
+            placeholder="Choose a strong password"
+            required
+          />
+          <button type="button" class="toggle-password">👁️</button>
+        </div>
+        <div class="password-strength"></div>
+      </div>
 
-            <div class="form-group">
-                <label for="confirm-password">Confirm Password</label>
-                <div class="password-container">
-                    <input type="password" id="confirm-password" name="confirm_password" class="form-control" placeholder="Confirm your strong password" required>
-                    <button type="button" class="toggle-password">👁️</button>
-                </div>
-            </div>
+      <div class="form-group">
+        <label for="confirm-password">Confirm Password</label>
+        <div class="password-container">
+          <input
+            type="password"
+            id="confirm-password"
+            name="confirm-password"
+            class="form-control"
+            placeholder="Confirm your strong password"
+            required
+          />
+          <button type="button" class="toggle-password">👁️</button>
+        </div>
+      </div>
 
-            <button type="submit" class="btn btn-primary" id="signup-button" disabled>Sign Up</button>
+      <div
+        class="warn"
+        id="password-mismatch"
+        style="display: none; width: 100"
+      >
+        <h4>Passwords do not match</h4>
+      </div>
 
-            <div class="switch-form">
-                <p>Already have an account? <a href="#" id="show-login">Login here</a>.</p>
-            </div>
-        </form>
-    </div>
+      <button type="submit" class="btn btn-primary" id="signup-button" disabled>
+        Sign Up
+      </button>
+
+      <div class="switch-form">
+        <p>
+          Already have an account? <a href="#" id="show-login">Login here</a>.
+        </p>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
-    // Toggle between login and signup forms
-    document.getElementById('show-signup').addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('login-form').style.display = 'none';
-        document.getElementById('signup-form').style.display = 'block';
+  // Toggle between login and signup forms
+  document
+    .getElementById("show-signup")
+    .addEventListener("click", function (e) {
+      e.preventDefault();
+      document.getElementById("login-form").style.display = "none";
+      document.getElementById("signup-form").style.display = "block";
     });
 
-    document.getElementById('show-login').addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('signup-form').style.display = 'none';
-        document.getElementById('login-form').style.display = 'block';
-    });
+  document.getElementById("show-login").addEventListener("click", function (e) {
+    e.preventDefault();
+    document.getElementById("signup-form").style.display = "none";
+    document.getElementById("login-form").style.display = "block";
+  });
 
-    // Toggle password visibility
-    document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function() {
-            const input = this.previousElementSibling;
-            if (input.type === 'password') {
-                input.type = 'text';
-                this.textContent = '🙈';
-            } else {
-                input.type = 'password';
-                this.textContent = '👁️';
-            }
-        });
-    });
+  // Password strength and validation for change password form
+  const newPasswordInput = document.getElementById("new-password");
+  const confirmPasswordInput = document.getElementById("confirm-password");
+  const passwordStrengthBar = document.querySelector(".password-strength");
+  const submitButton = document.getElementById("signup-button");
+  // Add event listeners for both new password and confirm password inputs
+  [newPasswordInput, confirmPasswordInput].forEach((input) => {
+    input.addEventListener("input", validatePasswordChange);
+  });
 
-    // Password strength checker
-    const newPasswordInput = document.getElementById('new-password');
-    const signupButton = document.getElementById('signup-button');
+  function validatePasswordChange() {
+    const newPassword = newPasswordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
 
-    newPasswordInput.addEventListener('input', function() {
-        const password = this.value;
-        const strength = checkPasswordStrength(password);
-        const strengthBar = document.querySelector('.password-strength');
-        
-        strengthBar.style.width = `${strength}%`;
-        
-        if (strength < 33) {
-            strengthBar.style.backgroundColor = '#ff4d4d';
-        } else if (strength < 66) {
-            strengthBar.style.backgroundColor = '#ffd700';
-        } else {
-            strengthBar.style.backgroundColor = '#00cc00';
-        }
+    // Check password strength
+    const strength = checkPasswordStrength(newPassword);
+    passwordStrengthBar.style.width = `${strength}%`;
 
-        // Enable or disable the signup button based on password length
-        if (password.length < 8) {
-            signupButton.disabled = true;
-        } else {
-            signupButton.disabled = false;
-        }
-    });
-
-    function checkPasswordStrength(password) {
-        let strength = 0;
-        if (password.length >= 8) strength += 25;
-        if (password.match(/[a-z]+/)) strength += 25;
-        if (password.match(/[A-Z]+/)) strength += 25;
-        if (password.match(/[0-9]+/)) strength += 25;
-        if (password.match(/[$@#&!]+/)) strength += 25;
-        return Math.min(100, strength);
+    // Update strength bar color
+    if (strength < 33) {
+      passwordStrengthBar.style.backgroundColor = "#ff4d4d";
+    } else if (strength < 66) {
+      passwordStrengthBar.style.backgroundColor = "#ffd700";
+    } else {
+      passwordStrengthBar.style.backgroundColor = "#00cc00";
     }
+
+    // Enable/disable change password button
+    if (
+      confirmPasswordInput.value &&
+      newPassword &&
+      confirmPassword &&
+      newPassword === confirmPassword &&
+      strength >= 50 &&
+      newPassword.length >= 8
+    ) {
+      submitButton.disabled = false;
+      submitButton.style.cursor = "pointer";
+    } else {
+      submitButton.disabled = true;
+      submitButton.style.cursor = "not-allowed";
+    }
+  }
+
+  // Password strength calculation
+  function checkPasswordStrength(password) {
+    let strength = 0;
+    if (password.length >= 8) strength += 25;
+    if (password.match(/[a-z]+/)) strength += 25;
+    if (password.match(/[A-Z]+/)) strength += 25;
+    if (password.match(/[0-9]+/)) strength += 25;
+    if (password.match(/[$@#&!]+/)) strength += 25;
+    return Math.min(100, strength);
+  }
+
+  // Toggle password visibility
+  document.querySelectorAll(".toggle-password").forEach((button) => {
+    button.addEventListener("click", function () {
+      const input = this.previousElementSibling;
+      if (input.type === "password") {
+        input.type = "text";
+        this.textContent = "🙈";
+      } else {
+        input.type = "password";
+        this.textContent = "👁️";
+      }
+    });
+  });
 </script>
+
 {% endblock %}

@@ -59,6 +59,7 @@ function createQuestionCard(question, count) {
                     <h2><strong>Level:</strong> ${question.level}</h2>
                     <h2><strong>Component:</strong> ${question.component}</h2>
                     <h2 style='color: #5d71e0;'><strong>Submitted by:</strong> ${question.submittedBy}</h2>
+                    <h2><strong>Submitted on:</strong> ${question.submittedOn}</h2>
                     <h2><strong>UUID:</strong> ${question.uuid}</h2>
                     </a>
                 `;
@@ -81,6 +82,7 @@ function createPaperCard(paper, count) {
                     <h2><strong>Board:</strong> ${paper.board}</h2>
                     <h2><strong>Level:</strong> ${paper.level}</h2>
                     <h2 style='color: #F25C6A;'><strong>Submitted by:</strong> ${paper.submittedBy}</h2>
+                    <h2><strong>Submitted on:</strong> ${paper.submittedOn}</h2>
                     <h2><strong>UUID:</strong> ${paper.uuid}</h2>
                     </a>
                 `;
@@ -130,8 +132,8 @@ function deleteItem(type, uuid) {
       },
     }).then((response) => {
         if (response.ok) {
+          goBack();
           window.location.reload();
-          window.location.href = '/admin';
         } else {
           throw new Error("Failed to delete item");
         }
@@ -153,7 +155,7 @@ function approveItem(type, uuid) {
     }).then((response) => {
       if (response.ok) {
         window.location.reload();
-        window.location.href = '/admin';
+        goBack
       } else {
         throw new Error("Failed to delete item");
       }
@@ -163,4 +165,22 @@ function approveItem(type, uuid) {
       alert("An error occurred while deleting the item");
     });
   }
+}
+
+function giveAdmin() {
+  const username = document.getElementById('username').value;
+  fetch('/admin/give_admin/' + username, {
+      method: 'POST'
+  }).then((response) => {
+      if (response) {
+        alert(response);
+          username.value = '';
+          window.location.reload();
+
+      }
+  }).catch((error) => {
+      console.error("Error:", error);
+      alert("An error occurred while giving admin");
+  });
+
 }

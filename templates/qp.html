@@ -16,6 +16,22 @@ section %}
                 ></object>
             </div>
         </div>
+
+        {% if current_user.is_authenticated and current_user.role == 'admin'%}
+        <div class="adminTools" style="margin-top: 20px;">
+            <button onclick="deleteItem('paper', '{{ id }}')" style="
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            font-size: 24px;
+            background-color: #f44336;
+            color: white;
+            transition: all 0.2s ease;">🗑️ Delete This Paper</button>
+        </div>
+
+        <script src="{{ url_for('static', filename='admin.js') }}"></script>
+        {%endif%}
     </div>
 </div>
 

@@ -134,6 +134,8 @@ def questionGenerator():
 # This route displays the questions the uppper route genetated a diffrent page and route
 @app.route('/question-gen', methods=['POST', 'GET'])
 def questionGen():
+    
+    
     logger.info('Question generation initiated' + ' IP: ' + str(getClientIp()))
     if request.method == 'POST':
         try:
@@ -153,16 +155,14 @@ def questionGen():
                 
             # Get questions
             rows = getQuestionsForGen(board, subject, level, topics, components, difficulties)
+
             return render_template('qpgen.html', rows=rows)
             
         except Exception as e:
             logger.error(f'Error in question generation: {str(e)}' + ' IP: ' + str(getClientIp()))
-            return f"Some error occurred server-side, no reason to panic. Error: {e}", 500
-        except Exception as e:
-            logger.error(f'Error in question generation: {str(e)}' + ' IP: ' + str(getClientIp()))
-            return f"Some error occurred server-side, no reason to panic. Error: {e}", 500
-
-
+            return redirect(url_for('questionGenerator'))
+    else:
+        return redirect(url_for('questionGenerator'))
 @app.route('/submit')
 def submit():
     logger.info('Submit page accessed' + ' IP: ' + str(getClientIp()))
@@ -331,12 +331,48 @@ def signup():
 
 # Will profiles even be a thing ? Public IDK but chaning the email password will be implemented
 
-# @app.route('/profile')
-# @login_required
-# def profile():
-#     return render_template('profile.html')
+@app.route('/profile')
+@login_required
+def profile():
 
+    try:
+        user = current_user
+        logger.info(f'User {user.username} accessed profile' + ' IP: ' + str(getClientIp()))
+    except Exception as e:
+        logger.error(f'Error in profile: {str(e)}' + ' IP: ' + str(getClientIp()))
+    return render_template('profile.html')
 
+@app.route('/change-password', methods=['POST'])
+def changePassword():
+    try:
+        previous_password = request.form.get('current-password')
+        new_password = request.form.get('new-password')
+        
+        if check_password_hash(current_user.password, previous_password):
+            # Hash the password before storing it
+            hashed_password = generate_password_hash(new_password)
+            
+            # Update the user's password
+            current_user.password = hashed_password
+            db.session.commit()
+            
+            logger.info(f'User {current_user.username} changed password' + ' IP: ' + str(getClientIp()))
+            
+            # Add flash message for JavaScript
+            flash('Password changed successfully!', 'success')
+            
+        else:
+            logger.warning(f'Failed to change password for user {current_user.username}' + ' IP: ' + str(getClientIp()))
+            flash('Current password is incorrect.', 'error')
+        
+        return redirect(url_for('profile'))
+    
+    except Exception as e:
+        logger.error(f'Error in changing password: {str(e)}' + ' IP: ' + str(getClientIp()))
+        flash('An error occurred while changing password.', 'error')
+        return redirect(url_for('profile'))     
+    
+    
 @app.route('/rate/<question_UUID>/<int:rating>', methods = ['POST'])
 @login_required
 def rate(question_UUID, rating):
@@ -449,7 +485,8 @@ def getNewData():
                     "board": question["board"],
                     "level": question["level"],
                     "component": question["component"],
-                    "submittedBy": question["submittedBy"]
+                    "submittedBy": question["submittedBy"],
+                    "submittedOn": question["submitDate"]
                 })
 
             for paper in papers:
@@ -461,7 +498,8 @@ def getNewData():
                     "board": paper["board"],
                     "level": paper["level"],
                     "component": paper["component"],
-                    "submittedBy": paper["submittedBy"]
+                    "submittedBy": paper["submittedBy"],
+                    "submittedOn": paper["submitDate"]
                 })
 
             return jsonify(data)
@@ -477,7 +515,7 @@ def approve(uuid):
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
-    if approve_question(uuid):
+    if approve_question(current_user.username, uuid):
         return jsonify({"succss": "Your request was processed successfully"})
     else:
         return jsonify({"error": "Your request was not processed successfully"})
@@ -491,7 +529,7 @@ def approvePaper(uuid):
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
-    if approve_paper(uuid):
+    if approve_paper(current_user.username, uuid):
         return jsonify({"succss": "Your request was processed successfully"})
     else:
         return jsonify({"error": "Your request was not processed successfully"})
@@ -556,6 +594,31 @@ def editQuestion(uuid):
     return render_template('admin.html', question=question)
 
 
+# Temporary solution man
+# A route to give admin access to user accounts
+@app.route('/admin/give_admin/<username>', methods=['POST'])
+def give_admin(username):
+    if current_user.role != 'admin':
+        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
+        flash('Access denied. Administrator privileges required.', 'error')
+        return redirect(url_for('index'))
+    
+    try:
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            logger.warning('User not found: ' + username)
+            return jsonify({"error": "User not found"}), 404
+        if user.role == 'admin':
+            logger.info('User already has admin privileges: ' + username)
+            return jsonify({"error": "User already has admin privileges"}), 400
+        
+        user.role = 'admin'
+        db.session.commit()
+        logger.info('Admin privileges given to user: ' + username)
+        return jsonify({"success": "Admin privileges given successfully"}), 200
+    except Exception as e:
+        logger.error(f'Error giving admin privileges: {e}')
+        return False
 
 @app.template_filter('b64encode')
 def b64encode_filter(s):

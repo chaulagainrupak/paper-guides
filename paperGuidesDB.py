@@ -20,9 +20,12 @@ dbPath = './instance/paper-guides-resources.db'
 def createDatabase():
     """
     Creates and synchronizes the database schema in one unified function.
-    The table schemas are hardcoded within this function.
+    - Creates new tables defined in the schema
+    - Drops tables that are no longer in the schema
+    - Adds new columns to existing tables
+    - Drops columns that are no longer in the schema
+    Tables and column schemas are hardcoded within this function.
     """
-
     # Define table schemas directly inside the function
     tableSchemas = {
         "papers": {
@@ -37,7 +40,10 @@ def createDatabase():
             "solutionFile": "BLOB",
             "approved": "DEFAULT False",
             "submittedBy": "TEXT",
-            "submittedFrom": "TEXT"
+            "submittedFrom": "TEXT",
+            "submitDate": "DATE",
+            "approvedBy": "TEXT",
+            "approvedOn": "DATE"
         },
         "questions": {
             "id": "INTEGER PRIMARY KEY",
@@ -57,7 +63,10 @@ def createDatabase():
             "four": "INTEGER DEFAULT 0",
             "five": "INTEGER DEFAULT 0",
             "submittedBy": "TEXT",
-            "submittedFrom": "TEXT"
+            "submittedFrom": "TEXT",
+            "submitDate": "DATE",
+            "approvedBy": "TEXT",
+            "approvedOn": "DATE"
         },
         "topicals": {
             "id": "INTEGER PRIMARY KEY",
@@ -67,7 +76,10 @@ def createDatabase():
             "questionFile": "BLOB",
             "solutionFile": "BLOB",
             "submittedBy": "TEXT",
-            "submittedFrom": "TEXT"
+            "submittedFrom": "TEXT",
+            "submitDate": "DATE",
+            "approvedBy": "TEXT",
+            "approvedOn": "DATE"
         },
         "ratings": {
             "id": "INTEGER PRIMARY KEY",
@@ -76,34 +88,80 @@ def createDatabase():
             "rating": "INTEGER"
         }
     }
-
+    
     try:
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-
+        
+        # Get list of existing tables
+        existing_tables = db.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+        ).fetchall()
+        existing_tables = [table[0] for table in existing_tables]
+        
+        # Drop tables that are no longer in the schema
+        for table in existing_tables:
+            if table not in tableSchemas:
+                db.execute(f"DROP TABLE {table}")
+                logger.info(f"Dropped table: {table} as it's no longer in the schema")
+                continue
+        
+        # Create or update remaining tables
         for tableName, schema in tableSchemas.items():
-            # Create table if it doesn't exist
-            columns = ", ".join(f"{name} {type_}" for name, type_ in schema.items())
-            db.execute(f"CREATE TABLE IF NOT EXISTS {tableName} ({columns})")
-
-            # Sync columns for the table
-            try:
+            if tableName not in existing_tables:
+                # Create new table if it doesn't exist
+                columns = ", ".join(f"{name} {type_}" for name, type_ in schema.items())
+                db.execute(f"CREATE TABLE IF NOT EXISTS {tableName} ({columns})")
+                logger.info(f"Created new table: {tableName}")
+            else:
+                # Handle column changes for existing tables
                 # Get existing columns
-                existingColumns = db.execute(f"PRAGMA table_info({tableName})").fetchall()
-                existingColumnNames = [col[1] for col in existingColumns]
-
-                # Add missing columns
-                for column, columnType in schema.items():
-                    if column not in existingColumnNames:
-                        db.execute(f"ALTER TABLE {tableName} ADD COLUMN {column} {columnType}")
-                        logger.info(f"Added column: {column} {columnType} to table: {tableName}")
-            except sqlite3.Error as e:
-                logger.error(f"Error syncing schema for {tableName}: {e}")
-
+                existing_columns = db.execute(f"PRAGMA table_info({tableName})").fetchall()
+                existing_column_names = [col[1] for col in existing_columns]
+                existing_column_types = {col[1]: col[2] for col in existing_columns}
+                
+                # Create temporary table with new schema
+                temp_table_name = f"temp_{tableName}"
+                columns = ", ".join(f"{name} {type_}" for name, type_ in schema.items())
+                db.execute(f"CREATE TABLE {temp_table_name} ({columns})")
+                
+                # Get common columns between old and new schema
+                common_columns = [col for col in schema.keys() if col in existing_column_names]
+                common_columns_str = ", ".join(common_columns)
+                
+                # Copy data from old table to temp table
+                db.execute(f"INSERT INTO {temp_table_name} ({common_columns_str}) SELECT {common_columns_str} FROM {tableName}")
+                
+                # Drop old table
+                db.execute(f"DROP TABLE {tableName}")
+                
+                # Rename temp table to original name
+                db.execute(f"ALTER TABLE {temp_table_name} RENAME TO {tableName}")
+                
+                # Log changes
+                added_columns = set(schema.keys()) - set(existing_column_names)
+                removed_columns = set(existing_column_names) - set(schema.keys())
+                
+                if added_columns:
+                    logger.info(f"Added columns to {tableName}: {', '.join(added_columns)}")
+                if removed_columns:
+                    logger.info(f"Removed columns from {tableName}: {', '.join(removed_columns)}")
+                
+                # Check for type changes
+                type_changes = []
+                for col, new_type in schema.items():
+                    if col in existing_column_types and existing_column_types[col] != new_type:
+                        type_changes.append(f"{col} ({existing_column_types[col]} → {new_type})")
+                
+                if type_changes:
+                    logger.info(f"Column type changes in {tableName}: {', '.join(type_changes)}")
+        
         connection.commit()
-
+        logger.info("Database schema update completed successfully")
+        
     except sqlite3.Error as e:
         logger.error(f"An error occurred while managing the database: {e}")
+        raise
     finally:
         if connection:
             connection.close()
@@ -125,9 +183,9 @@ def insertQuestion(board, subject, topic, difficulty, level, component, question
         encodedSolutionFile = base64.b64encode(compressedSolutionFile).decode('utf-8')
 
         db.execute('''INSERT INTO questions
-            (uuid, subject, topic, difficulty, board, level, component, questionFile, solutionFile, submittedBy, submittedFrom)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-            (uuidStr, subject, topic, difficulty, board, level, component, encodedQuestionFile, encodedSolutionFile, user, ip))
+            (uuid, subject, topic, difficulty, board, level, component, questionFile, solutionFile, submittedBy, submittedFrom, submitDate)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            (uuidStr, subject, topic, difficulty, board, level, component, encodedQuestionFile, encodedSolutionFile, user, ip, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         connection.commit()
         connection.close()
         logger.info(f"Question inserted successfully. UUID: {uuidStr}")
@@ -167,10 +225,10 @@ def insertPaper(board: str, subject: str, year: str, level: str,
 
         db = connection.cursor()
         db.execute('''INSERT INTO papers
-            (uuid, subject, year, board, level, component, questionFile, solutionFile, submittedBy, submittedFrom)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            (uuid, subject, year, board, level, component, questionFile, solutionFile, submittedBy, submittedFrom, submitDate)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
             (uuidStr, subject, year, board, level, component,
-             questionFile_b64, solutionFile_b64, user, ip))
+             questionFile_b64, solutionFile_b64, user, ip, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         connection.commit()
         connection.close()
         logger.info(f"Paper inserted successfully. UUID: {uuidStr}")
@@ -193,9 +251,9 @@ def insertTopical(board, subject, questionFile, solutionFile, user, ip):
 
         db = connection.cursor()
         db.execute('''INSERT INTO topicals
-            (uuid, subject, board, questionFile, solutionFile, submittedBy, submittedFrom)
-            VALUES (?, ?, ?, ?, ?, ?, ?)''',
-            (uuidStr, subject, board, questionFile, solutionFile, user, ip))
+            (uuid, subject, board, questionFile, solutionFile, submittedBy, submittedFrom, submitDate)
+            VALUES (?, ?, ?, ?, ?, ?, , ?)''',
+            (uuidStr, subject, board, questionFile, solutionFile, user, ip, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         connection.commit()
         connection.close()
         logger.info(f"Topical paper inserted successfully. UUID: {uuidStr}")
@@ -567,7 +625,7 @@ def get_unapproved_papers():
         if connection:
             connection.close()
 
-def approve_question(uuid: str) -> bool:
+def approve_question(username: str, uuid: str) -> bool:
     """Approve a question by UUID"""
     connection = None
     try:
@@ -585,7 +643,7 @@ def approve_question(uuid: str) -> bool:
 
         # Update approval status
         cursor = connection.cursor()
-        cursor.execute('UPDATE questions SET approved = 1 WHERE uuid = ?', (uuid,))
+        cursor.execute('UPDATE questions SET approved = True , approvedBy = ? , approvedOn = ? WHERE uuid = ?', (username, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), uuid))
         connection.commit()
 
         # Send webhook notification
@@ -600,7 +658,7 @@ def approve_question(uuid: str) -> bool:
         if connection:
             connection.close()
 
-def approve_paper(uuid: str) -> bool:
+def approve_paper(username : str,uuid: str) -> bool:
     """Approve a paper by UUID"""
     connection = None
     try:
@@ -618,7 +676,7 @@ def approve_paper(uuid: str) -> bool:
 
         # Update approval status
         cursor = connection.cursor()
-        cursor.execute('UPDATE papers SET approved = True WHERE uuid = ?', (uuid,))
+        cursor.execute('UPDATE papers SET approved = True , approvedBy = ? , approvedOn = ? WHERE uuid = ?', (username, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), uuid))
         connection.commit()
 
         # Send webhook notification
