@@ -142,7 +142,7 @@ body{
     display: flex;
     justify-content: center;
     align-items: flex-start; /* Align to the top */
-    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-y: scroll; /* Enable vertical scrolling */
     overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
@@ -154,7 +154,6 @@ body{
     object-fit: contain; /* Ensures full image is visible */
     object-position: top center; /* Align image from the top */
 }
-
 
 .solution-container {
     display: none;
@@ -279,12 +278,18 @@ transform: translateX(0);
                         ></div>
                     </div>
                     <div class="question-info">
+
+                        <!-- Name , Topic and Difficulty for question card -->
                         <h4 class="blue-highlight" style="font-size: 1.4rem">
                             {{row.3}}
                         </h4>
-                        <h5 class="pink-highlight" style="font-size: 1rem">
-                            {{row.7}}
-                        </h5>
+                        
+                        <div style="display: flex; justify-content: space-between; width: 12%;">
+                            <h5 class="pink-highlight" style="font-size: 1rem">
+                                {{row.7}}
+                            </h5>
+                            <h5 style="font-size: 1rem;" class="difficulty-icon" difficulty="{{row.4}}">{{row.4}}</h5>
+                        </div>
                     </div>
                 </div>
             </div>

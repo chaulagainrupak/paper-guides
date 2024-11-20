@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
   const questionItems = document.querySelectorAll(".question-item");
   const questionContainers = document.querySelectorAll(".question-container");
+  const difficultyIcons = document.querySelectorAll(".difficulty-icon");
 
   // Pagination
   const itemsPerPage = 6;
@@ -105,11 +106,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize pagination
   showPage(currentPage);
 
-
-  document.querySelectorAll(".difficulty").forEach((item) => {
-    var diff = item.getAttribute("difficulty");
-
-    if (diff == 1) {
+  difficultyIcons.forEach((icon) => {
+    const difficulty = icon.getAttribute("difficulty");  
+    
+    if(difficulty === "1"){
+      icon.setAttribute("style", "background-color: #ff0000; padding: 0.2rem; border-radius: 50%; color: white; height: auto;");
     }
-  })
+  });
 });
