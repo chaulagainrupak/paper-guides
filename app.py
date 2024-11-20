@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, send_from_directory, Response
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
 from datetime import datetime
@@ -43,6 +44,9 @@ config = loadConfig(configPath)
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
+
+
+migrate = Migrate(app, db)
 
 
 # Create the database 

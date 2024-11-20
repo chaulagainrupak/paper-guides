@@ -172,3 +172,4 @@ log
 .vscode
 test.py
 sitemap.xml
+migrations
