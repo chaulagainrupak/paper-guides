@@ -131,11 +131,8 @@ function deleteItem(type, uuid) {
         "Content-Type": "application/json",
       },
     }).then((response) => {
-        if (response.ok) {
-          goBack();
-          window.location.reload();
-        } else {
-          throw new Error("Failed to delete item");
+        if (response) {
+          window.location.href = "/admin";
         }
       })
       .catch((error) => {
@@ -172,10 +169,10 @@ function giveAdmin() {
   fetch('/admin/give_admin/' + username, {
       method: 'POST'
   }).then((response) => {
-      if (response) {
-        alert(response);
+      if (response.ok) {
+        alert(`Admin rights given to ${username}`);
           username.value = '';
-          window.location.reload();
+          window.location.href = "/admin";
 
       }
   }).catch((error) => {

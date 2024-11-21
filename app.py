@@ -544,10 +544,10 @@ def deleteQuestion(uuid):
         return redirect(url_for('index'))
 
     if delete_question(uuid):
-        flash('Question deleted successfully!')
+        return jsonify({"succss": "Your request was processed successfully"}), 200
     else:
-        flash('Error deleting question', 'error')
-    return redirect(url_for('admin_dashboard'))
+        return jsonify({"error": "Your request was not processed successfully"}), 304
+    
 
 @app.route('/delete_paper/<uuid>', methods=["POST"])
 @login_required
@@ -558,42 +558,9 @@ def deletePaper(uuid):
         return redirect(url_for('index'))
 
     if delete_paper(uuid):
-        flash('Paper deleted successfully!')
+        return jsonify({"succss": "Your request was processed successfully"}), 200
     else:
-        flash('Error deleting paper', 'error')
-    return redirect(url_for('admin_dashboard'))
-
-@app.route('/edit_question/<uuid>', methods=['GET', 'POST'])
-@login_required
-def editQuestion(uuid):
-    if current_user.role != 'admin':
-        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
-        flash('Access denied. Administrator privileges required.', 'error')
-        return redirect(url_for('index'))
-
-    if request.method == 'POST':
-        data = {
-            'subject': request.form['subject'],
-            'topic': request.form['topic'],
-            'difficulty': request.form['difficulty'],
-            'board': request.form['board'],
-            'level': request.form['level'],
-            'component': request.form['component']
-        }
-
-        if update_question(uuid, data):
-            flash('Question updated successfully!')
-            return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Error updating question', 'error')
-
-    question = get_question(uuid)
-    if not question:
-        flash('Question not found', 'error')
-        return redirect(url_for('admin_dashboard'))
-
-    return render_template('admin.html', question=question)
-
+        return jsonify({"error": "Your request was not processed successfully"}), 304
 
 # Temporary solution man
 # A route to give admin access to user accounts
@@ -616,7 +583,7 @@ def give_admin(username):
         user.role = 'admin'
         db.session.commit()
         logger.info('Admin privileges given to user: ' + username)
-        return jsonify({"success": "Admin privileges given successfully"}), 200
+        return jsonify({"message": "Admin privileges given successfully"}), 200
     except Exception as e:
         logger.error(f'Error giving admin privileges: {e}')
         return False

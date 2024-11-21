@@ -749,37 +749,6 @@ def get_paper(uuid: str):
         if connection:
             connection.close()
 
-def update_question(uuid: str, data) -> bool:
-    """Update a question's details"""
-    try:
-        connection = sqlite3.connect(dbPath)
-        db = connection.cursor()
-
-        db.execute('''
-            UPDATE questions
-            SET subject = ?, topic = ?, difficulty = ?, board = ?,
-                level = ?, component = ?
-            WHERE uuid = ?
-        ''', (
-            data['subject'],
-            data['topic'],
-            data['difficulty'],
-            data['board'],
-            data['level'],
-            data['component'],
-            uuid
-        ))
-        connection.commit()
-        return True
-    except sqlite3.Error as e:
-        logger.error(f"Error updating question {uuid}: {e}")
-        return False
-    finally:
-        if connection:
-            connection.close()
-
-
-
 
 # Discord web hook so the users are notified when a question is approved
 

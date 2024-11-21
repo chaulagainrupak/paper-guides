@@ -172,7 +172,7 @@ block prompt %}
     <div class="multiselect">
         <div class="selectBox" onclick="toggleCheckboxes('topicCheckboxes')">
             <select>
-                <option>Select Topic(s)</option>
+                <option class="topics-title">Select Topic(s)</option>
             </select>
             <div class="overSelect"></div>
         </div>
@@ -184,7 +184,7 @@ block prompt %}
     <div class="multiselect">
         <div class="selectBox" onclick="toggleCheckboxes('difficultyCheckboxes')">
             <select>
-                <option>Select Difficulty</option>
+                <option class="difficulty-title">Select Difficulty</option>
             </select>
             <div class="overSelect"></div>
         </div>
@@ -192,7 +192,7 @@ block prompt %}
             <span class="close-button" onclick="closeCheckboxes('difficultyCheckboxes')">×</span>
             {% for i in range(1, 6) %}
             <label>
-                <input type="checkbox" name="difficulty" value="{{ i }}">
+                <input type="checkbox" name="difficulty" value="{{ i }}" id="difficulty-checkbox">
                 <span>{{ i }}</span>
             </label>
             {% endfor %}
@@ -202,7 +202,7 @@ block prompt %}
     <div class="multiselect">
         <div class="selectBox" onclick="toggleCheckboxes('componentCheckboxes')">
             <select>
-                <option>Select Component(s)</option>
+                <option class="component-title">Select Component(s)</option>
             </select>
             <div class="overSelect"></div>
         </div>
