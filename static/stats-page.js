@@ -116,19 +116,34 @@ Object.keys(statsData.byBoard).forEach(board => {
                 labels: subjects,
                 datasets: [
                     {
-                        label: 'Approved Questions And Papers',
+                        label: 'Approved Questions',
                         data: subjects.map(subject => levelData.subjects[subject].approved),
                         backgroundColor: subjects.map(() => getRandomColor()),
                         borderColor: subjects.map(() => getRandomColor()),
                         borderWidth: 1
                     },
                     {
-                        label: 'Unapproved Questions And Papers',
+                        label: 'Unapproved Questions',
                         data: subjects.map(subject => levelData.subjects[subject].unapproved),
                         backgroundColor: subjects.map(() => 'rgba(255, 99, 132, 0.2)'), // Light red
                         borderColor: subjects.map(() => 'rgb(255, 99, 132)'), // Red
                         borderWidth: 1
+                    },
+                    {
+                        label: 'Approved Papers',
+                        data: subjects.map(subject => levelData.subjects[subject].approvedPapers),
+                        backgroundColor: subjects.map(() => getRandomColor()),
+                        borderColor: subjects.map(() => getRandomColor()),
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Unapproved Papers',
+                        data: subjects.map(subject => levelData.subjects[subject].unapprovedPapers),
+                        backgroundColor: subjects.map(() => 'rgba(255, 99, 132, 0.2)'), // Light red
+                        borderColor: subjects.map(() => 'rgb(255, 99, 132)'), // Red
+                        borderWidth: 1
                     }
+
                 ]
             },
             options: {

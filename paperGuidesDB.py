@@ -926,11 +926,11 @@ def getStat(config):
                 for subject in boardConfig["subjects"]:
                     subjectName = subject["name"]
                     boardStats["levels"][level]["subjects"][subjectName] = {
-                        "approved": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, True)).fetchone()[0]
-                                    + db.execute("SELECT COUNT(*) FROM papers WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, True)).fetchone()[0],
-                        "unapproved": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, False)).fetchone()[0]
-                                    + db.execute("SELECT COUNT(*) FROM papers WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, False)).fetchone()[0],
+                        "approved": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, True)).fetchone()[0],
+                        "unapproved": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, False)).fetchone()[0],
 
+                        "approvedPapers" : db.execute("SELECT COUNT(*) FROM papers WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, True)).fetchone()[0],
+                        "unapprovedPapers" : db.execute("SELECT COUNT(*) FROM papers WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, False)).fetchone()[0],
                     }
 
 
