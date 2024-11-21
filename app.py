@@ -50,9 +50,10 @@ migrate = Migrate(app, db)
 
 
 # Create the database 
-createDatabase()
 with app.app_context():
     db.create_all()
+
+createDatabase()
 
 @login_manager.user_loader
 def load_user(user_id):
