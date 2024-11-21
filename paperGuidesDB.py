@@ -626,10 +626,11 @@ def approve_question(username: str, uuid: str) -> bool:
         connection = sqlite3.connect(dbPath)
 
         # Get question data before updating
-        question_data = get_item_data(connection, "question", uuid)
+        question_data = get_question(uuid)
         if not question_data:
             logger.error(f"Question {uuid} not found", extra={'http_request': True})
             return False
+        
 
         # Update approval status
         cursor = connection.cursor()
@@ -659,13 +660,21 @@ def approve_paper(username : str,uuid: str) -> bool:
         connection = sqlite3.connect(dbPath)
 
         # Get paper data before updating
-        paper_data = get_item_data(connection, "paper", uuid)
+        paper_data = get_paper(uuid)
         if not paper_data:
             logger.error(f"Paper {uuid} not found", extra={'http_request': True})
             return False
 
         # Update approval status
         cursor = connection.cursor()
+  
+        # Get all the paper data from the db to check if we are approving a duplicate paper
+        query = "SELECT * FROM papers WHERE approved = True AND subject = ? AND year = ? AND component = ? AND board = ? AND level = ?"
+        exesting_paper = cursor.execute(query, (paper_data['subject'], paper_data['year'], paper_data['component'], paper_data['board'], paper_data['level'])).fetchone()
+
+        if exesting_paper:
+            return False
+
         cursor.execute('UPDATE papers SET approved = True , approvedBy = ? , approvedOn = ? WHERE uuid = ?', (username, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), uuid))
         connection.commit()
 
@@ -797,52 +806,6 @@ def send_to_discord(item_type: str, data: dict) -> bool:
         logger.error(f"Failed to send Discord webhook: {str(e)}",
                     extra={'http_request': True})
         return False
-
-
-
-def get_item_data(connection: sqlite3.Connection, item_type: str, uuid: str) -> dict:
-    """Get question or paper data before approval"""
-    cursor = connection.cursor()
-    if item_type == "question":
-        cursor.execute('''
-            SELECT uuid, subject, topic, difficulty, board, level, component
-            FROM questions
-            WHERE uuid = ?
-        ''', (uuid,))
-    else:  # paper
-        cursor.execute('''
-            SELECT uuid, subject, year, board, level, component
-            FROM papers
-            WHERE uuid = ?
-        ''', (uuid,))
-
-    row = cursor.fetchone()
-    if not row:
-        return {}
-
-    # Convert row to dictionary based on item type
-    if item_type == "question":
-        return {
-            'uuid': row[0],
-            'subject': row[1],
-            'topic': row[2],
-            'difficulty': row[3],
-            'board': row[4],
-            'level': row[5],
-            'component': row[6]
-        }
-    else:  # paper
-        return {
-            'uuid': row[0],
-            'subject': row[1],
-            'year': row[2],
-            'board': row[3],
-            'level': row[4],
-            'component': row[5]
-        }
-
-
-import sqlite3
 
 def getStat(config):
     try:

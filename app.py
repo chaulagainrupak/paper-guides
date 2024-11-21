@@ -359,9 +359,7 @@ def changePassword():
             
             logger.info(f'User {current_user.username} changed password' + ' IP: ' + str(getClientIp()))
             
-            # Add flash message for JavaScript
-            flash('Password changed successfully!', 'success')
-            
+            return redirect(url_for('logout'))
         else:
             logger.warning(f'Failed to change password for user {current_user.username}' + ' IP: ' + str(getClientIp()))
             flash('Current password is incorrect.', 'error')
@@ -517,23 +515,29 @@ def approve(uuid):
         return redirect(url_for('index'))
 
     if approve_question(current_user.username, uuid):
-        return jsonify({"succss": "Your request was processed successfully"})
+        return jsonify({"message": "Your request was processed successfully"})
     else:
         return jsonify({"error": "Your request was not processed successfully"})
-    return redirect(url_for('admin_dashboard'))
 
-@app.route('/approve_paper/<uuid>', methods=["POST"])
+@app.route('/approve_paper/<uuid>', methods=["GET", "POST"])
 @login_required
 def approvePaper(uuid):
     if current_user.role != 'admin':
-        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
-        flash('Access denied. Administrator privileges required.', 'error')
+        logger.warning(
+            f"Admin page / endpoint is trying to be accessed by a non-admin user. IP: {getClientIp()}"
+        )
         return redirect(url_for('index'))
 
+    
     if approve_paper(current_user.username, uuid):
-        return jsonify({"succss": "Your request was processed successfully"})
+        logger.info(f"Paper {uuid} was approved by {current_user.username}")
+        # Returning plain text for success with a 200 status
+        return f"Paper {uuid} was approved by {current_user.username}", 200
     else:
-        return jsonify({"error": "Your request was not processed successfully"})
+        logger.error(f"Paper {uuid} was unable to be approved by {current_user.username}")
+        return f"Paper {uuid} was unable to be approved", 400
+
+
 
 @app.route('/delete_question/<uuid>', methods=["POST"])
 @login_required
