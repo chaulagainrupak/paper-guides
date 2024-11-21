@@ -30,7 +30,7 @@
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
 
-            .delete-existing {
+            .div-style{
                 background-color: white;
                 padding: 20px;
                 border-radius: 8px;
@@ -170,7 +170,7 @@
             <h1>Admin Dashboard</h1>
         </div>
 
-        <div class="delete-existing">
+        <div class="delete-existing div-style">
             <h2>Delete Existing Items</h2>
             <div class="delete-form">
                 <div class="form-group">
@@ -190,10 +190,16 @@
             </div>
         </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %} {% if
-        messages %} {% for category, message in messages %}
-        <div class="alert {{ category }}">{{ message }}</div>
-        {% endfor %} {% endif %} {% endwith %}
+        <div class="give-admin div-style">
+            <h2>Give Admin Access</h2>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" placeholder="Enter Username">
+            </div>
+            <button class="button approve" onclick="giveAdmin()">
+                Give Admin Access
+            </button>
+        </div>
 
         <div class="dashboard-content">
             <!-- Questions Section -->
