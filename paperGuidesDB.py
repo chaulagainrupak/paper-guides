@@ -19,14 +19,10 @@ dbPath = './instance/paper-guides-resources.db'
 
 def createDatabase():
     """
-    Creates and synchronizes the database schema in one unified function.
-    - Creates new tables defined in the schema
-    - Drops tables that are no longer in the schema
-    - Adds new columns to existing tables
-    - Drops columns that are no longer in the schema
-    Tables and column schemas are hardcoded within this function.
+    Safely creates and synchronizes the database schema.
+    - Ensures only one process accesses the schema update logic at a time.
     """
-    # Define table schemas directly inside the function
+    # Define table schemas
     tableSchemas = {
         "papers": {
             "id": "INTEGER PRIMARY KEY",
@@ -38,7 +34,7 @@ def createDatabase():
             "level": "INTEGER",
             "questionFile": "BLOB",
             "solutionFile": "BLOB",
-            "approved": "DEFAULT False",
+            "approved": "BOOLEAN DEFAULT 0",
             "submittedBy": "TEXT",
             "submittedFrom": "TEXT",
             "submitDate": "DATE",
@@ -56,7 +52,7 @@ def createDatabase():
             "component": "TEXT",
             "questionFile": "BLOB",
             "solutionFile": "BLOB",
-            "approved": "DEFAULT False",
+            "approved": "BOOLEAN DEFAULT 0",
             "one": "INTEGER DEFAULT 0",
             "two": "INTEGER DEFAULT 0",
             "three": "INTEGER DEFAULT 0",
@@ -89,83 +85,77 @@ def createDatabase():
         }
     }
     
+    # Lock file to prevent concurrent schema updates
+    lockFile = "/tmp/db_lock"
+    if os.path.exists(lockFile):
+        logger.info("Database schema update already in progress.")
+        return
+
     try:
+        # Create lock file
+        open(lockFile, "w").close()
+        
+        # Connect to SQLite database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-        
-        # Get list of existing tables
-        existing_tables = db.execute(
+
+        # Get existing tables
+        existingTables = db.execute(
             "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
         ).fetchall()
-        existing_tables = [table[0] for table in existing_tables]
-        
-        # Drop tables that are no longer in the schema
-        for table in existing_tables:
+        existingTables = [table[0] for table in existingTables]
+
+        # Drop tables no longer in schema
+        for table in existingTables:
             if table not in tableSchemas:
                 db.execute(f"DROP TABLE {table}")
-                logger.info(f"Dropped table: {table} as it's no longer in the schema")
-                continue
-        
-        # Create or update remaining tables
+                logger.info(f"Dropped table: {table} (no longer in schema)")
+
+        # Create or update tables
         for tableName, schema in tableSchemas.items():
-            if tableName not in existing_tables:
-                # Create new table if it doesn't exist
-                columns = ", ".join(f"{name} {type_}" for name, type_ in schema.items())
+            if tableName not in existingTables:
+                # Create table if it doesn't exist
+                columns = ", ".join(f"{colName} {colType}" for colName, colType in schema.items())
                 db.execute(f"CREATE TABLE IF NOT EXISTS {tableName} ({columns})")
                 logger.info(f"Created new table: {tableName}")
             else:
-                # Handle column changes for existing tables
-                # Get existing columns
-                existing_columns = db.execute(f"PRAGMA table_info({tableName})").fetchall()
-                existing_column_names = [col[1] for col in existing_columns]
-                existing_column_types = {col[1]: col[2] for col in existing_columns}
-                
-                # Create temporary table with new schema
-                temp_table_name = f"temp_{tableName}"
-                columns = ", ".join(f"{name} {type_}" for name, type_ in schema.items())
-                db.execute(f"CREATE TABLE {temp_table_name} ({columns})")
-                
-                # Get common columns between old and new schema
-                common_columns = [col for col in schema.keys() if col in existing_column_names]
-                common_columns_str = ", ".join(common_columns)
-                
-                # Copy data from old table to temp table
-                db.execute(f"INSERT INTO {temp_table_name} ({common_columns_str}) SELECT {common_columns_str} FROM {tableName}")
-                
-                # Drop old table
+                # Handle column modifications
+                existingColumns = db.execute(f"PRAGMA table_info({tableName})").fetchall()
+                existingColumnNames = [col[1] for col in existingColumns]
+                existingColumnTypes = {col[1]: col[2] for col in existingColumns}
+
+                # Create a temp table with the new schema
+                tempTableName = f"temp_{tableName}"
+                columns = ", ".join(f"{colName} {colType}" for colName, colType in schema.items())
+                db.execute(f"CREATE TABLE {tempTableName} ({columns})")
+
+                # Transfer data for common columns
+                commonColumns = [col for col in schema.keys() if col in existingColumnNames]
+                commonColumnsStr = ", ".join(commonColumns)
+                db.execute(
+                    f"INSERT INTO {tempTableName} ({commonColumnsStr}) SELECT {commonColumnsStr} FROM {tableName}"
+                )
+
+                # Drop old table and rename temp table
                 db.execute(f"DROP TABLE {tableName}")
-                
-                # Rename temp table to original name
-                db.execute(f"ALTER TABLE {temp_table_name} RENAME TO {tableName}")
-                
-                # Log changes
-                added_columns = set(schema.keys()) - set(existing_column_names)
-                removed_columns = set(existing_column_names) - set(schema.keys())
-                
-                if added_columns:
-                    logger.info(f"Added columns to {tableName}: {', '.join(added_columns)}")
-                if removed_columns:
-                    logger.info(f"Removed columns from {tableName}: {', '.join(removed_columns)}")
-                
-                # Check for type changes
-                type_changes = []
-                for col, new_type in schema.items():
-                    if col in existing_column_types and existing_column_types[col] != new_type:
-                        type_changes.append(f"{col} ({existing_column_types[col]} → {new_type})")
-                
-                if type_changes:
-                    logger.info(f"Column type changes in {tableName}: {', '.join(type_changes)}")
-        
+                db.execute(f"ALTER TABLE {tempTableName} RENAME TO {tableName}")
+
+                logger.info(f"Updated schema for table: {tableName}")
+
+        # Commit changes
         connection.commit()
-        logger.info("Database schema update completed successfully")
-        
+        logger.info("Database schema update completed successfully.")
+
     except sqlite3.Error as e:
-        logger.error(f"An error occurred while managing the database: {e}")
-        raise
+        logger.error(f"SQLite error: {e}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
     finally:
+        # Remove lock file and close connection
+        if os.path.exists(lockFile):
+            os.remove(lockFile)
         if connection:
             connection.close()
-
 
 def insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile, user, ip):
     try:
