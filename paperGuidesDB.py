@@ -222,7 +222,7 @@ def insertPaper(board: str, subject: str, year: str, level: str,
         connection.commit()
         connection.close()
         logger.info(f"Paper inserted successfully. UUID: {uuidStr}")
-        return True
+        return True, uuidStr
     except Exception as e:
         logger.error(f"Error inserting paper into database: {e}")
         return False
@@ -693,14 +693,22 @@ def approve_paper(username : str,uuid: str) -> bool:
 
         # Update approval status
         cursor = connection.cursor()
-  
-        # Get all the paper data from the db to check if we are approving a duplicate paper
-        query = """SELECT * FROM papers WHERE 
-                approved = True AND subject = ? 
-                AND year = ? AND component = ? 
-                AND board = ? AND level = ?"""
         
-        exesting_paper = cursor.execute(query, (paper_data['subject'], paper_data['year'], paper_data['component'], paper_data['board'], paper_data['level'])).fetchone()
+        # Get all the paper data from the db to check if we are approving a duplicate paper
+        if paper_data['board'] == 'A Levels':
+            query = """SELECT * FROM papers WHERE
+                    approved = True AND subject = ?
+                    AND year = ? AND component = ?
+                    AND board = ?"""       
+        
+            exesting_paper = cursor.execute(query, (paper_data['subject'], paper_data['year'], paper_data['component'], paper_data['board'])).fetchone()
+        else:
+            query = """SELECT * FROM papers WHERE 
+                    approved = True AND subject = ? 
+                    AND year = ? AND component = ? 
+                    AND board = ? AND level = ?"""
+            
+            exesting_paper = cursor.execute(query, (paper_data['subject'], paper_data['year'], paper_data['component'], paper_data['board'], paper_data['level'])).fetchone()
 
         if exesting_paper:
             logger.warning(f"Paper {uuid} has a duplicate in the database with UUID: {exesting_paper[1]}" )

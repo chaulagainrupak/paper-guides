@@ -110,7 +110,6 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
     component = file_data.split(', ')[1]
     full_year = file_data.split('Year: ')[1].split(' question')[0]
     question = renderQuestion(level, subject_name, full_year, component)
-    logger.warning(question)
     return render_template('qp.html', question=question[0], file_data=file_data, id=question[1][0][0], config=config)
 
 
@@ -251,7 +250,7 @@ def submitPaper():
         if paper_type == 'yearly':
             if not year:
                 raise ValueError("Year is required for yearly papers")
-            result = insertPaper(board, subject, formatted_year, level, component, questionFile, solutionFile, current_user.username, getClientIp())
+            result , uuid= insertPaper(board, subject, formatted_year, level, component, questionFile, solutionFile, current_user.username, getClientIp())
         elif paper_type == 'topical':
             result = insertTopical(board, subject, questionFile, solutionFile, current_user.username, getClientIp())
         else:
@@ -259,6 +258,9 @@ def submitPaper():
 
         if result:
             logger.info('Paper submitted successfully' + ' IP: ' + str(getClientIp()))
+            if current_user.role == 'admin':
+                if approvePaper(uuid)[1] == 400:
+                    return redirect(f'admin/paper/{uuid}')
             return redirect(url_for('index'))
         else:
             raise Exception("Insert operation failed")
@@ -536,7 +538,6 @@ def approvePaper(uuid):
         )
         return redirect(url_for('index'))
 
-    
     if approve_paper(current_user.username, uuid):
         logger.info(f"Paper {uuid} was approved by {current_user.username}")
         # Returning plain text for success with a 200 status
