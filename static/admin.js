@@ -131,11 +131,8 @@ function deleteItem(type, uuid) {
         "Content-Type": "application/json",
       },
     }).then((response) => {
-        if (response.ok) {
-          goBack();
-          window.location.reload();
-        } else {
-          throw new Error("Failed to delete item");
+        if (response) {
+          window.location.href = "/admin";
         }
       })
       .catch((error) => {
@@ -148,23 +145,24 @@ function deleteItem(type, uuid) {
 function approveItem(type, uuid) {
   if (confirm(`Are you sure you want to approve this ${type}?`)) {
     fetch(`/approve_${type}/${uuid}`, {
-      method: "POST", 
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
-      }   
-    }).then((response) => {
-      if (response.ok) {
-        window.location.reload();
-        goBack
-      } else {
-        throw new Error("Failed to delete item");
-      }
+      },
     })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert("An error occurred while deleting the item");
-    });
-  }
+      .then((response) => {
+        if(response.status == 200) {
+          alert(`${type} approved successfully`);
+          window.location.reload(); 
+        }else if (response.status == 400) {
+          alert(`paper already approved and exists in the database`);
+        }else {
+          alert('An error occurred while approving the item, check console');
+          console.log(response);
+          throw new Error("Failed to approve item");
+        }
+  })
+}
 }
 
 function giveAdmin() {
@@ -172,10 +170,10 @@ function giveAdmin() {
   fetch('/admin/give_admin/' + username, {
       method: 'POST'
   }).then((response) => {
-      if (response) {
-        alert(response);
+      if (response.ok) {
+        alert(`Admin rights given to ${username}`);
           username.value = '';
-          window.location.reload();
+          window.location.href = "/admin";
 
       }
   }).catch((error) => {

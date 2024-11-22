@@ -99,10 +99,9 @@ def getSubjectYears(level, subject_name):
 def getSubjectQuestions(level ,subject_name, year):
     logger.info(f'Questions page accessed for level {level}, subject {subject_name}, year {year}' + ' IP: ' + str(getClientIp()))
     question_name = getQuestions(level, subject_name, year)
-    return render_template('questions.html', questions_name = question_name, year = year)
+    return render_template('questions.html', questions_name = question_name, year = year, config = config, level = level )
 
 
-@app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
 @app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
 def renderSubjectQuestion(level, subject_name, year, file_data):
     logger.info(f'Question rendered for level {level}, subject {subject_name}, year {year}, file {file_data}' + ' IP: ' + str(getClientIp()))
@@ -111,7 +110,7 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
     component = file_data.split(', ')[1]
     full_year = file_data.split('Year: ')[1].split(' question')[0]
     question = renderQuestion(level, subject_name, full_year, component)
-    return render_template('qp.html', question=question[0], file_data=file_data, id=question[1][0][0])
+    return render_template('qp.html', question=question[0], file_data=file_data, id=question[1][0][0], config=config)
 
 
 
@@ -359,9 +358,7 @@ def changePassword():
             
             logger.info(f'User {current_user.username} changed password' + ' IP: ' + str(getClientIp()))
             
-            # Add flash message for JavaScript
-            flash('Password changed successfully!', 'success')
-            
+            return redirect(url_for('logout'))
         else:
             logger.warning(f'Failed to change password for user {current_user.username}' + ' IP: ' + str(getClientIp()))
             flash('Current password is incorrect.', 'error')
@@ -517,23 +514,29 @@ def approve(uuid):
         return redirect(url_for('index'))
 
     if approve_question(current_user.username, uuid):
-        return jsonify({"succss": "Your request was processed successfully"})
+        return jsonify({"message": "Your request was processed successfully"})
     else:
         return jsonify({"error": "Your request was not processed successfully"})
-    return redirect(url_for('admin_dashboard'))
 
-@app.route('/approve_paper/<uuid>', methods=["POST"])
+@app.route('/approve_paper/<uuid>', methods=["GET", "POST"])
 @login_required
 def approvePaper(uuid):
     if current_user.role != 'admin':
-        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
-        flash('Access denied. Administrator privileges required.', 'error')
+        logger.warning(
+            f"Admin page / endpoint is trying to be accessed by a non-admin user. IP: {getClientIp()}"
+        )
         return redirect(url_for('index'))
 
+    
     if approve_paper(current_user.username, uuid):
-        return jsonify({"succss": "Your request was processed successfully"})
+        logger.info(f"Paper {uuid} was approved by {current_user.username}")
+        # Returning plain text for success with a 200 status
+        return f"Paper {uuid} was approved by {current_user.username}", 200
     else:
-        return jsonify({"error": "Your request was not processed successfully"})
+        logger.error(f"Paper {uuid} was unable to be approved by {current_user.username}")
+        return f"Paper {uuid} was unable to be approved", 400
+
+
 
 @app.route('/delete_question/<uuid>', methods=["POST"])
 @login_required
@@ -544,10 +547,10 @@ def deleteQuestion(uuid):
         return redirect(url_for('index'))
 
     if delete_question(uuid):
-        flash('Question deleted successfully!')
+        return jsonify({"succss": "Your request was processed successfully"}), 200
     else:
-        flash('Error deleting question', 'error')
-    return redirect(url_for('admin_dashboard'))
+        return jsonify({"error": "Your request was not processed successfully"}), 304
+    
 
 @app.route('/delete_paper/<uuid>', methods=["POST"])
 @login_required
@@ -558,42 +561,9 @@ def deletePaper(uuid):
         return redirect(url_for('index'))
 
     if delete_paper(uuid):
-        flash('Paper deleted successfully!')
+        return jsonify({"succss": "Your request was processed successfully"}), 200
     else:
-        flash('Error deleting paper', 'error')
-    return redirect(url_for('admin_dashboard'))
-
-@app.route('/edit_question/<uuid>', methods=['GET', 'POST'])
-@login_required
-def editQuestion(uuid):
-    if current_user.role != 'admin':
-        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
-        flash('Access denied. Administrator privileges required.', 'error')
-        return redirect(url_for('index'))
-
-    if request.method == 'POST':
-        data = {
-            'subject': request.form['subject'],
-            'topic': request.form['topic'],
-            'difficulty': request.form['difficulty'],
-            'board': request.form['board'],
-            'level': request.form['level'],
-            'component': request.form['component']
-        }
-
-        if update_question(uuid, data):
-            flash('Question updated successfully!')
-            return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Error updating question', 'error')
-
-    question = get_question(uuid)
-    if not question:
-        flash('Question not found', 'error')
-        return redirect(url_for('admin_dashboard'))
-
-    return render_template('admin.html', question=question)
-
+        return jsonify({"error": "Your request was not processed successfully"}), 304
 
 # Temporary solution man
 # A route to give admin access to user accounts
@@ -616,7 +586,7 @@ def give_admin(username):
         user.role = 'admin'
         db.session.commit()
         logger.info('Admin privileges given to user: ' + username)
-        return jsonify({"success": "Admin privileges given successfully"}), 200
+        return jsonify({"message": "Admin privileges given successfully"}), 200
     except Exception as e:
         logger.error(f'Error giving admin privileges: {e}')
         return False
