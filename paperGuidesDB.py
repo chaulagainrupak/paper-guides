@@ -437,10 +437,10 @@ def getQuestionsForGen(board, subject, level, topics, components, difficulties):
         board (str): Board name (e.g., "Board1")
         subject (str): Subject name
         level (int): Education level
-        topics (list): List of selected topics
+        topics (str|list): 'ALL' or list of specific topics
         components (str|list): 'ALL' or list of specific components
-        difficulties (list): List of difficulty levels
-    
+        difficulties (str|list): 'ALL' or list of difficulty levels
+        
     Returns:
         list: List of question rows matching the criteria
     """
@@ -449,47 +449,52 @@ def getQuestionsForGen(board, subject, level, topics, components, difficulties):
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-        
+
         # Base query parts
         query = """
             SELECT *
             FROM questions
             WHERE
-            board = ? 
-            AND subject = ? 
+            board = ?
+            AND subject = ?
             AND level = ?
             AND approved = True
         """
-        
-        # Build difficulty condition
-        difficultyCondition = " OR ".join([f"difficulty = ?" for _ in difficulties]) if difficulties else ""
-        
-        # Build topic condition
-        topicCondition = " OR ".join([f"topic = ?" for _ in topics]) if topics else ""
-        
-        # Build the query and parameters dynamically
-        params = [board, subject, level] 
+        params = [board, subject, level]
+
+        # Helper function to build conditions
+        def add_condition(field_name, values):
+            if values != 'ALL':
+                condition = " OR ".join([f"{field_name} = ?" for _ in values])
+                return f" AND ({condition})", values
+            return "", []
 
         # Add difficulty condition
-        if difficulties:
-            query += f" AND ({difficultyCondition})"
-            params.extend(difficulties)
+        if difficulties != 'ALL':
+            diff_condition, diff_params = add_condition("difficulty", difficulties)
+            query += diff_condition
+            params.extend(diff_params)
 
         # Add topic condition
-        if topics:
-            query += f" AND ({topicCondition})"
-            params.extend(topics)
+        if topics != 'ALL':
+            topic_condition, topic_params = add_condition("topic", topics)
+            query += topic_condition
+            params.extend(topic_params)
 
         # Add components condition
         if components != 'ALL':
-            componentCondition = " OR ".join([f"component = ?" for _ in components]) if components else ""
-            query += f" AND ({componentCondition})"
-            params.extend(components)
-        
+            comp_condition, comp_params = add_condition("component", components)
+            query += comp_condition
+            params.extend(comp_params)
+
+        # Log the query for debugging (optional)
+        logger.debug(f"Generated SQL query: {query}")
+        logger.debug(f"Query parameters: {params}")
+
         # Execute the query
         cursor = db.execute(query, params)
         rows = cursor.fetchall()
-        
+
         # Process results
         if rows:
             # If more than 12 questions, randomly select 12
@@ -497,15 +502,14 @@ def getQuestionsForGen(board, subject, level, topics, components, difficulties):
                 rows = random.sample(rows, 12)
             else:
                 random.shuffle(rows)
-            
-            # Example processed rows, you can customize this part
+
             processed_rows = rows
             logger.info(f"Successfully retrieved {len(processed_rows)} questions for {subject} level {level}")
             return processed_rows
         else:
             logger.warning(f"No questions found for {subject} level {level}")
             return []
-            
+
     except sqlite3.Error as e:
         logger.error(f"Database error in getQuestionsForGen: {str(e)}")
         raise Exception(f"Database error occurred: {str(e)}")

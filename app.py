@@ -134,35 +134,43 @@ def questionGenerator():
 # This route displays the questions the uppper route genetated a diffrent page and route
 @app.route('/question-gen', methods=['POST', 'GET'])
 def questionGen():
-    
-    
     logger.info('Question generation initiated' + ' IP: ' + str(getClientIp()))
     if request.method == 'POST':
         try:
             # Extract form data
             board = request.form.get('board')
             subject = request.form.get('subject')
-            level = request.form.get('level')  
+            level = request.form.get('level')
             topics = request.form.getlist('topic')
             difficulties = request.form.getlist('difficulty')
             components = request.form.getlist('component')
-            
-            # Handle components
+
+            # Handle ALL selections
+            if 'ALL' in topics:
+                topics = 'ALL'
+            else:
+                topics = [topic for topic in topics]
+
+            if 'ALL' in difficulties:
+                difficulties = 'ALL'
+            else:
+                difficulties = [difficulty for difficulty in difficulties]
+
             if 'ALL' in components:
                 components = 'ALL'
             else:
                 components = [component for component in components]
-                
+
             # Get questions
             rows = getQuestionsForGen(board, subject, level, topics, components, difficulties)
-
             return render_template('qpgen.html', rows=rows)
-            
         except Exception as e:
             logger.error(f'Error in question generation: {str(e)}' + ' IP: ' + str(getClientIp()))
             return redirect(url_for('questionGenerator'))
     else:
         return redirect(url_for('questionGenerator'))
+
+        
 @app.route('/submit')
 def submit():
     logger.info('Submit page accessed' + ' IP: ' + str(getClientIp()))

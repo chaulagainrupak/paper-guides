@@ -1,8 +1,76 @@
 document.addEventListener("DOMContentLoaded", function () {
     const config = JSON.parse(document.getElementById("config").textContent);
     
+    const styleBlock = `
+    <style>
+        .checkboxes label.disabled {
+            color: #999;
+            text-decoration: line-through;
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .checkboxes label.disabled:hover {
+            background-color: #f5f5f5;
+        }
+
+        .all-selected-notice {
+            color: #666;
+            font-style: italic;
+            padding: 8px;
+            background-color: #f8f8f8;
+            margin-top: 5px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+    </style>
+    `;
+    document.head.insertAdjacentHTML('beforeend', styleBlock);
+    
     // Track current education system
     let currentSystem = document.getElementById("board").value;
+    
+    // Function to handle ALL selection behavior
+    // Function to handle ALL selection behavior
+    function handleAllSelection(containerId, inputName) {
+        const container = document.getElementById(containerId);
+        const allCheckbox = container.querySelector(`input[value="ALL"]`);
+        const otherCheckboxes = container.querySelectorAll(`input[name="${inputName}"]:not([value="ALL"])`);
+        const closeButton = container.querySelector('.close-button');
+        
+        // Remove any existing notice
+        const existingNotice = container.querySelector('.all-selected-notice');
+        if (existingNotice) {
+            existingNotice.remove();
+        }
+
+        if (allCheckbox.checked) {
+            // Create notice
+            const notice = document.createElement('div');
+            notice.className = 'all-selected-notice';
+            notice.textContent = 'Uncheck "ALL" to select individual items';
+            
+            // Insert notice after the close button
+            if (closeButton && closeButton.nextSibling) {
+                container.insertBefore(notice, closeButton.nextSibling);
+            } else {
+                container.insertBefore(notice, container.firstChild);
+            }
+
+            // Disable and strike through other options
+            otherCheckboxes.forEach(cb => {
+                cb.checked = false;
+                cb.disabled = true;
+                cb.parentElement.classList.add('disabled');
+            });
+        } else {
+            // Enable other options
+            otherCheckboxes.forEach(cb => {
+                cb.disabled = false;
+                cb.parentElement.classList.remove('disabled');
+            });
+        }
+    }
     
     // Add education system selector
     function initializeEducationSystem() {
@@ -54,11 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
         allCheckbox.name = "component";
         allCheckbox.value = "ALL";
         allCheckbox.addEventListener("change", function() {
-            const otherCheckboxes = componentCheckboxes.querySelectorAll('input[name="component"]:not([value="ALL"])');
-            otherCheckboxes.forEach(cb => {
-                cb.checked = false;
-                cb.disabled = this.checked;
-            });
+            handleAllSelection('componentCheckboxes', 'component');
             updateSelectTitle('componentCheckboxes', 'component-title');
         });
         allLabel.appendChild(allCheckbox);
@@ -76,6 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const allCheckbox = componentCheckboxes.querySelector('input[value="ALL"]');
                 if (this.checked) {
                     allCheckbox.checked = false;
+                    handleAllSelection('componentCheckboxes', 'component');
                 }
                 updateSelectTitle('componentCheckboxes', 'component-title');
             });
@@ -109,11 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
             allCheckbox.name = "topic";
             allCheckbox.value = "ALL";
             allCheckbox.addEventListener("change", function() {
-                const otherCheckboxes = topicCheckboxes.querySelectorAll('input[name="topic"]:not([value="ALL"])');
-                otherCheckboxes.forEach(cb => {
-                    cb.checked = false;
-                    cb.disabled = this.checked;
-                });
+                handleAllSelection('topicCheckboxes', 'topic');
                 updateSelectTitle('topicCheckboxes', 'topics-title');
             });
             allLabel.appendChild(allCheckbox);
@@ -131,6 +192,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const allCheckbox = topicCheckboxes.querySelector('input[value="ALL"]');
                     if (this.checked) {
                         allCheckbox.checked = false;
+                        handleAllSelection('topicCheckboxes', 'topic');
                     }
                     updateSelectTitle('topicCheckboxes', 'topics-title');
                 });
@@ -150,8 +212,8 @@ document.addEventListener("DOMContentLoaded", function () {
         
         if (checkedBoxes.length === 0) {
             titleElement.textContent = titleClass === 'topics-title' ? 'Select Topic(s)' : 
-                                        titleClass === 'difficulty-title' ? 'Select Difficulty' : 
-                                        'Select Component(s)';
+                                     titleClass === 'difficulty-title' ? 'Select Difficulty' : 
+                                     'Select Component(s)';
         } else {
             const selectedNames = Array.from(checkedBoxes)
                 .map(cb => cb.value)
@@ -178,17 +240,13 @@ document.addEventListener("DOMContentLoaded", function () {
     allCheckbox.name = "difficulty";
     allCheckbox.value = "ALL";
     allCheckbox.addEventListener("change", function() {
-        const otherCheckboxes = difficultyCheckboxes.querySelectorAll('input[name="difficulty"]:not([value="ALL"])');
-        otherCheckboxes.forEach(cb => {
-            cb.checked = false;
-            cb.disabled = this.checked;
-        });
+        handleAllSelection('difficultyCheckboxes', 'difficulty');
         updateSelectTitle('difficultyCheckboxes', 'difficulty-title');
     });
     allLabel.appendChild(allCheckbox);
     allLabel.appendChild(document.createTextNode("ALL"));
     difficultyCheckboxes.insertBefore(allLabel, difficultyCheckboxes.firstChild);
-  
+    
     // Add change listeners to existing difficulty checkboxes
     const difficultyBoxes = difficultyCheckboxes.querySelectorAll('input[type="checkbox"]:not([value="ALL"])');
     difficultyBoxes.forEach(checkbox => {
@@ -196,6 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const allCheckbox = difficultyCheckboxes.querySelector('input[value="ALL"]');
             if (this.checked) {
                 allCheckbox.checked = false;
+                handleAllSelection('difficultyCheckboxes', 'difficulty');
             }
             updateSelectTitle('difficultyCheckboxes', 'difficulty-title');
         });
@@ -213,7 +272,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeEducationSystem();
     updateFormForSystem(currentSystem);
     
-    // Existing window global functions
+    // Window global functions
     window.toggleCheckboxes = function(checkboxesId) {
         const checkboxes = document.getElementById(checkboxesId);
         const isCurrentlyHidden = checkboxes.style.display === "none" || checkboxes.style.display === "";
@@ -239,4 +298,4 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     });
-  });
+});
