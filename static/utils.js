@@ -6,6 +6,7 @@ function goBack() {
     if (referrer && referrer.startsWith(mySite)) {
         // Referrer is from the same site
         history.back();
+        await(300);
         window.location.reload();
     } else {
         // Referrer is external or not present

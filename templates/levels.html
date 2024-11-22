@@ -12,14 +12,23 @@
             <!-- Board Title -->
             <h1>{{ board }}</h1>
 
-            {% for level in boardData.levels %}
+            {% if board == "A Levels" %}
+                <div class="level-section">
+                    <!-- Level Link -->
+                    <a href="/subjects/A level">
+                        CIE: A Levels
+                    </a>
+                </div>
+            {% else %}
+                {% for level in boardData.levels %}
                 <div class="level-section">
                     <!-- Level Link -->
                     <a href="/subjects/{{level}}">
                         {{board}} Grade: {{ level }}
                     </a>
                 </div>
-            {% endfor %}
+                {% endfor %}
+            {% endif %}
         </div>
     {% endfor %}
 

@@ -260,7 +260,14 @@ def getYears(level , subjectName):
         db = connection.cursor()
 
         # Execute the query and fetch all results
-        rows = db.execute('SELECT year FROM papers WHERE level = ? AND subject = ? AND approved = 1', (level, subjectName)).fetchall()
+
+        if level == "A level" or level == "AS level":
+            query = 'SELECT year FROM papers WHERE board = ? AND subject = ? AND approved = 1'
+            rows = db.execute(query, ( "A Levels",subjectName,)).fetchall()
+        else:
+            query = 'SELECT year FROM papers WHERE level = ? AND subject = ? AND approved = 1'
+            rows = db.execute(query, (level, subjectName)).fetchall()
+
 
         # Extract the years from the query result
         years = list(set([row[0] for row in rows]))
@@ -288,15 +295,27 @@ def getQuestions(level, subject_name, year):
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
         
-        # Get rows where the first 4 characters match, but retrieve the full year string
-        rows = db.execute('''
-            SELECT component, year 
-            FROM papers 
-            WHERE level = ? 
-            AND subject = ? 
-            AND substr(year, 1, 4) = ? 
-            AND approved = 1
-        ''', (level, subject_name, str(year))).fetchall()
+        if level == "A level" or level == "AS level":
+            query = '''
+                SELECT component, year 
+                FROM papers 
+                WHERE board = ? 
+                AND subject = ? 
+                AND substr(year, 1, 4) = ? 
+                AND approved = 1
+            '''
+            rows = db.execute(query, ( "A Levels" ,subject_name,str(year))).fetchall()
+        else:
+            query = '''
+                SELECT component, year 
+                FROM papers 
+                WHERE level = ? 
+                AND subject = ? 
+                AND substr(year, 1, 4) = ? 
+                AND approved = 1
+            '''
+            # Get rows where the first 4 characters match, but retrieve the full year string
+            rows = db.execute(query, (level, subject_name, str(year))).fetchall()
         
         components = [row[0] for row in rows]
         full_years = [row[1] for row in rows]  # Get the full year strings from database
@@ -323,42 +342,45 @@ def renderQuestion(level, subject_name, year, component):
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
         
-        # Modified queries to use substr for year comparison
-        rows = db.execute('''
-            SELECT questionFile 
-            FROM papers 
-            WHERE level = ? 
-            AND subject = ? 
-            AND year = ? 
-            AND component = ? 
+        # Single query to fetch both questionFile and uuid
+        if level == 'A level' or level == 'AS level':
+            query = '''
+            SELECT questionFile, uuid
+            FROM papers
+            WHERE board = ?
+            AND subject = ?
+            AND year = ?
+            AND component = ?
             AND approved = 1
-        ''', (level, subject_name, year, component)).fetchall()
-        
-        id = db.execute('''
-            SELECT uuid 
-            FROM papers 
-            WHERE level = ? 
-            AND subject = ? 
-            AND year = ? 
-            AND component = ? 
+            '''
+            result = db.execute(query, ( "A Levels" ,subject_name, year, component)).fetchall()
+        else:
+            query = '''
+            SELECT questionFile, uuid
+            FROM papers
+            WHERE level = ?
+            AND subject = ?
+            AND year = ?
+            AND component = ?
             AND approved = 1
-        ''', (level, subject_name, year, component)).fetchall()
+            '''
+            result = db.execute(query, (level, subject_name, year, component)).fetchall()
         
-        # Extract the compressed data from the query result
-        compressedData = [row[0] for row in rows]
-        compressedData.append(id)
-        
-        if not compressedData:
+        # Check if results exist
+        if not result:
             logger.warning(f"No data found for level {level}, subject {subject_name}, year {year}, component {component}")
             return None
-            
-        logger.info(f"Question rendered successfully for level {level}, subject {subject_name}, year {year}, component {component}")
-        return compressedData
         
+        # Separate compressed data and IDs
+        compressedData = [row[0] for row in result]
+        ids = [row[1] for row in result]
+        
+        logger.info(f"Question rendered successfully for level {level}, subject {subject_name}, year {year}, component {component}")
+        return compressedData + ids
+    
     except sqlite3.Error as e:
         logger.error(f"An error occurred while rendering question: {e}")
         return None
-        
     finally:
         connection.close()
 

@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const yearSelect = document.getElementById("year");
   const otherYearDiv = document.getElementById("other_year_div");
   const sessionDiv = document.getElementById("session_div");
-  const sessionSelect = document.getElementById("session");
+  const levelDiv = document.getElementById("level_div");
 
   const questionSelects = {
     board: document.getElementById("board"),
@@ -130,6 +130,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     populateSubjects(selects.subject, selectedBoard);
     if (selects.topic) populateTopics(selects.topic, selects.subject.value, selectedBoard);
+
+    if (selectedBoard === "A Levels") {
+      levelDiv.style.display = "none";
+    }else{
+      levelDiv.style.display = "block";
+    }
+
     populateLevels(selects.level, selectedBoard);
     populateComponents(selects.component, selectedBoard);
   }
@@ -156,8 +163,10 @@ document.addEventListener("DOMContentLoaded", function () {
     
     if (selectedBoard === "A Levels") {
       sessionDiv.style.display = "block";
+      levelDiv.style.display = "none";
     } else {
       sessionDiv.style.display = "none";
+      levelDiv.style.display = "block";
     }
 
   });
