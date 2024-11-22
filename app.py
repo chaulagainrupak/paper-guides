@@ -99,10 +99,9 @@ def getSubjectYears(level, subject_name):
 def getSubjectQuestions(level ,subject_name, year):
     logger.info(f'Questions page accessed for level {level}, subject {subject_name}, year {year}' + ' IP: ' + str(getClientIp()))
     question_name = getQuestions(level, subject_name, year)
-    return render_template('questions.html', questions_name = question_name, year = year)
+    return render_template('questions.html', questions_name = question_name, year = year, config = config, level = level )
 
 
-@app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
 @app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
 def renderSubjectQuestion(level, subject_name, year, file_data):
     logger.info(f'Question rendered for level {level}, subject {subject_name}, year {year}, file {file_data}' + ' IP: ' + str(getClientIp()))
@@ -111,7 +110,7 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
     component = file_data.split(', ')[1]
     full_year = file_data.split('Year: ')[1].split(' question')[0]
     question = renderQuestion(level, subject_name, full_year, component)
-    return render_template('qp.html', question=question[0], file_data=file_data, id=question[1][0][0])
+    return render_template('qp.html', question=question[0], file_data=file_data, id=question[1][0][0], config=config)
 
 
 

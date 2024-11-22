@@ -669,10 +669,15 @@ def approve_paper(username : str,uuid: str) -> bool:
         cursor = connection.cursor()
   
         # Get all the paper data from the db to check if we are approving a duplicate paper
-        query = "SELECT * FROM papers WHERE approved = True AND subject = ? AND year = ? AND component = ? AND board = ? AND level = ?"
+        query = """SELECT * FROM papers WHERE 
+                approved = True AND subject = ? 
+                AND year = ? AND component = ? 
+                AND board = ? AND level = ?"""
+        
         exesting_paper = cursor.execute(query, (paper_data['subject'], paper_data['year'], paper_data['component'], paper_data['board'], paper_data['level'])).fetchone()
 
         if exesting_paper:
+            logger.warning(f"Paper {uuid} has a duplicate in the database with UUID: {exesting_paper[1]}" )
             return False
 
         cursor.execute('UPDATE papers SET approved = True , approvedBy = ? , approvedOn = ? WHERE uuid = ?', (username, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), uuid))

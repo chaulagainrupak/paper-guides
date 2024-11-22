@@ -6,6 +6,7 @@ function goBack() {
     if (referrer && referrer.startsWith(mySite)) {
         // Referrer is from the same site
         history.back();
+        window.location.reload();
     } else {
         // Referrer is external or not present
         window.location.href = '/';
@@ -31,4 +32,45 @@ function getRandomQuestion() {
 
     // Navigate to the random question
     window.location.href = randomQuestionLink;
+}
+
+
+function filterPaper(f, button) {
+    // Ensure the filter value is treated as a string
+    const filterValue = String(f).trim();
+    
+    // Select all elements with the class 'question-link'
+    const questionLinks = document.querySelectorAll('.question-link');
+    
+    // Select all filter buttons
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    
+    // Remove the 'active' class from all buttons
+    filterButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // Add the 'active' class to the clicked button (if provided)
+    if (button) {
+        button.classList.add('active');
+    }
+    
+    // Handle the "clear" case
+    if (filterValue === 'clear') {
+        questionLinks.forEach(link => {
+            link.setAttribute('style', 'display: block;');
+        });
+        return;
+    }
+    
+    // Loop through each link
+    questionLinks.forEach(link => {
+        
+        // Check if the href includes the filter value
+        if (link.href.includes("%20"+filterValue)) {
+            // Make the link visible
+            link.setAttribute('style', 'display: block;');
+        } else {
+            // Hide the link
+            link.setAttribute('style', 'display: none;');
+        }
+    });
 }
