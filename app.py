@@ -134,35 +134,43 @@ def questionGenerator():
 # This route displays the questions the uppper route genetated a diffrent page and route
 @app.route('/question-gen', methods=['POST', 'GET'])
 def questionGen():
-    
-    
     logger.info('Question generation initiated' + ' IP: ' + str(getClientIp()))
     if request.method == 'POST':
         try:
             # Extract form data
             board = request.form.get('board')
             subject = request.form.get('subject')
-            level = request.form.get('level')  
+            level = request.form.get('level')
             topics = request.form.getlist('topic')
             difficulties = request.form.getlist('difficulty')
             components = request.form.getlist('component')
-            
-            # Handle components
+
+            # Handle ALL selections
+            if 'ALL' in topics:
+                topics = 'ALL'
+            else:
+                topics = [topic for topic in topics]
+
+            if 'ALL' in difficulties:
+                difficulties = 'ALL'
+            else:
+                difficulties = [difficulty for difficulty in difficulties]
+
             if 'ALL' in components:
                 components = 'ALL'
             else:
                 components = [component for component in components]
-                
+
             # Get questions
             rows = getQuestionsForGen(board, subject, level, topics, components, difficulties)
-
             return render_template('qpgen.html', rows=rows)
-            
         except Exception as e:
             logger.error(f'Error in question generation: {str(e)}' + ' IP: ' + str(getClientIp()))
             return redirect(url_for('questionGenerator'))
     else:
         return redirect(url_for('questionGenerator'))
+
+        
 @app.route('/submit')
 def submit():
     logger.info('Submit page accessed' + ' IP: ' + str(getClientIp()))
@@ -242,7 +250,7 @@ def submitPaper():
         if paper_type == 'yearly':
             if not year:
                 raise ValueError("Year is required for yearly papers")
-            result = insertPaper(board, subject, formatted_year, level, component, questionFile, solutionFile, current_user.username, getClientIp())
+            result , uuid= insertPaper(board, subject, formatted_year, level, component, questionFile, solutionFile, current_user.username, getClientIp())
         elif paper_type == 'topical':
             result = insertTopical(board, subject, questionFile, solutionFile, current_user.username, getClientIp())
         else:
@@ -250,6 +258,9 @@ def submitPaper():
 
         if result:
             logger.info('Paper submitted successfully' + ' IP: ' + str(getClientIp()))
+            if current_user.role == 'admin':
+                if approvePaper(uuid)[1] == 400:
+                    return redirect(f'admin/paper/{uuid}')
             return redirect(url_for('index'))
         else:
             raise Exception("Insert operation failed")
@@ -527,7 +538,6 @@ def approvePaper(uuid):
         )
         return redirect(url_for('index'))
 
-    
     if approve_paper(current_user.username, uuid):
         logger.info(f"Paper {uuid} was approved by {current_user.username}")
         # Returning plain text for success with a 200 status

@@ -222,7 +222,7 @@ def insertPaper(board: str, subject: str, year: str, level: str,
         connection.commit()
         connection.close()
         logger.info(f"Paper inserted successfully. UUID: {uuidStr}")
-        return True
+        return True, uuidStr
     except Exception as e:
         logger.error(f"Error inserting paper into database: {e}")
         return False
@@ -260,7 +260,14 @@ def getYears(level , subjectName):
         db = connection.cursor()
 
         # Execute the query and fetch all results
-        rows = db.execute('SELECT year FROM papers WHERE level = ? AND subject = ? AND approved = 1', (level, subjectName)).fetchall()
+
+        if level == "A level" or level == "AS level":
+            query = 'SELECT year FROM papers WHERE board = ? AND subject = ? AND approved = 1'
+            rows = db.execute(query, ( "A Levels",subjectName,)).fetchall()
+        else:
+            query = 'SELECT year FROM papers WHERE level = ? AND subject = ? AND approved = 1'
+            rows = db.execute(query, (level, subjectName)).fetchall()
+
 
         # Extract the years from the query result
         years = list(set([row[0] for row in rows]))
@@ -288,15 +295,27 @@ def getQuestions(level, subject_name, year):
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
         
-        # Get rows where the first 4 characters match, but retrieve the full year string
-        rows = db.execute('''
-            SELECT component, year 
-            FROM papers 
-            WHERE level = ? 
-            AND subject = ? 
-            AND substr(year, 1, 4) = ? 
-            AND approved = 1
-        ''', (level, subject_name, str(year))).fetchall()
+        if level == "A level" or level == "AS level":
+            query = '''
+                SELECT component, year 
+                FROM papers 
+                WHERE board = ? 
+                AND subject = ? 
+                AND substr(year, 1, 4) = ? 
+                AND approved = 1
+            '''
+            rows = db.execute(query, ( "A Levels" ,subject_name,str(year))).fetchall()
+        else:
+            query = '''
+                SELECT component, year 
+                FROM papers 
+                WHERE level = ? 
+                AND subject = ? 
+                AND substr(year, 1, 4) = ? 
+                AND approved = 1
+            '''
+            # Get rows where the first 4 characters match, but retrieve the full year string
+            rows = db.execute(query, (level, subject_name, str(year))).fetchall()
         
         components = [row[0] for row in rows]
         full_years = [row[1] for row in rows]  # Get the full year strings from database
@@ -323,42 +342,45 @@ def renderQuestion(level, subject_name, year, component):
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
         
-        # Modified queries to use substr for year comparison
-        rows = db.execute('''
-            SELECT questionFile 
-            FROM papers 
-            WHERE level = ? 
-            AND subject = ? 
-            AND year = ? 
-            AND component = ? 
+        # Single query to fetch both questionFile and uuid
+        if level == 'A level' or level == 'AS level':
+            query = '''
+            SELECT questionFile, uuid
+            FROM papers
+            WHERE board = ?
+            AND subject = ?
+            AND year = ?
+            AND component = ?
             AND approved = 1
-        ''', (level, subject_name, year, component)).fetchall()
-        
-        id = db.execute('''
-            SELECT uuid 
-            FROM papers 
-            WHERE level = ? 
-            AND subject = ? 
-            AND year = ? 
-            AND component = ? 
+            '''
+            result = db.execute(query, ( "A Levels" ,subject_name, year, component)).fetchall()
+        else:
+            query = '''
+            SELECT questionFile, uuid
+            FROM papers
+            WHERE level = ?
+            AND subject = ?
+            AND year = ?
+            AND component = ?
             AND approved = 1
-        ''', (level, subject_name, year, component)).fetchall()
+            '''
+            result = db.execute(query, (level, subject_name, year, component)).fetchall()
         
-        # Extract the compressed data from the query result
-        compressedData = [row[0] for row in rows]
-        compressedData.append(id)
-        
-        if not compressedData:
+        # Check if results exist
+        if not result:
             logger.warning(f"No data found for level {level}, subject {subject_name}, year {year}, component {component}")
             return None
-            
-        logger.info(f"Question rendered successfully for level {level}, subject {subject_name}, year {year}, component {component}")
-        return compressedData
         
+        # Separate compressed data and IDs
+        compressedData = [row[0] for row in result]
+        ids = [row[1] for row in result]
+        
+        logger.info(f"Question rendered successfully for level {level}, subject {subject_name}, year {year}, component {component}")
+        return compressedData + ids
+    
     except sqlite3.Error as e:
         logger.error(f"An error occurred while rendering question: {e}")
         return None
-        
     finally:
         connection.close()
 
@@ -437,10 +459,10 @@ def getQuestionsForGen(board, subject, level, topics, components, difficulties):
         board (str): Board name (e.g., "Board1")
         subject (str): Subject name
         level (int): Education level
-        topics (list): List of selected topics
+        topics (str|list): 'ALL' or list of specific topics
         components (str|list): 'ALL' or list of specific components
-        difficulties (list): List of difficulty levels
-    
+        difficulties (str|list): 'ALL' or list of difficulty levels
+        
     Returns:
         list: List of question rows matching the criteria
     """
@@ -449,47 +471,52 @@ def getQuestionsForGen(board, subject, level, topics, components, difficulties):
         # Connect to the database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
-        
+
         # Base query parts
         query = """
             SELECT *
             FROM questions
             WHERE
-            board = ? 
-            AND subject = ? 
+            board = ?
+            AND subject = ?
             AND level = ?
             AND approved = True
         """
-        
-        # Build difficulty condition
-        difficultyCondition = " OR ".join([f"difficulty = ?" for _ in difficulties]) if difficulties else ""
-        
-        # Build topic condition
-        topicCondition = " OR ".join([f"topic = ?" for _ in topics]) if topics else ""
-        
-        # Build the query and parameters dynamically
-        params = [board, subject, level] 
+        params = [board, subject, level]
+
+        # Helper function to build conditions
+        def add_condition(field_name, values):
+            if values != 'ALL':
+                condition = " OR ".join([f"{field_name} = ?" for _ in values])
+                return f" AND ({condition})", values
+            return "", []
 
         # Add difficulty condition
-        if difficulties:
-            query += f" AND ({difficultyCondition})"
-            params.extend(difficulties)
+        if difficulties != 'ALL':
+            diff_condition, diff_params = add_condition("difficulty", difficulties)
+            query += diff_condition
+            params.extend(diff_params)
 
         # Add topic condition
-        if topics:
-            query += f" AND ({topicCondition})"
-            params.extend(topics)
+        if topics != 'ALL':
+            topic_condition, topic_params = add_condition("topic", topics)
+            query += topic_condition
+            params.extend(topic_params)
 
         # Add components condition
         if components != 'ALL':
-            componentCondition = " OR ".join([f"component = ?" for _ in components]) if components else ""
-            query += f" AND ({componentCondition})"
-            params.extend(components)
-        
+            comp_condition, comp_params = add_condition("component", components)
+            query += comp_condition
+            params.extend(comp_params)
+
+        # Log the query for debugging (optional)
+        logger.debug(f"Generated SQL query: {query}")
+        logger.debug(f"Query parameters: {params}")
+
         # Execute the query
         cursor = db.execute(query, params)
         rows = cursor.fetchall()
-        
+
         # Process results
         if rows:
             # If more than 12 questions, randomly select 12
@@ -497,15 +524,14 @@ def getQuestionsForGen(board, subject, level, topics, components, difficulties):
                 rows = random.sample(rows, 12)
             else:
                 random.shuffle(rows)
-            
-            # Example processed rows, you can customize this part
+
             processed_rows = rows
             logger.info(f"Successfully retrieved {len(processed_rows)} questions for {subject} level {level}")
             return processed_rows
         else:
             logger.warning(f"No questions found for {subject} level {level}")
             return []
-            
+
     except sqlite3.Error as e:
         logger.error(f"Database error in getQuestionsForGen: {str(e)}")
         raise Exception(f"Database error occurred: {str(e)}")
@@ -667,14 +693,22 @@ def approve_paper(username : str,uuid: str) -> bool:
 
         # Update approval status
         cursor = connection.cursor()
-  
-        # Get all the paper data from the db to check if we are approving a duplicate paper
-        query = """SELECT * FROM papers WHERE 
-                approved = True AND subject = ? 
-                AND year = ? AND component = ? 
-                AND board = ? AND level = ?"""
         
-        exesting_paper = cursor.execute(query, (paper_data['subject'], paper_data['year'], paper_data['component'], paper_data['board'], paper_data['level'])).fetchone()
+        # Get all the paper data from the db to check if we are approving a duplicate paper
+        if paper_data['board'] == 'A Levels':
+            query = """SELECT * FROM papers WHERE
+                    approved = True AND subject = ?
+                    AND year = ? AND component = ?
+                    AND board = ?"""       
+        
+            exesting_paper = cursor.execute(query, (paper_data['subject'], paper_data['year'], paper_data['component'], paper_data['board'])).fetchone()
+        else:
+            query = """SELECT * FROM papers WHERE 
+                    approved = True AND subject = ? 
+                    AND year = ? AND component = ? 
+                    AND board = ? AND level = ?"""
+            
+            exesting_paper = cursor.execute(query, (paper_data['subject'], paper_data['year'], paper_data['component'], paper_data['board'], paper_data['level'])).fetchone()
 
         if exesting_paper:
             logger.warning(f"Paper {uuid} has a duplicate in the database with UUID: {exesting_paper[1]}" )
