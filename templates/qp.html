@@ -1,14 +1,31 @@
 {% extends 'base.html' %} {% block title %} Paper-Guides {% endblock %} {% block
 section %}
-
-<div class="qp-container">
+<style>
+    .btn {
+        background: none;  
+        font-size: 1rem; 
+        cursor: pointer; 
+        padding: 8px 8px; 
+        border-radius: 20px;
+    }
+</style>
     <div class="qp-main-content">
-        <div class="section-title" style="display: flex; justify-content: space-between;">
-            <h1 class="paper-title" id="{{id}}">{{file_data}}</h1>
+        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <h1 class="paper-title" id="{{id}}" style="align-self: center;">{{file_data}}</h1>
+            <button onclick="showSolution(this)" class="btn" style="border: #5d71e0 2px solid; color:#5d71e0;"> Show Solution</button>
             <button onclick="goBack()" style="background: none; border: none; color: #5d71e0; font-size: 1.5rem; cursor: pointer;">← Back</button>
         </div>
+
         <div class="pdf-container">
-            <div class="paper-pdf" data-compressed="{{ question }}">
+            <div class="paper-pdf question-pdf" data-compressed="{{ question }}">
+                <object
+                    type="application/pdf"
+                    width="100%"
+                    height="600px"
+                ></object>
+            </div>
+
+            <div class="paper-pdf solution-pdf" data-compressed="{{ solution }}" style="display: none;">
                 <object
                     type="application/pdf"
                     width="100%"
@@ -33,6 +50,5 @@ section %}
         <script src="{{ url_for('static', filename='admin.js') }}"></script>
         {%endif%}
     </div>
-</div>
 
 {% endblock %}

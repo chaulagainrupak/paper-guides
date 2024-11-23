@@ -110,7 +110,7 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
     component = file_data.split(', ')[1]
     full_year = file_data.split('Year: ')[1].split(' question')[0]
     question = renderQuestion(level, subject_name, full_year, component)
-    return render_template('qp.html', question=question[0], file_data=file_data, id=question[1][0][0], config=config)
+    return render_template('qp.html', question=question[0], solution= question[1], file_data=file_data, id=question[2], config=config)
 
 
 
