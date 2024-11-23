@@ -96,24 +96,6 @@
             <h2><strong>Submitted by:</strong> {{ paper.submittedBy }}</h2>
         </div>
 
-        <div class="pdf-container">
-            <h4>Question Paper:</h4>
-            <object data-compressed="{{paper.questionFile}}" type="application/pdf" class="paper-pdf">
-                <p>Your browser doesn't support embedded PDFs. Download it
-                    <a href="{{ paper.questionFile }}">here</a>.
-                </p>
-            </object>
-        </div>
-
-        <div class="pdf-container">
-            <h4>Solution Paper:</h4>
-            <object data-compressed="{{ paper.solutionFile }}" type="application/pdf" class="paper-pdf">
-                <p>Your browser doesn't support embedded PDFs. Download it
-                    <a href="{{ paper.solutionFile }}">here</a>.
-                </p>
-            </object>
-        </div>
-
         <div class="actions">
             {% if paper.approved == 0 %}
             <button onclick="approveItem('paper','{{ paper.uuid }}')" class="button approve">
@@ -123,6 +105,27 @@
             <button onclick="deleteItem('paper','{{ paper.uuid }}')" class="button delete">
                 Delete
             </button>
+        </div>
+
+
+        <div style="display: flex; justify-content: space-around;">
+            <div class="pdf-container" style="width: 50%;">
+                <h4>Question Paper:</h4>
+                <object data-compressed="{{paper.questionFile}}" type="application/pdf" class="paper-pdf">
+                    <p>Your browser doesn't support embedded PDFs. Download it
+                        <a href="{{ paper.questionFile }}">here</a>.
+                    </p>
+                </object>
+            </div>
+    
+            <div class="pdf-container" style="width: 50%;">
+                <h4>Solution Paper:</h4>
+                <object data-compressed="{{ paper.solutionFile }}" type="application/pdf" class="paper-pdf">
+                    <p>Your browser doesn't support embedded PDFs. Download it
+                        <a href="{{ paper.solutionFile }}">here</a>.
+                    </p>
+                </object>
+            </div>
         </div>
     </div>
 </body>

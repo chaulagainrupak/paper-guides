@@ -54,14 +54,14 @@ async function renderPDFElement(element, base64Data) {
       // Create container for PDF or images
       const container = document.createElement("div");
       container.style.width = "100%";
-      container.style.height = "80dvh";
+      container.style.height = "100%";
       container.style.overflow = "auto";
 
       // Try to load PDF first
       const object = document.createElement("object");
       object.type = "application/pdf";
       object.width = "100%";
-      object.height = "100";
+      object.height = "100%";
       object.data = pdfDataUrl;
 
       // Add fallback handling
