@@ -842,11 +842,9 @@ def send_to_discord(item_type: str, data: dict) -> bool:
 
 def getStat(config):
     try:
-        # Connect to the SQLite database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
 
-        # Initialize the stats dictionary
         stats = {
             "overall": {
                 "questions": {
@@ -861,7 +859,6 @@ def getStat(config):
             "byBoard": {}
         }
 
-        # Loop through each board in the config
         for boardName, boardConfig in config.items():
             boardStats = {
                 "levels": {},
@@ -869,57 +866,116 @@ def getStat(config):
             }
             stats["byBoard"][boardName] = boardStats
 
-            # Handle overall approved/unapproved question count for this board
             for level in boardConfig["levels"]:
-                boardStats[ "levels"][level] = {
-                    "approvedQuestions": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND approved = ?", (level, True)).fetchone()[0],
-                    "unapprovedQuestions": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND approved = ?", (level, False)).fetchone()[0],
-                    "subjects": {}
-                }
-
-                # Loop through each subject in the board
-                for subject in boardConfig["subjects"]:
-                    subjectName = subject["name"]
-                    boardStats["levels"][level]["subjects"][subjectName] = {
-                        "approved": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, True)).fetchone()[0],
-                        "unapproved": db.execute("SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, False)).fetchone()[0],
-
-                        "approvedPapers" : db.execute("SELECT COUNT(*) FROM papers WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, True)).fetchone()[0],
-                        "unapprovedPapers" : db.execute("SELECT COUNT(*) FROM papers WHERE level = ? AND subject = ? AND approved = ?", (level, subjectName, False)).fetchone()[0],
+                # Normalize A-level variations
+                normalized_level = level
+                if level.lower() in ["a level", "as level", "a-level", "as-level"]:
+                    normalized_level = "A level"  # Use this as the standard key
+                
+                if normalized_level not in boardStats["levels"]:
+                    boardStats["levels"][normalized_level] = {
+                        "approvedQuestions": 0,
+                        "unapprovedQuestions": 0,
+                        "subjects": {}
                     }
 
+                # For A-levels, combine both A and AS level counts
+                if level.lower() in ["a level", "as level", "a-level", "as-level"]:
+                    approved_count = db.execute(
+                        "SELECT COUNT(*) FROM questions WHERE (level = ? OR level = ? OR level = ? OR level = ?) AND approved = ?",
+                        ("A level", "AS level", "A Level", "AS Level", True)
+                    ).fetchone()[0]
+                    unapproved_count = db.execute(
+                        "SELECT COUNT(*) FROM questions WHERE (level = ? OR level = ? OR level = ? OR level = ?) AND approved = ?",
+                        ("A level", "AS level", "A Level", "AS Level", False)
+                    ).fetchone()[0]
+                    
+                    boardStats["levels"][normalized_level]["approvedQuestions"] += approved_count
+                    boardStats["levels"][normalized_level]["unapprovedQuestions"] += unapproved_count
 
-            # Why are we doing this twice when we could have added the count directly to the json? 
-            # Because I can and makes the code a bit more redable
+                    # Handle subjects for A-levels
+                    for subject in boardConfig["subjects"]:
+                        subjectName = subject["name"]
+                        if subjectName not in boardStats["levels"][normalized_level]["subjects"]:
+                            boardStats["levels"][normalized_level]["subjects"][subjectName] = {
+                                "approved": 0,
+                                "unapproved": 0,
+                                "approvedPapers": 0,
+                                "unapprovedPapers": 0
+                            }
+                        
+                        # Combine A and AS level counts for each subject
+                        approved = db.execute(
+                            "SELECT COUNT(*) FROM questions WHERE (level = ? OR level = ? OR level = ? OR level = ?) AND subject = ? AND approved = ?",
+                            ("A level", "AS level", "A Level", "AS Level", subjectName, True)
+                        ).fetchone()[0]
+                        unapproved = db.execute(
+                            "SELECT COUNT(*) FROM questions WHERE (level = ? OR level = ? OR level = ? OR level = ?) AND subject = ? AND approved = ?",
+                            ("A level", "AS level", "A Level", "AS Level", subjectName, False)
+                        ).fetchone()[0]
+                        
+                        approved_papers = db.execute(
+                            "SELECT COUNT(*) FROM papers WHERE (level = ? OR level = ? OR level = ? OR level = ?) AND subject = ? AND approved = ?",
+                            ("A level", "AS level", "A Level", "AS Level", subjectName, True)
+                        ).fetchone()[0]
+                        unapproved_papers = db.execute(
+                            "SELECT COUNT(*) FROM papers WHERE (level = ? OR level = ? OR level = ? OR level = ?) AND subject = ? AND approved = ?",
+                            ("A level", "AS level", "A Level", "AS Level", subjectName, False)
+                        ).fetchone()[0]
 
-            # Update overall board-level stats
-            approvedQuestionsCount = db.execute(
-                "SELECT COUNT(*) FROM questions WHERE approved = ?", (True,)
-            ).fetchone()[0]
-            unapprovedQuestionsCount = db.execute(
-                "SELECT COUNT(*) FROM questions WHERE approved = ?", (False,)
-            ).fetchone()[0]
+                        boardStats["levels"][normalized_level]["subjects"][subjectName].update({
+                            "approved": approved,
+                            "unapproved": unapproved,
+                            "approvedPapers": approved_papers,
+                            "unapprovedPapers": unapproved_papers
+                        })
+                else:
+                    # Handle non-A-level statistics as before
+                    boardStats["levels"][normalized_level]["approvedQuestions"] = db.execute(
+                        "SELECT COUNT(*) FROM questions WHERE level = ? AND approved = ?",
+                        (level, True)
+                    ).fetchone()[0]
+                    boardStats["levels"][normalized_level]["unapprovedQuestions"] = db.execute(
+                        "SELECT COUNT(*) FROM questions WHERE level = ? AND approved = ?",
+                        (level, False)
+                    ).fetchone()[0]
 
-            # Update the JSON
-            stats["overall"]["questions"]["approved"] = approvedQuestionsCount
-            stats["overall"]["questions"]["unapproved"] = unapprovedQuestionsCount
+                    for subject in boardConfig["subjects"]:
+                        subjectName = subject["name"]
+                        boardStats["levels"][normalized_level]["subjects"][subjectName] = {
+                            "approved": db.execute(
+                                "SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?",
+                                (level, subjectName, True)
+                            ).fetchone()[0],
+                            "unapproved": db.execute(
+                                "SELECT COUNT(*) FROM questions WHERE level = ? AND subject = ? AND approved = ?",
+                                (level, subjectName, False)
+                            ).fetchone()[0],
+                            "approvedPapers": db.execute(
+                                "SELECT COUNT(*) FROM papers WHERE level = ? AND subject = ? AND approved = ?",
+                                (level, subjectName, True)
+                            ).fetchone()[0],
+                            "unapprovedPapers": db.execute(
+                                "SELECT COUNT(*) FROM papers WHERE level = ? AND subject = ? AND approved = ?",
+                                (level, subjectName, False)
+                            ).fetchone()[0]
+                        }
 
-            approvedPapersCount = db.execute(
-                "SELECT COUNT(*) FROM papers WHERE approved = ?", (True,)
-            ).fetchone()[0]
-            unapprovedPapersCount = db.execute(
-                "SELECT COUNT(*) FROM papers WHERE approved = ?", (False,)
-            ).fetchone()[0]
+        # Update overall stats
+        stats["overall"]["questions"]["approved"] = db.execute(
+            "SELECT COUNT(*) FROM questions WHERE approved = ?", (True,)
+        ).fetchone()[0]
+        stats["overall"]["questions"]["unapproved"] = db.execute(
+            "SELECT COUNT(*) FROM questions WHERE approved = ?", (False,)
+        ).fetchone()[0]
+        stats["overall"]["papers"]["approved"] = db.execute(
+            "SELECT COUNT(*) FROM papers WHERE approved = ?", (True,)
+        ).fetchone()[0]
+        stats["overall"]["papers"]["unapproved"] = db.execute(
+            "SELECT COUNT(*) FROM papers WHERE approved = ?", (False,)
+        ).fetchone()[0]
 
-            # Update the JSON
-            stats["overall"]["papers"]["approved"] = approvedPapersCount
-            stats["overall"]["papers"]["unapproved"] = unapprovedPapersCount
-
-
- 
-        # Close the connection
         connection.close()
-
         return stats
 
     except sqlite3.Error as e:

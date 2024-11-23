@@ -1,342 +1,358 @@
-{   
-    "NEB": {
-        "levels": [
-            "10",
-            "11",
-            "12"
-        ],
-        "subjects": [
-            {
-                "name": "Compulsory Maths",
-                "topics": [
-                    "Sets and Functions",
-                    "Algebra and Matrices",
-                    "Geometry and Coordinate Geometry",
-                    "Trigonometry and Its Applications",
-                    "Calculus (Differentiation & Integration)",
-                    "Vectors and 3D Geometry",
-                    "Statistics and Probability",
-                    "Linear Programming",
-                    "Sequences and Series",
-                    "Complex Numbers",
-                    "Indices and Logarithms",
-                    "Permutation and Combination"
-                ]
-            },
-            {
-                "name": "Optional Maths",
-                "topics": [
-                    "Advanced Statistics",
-                    "Advanced Probability",
-                    "Discrete Mathematics",
-                    "Mathematical Reasoning",
-                    "Graph Theory",
-                    "Number Theory",
-                    "Advanced Calculus",
-                    "Mathematical Modelling",
-                    "Numerical Methods",
-                    "Boolean Algebra",
-                    "Groups and Rings",
-                    "Differential Equations"
-                ]
-            },
-            {
-                "name": "Physics",
-                "topics": [
-                    "Mechanics and Properties of Matter",
-                    "Heat and Thermodynamics",
-                    "Wave Motion and Sound",
-                    "Optics and Optical Instruments",
-                    "Electricity and Magnetism",
-                    "Modern Physics",
-                    "Electronics",
-                    "Nuclear Physics",
-                    "Quantum Physics",
-                    "Relativity",
-                    "Solid State Physics",
-                    "Astronomy and Cosmology"
-                ]
-            },
-            {
-                "name": "Chemistry",
-                "topics": [
-                    "Atomic Structure and Chemical Bonding",
-                    "States of Matter",
-                    "Redox Reactions and Electrochemistry",
-                    "Chemical Equilibrium",
-                    "Chemical Kinetics",
-                    "Periodic Table and Elements",
-                    "Organic Chemistry and Functional Groups",
-                    "Polymers and Biomolecules",
-                    "Environmental Chemistry",
-                    "Industrial Chemistry",
-                    "Coordination Compounds",
-                    "Surface Chemistry and Catalysis"
-                ]
-            },
-            {
-                "name": "Biology",
-                "topics": [
-                    "Cell Biology and Biomolecules",
-                    "Genetics and Evolution",
-                    "Ecology and Environment",
-                    "Human Anatomy and Physiology",
-                    "Plant Anatomy and Physiology",
-                    "Biodiversity and Conservation",
-                    "Biotechnology and Its Applications",
-                    "Microbiology",
-                    "Developmental Biology",
-                    "Applied Biology",
-                    "Animal Behavior",
-                    "Molecular Biology"
-                ]
-            },
-            {
-                "name": "English",
-                "topics": [
-                    "Reading Comprehension",
-                    "Writing Skills and Essays",
-                    "Grammar and Usage",
-                    "Literature and Poetry",
-                    "Short Stories and Drama",
-                    "Business Communication",
-                    "Technical Writing",
-                    "Speaking and Listening",
-                    "Critical Analysis",
-                    "Academic Writing",
-                    "Creative Writing",
-                    "Research Writing"
-                ]
-            },
-            {
-                "name": "Nepali",
-                "topics": [
-                    "Vyakaran (Grammar)",
-                    "Sahitya (Literature)",
-                    "Kabita (Poetry)",
-                    "Katha (Stories)",
-                    "Upanyas (Novel)",
-                    "Nibandha (Essays)",
-                    "Nataka (Drama)",
-                    "Rachana (Composition)",
-                    "Byabaharik Lekhan (Practical Writing)",
-                    "Bhasa Vigyan (Linguistics)",
-                    "Lok Sahitya (Folk Literature)",
-                    "Aalochana (Literary Criticism)"
-                ]
-            },
-            {
-                "name": "Computer",
-                "topics": [
-                    "Programming Fundamentals",
-                    "Object-Oriented Programming",
-                    "Database Management Systems",
-                    "Web Development",
-                    "Data Structures and Algorithms",
-                    "Computer Networks",
-                    "Operating Systems",
-                    "Software Engineering",
-                    "Computer Architecture",
-                    "Cyber Security",
-                    "Mobile Application Development",
-                    "Artificial Intelligence Basics"
-                ]
-            },
-            {
-                "name": "Accounts",
-                "topics": [
-                    "Basic Accounting Concepts",
-                    "Financial Accounting",
-                    "Cost Accounting",
-                    "Management Accounting",
-                    "Company Accounts",
-                    "Partnership Accounts",
-                    "Taxation",
-                    "Auditing",
-                    "Financial Statement Analysis",
-                    "Budgeting and Forecasting",
-                    "Banking Transactions",
-                    "Computerized Accounting"
-                ]
-            },
-            {
-                "name": "Economics",
-                "topics": [
-                    "Basic Economic Concepts",
-                    "Microeconomics",
-                    "Macroeconomics",
-                    "International Economics",
-                    "Development Economics",
-                    "Public Finance",
-                    "Money and Banking",
-                    "Statistical Methods",
-                    "Nepalese Economy",
-                    "Environmental Economics",
-                    "Labor Economics",
-                    "Agricultural Economics"
-                ]
-            }
-        ],
-        "components": [
-            "Province 1",
-            "Province 2",
-            "Bagmati Province",
-            "Gandaki Province",
-            "Lumbini Province",
-            "Karnali Province",
-            "Sudurpashchim Province"
+{
+  "NEB": {
+    "levels": ["10", "11", "12"],
+    "subjects": [
+      {
+        "name": "Compulsory Maths",
+        "topics": [
+          "Sets and Functions",
+          "Algebra and Matrices",
+          "Geometry and Coordinate Geometry",
+          "Trigonometry and Its Applications",
+          "Calculus (Differentiation & Integration)",
+          "Vectors and 3D Geometry",
+          "Statistics and Probability",
+          "Linear Programming",
+          "Sequences and Series",
+          "Complex Numbers",
+          "Indices and Logarithms",
+          "Permutation and Combination"
         ]
-    },
-
-    "A Levels": {
-        "levels": [
-            "AS level",
-            "A level"
-        ],
-        "subjects": [
-            {
-                "name": "English General Paper (8021)",
-                "topics": [
-                    "Economic, historical, moral, political, and social issues",
-                    "Science, including its history, philosophy, ethics, general principles, and applications",
-                    "Environmental issues",
-                    "Technology and mathematics",
-                    "Literature, language, arts, crafts, and the media"
-                ]
-            },
-            {
-                "name": "Mathematics (9709)",
-                "topics": [
-                    "Quadratics",
-                    "Functions",
-                    "Coordinate Geometry",
-                    "Circular Measure",
-                    "Trigonometry",
-                    "Series",
-                    "Differentiation",
-                    "Integration",
-                    "Representation of Data",
-                    "Permutations and Combinations",
-                    "Probability",
-                    "Discrete Random Variables",
-                    "The Normal Distribution"
-                ]
-            },
-            {
-                "name": "Physics (9702)",
-                "topics": [
-                    "Physical Quantities and Units",
-                    "Kinematics",
-                    "Dynamics",
-                    "Forces, Density, and Pressure",
-                    "Work, Energy, and Power",
-                    "Deformation of Solids",
-                    "Waves",
-                    "Superposition",
-                    "Electricity",
-                    "D.C. Circuits",
-                    "Particle Physics"
-                ]
-            },
-            {
-                "name": "Chemistry (9701)",
-                "topics": [
-                    "Atomic Structure",
-                    "Atoms, Molecules, and Stoichiometry",
-                    "Chemical Bonding",
-                    "States of Matter",
-                    "Chemical Energetics",
-                    "Electrochemistry",
-                    "Equilibria",
-                    "Reaction Kinetics",
-                    "The Periodic Table: Chemical Periodicity",
-                    "Group 2",
-                    "Group 17",
-                    "Nitrogen and Sulfur",
-                    "Introduction to AS Level Organic Chemistry",
-                    "Hydrocarbons",
-                    "Halogen Compounds",
-                    "Hydroxy Compounds",
-                    "Carbonyl Compounds",
-                    "Carboxylic Acids and Derivatives",
-                    "Nitrogen Compounds",
-                    "Polymerisation",
-                    "Organic Synthesis"
-                ]
-            },
-            {
-                "name": "Computer Science (9618)",
-                "topics": [
-                    "Information Representation",
-                    "Communication",
-                    "Hardware",
-                    "Processor Fundamentals",
-                    "System Software",
-                    "Security, Privacy, and Data Integrity",
-                    "Ethics and Ownership",
-                    "Databases",
-                    "Algorithm Design and Problem-solving",
-                    "Data Types and Structures",
-                    "Programming",
-                    "Software Development"
-                ]
-            },
-            {
-                "name": "Economics (9708)",
-                "topics": [
-                    "Basic Economic Principles",
-                    "Demand and Supply Analysis",
-                    "Elasticity of Demand and Supply",
-                    "Market Structures and Types",
-                    "Consumer and Producer Surplus",
-                    "Labor Market",
-                    "Macroeconomic Indicators",
-                    "National Income Accounting",
-                    "Fiscal and Monetary Policy",
-                    "Inflation, Unemployment, and Growth",
-                    "International Trade and Balance of Payments",
-                    "Economic Development and Sustainability",
-                    "Market Failure and Government Intervention"
-                ]
-            },
-            {
-                "name": "Accounting (9706)",
-                "topics": [
-                    "Basic Accounting Principles",
-                    "Double-Entry Bookkeeping",
-                    "Preparation of Financial Statements",
-                    "Non-current Assets",
-                    "Inventory Valuation",
-                    "Financial Ratios",
-                    "Bank Reconciliation",
-                    "Depreciation and Amortization",
-                    "Control Accounts",
-                    "Incorporated Business Accounts",
-                    "Partnership Accounts",
-                    "Costing and Budgeting",
-                    "Introduction to Auditing"
-                ]
-            }
-        ],
-        "components": [
-            "11",
-            "12",
-            "13",
-            "21",
-            "22",
-            "23",
-            "31",
-            "32",
-            "33",
-            "41",
-            "42",
-            "43",
-            "51",
-            "52",
-            "53",
-            "61",
-            "62",
-            "63"
+      },
+      {
+        "name": "Optional Maths",
+        "topics": [
+          "Advanced Statistics",
+          "Advanced Probability",
+          "Discrete Mathematics",
+          "Mathematical Reasoning",
+          "Graph Theory",
+          "Number Theory",
+          "Advanced Calculus",
+          "Mathematical Modelling",
+          "Numerical Methods",
+          "Boolean Algebra",
+          "Groups and Rings",
+          "Differential Equations"
         ]
-    }
+      },
+      {
+        "name": "Physics",
+        "topics": [
+          "Mechanics and Properties of Matter",
+          "Heat and Thermodynamics",
+          "Wave Motion and Sound",
+          "Optics and Optical Instruments",
+          "Electricity and Magnetism",
+          "Modern Physics",
+          "Electronics",
+          "Nuclear Physics",
+          "Quantum Physics",
+          "Relativity",
+          "Solid State Physics",
+          "Astronomy and Cosmology"
+        ]
+      },
+      {
+        "name": "Chemistry",
+        "topics": [
+          "Atomic Structure and Chemical Bonding",
+          "States of Matter",
+          "Redox Reactions and Electrochemistry",
+          "Chemical Equilibrium",
+          "Chemical Kinetics",
+          "Periodic Table and Elements",
+          "Organic Chemistry and Functional Groups",
+          "Polymers and Biomolecules",
+          "Environmental Chemistry",
+          "Industrial Chemistry",
+          "Coordination Compounds",
+          "Surface Chemistry and Catalysis"
+        ]
+      },
+      {
+        "name": "Biology",
+        "topics": [
+          "Cell Biology and Biomolecules",
+          "Genetics and Evolution",
+          "Ecology and Environment",
+          "Human Anatomy and Physiology",
+          "Plant Anatomy and Physiology",
+          "Biodiversity and Conservation",
+          "Biotechnology and Its Applications",
+          "Microbiology",
+          "Developmental Biology",
+          "Applied Biology",
+          "Animal Behavior",
+          "Molecular Biology"
+        ]
+      },
+      {
+        "name": "English",
+        "topics": [
+          "Reading Comprehension",
+          "Writing Skills and Essays",
+          "Grammar and Usage",
+          "Literature and Poetry",
+          "Short Stories and Drama",
+          "Business Communication",
+          "Technical Writing",
+          "Speaking and Listening",
+          "Critical Analysis",
+          "Academic Writing",
+          "Creative Writing",
+          "Research Writing"
+        ]
+      },
+      {
+        "name": "Nepali",
+        "topics": [
+          "Vyakaran (Grammar)",
+          "Sahitya (Literature)",
+          "Kabita (Poetry)",
+          "Katha (Stories)",
+          "Upanyas (Novel)",
+          "Nibandha (Essays)",
+          "Nataka (Drama)",
+          "Rachana (Composition)",
+          "Byabaharik Lekhan (Practical Writing)",
+          "Bhasa Vigyan (Linguistics)",
+          "Lok Sahitya (Folk Literature)",
+          "Aalochana (Literary Criticism)"
+        ]
+      },
+      {
+        "name": "Computer",
+        "topics": [
+          "Programming Fundamentals",
+          "Object-Oriented Programming",
+          "Database Management Systems",
+          "Web Development",
+          "Data Structures and Algorithms",
+          "Computer Networks",
+          "Operating Systems",
+          "Software Engineering",
+          "Computer Architecture",
+          "Cyber Security",
+          "Mobile Application Development",
+          "Artificial Intelligence Basics"
+        ]
+      },
+      {
+        "name": "Accounts",
+        "topics": [
+          "Basic Accounting Concepts",
+          "Financial Accounting",
+          "Cost Accounting",
+          "Management Accounting",
+          "Company Accounts",
+          "Partnership Accounts",
+          "Taxation",
+          "Auditing",
+          "Financial Statement Analysis",
+          "Budgeting and Forecasting",
+          "Banking Transactions",
+          "Computerized Accounting"
+        ]
+      },
+      {
+        "name": "Economics",
+        "topics": [
+          "Basic Economic Concepts",
+          "Microeconomics",
+          "Macroeconomics",
+          "International Economics",
+          "Development Economics",
+          "Public Finance",
+          "Money and Banking",
+          "Statistical Methods",
+          "Nepalese Economy",
+          "Environmental Economics",
+          "Labor Economics",
+          "Agricultural Economics"
+        ]
+      }
+    ],
+    "components": [
+      "Province 1",
+      "Province 2",
+      "Bagmati Province",
+      "Gandaki Province",
+      "Lumbini Province",
+      "Karnali Province",
+      "Sudurpashchim Province"
+    ]
+  },
+  "A Levels": {
+    "levels": ["AS level", "A level"],
+    "subjects": [
+      {
+        "name": "English General Paper (8021)",
+        "topics": [
+          "Economic, historical, moral, political, and social issues",
+          "Science, including its history, philosophy, ethics, general principles, and applications",
+          "Environmental issues",
+          "Technology and mathematics",
+          "Literature, language, arts, crafts, and the media"
+        ]
+      },
+      {
+        "name": "Mathematics (9709)",
+        "topics": [
+          "Quadratics",
+          "Functions",
+          "Coordinate Geometry",
+          "Circular Measure",
+          "Trigonometry",
+          "Series",
+          "Differentiation",
+          "Integration",
+          "Representation of Data",
+          "Permutations and Combinations",
+          "Probability",
+          "Discrete Random Variables",
+          "The Normal Distribution"
+        ]
+      },
+      {
+        "name": "Physics (9702)",
+        "topics": [
+          "Physical Quantities and Units",
+          "Kinematics",
+          "Dynamics",
+          "Forces, Density, and Pressure",
+          "Work, Energy, and Power",
+          "Deformation of Solids",
+          "Waves",
+          "Superposition",
+          "Electricity",
+          "D.C. Circuits",
+          "Particle Physics"
+        ]
+      },
+      {
+        "name": "Chemistry (9701)",
+        "topics": [
+          "Atomic Structure",
+          "Atoms, Molecules, and Stoichiometry",
+          "Chemical Bonding",
+          "States of Matter",
+          "Chemical Energetics",
+          "Electrochemistry",
+          "Equilibria",
+          "Reaction Kinetics",
+          "The Periodic Table: Chemical Periodicity",
+          "Group 2",
+          "Group 17",
+          "Nitrogen and Sulfur",
+          "Introduction to AS Level Organic Chemistry",
+          "Hydrocarbons",
+          "Halogen Compounds",
+          "Hydroxy Compounds",
+          "Carbonyl Compounds",
+          "Carboxylic Acids and Derivatives",
+          "Nitrogen Compounds",
+          "Polymerisation",
+          "Organic Synthesis"
+        ]
+      },
+      {
+        "name": "Biology (9700)",
+        "topics": [
+          "Cell Structure",
+          "Biological Molecules",
+          "Enzymes",
+          "Cell Membranes and Transport",
+          "The Mitotic Cell Cycle",
+          "Nucleic Acids and Protein Synthesis",
+          "Transport in Plants",
+          "Transport in Mammals",
+          "Gas Exchange",
+          "Infectious Diseases",
+          "Immunity",
+          "Energy and Respiration",
+          "Photosynthesis",
+          "Homeostasis",
+          "Control and Coordination",
+          "Inheritance",
+          "Selection and Evolution",
+          "Biodiversity, Classification, and Conservation",
+          "Genetic Technology"
+        ]
+      },
+      {
+        "name": "Computer Science (9618)",
+        "topics": [
+          "Information Representation",
+          "Communication",
+          "Hardware",
+          "Processor Fundamentals",
+          "System Software",
+          "Security, Privacy, and Data Integrity",
+          "Ethics and Ownership",
+          "Databases",
+          "Algorithm Design and Problem-solving",
+          "Data Types and Structures",
+          "Programming",
+          "Software Development"
+        ]
+      },
+      {
+        "name": "Economics (9708)",
+        "topics": [
+          "Basic Economic Principles",
+          "Demand and Supply Analysis",
+          "Elasticity of Demand and Supply",
+          "Market Structures and Types",
+          "Consumer and Producer Surplus",
+          "Labor Market",
+          "Macroeconomic Indicators",
+          "National Income Accounting",
+          "Fiscal and Monetary Policy",
+          "Inflation, Unemployment, and Growth",
+          "International Trade and Balance of Payments",
+          "Economic Development and Sustainability",
+          "Market Failure and Government Intervention"
+        ]
+      },
+      {
+        "name": "Accounting (9706)",
+        "topics": [
+          "Basic Accounting Principles",
+          "Double-Entry Bookkeeping",
+          "Preparation of Financial Statements",
+          "Non-current Assets",
+          "Inventory Valuation",
+          "Financial Ratios",
+          "Bank Reconciliation",
+          "Depreciation and Amortization",
+          "Control Accounts",
+          "Incorporated Business Accounts",
+          "Partnership Accounts",
+          "Costing and Budgeting",
+          "Introduction to Auditing"
+        ]
+      }
+    ],
+    "components": [
+      "11",
+      "12",
+      "13",
+      "21",
+      "22",
+      "23",
+      "31",
+      "32",
+      "33",
+      "41",
+      "42",
+      "43",
+      "51",
+      "52",
+      "53",
+      "61",
+      "62",
+      "63"
+    ]
+  }
 }
