@@ -261,26 +261,24 @@ def getYears(level , subjectName):
 
         # Execute the query and fetch all results
 
-        if level == "A level" or level == "AS level":
-            query = 'SELECT year FROM papers WHERE board = ? AND subject = ? AND approved = 1'
+        if level == "A level" or level == "AS level" or level == "A Level" or level == "AS Level":
+            query = 'SELECT substr(year, 1, 4) FROM papers WHERE board = ? AND subject = ? AND approved = 1'
             rows = db.execute(query, ( "A Levels",subjectName,)).fetchall()
         else:
-            query = 'SELECT year FROM papers WHERE level = ? AND subject = ? AND approved = 1'
+            query = 'SELECT substr(year, 1, 4) FROM papers WHERE level = ? AND subject = ? AND approved = 1'
             rows = db.execute(query, (level, subjectName)).fetchall()
 
 
         # Extract the years from the query result
         years = list(set([row[0] for row in rows]))
 
-        for year in years:
-            total_years.append(str(year)[:4])
-
-        if total_years == []:
+        if years == []:
             logger.warning(f"No years found for level {level} and subject {subjectName}")
             return False
-
+        else:
+            years.sort(reverse=True)
         logger.info(f"Years retrieved successfully for level {level} and subject {subjectName}")
-        return total_years
+        return years
     except sqlite3.Error as e:
         logger.error(f"An error occurred while getting years: {e}")
         return None
@@ -345,7 +343,7 @@ def renderQuestion(level, subject_name, year, component):
         # Single query to fetch both questionFile and uuid
         if level == 'A level' or level == 'AS level':
             query = '''
-            SELECT questionFile, uuid
+            SELECT questionFile, solutionFile, uuid
             FROM papers
             WHERE board = ?
             AND subject = ?
@@ -356,7 +354,7 @@ def renderQuestion(level, subject_name, year, component):
             result = db.execute(query, ( "A Levels" ,subject_name, year, component)).fetchall()
         else:
             query = '''
-            SELECT questionFile, uuid
+            SELECT questionFile, solutionFile ,uuid
             FROM papers
             WHERE level = ?
             AND subject = ?
@@ -371,12 +369,8 @@ def renderQuestion(level, subject_name, year, component):
             logger.warning(f"No data found for level {level}, subject {subject_name}, year {year}, component {component}")
             return None
         
-        # Separate compressed data and IDs
-        compressedData = [row[0] for row in result]
-        ids = [row[1] for row in result]
-        
         logger.info(f"Question rendered successfully for level {level}, subject {subject_name}, year {year}, component {component}")
-        return compressedData + ids
+        return result[0]
     
     except sqlite3.Error as e:
         logger.error(f"An error occurred while rendering question: {e}")

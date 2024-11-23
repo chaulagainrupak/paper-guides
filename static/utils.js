@@ -36,6 +36,23 @@ function getRandomQuestion() {
 }
 
 
+function showSolution(button) {
+    const questionContainer = document.querySelector('.question-pdf');
+    const solutionContainer = document.querySelector('.solution-pdf');
+
+    if (solutionContainer.style.display === 'none') {
+        questionContainer.style.display = 'none';
+        solutionContainer.style.display = 'block';
+        button.setAttribute('style', 'border: #F25C6A 2px solid; color: #F25C6A;');
+        button.innerText = "Hide Solution";
+    }else {
+        questionContainer.style.display = 'block';
+        solutionContainer.style.display = 'none';
+        button.setAttribute('style', 'border: #5d71e0 2px solid; color: #5d71e0;');
+        button.innerText = "Show Solution";        
+    }
+}
+
 function filterPaper(f, button) {
     // Ensure the filter value is treated as a string
     const filterValue = String(f).trim();
