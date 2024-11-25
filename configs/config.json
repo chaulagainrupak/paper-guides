@@ -298,6 +298,23 @@
         ]
       },
       {
+        "name": "Computer Science (9608)",
+        "topics": [
+          "Data Representation & Binary Systems",
+          "Communication & Networks",
+          "Hardware & Virtual Machines",
+          "System Software & Security",
+          "Processor Architecture & Assembly",
+          "Data Structures & Algorithms",
+          "Programming Concepts & OOP",
+          "Database Design & SQL",
+          "Boolean Algebra & Logic Gates",
+          "Software Development Lifecycle",
+          "Problem Solving & Program Design",
+          "Web Technologies & Standards"
+        ]
+      },
+      {
         "name": "Economics (9708)",
         "topics": [
           "Basic Economic Principles",
