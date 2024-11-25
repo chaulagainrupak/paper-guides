@@ -195,7 +195,7 @@ This is for the links for the link sections
   width: 100%;
 }
 /* Responsive design */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1300px) {
   .content-wrapper {
     flex-direction: column;
   }
@@ -374,7 +374,7 @@ This is for the links for the link sections
     display: none;
   }
 
-  @media screen and (max-width: 1000px) {
+  @media screen and (max-width: 1300px) {
     .navbar > div {
       display: none;
     }
