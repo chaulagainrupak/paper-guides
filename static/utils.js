@@ -78,17 +78,25 @@ function filterPaper(f, button) {
         });
         return;
     }
-    
-    // Loop through each link
+
+
+
     questionLinks.forEach(link => {
-        
-        // Check if the href includes the filter value
-        if (link.href.includes("%20"+filterValue)) {
-            // Make the link visible
-            link.setAttribute('style', 'display: block;');
+        // Extract the paper number between commas using regex
+        const match = link.href.match(/,%20(\d+),/);
+        const paperNumber = match ? match[1] : null;
+    
+        if (paperNumber) {
+            // Create a dynamic regex pattern based on filterValue
+            const pattern = new RegExp(`^${filterValue}\\d$`);
+            
+            if (pattern.test(paperNumber)) {
+                link.style.display = 'block';
+            } else {
+                link.style.display = 'none';
+            }
         } else {
-            // Hide the link
-            link.setAttribute('style', 'display: none;');
+            link.style.display = 'none';
         }
     });
 }

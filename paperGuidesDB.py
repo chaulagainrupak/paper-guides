@@ -301,6 +301,7 @@ def getQuestions(level, subject_name, year):
                 AND subject = ? 
                 AND substr(year, 1, 4) = ? 
                 AND approved = 1
+                ORDER BY component ASC
             '''
             rows = db.execute(query, ( "A Levels" ,subject_name,str(year))).fetchall()
         else:
