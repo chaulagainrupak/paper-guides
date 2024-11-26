@@ -37,10 +37,55 @@
     <!-- Clear Filters Button -->
     <button onclick="filterPaper('clear')" class="clear-filter-btn">Clear All Filters</button>
 </div>
-    {% for question in questions_name %}
-        <a href="{{year}}/{{question}}" class="question-link">{{question}}</a>
-    {% endfor%}
-    <a href="/submit">Did not find the required paper? <span class="blue-highlight" cla>Submit-It</span></a>
+<!-- February/March Category -->
+{% set febMarchQuestions = [] %}
+{% for question in questions_name %}
+    {% if "Feb / Mar" in question %}
+        {% set _ = febMarchQuestions.append(question) %}
+    {% endif %}
+{% endfor %}
+{% if febMarchQuestions %}
+    <h2 style="font-size: 2rem; text-decoration: underline; margin-top: 20px;">• Feb/March</h2>
+    <div class="question-group">
+        {% for question in febMarchQuestions %}
+            <a href="{{ year }}/{{ question }}" class="question-link">{{ question }}</a>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- May/June Category -->
+{% set mayJuneQuestions = [] %}
+{% for question in questions_name %}
+    {% if "May / June" in question %}
+        {% set _ = mayJuneQuestions.append(question) %}
+    {% endif %}
+{% endfor %}
+{% if mayJuneQuestions %}
+    <h2 style="font-size: 2rem; text-decoration: underline; margin-top: 20px;">• May/June</h2>
+    <div class="question-group">
+        {% for question in mayJuneQuestions %}
+            <a href="{{ year }}/{{ question }}" class="question-link">{{ question }}</a>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- October/November Category -->
+{% set octNovQuestions = [] %}
+{% for question in questions_name %}
+    {% if "Oct / Nov" in question %}
+        {% set _ = octNovQuestions.append(question) %}
+    {% endif %}
+{% endfor %}
+{% if octNovQuestions %}
+    <h2 style="font-size: 2rem; text-decoration: underline; margin-top: 20px;">• Oct/Nov</h2>
+    <div class="question-group">
+        {% for question in octNovQuestions %}
+            <a href="{{ year }}/{{ question }}" class="question-link">{{ question }}</a>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
 
     <style>
         .filter-btn {
