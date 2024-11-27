@@ -106,7 +106,7 @@ This is for the links for the link sections
 .content-wrapper {
   display: flex;
   justify-content: space-between;
-  padding: 2rem;
+  padding: 1rem;
   width: 100%;
 }
 
@@ -185,7 +185,7 @@ This is for the links for the link sections
 .qp-container {
   width: auto;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .qp-main-content {
@@ -204,6 +204,7 @@ This is for the links for the link sections
     width: 100%;
     margin-left: 0;
     margin-bottom: 1rem;
+    padding: 0;
   }
 
   .qp-container {
