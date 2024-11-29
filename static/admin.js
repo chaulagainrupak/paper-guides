@@ -132,12 +132,13 @@ function deleteItem(type, uuid) {
       },
     }).then((response) => {
         if (response) {
-          window.location.href = "/admin";
+          goBack();
         }
       })
       .catch((error) => {
         console.error("Error:", error);
         alert("An error occurred while deleting the item");
+        goBack();
       });
   }
 }

@@ -48,12 +48,10 @@ login_manager.init_app(app)
 
 migrate = Migrate(app, db)
 
-
+createDatabase()
 # Create the database 
 with app.app_context():
     db.create_all()
-
-createDatabase()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -557,7 +555,7 @@ def deleteQuestion(uuid):
         return redirect(url_for('index'))
 
     if delete_question(uuid):
-        return jsonify({"succss": "Your request was processed successfully"}), 200
+        return jsonify({"success": "Your request was processed successfully"}), 200
     else:
         return jsonify({"error": "Your request was not processed successfully"}), 304
     
@@ -571,7 +569,7 @@ def deletePaper(uuid):
         return redirect(url_for('index'))
 
     if delete_paper(uuid):
-        return jsonify({"succss": "Your request was processed successfully"}), 200
+        return jsonify({"success": "Your request was processed successfully"}), 200
     else:
         return jsonify({"error": "Your request was not processed successfully"}), 304
 
