@@ -1,4 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+    // Disable submit buttons on page load
+    document.querySelectorAll('.submit-btn').forEach((button) => {
+      button.disabled = true;
+      button.style.cursor = 'not-allowed';
+    });
+
+    
   // Get DOM elements
   const questionForm = document.getElementById("question_form");
   const paperForm = document.getElementById("paper_form");
@@ -239,3 +247,19 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+
+// Turnstile callback functions
+function onTurnstileSuccess(token) {
+  document.querySelectorAll('.submit-btn').forEach((button) => {
+    button.disabled = false;
+    button.style.cursor = 'pointer';
+  });
+}
+
+function onTurnstileExpired() {
+  document.querySelectorAll('.submit-btn').forEach((button) => {
+    button.disabled = true;
+    button.style.cursor = 'not-allowed';
+  });
+}

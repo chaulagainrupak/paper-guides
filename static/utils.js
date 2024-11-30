@@ -41,17 +41,24 @@ function showSolution(button) {
     const solutionContainer = document.querySelector('.solution-pdf');
     const paperTitle = document.querySelector('.paper-title');
 
+    const questionFull = document.querySelector(".question-full");
+    const solutionFull = document.querySelector(".solution-full");
+
     if (solutionContainer.style.display === 'none') {
         questionContainer.style.display = 'none';
         solutionContainer.style.display = 'block';
-        button.setAttribute('style', 'border: #F25C6A 2px solid; color: #F25C6A;');
+        button.setAttribute('style', 'background-color: #F25C6A;');
         button.innerText = "Hide Solution";
+        questionFull.style.display = 'none';    
+        solutionFull.style.display = 'block';    
         paperTitle.innerText = paperTitle.innerText.replace('question paper', 'mark scheme');
     }else {
         questionContainer.style.display = 'block';
         solutionContainer.style.display = 'none';
-        button.setAttribute('style', 'border: #5d71e0 2px solid; color: #5d71e0;');
+        button.setAttribute('style', 'background-color:#5d71e0;');
         button.innerText = "Show Solution";        
+        questionFull.style.display = 'block';    
+        solutionFull.style.display = 'none';   
         paperTitle.innerText =paperTitle.innerText.replace('mark scheme', 'question paper');
     }
 }
