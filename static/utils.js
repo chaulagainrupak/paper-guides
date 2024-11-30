@@ -104,15 +104,23 @@ function filterPaper(f, button) {
     });
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.submit-btn').forEach((button) => {
+      button.disabled = true;
+      button.style.cursor = 'not-allowed';
+    });
+  });
 
 function onTurnstileSuccess() {
     document.querySelectorAll('.submit-btn').forEach((button) => {
         button.disabled = false;
+        button.style.cursor = 'pointer';
     });
 }
 
 function onTurnstileExpired() {
     document.querySelectorAll('.submit-btn').forEach((button) => {
         button.disabled = true;
+        button.style.cursor = 'not-allowed';
     });
 }
