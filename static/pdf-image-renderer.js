@@ -104,6 +104,15 @@ async function renderPDFElement(element, base64Data) {
     object.height = "100%";
     object.data = pdfDataUrl;
 
+    const questionFull = document.querySelector(".question-full");
+    const solutionFull = document.querySelector(".solution-full");
+    
+    if (element.classList.contains("question-pdf")) {
+      questionFull.setAttribute("onclick", `window.open('${pdfDataUrl}', '_blank')`);
+    } else if (element.classList.contains("solution-pdf")) {
+      solutionFull.setAttribute("onclick", `window.open('${pdfDataUrl}', '_blank')`);
+    }
+    
     // Add fallback handling
     object.onerror = async () => {
       try {
