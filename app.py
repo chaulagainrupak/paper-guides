@@ -29,6 +29,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS', default=False)
 
+TURNSTILE_SECRET_KEY = os.getenv('TURNSTILE_SECRET_KEY')
 
 db.init_app(app)
 
@@ -196,6 +197,17 @@ def contact():
 @app.route('/submitQuestion', methods=['POST'])
 @login_required
 def submitQuestion():
+
+    # Get the Turnstile token from the form submission
+    turnstileToken = request.form.get("cf-turnstile-response")
+    if not turnstileToken:
+        return "Turnstile token missing!", 400
+
+    # Verify the token
+    verificationResult = verifyTurnstile(turnstileToken)
+    if not verificationResult.get("success"):
+        return "Failed Turnstile verification. Please try again.", 403
+    
     logger.info('Question submission initiated' + ' IP: ' + str(getClientIp()))
     board = request.form.get('board')
     subject = request.form.get('subject')
@@ -217,6 +229,17 @@ def submitQuestion():
 @app.route('/submitPaper', methods=['POST'])
 @login_required
 def submitPaper():
+
+    # Get the Turnstile token from the form submission
+    turnstileToken = request.form.get("cf-turnstile-response")
+    if not turnstileToken:
+        return "Turnstile token missing!", 400
+
+    # Verify the token
+    verificationResult = verifyTurnstile(turnstileToken)
+    if not verificationResult.get("success"):
+        return "Failed Turnstile verification. Please try again.", 403
+    
     logger.info('Paper submission initiated' + ' IP: ' + str(getClientIp()))
     try:
         board = request.form.get('board')
@@ -282,6 +305,18 @@ def login():
         return redirect(url_for('index'))
 
     if request.method == 'POST':
+
+        # Get the Turnstile token from the form submission
+        turnstileToken = request.form.get("cf-turnstile-response")
+        if not turnstileToken:
+            return "Turnstile token missing!", 400
+
+        # Verify the token
+        verificationResult = verifyTurnstile(turnstileToken)
+        if not verificationResult.get("success"):
+            return "Failed Turnstile verification. Please try again.", 403
+
+
         username_or_email = request.form.get('username')
         password = request.form.get('password')
 
@@ -315,6 +350,16 @@ def signup():
         return redirect(url_for('index'))
 
     if request.method == 'POST':
+        # Get the Turnstile token from the form submission
+        turnstileToken = request.form.get("cf-turnstile-response")
+        if not turnstileToken:
+            return "Turnstile token missing!", 400
+
+        # Verify the token
+        verificationResult = verifyTurnstile(turnstileToken)
+        if not verificationResult.get("success"):
+            return "Failed Turnstile verification. Please try again.", 403
+
         username = request.form.get('new-username')
         password = request.form.get('new-password')
         email = request.form.get('new-email')
@@ -380,20 +425,20 @@ def changePassword():
         return redirect(url_for('profile'))     
     
     
-@app.route('/rate/<question_UUID>/<int:rating>', methods = ['POST'])
-@login_required
-def rate(question_UUID, rating):
-    try:
-        user = current_user.id
-        if giveRating(user, question_UUID, rating):
-            logger.info(f'User {user} rated question {question_UUID} with {rating}' + ' IP: ' + str(getClientIp()))
-            return True
-        else:
-            logger.warning(f'Failed to rate question {question_UUID}' + ' IP: ' + str(getClientIp()))
-            return False
-    except Exception as e:
-        logger.error(f'Error in rating: {str(e)}' + ' IP: ' + str(getClientIp()))
-        return False
+# @app.route('/rate/<question_UUID>/<int:rating>', methods = ['POST'])
+# @login_required
+# def rate(question_UUID, rating):
+#     try:
+#         user = current_user.id
+#         if giveRating(user, question_UUID, rating):
+#             logger.info(f'User {user} rated question {question_UUID} with {rating}' + ' IP: ' + str(getClientIp()))
+#             return True
+#         else:
+#             logger.warning(f'Failed to rate question {question_UUID}' + ' IP: ' + str(getClientIp()))
+#             return False
+#     except Exception as e:
+#         logger.error(f'Error in rating: {str(e)}' + ' IP: ' + str(getClientIp()))
+#         return False
 
 
 
@@ -624,6 +669,15 @@ def getClientIp():
     # Try to get the IP from the 'X-Forwarded-For' header (Cloudflare/proxy header)
     return request.headers.get('X-Forwarded-For', request.remote_addr)
 
+
+def verifyTurnstile(token):
+    url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+    payload = {
+        "secret": TURNSTILE_SECRET_KEY,
+        "response": token
+    }
+    response = requests.post(url, data=payload)
+    return response.json()
 
 if __name__ == '__main__':
     app.run(debug=True)

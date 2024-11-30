@@ -19,11 +19,11 @@ Open-source project providing free educational materials for Nepal Education Boa
 ## Example `.env` file
 
 ```
-
 SECRET_KEY=your_secret_key_here
 SQLALCHEMY_DATABASE_URI=sqlite:///paper-guides.db
 SQLALCHEMY_TRACK_MODIFICATIONS=False
 DISCORD_WEBHOOK_URL=urlhere
+TURNSTILE_SECRET_KEY=key_here
 ```
 
 ## License
