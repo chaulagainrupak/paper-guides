@@ -9,6 +9,8 @@ from models import db, User
 from datetime import datetime
 import base64
 import subprocess
+import random 
+import time
 
 # We are importing all the required functions from the following files inorder to make a huge app file?
 
@@ -201,12 +203,22 @@ def submitQuestion():
     # Get the Turnstile token from the form submission
     turnstileToken = request.form.get("cf-turnstile-response")
     if not turnstileToken:
+        logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
         return "Turnstile token missing!", 400
 
-    # Verify the token
+    # Verify the token with enhanced verification
     verificationResult = verifyTurnstile(turnstileToken)
+    
+    # Check verification success
     if not verificationResult.get("success"):
-        return "Failed Turnstile verification. Please try again.", 403
+        logger.warning(
+            f'Failed Turnstile verification. '
+            f'Errors: {verificationResult.get("error-codes", [])} '
+            f'Attempts: {verificationResult.get("attempts", 1)}' + 
+            ' IP: ' + str(getClientIp())
+        )
+        return f"Failed Turnstile verification: {verificationResult.get('message', 'Unknown error')}", 403
+    
     
     logger.info('Question submission initiated' + ' IP: ' + str(getClientIp()))
     board = request.form.get('board')
@@ -233,13 +245,23 @@ def submitPaper():
     # Get the Turnstile token from the form submission
     turnstileToken = request.form.get("cf-turnstile-response")
     if not turnstileToken:
+        logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
         return "Turnstile token missing!", 400
 
-    # Verify the token
+    # Verify the token with enhanced verification
     verificationResult = verifyTurnstile(turnstileToken)
-    if not verificationResult.get("success"):
-        return "Failed Turnstile verification. Please try again.", 403
     
+    # Check verification success
+    if not verificationResult.get("success"):
+        logger.warning(
+            f'Failed Turnstile verification. '
+            f'Errors: {verificationResult.get("error-codes", [])} '
+            f'Attempts: {verificationResult.get("attempts", 1)}' + 
+            ' IP: ' + str(getClientIp())
+        )
+        return f"Failed Turnstile verification: {verificationResult.get('message', 'Unknown error')}", 403
+    
+
     logger.info('Paper submission initiated' + ' IP: ' + str(getClientIp()))
     try:
         board = request.form.get('board')
@@ -309,14 +331,22 @@ def login():
         # Get the Turnstile token from the form submission
         turnstileToken = request.form.get("cf-turnstile-response")
         if not turnstileToken:
+            logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
             return "Turnstile token missing!", 400
 
-        # Verify the token
+        # Verify the token with enhanced verification
         verificationResult = verifyTurnstile(turnstileToken)
+        
+        # Check verification success
         if not verificationResult.get("success"):
-            return "Failed Turnstile verification. Please try again.", 403
-
-
+            logger.warning(
+                f'Failed Turnstile verification. '
+                f'Errors: {verificationResult.get("error-codes", [])} '
+                f'Attempts: {verificationResult.get("attempts", 1)}' + 
+                ' IP: ' + str(getClientIp())
+            )
+            return f"Failed Turnstile verification: {verificationResult.get('message', 'Unknown error')}", 403
+        
         username_or_email = request.form.get('username')
         password = request.form.get('password')
 
@@ -353,13 +383,22 @@ def signup():
         # Get the Turnstile token from the form submission
         turnstileToken = request.form.get("cf-turnstile-response")
         if not turnstileToken:
+            logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
             return "Turnstile token missing!", 400
 
-        # Verify the token
+        # Verify the token with enhanced verification
         verificationResult = verifyTurnstile(turnstileToken)
+        
+        # Check verification success
         if not verificationResult.get("success"):
-            return "Failed Turnstile verification. Please try again.", 403
-
+            logger.warning(
+                f'Failed Turnstile verification. '
+                f'Errors: {verificationResult.get("error-codes", [])} '
+                f'Attempts: {verificationResult.get("attempts", 1)}' + 
+                ' IP: ' + str(getClientIp())
+            )
+            return f"Failed Turnstile verification: {verificationResult.get('message', 'Unknown error')}", 403
+    
         username = request.form.get('new-username')
         password = request.form.get('new-password')
         email = request.form.get('new-email')
@@ -670,14 +709,96 @@ def getClientIp():
     return request.headers.get('X-Forwarded-For', request.remote_addr)
 
 
-def verifyTurnstile(token):
-    url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+def verifyTurnstile(token, max_retries=3):
+    """
+    Verify Cloudflare Turnstile CAPTCHA token with robust retry mechanism.
+    
+    Args:
+        token (str): The Turnstile response token
+        max_retries (int): Maximum number of retry attempts
+    
+    Returns:
+        dict: Verification result with 'success' and detailed error information
+    """
+    # Initial validation of token
+    if not token or not isinstance(token, str) or len(token) > 1000:
+        logger.warning('Invalid Turnstile token')
+        return {
+            "success": False, 
+            "error-codes": ["invalid-input-token"],
+            "message": "Invalid or too long token"
+        }
+    
+    # Payload for verification
     payload = {
         "secret": TURNSTILE_SECRET_KEY,
         "response": token
     }
-    response = requests.post(url, data=payload)
-    return response.json()
+    
+    # Retry loop with exponential backoff
+    for attempt in range(max_retries):
+        try:
+            # Calculate exponential backoff with jitter
+            if attempt > 0:
+                # Exponential backoff with jitter to prevent thundering herd problem
+                wait_time = (2 ** attempt) + random.uniform(0, 1)
+                time.sleep(wait_time)
+            
+            # Make request with timeout
+            response = requests.post(
+                "https://challenges.cloudflare.com/turnstile/v0/siteverify", 
+                data=payload,
+                timeout=5  # 5-second timeout
+            )
+            # Raise an exception for bad HTTP responses
+            response.raise_for_status()
+            
+            # Parse response
+            result = response.json()
+            
+            # Successful verification
+            return {
+                "success": result.get("success", False),
+                "error-codes": result.get("error-codes", []),
+                "message": "Verification complete",
+                "attempts": attempt + 1
+            }
+        
+        except requests.exceptions.Timeout:
+            logger.warning(f"Turnstile verification timed out. Attempt {attempt + 1}/{max_retries}")
+            # Continue to next retry
+            continue
+        
+        except requests.exceptions.ConnectionError:
+            logger.warning(f"Network connection error. Attempt {attempt + 1}/{max_retries}")
+            # Continue to next retry
+            continue
+        
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Network error in Turnstile verification: {e}")
+            # For some errors, we might want to exit early
+            if attempt == max_retries - 1:
+                return {
+                    "success": False, 
+                    "error-codes": ["network-error"],
+                    "message": f"Network error after {max_retries} attempts: {str(e)}",
+                    "attempts": max_retries
+                }
+            continue
+        
+        except ValueError:  # JSON parsing error
+            logger.error(f"Failed to parse Turnstile response. Attempt {attempt + 1}/{max_retries}")
+            # Continue to next retry
+            continue
+    
+    # If all retries fail
+    logger.error("All Turnstile verification attempts failed")
+    return {
+        "success": False, 
+        "error-codes": ["verification-failed"],
+        "message": f"Failed to verify token after {max_retries} attempts",
+        "attempts": max_retries
+    }
 
 if __name__ == '__main__':
     app.run(debug=True)

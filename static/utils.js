@@ -103,3 +103,16 @@ function filterPaper(f, button) {
         }
     });
 }
+
+
+function onTurnstileSuccess() {
+    document.querySelectorAll('.submit-btn').forEach((button) => {
+        button.disabled = false;
+    });
+}
+
+function onTurnstileExpired() {
+    document.querySelectorAll('.submit-btn').forEach((button) => {
+        button.disabled = true;
+    });
+}
