@@ -2,17 +2,17 @@
 section %}
 <style>
     .btn {
-        background: none;  
-        font-size: 1.5rem; 
-        cursor: pointer; 
-        padding: 8px 8px; 
+        background: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 8px 8px;
         border-radius: 8px;
         color: white;
         border: none;
     }
 
     @media screen and (max-width: 1300px) {
-        .section-title{
+        .section-title {
             font-size: 0.9rem;
         }
         .section {
@@ -24,56 +24,94 @@ section %}
         margin: 0.5rem 0 0.5rem 0;
     }
 </style>
-    <div class="qp-main-content">
-        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
-            <h1 class="paper-title" id="{{id}}" style="align-self: center;">{{file_data}}</h1>
-            <button onclick="goBack()" style="background: none; border: none; color: #5d71e0; font-size: 1.5rem; cursor: pointer;">← Back</button>
-        </div>
-
-        <div>
-            <p class="pink-highlight">
-                Opening the PDF in fullscreen may show a "not secure" warning, but it is safe.
-            </p>
-        </div>
-        
-        <div class="tool-bar" style="display: flex; justify-content: space-between;">
-            <button class="btn question-full" style="background-color:#3CB371; text-decoration: none;"> View question in fullscreen</button>
-            <button class="btn solution-full" style="background-color:#3CB371; text-decoration: none; display: none;"> View solution in fullscreen</button>
-            <button onclick="showSolution(this)" class="btn" style="background-color:#5d71e0; border: none;"> Show Solution</button>
-        </div>
-        <div class="pdf-container">
-            <div class="paper-pdf question-pdf" data-compressed="{{ question }}">
-                <object
-                    type="application/pdf"
-                    width="100%"
-                    height="600px"
-                ></object>
-            </div>
-
-            <div class="paper-pdf solution-pdf" data-compressed="{{ solution }}" style="display: none;">
-                <object
-                    type="application/pdf"
-                    width="100%"
-                    height="600px"
-                ></object>
-            </div>
-        </div>
-
-        {% if current_user.is_authenticated and current_user.role == 'admin'%}
-        <div class="adminTools" style="margin-top: 20px;">
-            <button onclick="deleteItem('paper', '{{ id }}')" style="
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            border: none;
-            font-size: 24px;
-            background-color: #f44336;
-            color: white;
-            transition: all 0.2s ease;">🗑️ Delete This Paper</button>
-        </div>
-
-        <script src="{{ url_for('static', filename='admin.js') }}"></script>
-        {%endif%}
+<div class="qp-main-content">
+    <div
+        class="section-title"
+        style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        "
+    >
+        <h1 class="paper-title" id="{{id}}" style="align-self: center">
+            {{file_data}}
+        </h1>
+        <button
+            onclick="goBack()"
+            style="
+                background: none;
+                border: none;
+                color: #5d71e0;
+                font-size: 1.5rem;
+                cursor: pointer;
+            "
+        >
+            ← Back
+        </button>
     </div>
+
+    <div class="tool-bar" style="display: flex; justify-content: space-between">
+        <button
+            onclick="openFullscreen('{{id}}', 'question')"
+            class="btn question-full"
+            style="background-color: #3cb371; text-decoration: none"
+        >
+            View question in fullscreen
+        </button>
+        <button
+            onclick="openFullscreen('{{id}}', 'solution')"
+            class="btn solution-full"
+            style="
+                background-color: #3cb371;
+                text-decoration: none;
+                display: none;
+            "
+        >
+            View solution in fullscreen
+        </button>
+        <button
+            onclick="showSolution(this)"
+            class="btn"
+            style="background-color: #5d71e0; border: none"
+        >
+            Show Solution
+        </button>
+    </div>
+    <div class="pdf-container">
+        <div class="paper-pdf question-pdf" data-compressed="{{ question }}">
+            <object type="application/pdf" width="100%" height="600px"></object>
+        </div>
+
+        <div
+            class="paper-pdf solution-pdf"
+            data-compressed="{{ solution }}"
+            style="display: none"
+        >
+            <object type="application/pdf" width="100%" height="600px"></object>
+        </div>
+    </div>
+
+    {% if current_user.is_authenticated and current_user.role == 'admin'%}
+    <div class="adminTools" style="margin-top: 20px">
+        <button
+            onclick="deleteItem('paper', '{{ id }}')"
+            style="
+                padding: 8px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                border: none;
+                font-size: 24px;
+                background-color: #f44336;
+                color: white;
+                transition: all 0.2s ease;
+            "
+        >
+            🗑️ Delete This Paper
+        </button>
+    </div>
+
+    <script src="{{ url_for('static', filename='admin.js') }}"></script>
+    {%endif%}
+</div>
 
 {% endblock %}

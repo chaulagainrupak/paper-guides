@@ -81,7 +81,7 @@ async function renderPDFElement(element, base64Data) {
   try {
     const binaryData = atob(base64Data);
     const uint8Array = new Uint8Array(
-      binaryData.split("").map((char) => char.charCodeAt(0))
+      binaryData.split("").map((char) => char.charCodeAt(0)),
     );
     const decompressedData = pako.inflate(uint8Array);
     let binary = "";
@@ -106,13 +106,19 @@ async function renderPDFElement(element, base64Data) {
 
     const questionFull = document.querySelector(".question-full");
     const solutionFull = document.querySelector(".solution-full");
-    
-    if (element.classList.contains("question-pdf")) {
-      questionFull.setAttribute("onclick", `window.open('${pdfDataUrl}', '_blank')`);
-    } else if (element.classList.contains("solution-pdf")) {
-      solutionFull.setAttribute("onclick", `window.open('${pdfDataUrl}', '_blank')`);
-    }
-    
+
+    // if (element.classList.contains("question-pdf")) {
+    //   questionFull.setAttribute(
+    //     "onclick",
+    //     `window.open('${pdfDataUrl}', '_blank')`,
+    //   );
+    // } else if (element.classList.contains("solution-pdf")) {
+    //   solutionFull.setAttribute(
+    //     "onclick",
+    //     `window.open('${pdfDataUrl}', '_blank')`,
+    //   );
+    // }
+
     // Add fallback handling
     object.onerror = async () => {
       try {
@@ -125,25 +131,25 @@ async function renderPDFElement(element, base64Data) {
         const loadingIndicator = document.createElement("div");
         loadingIndicator.innerHTML = `
           <div style="
-            text-align: center; 
-            padding: 20px; 
-            background-color: #f0f0f0; 
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f0f0;
             border-radius: 5px;
           ">
             <div style="
-              font-size: 24px; 
+              font-size: 24px;
               margin-bottom: 10px;
               color: #333;
             ">
               🕒 Rendering Document
             </div>
             <p style="color: #666;">
-              Your document is being converted to images. 
+              Your document is being converted to images.
               Please wait about 5 seconds.
             </p>
             <div style="
-              width: 50px; 
-              height: 50px; 
+              width: 50px;
+              height: 50px;
               border: 5px solid #f3f3f3;
               border-top: 5px solid #3498db;
               border-radius: 50%;
@@ -164,35 +170,35 @@ async function renderPDFElement(element, base64Data) {
         // Load the PDF document
         const loadingTask = pdfjsLib.getDocument({ data: decompressedData });
         const pdf = await loadingTask.promise;
-        
+
         // Create scrollable container for images
         const imageContainer = document.createElement("div");
         imageContainer.style.width = "100%";
         imageContainer.style.height = "100%";
         imageContainer.style.overflowY = "auto";
-        
+
         // Render each page as an image
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           const page = await pdf.getPage(pageNum);
           const viewport = page.getViewport({ scale: 1.5 });
-          
+
           const canvas = document.createElement("canvas");
           canvas.width = viewport.width;
           canvas.height = viewport.height;
-          
+
           const context = canvas.getContext("2d");
           await page.render({
             canvasContext: context,
-            viewport: viewport
+            viewport: viewport,
           }).promise;
-          
+
           const img = document.createElement("img");
           img.src = canvas.toDataURL();
           img.style.width = "100%";
           img.style.marginBottom = "20px";
           imageContainer.appendChild(img);
         }
-        
+
         // Replace loading indicator with image container
         container.innerHTML = "";
         container.appendChild(imageContainer);
@@ -232,7 +238,7 @@ async function renderPDFElement(element, base64Data) {
         text-align: center;
       ">
         <p style="color: #495057;">
-          Your browser doesn't support embedded PDFs. 
+          Your browser doesn't support embedded PDFs.
           <a href="${pdfDataUrl}" style="
             display: inline-block;
             background-color: #007bff;
@@ -249,7 +255,6 @@ async function renderPDFElement(element, base64Data) {
     container.appendChild(object);
     element.innerHTML = "";
     element.appendChild(container);
-
   } catch (error) {
     console.error("Failed to render PDF:", error);
     element.innerHTML = `
@@ -271,27 +276,29 @@ async function renderPDFElement(element, base64Data) {
 // Helper function to load PDF.js library
 async function loadPDFJS() {
   return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-      script.onload = resolve;
-      script.onerror = reject;
-      document.head.appendChild(script);
+    const script = document.createElement("script");
+    script.src =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
   });
 }
 
 // Initialize elements when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize images
-  document.querySelectorAll(".question-image, .solution-image")
-      .forEach((element) => {
-          const base64Data = element.getAttribute("data-compressed");
-          renderImageFromElement(element, base64Data);
-      });
+  document
+    .querySelectorAll(".question-image, .solution-image")
+    .forEach((element) => {
+      const base64Data = element.getAttribute("data-compressed");
+      renderImageFromElement(element, base64Data);
+    });
 
   // Initialize PDFs
   document.querySelectorAll(".paper-pdf").forEach((element) => {
-      const base64Data = element.getAttribute("data-compressed");
-      renderPDFElement(element, base64Data);
+    const base64Data = element.getAttribute("data-compressed");
+    renderPDFElement(element, base64Data);
   });
 });
 
