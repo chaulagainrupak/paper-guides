@@ -265,6 +265,29 @@
 </div>
 
 <script>
+// Disable submit buttons on page load
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.submit-btn').forEach((button) => {
+    button.disabled = true;
+    button.style.cursor = 'not-allowed';
+  });
+});
+
+// Turnstile callback functions
+function onTurnstileSuccess(token) {
+  document.querySelectorAll('.submit-btn').forEach((button) => {
+    button.disabled = false;
+    button.style.cursor = 'pointer';
+  });
+}
+
+function onTurnstileExpired() {
+  document.querySelectorAll('.submit-btn').forEach((button) => {
+    button.disabled = true;
+    button.style.cursor = 'not-allowed';
+  });
+}
+
   // Toggle between login and signup forms
   document
     .getElementById("show-signup")
