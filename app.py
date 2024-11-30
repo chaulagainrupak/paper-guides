@@ -1,4 +1,5 @@
 import os
+from types import resolve_bases
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, send_from_directory, Response
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -9,7 +10,7 @@ from models import db, User
 from datetime import datetime
 import base64
 import subprocess
-import random 
+import random
 import time
 
 # We are importing all the required functions from the following files inorder to make a huge app file?
@@ -52,7 +53,7 @@ login_manager.init_app(app)
 migrate = Migrate(app, db)
 
 createDatabase()
-# Create the database 
+# Create the database
 with app.app_context():
     db.create_all()
 
@@ -106,14 +107,24 @@ def getSubjectQuestions(level ,subject_name, year):
 @app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
 def renderSubjectQuestion(level, subject_name, year, file_data):
     logger.info(f'Question rendered for level {level}, subject {subject_name}, year {year}, file {file_data}' + ' IP: ' + str(getClientIp()))
-    
+
     # Ensure `file_data` is properly decoded
     component = file_data.split(', ')[1]
     full_year = file_data.split('Year: ')[1].split(' question')[0]
     question = renderQuestion(level, subject_name, full_year, component)
     return render_template('qp.html', question=question[0], solution= question[1], file_data=file_data, id=question[2], config=config)
 
+@app.route('/view-pdf/<type>/<uuid>')
+def viewPdf(type, uuid):
+    logger.info(f'{type}: {uuid} rendered in full screen. IP: {getClientIp()}')
 
+    paper = get_paper(uuid)
+    if type == "question":
+        return render_template('qp-full.html', question = paper["questionFile"]), 200
+    elif type == "solution":
+        return render_template('qp-full.html', question = paper["solutionFile"]), 200
+    else:
+        return redirect(url_for('index')), 304
 
 # Reders the about page. Duh
 
@@ -171,7 +182,7 @@ def questionGen():
     else:
         return redirect(url_for('questionGenerator'))
 
-        
+
 @app.route('/submit')
 def submit():
     logger.info('Submit page accessed' + ' IP: ' + str(getClientIp()))
@@ -208,18 +219,18 @@ def submitQuestion():
 
     # Verify the token with enhanced verification
     verificationResult = verifyTurnstile(turnstileToken)
-    
+
     # Check verification success
     if not verificationResult.get("success"):
         logger.warning(
             f'Failed Turnstile verification. '
             f'Errors: {verificationResult.get("error-codes", [])} '
-            f'Attempts: {verificationResult.get("attempts", 1)}' + 
+            f'Attempts: {verificationResult.get("attempts", 1)}' +
             ' IP: ' + str(getClientIp())
         )
         return render_template('captcha-error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
-    
-    
+
+
     logger.info('Question submission initiated' + ' IP: ' + str(getClientIp()))
     board = request.form.get('board')
     subject = request.form.get('subject')
@@ -247,20 +258,20 @@ def submitPaper():
     if not turnstileToken:
         logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
         return render_template('captcha-error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
-        
+
     # Verify the token with enhanced verification
     verificationResult = verifyTurnstile(turnstileToken)
-    
+
     # Check verification success
     if not verificationResult.get("success"):
         logger.warning(
             f'Failed Turnstile verification. '
             f'Errors: {verificationResult.get("error-codes", [])} '
-            f'Attempts: {verificationResult.get("attempts", 1)}' + 
+            f'Attempts: {verificationResult.get("attempts", 1)}' +
             ' IP: ' + str(getClientIp())
         )
         return render_template('captcha-error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
-        
+
 
     logger.info('Paper submission initiated' + ' IP: ' + str(getClientIp()))
     try:
@@ -336,17 +347,17 @@ def login():
 
         # Verify the token with enhanced verification
         verificationResult = verifyTurnstile(turnstileToken)
-        
+
         # Check verification success
         if not verificationResult.get("success"):
             logger.warning(
                 f'Failed Turnstile verification. '
                 f'Errors: {verificationResult.get("error-codes", [])} '
-                f'Attempts: {verificationResult.get("attempts", 1)}' + 
+                f'Attempts: {verificationResult.get("attempts", 1)}' +
                 ' IP: ' + str(getClientIp())
             )
             return render_template('captcha-error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
-        
+
         username_or_email = request.form.get('username')
         password = request.form.get('password')
 
@@ -388,17 +399,17 @@ def signup():
 
         # Verify the token with enhanced verification
         verificationResult = verifyTurnstile(turnstileToken)
-        
+
         # Check verification success
         if not verificationResult.get("success"):
             logger.warning(
                 f'Failed Turnstile verification. '
                 f'Errors: {verificationResult.get("error-codes", [])} '
-                f'Attempts: {verificationResult.get("attempts", 1)}' + 
+                f'Attempts: {verificationResult.get("attempts", 1)}' +
                 ' IP: ' + str(getClientIp())
             )
             return render_template('captcha-error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
-    
+
         username = request.form.get('new-username')
         password = request.form.get('new-password')
         email = request.form.get('new-email')
@@ -440,30 +451,30 @@ def changePassword():
     try:
         previous_password = request.form.get('current-password')
         new_password = request.form.get('new-password')
-        
+
         if check_password_hash(current_user.password, previous_password):
             # Hash the password before storing it
             hashed_password = generate_password_hash(new_password)
-            
+
             # Update the user's password
             current_user.password = hashed_password
             db.session.commit()
-            
+
             logger.info(f'User {current_user.username} changed password' + ' IP: ' + str(getClientIp()))
-            
+
             return redirect(url_for('logout'))
         else:
             logger.warning(f'Failed to change password for user {current_user.username}' + ' IP: ' + str(getClientIp()))
             flash('Current password is incorrect.', 'error')
-        
+
         return redirect(url_for('profile'))
-    
+
     except Exception as e:
         logger.error(f'Error in changing password: {str(e)}' + ' IP: ' + str(getClientIp()))
         flash('An error occurred while changing password.', 'error')
-        return redirect(url_for('profile'))     
-    
-    
+        return redirect(url_for('profile'))
+
+
 # @app.route('/rate/<question_UUID>/<int:rating>', methods = ['POST'])
 # @login_required
 # def rate(question_UUID, rating):
@@ -531,7 +542,7 @@ def adminShowQuestion(uuid):
     if current_user.role != 'admin':
         logger.warning(f'Unauthorized access attempt by user: {current_user.username} from IP: ', getClientIp())
         return redirect(url_for('index'))
-    
+
     try:
         logger.info(f'Question page addessed for paper {uuid} By: {current_user.username} with role: {current_user.role} IP: ' + str(getClientIp()))
         return render_template('admin-question.html', question=get_question(uuid))
@@ -642,7 +653,7 @@ def deleteQuestion(uuid):
         return jsonify({"success": "Your request was processed successfully"}), 200
     else:
         return jsonify({"error": "Your request was not processed successfully"}), 304
-    
+
 
 @app.route('/delete_paper/<uuid>', methods=["POST"])
 @login_required
@@ -665,7 +676,7 @@ def give_admin(username):
         logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
-    
+
     try:
         user = User.query.filter_by(username=username).first()
         if not user:
@@ -674,7 +685,7 @@ def give_admin(username):
         if user.role == 'admin':
             logger.info('User already has admin privileges: ' + username)
             return jsonify({"error": "User already has admin privileges"}), 400
-        
+
         user.role = 'admin'
         db.session.commit()
         logger.info('Admin privileges given to user: ' + username)
@@ -717,11 +728,11 @@ def getClientIp():
 def verifyTurnstile(token, max_retries=3):
     """
     Verify Cloudflare Turnstile CAPTCHA token with robust retry mechanism.
-    
+
     Args:
         token (str): The Turnstile response token
         max_retries (int): Maximum number of retry attempts
-    
+
     Returns:
         dict: Verification result with 'success' and detailed error information
     """
@@ -729,17 +740,17 @@ def verifyTurnstile(token, max_retries=3):
     if not token or not isinstance(token, str) or len(token) > 1000:
         logger.warning('Invalid Turnstile token')
         return {
-            "success": False, 
+            "success": False,
             "error-codes": ["invalid-input-token"],
             "message": "Invalid or too long token"
         }
-    
+
     # Payload for verification
     payload = {
         "secret": TURNSTILE_SECRET_KEY,
         "response": token
     }
-    
+
     # Retry loop with exponential backoff
     for attempt in range(max_retries):
         try:
@@ -748,19 +759,19 @@ def verifyTurnstile(token, max_retries=3):
                 # Exponential backoff with jitter to prevent thundering herd problem
                 wait_time = (2 ** attempt) + random.uniform(0, 1)
                 time.sleep(wait_time)
-            
+
             # Make request with timeout
             response = requests.post(
-                "https://challenges.cloudflare.com/turnstile/v0/siteverify", 
+                "https://challenges.cloudflare.com/turnstile/v0/siteverify",
                 data=payload,
                 timeout=5  # 5-second timeout
             )
             # Raise an exception for bad HTTP responses
             response.raise_for_status()
-            
+
             # Parse response
             result = response.json()
-            
+
             # Successful verification
             return {
                 "success": result.get("success", False),
@@ -768,38 +779,38 @@ def verifyTurnstile(token, max_retries=3):
                 "message": "Verification complete",
                 "attempts": attempt + 1
             }
-        
+
         except requests.exceptions.Timeout:
             logger.warning(f"Turnstile verification timed out. Attempt {attempt + 1}/{max_retries}")
             # Continue to next retry
             continue
-        
+
         except requests.exceptions.ConnectionError:
             logger.warning(f"Network connection error. Attempt {attempt + 1}/{max_retries}")
             # Continue to next retry
             continue
-        
+
         except requests.exceptions.RequestException as e:
             logger.error(f"Network error in Turnstile verification: {e}")
             # For some errors, we might want to exit early
             if attempt == max_retries - 1:
                 return {
-                    "success": False, 
+                    "success": False,
                     "error-codes": ["network-error"],
                     "message": f"Network error after {max_retries} attempts: {str(e)}",
                     "attempts": max_retries
                 }
             continue
-        
+
         except ValueError:  # JSON parsing error
             logger.error(f"Failed to parse Turnstile response. Attempt {attempt + 1}/{max_retries}")
             # Continue to next retry
             continue
-    
+
     # If all retries fail
     logger.error("All Turnstile verification attempts failed")
     return {
-        "success": False, 
+        "success": False,
         "error-codes": ["verification-failed"],
         "message": f"Failed to verify token after {max_retries} attempts",
         "attempts": max_retries
