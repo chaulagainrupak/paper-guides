@@ -215,7 +215,7 @@ def submitQuestion():
     turnstileToken = request.form.get("cf-turnstile-response")
     if not turnstileToken:
         logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
-        return render_template('captcha-error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
+        return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
 
     # Verify the token with enhanced verification
     verificationResult = verifyTurnstile(turnstileToken)
@@ -228,7 +228,7 @@ def submitQuestion():
             f'Attempts: {verificationResult.get("attempts", 1)}' +
             ' IP: ' + str(getClientIp())
         )
-        return render_template('captcha-error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
+        return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
 
 
     logger.info('Question submission initiated' + ' IP: ' + str(getClientIp()))
@@ -257,7 +257,7 @@ def submitPaper():
     turnstileToken = request.form.get("cf-turnstile-response")
     if not turnstileToken:
         logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
-        return render_template('captcha-error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
+        return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
 
     # Verify the token with enhanced verification
     verificationResult = verifyTurnstile(turnstileToken)
@@ -270,7 +270,7 @@ def submitPaper():
             f'Attempts: {verificationResult.get("attempts", 1)}' +
             ' IP: ' + str(getClientIp())
         )
-        return render_template('captcha-error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
+        return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
 
 
     logger.info('Paper submission initiated' + ' IP: ' + str(getClientIp()))
@@ -343,7 +343,7 @@ def login():
         turnstileToken = request.form.get("cf-turnstile-response")
         if not turnstileToken:
             logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
-            return render_template('captcha-error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
+            return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
 
         # Verify the token with enhanced verification
         verificationResult = verifyTurnstile(turnstileToken)
@@ -356,7 +356,7 @@ def login():
                 f'Attempts: {verificationResult.get("attempts", 1)}' +
                 ' IP: ' + str(getClientIp())
             )
-            return render_template('captcha-error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
+            return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
 
         username_or_email = request.form.get('username')
         password = request.form.get('password')
@@ -395,7 +395,7 @@ def signup():
         turnstileToken = request.form.get("cf-turnstile-response")
         if not turnstileToken:
             logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
-            return render_template('captcha-error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
+            return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
 
         # Verify the token with enhanced verification
         verificationResult = verifyTurnstile(turnstileToken)
@@ -408,7 +408,7 @@ def signup():
                 f'Attempts: {verificationResult.get("attempts", 1)}' +
                 ' IP: ' + str(getClientIp())
             )
-            return render_template('captcha-error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
+            return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
 
         username = request.form.get('new-username')
         password = request.form.get('new-password')
