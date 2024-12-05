@@ -1,85 +1,91 @@
-{% extends 'base.html' %} 
-{% block title %}Page Not Found{% endblock%} 
-
-
-{% block body %}
-<!DOCTYPE html>
+{% extends 'base.html' %} {% block title %}Page Not Found{% endblock%} {% block
+body %}
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Page Not Found</title>
-    <style>
-      :root {
-        --rich-black: #0d1b2aff;
-        --picton-blue: #3eafe4ff;
-        --baby-powder: #fffffaff;
-        --blue-highlight: #5d71e0;
-      }
-      h1 {
-        color: var(--rich-black);
-        margin-bottom: 1rem;
-        font-size: 2.5rem;
-      }
-      p {
-        color: var(--rich-black);
-        margin-bottom: 1.5rem;
-      }
-      .error-code {
-        font-size: 6rem;
-        color: var(--blue-highlight);
-        font-weight: bold;
-        margin-bottom: 1rem;
-      }
-      button {
-        background-color: var(--blue-highlight);
-        color: white;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-      }
-      button:hover {
-        background-color: var(--picton-blue);
-        transform: translateY(-2px);
-      }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Page Not Found</title>
+        <style>
+            h1 {
+                margin-bottom: 1rem;
+                font-size: 2.5rem;
+            }
+            p {
+                margin-bottom: 1.5rem;
+            }
+            .error-code {
+                font-size: 6rem;
+                color: var(--blue-highlight);
+                font-weight: bold;
+                margin-bottom: 1rem;
+            }
+            button {
+                background-color: var(--blue-highlight);
+                color: white;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 1rem;
+                transition:
+                    background-color 0.3s ease,
+                    transform 0.2s ease;
+            }
+            button:hover {
+                background-color: var(--picton-blue);
+                transform: translateY(-2px);
+            }
 
-      .container {
-        background-color: var(--baby-powder);
-        border-radius: 20px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        padding: 2rem;
-        max-width: 400px;
-        width: 90%;
-      }
+            .container {
+                background-color: var(--baby-powder);
+                border-radius: 20px;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                padding: 2rem;
+                max-width: 400px;
+                width: 90%;
+            }
 
-      body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
-      flex-direction: column;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="error-code">404!</div>
-      <h1>Page Not Found</h1>
-      <p>Oops! The page you are looking for seems to have gone missing.</p>
-      <button onclick="goBack()">Go Back</button>
-      <button onclick="window.location.href='/'">Go to Home</button>
-    </div>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                    Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+                    "Helvetica Neue", sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                text-align: center;
+                flex-direction: column;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="error-code">404!</div>
+            <h1>Page Not Found</h1>
+            <p>
+                Oops! The page you are looking for seems to have gone missing.
+            </p>
+            <button onclick="goBack()">Go Back</button>
+            <button onclick="window.location.href='/'">Go to Home</button>
+        </div>
 
-    <div style="margin: 4rem;">
-    <iframe src="https://giphy.com/embed/ebFG4jcnC1Ny8" width="480" height="331" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/surprised-cat-funny-ebFG4jcnC1Ny8"></a></p>
-
-    </div>
-  </body>
+        <div style="margin: 4rem">
+            <iframe
+                src="https://giphy.com/embed/ebFG4jcnC1Ny8"
+                width="480"
+                height="331"
+                frameborder="0"
+                class="giphy-embed"
+                allowfullscreen
+            ></iframe>
+            <p>
+                <a
+                    href="https://giphy.com/gifs/surprised-cat-funny-ebFG4jcnC1Ny8"
+                ></a>
+            </p>
+        </div>
+    </body>
 </html>
 {% endblock %}

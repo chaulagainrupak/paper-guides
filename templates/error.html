@@ -1,70 +1,64 @@
-{% extends 'base.html' %}
-
-
-{% block title %}{{error_title}}{% endblock%}
-
-{% block section %}    
-<!DOCTYPE html>
+{% extends 'base.html' %} {% block title %}{{error_title}}{% endblock%} {% block
+section %}
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Captcha Verification Failed</title>
-    <style>
-        :root {
-            --rich-black: #0d1b2aff;
-            --picton-blue: #3eafe4ff;
-            --baby-powder: #fffffaff;
-            --blue-highlight: #5d71e0;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: var(--background, #e3f2fd);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
-        .container {
-            background-color: var(--baby-powder);
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            max-width: 400px;
-            width: 90%;
-        }
-        h1 {
-            color: var(--rich-black);
-            margin-bottom: 1rem;
-        }
-        p {
-            color: var(--rich-black);
-            margin-bottom: 1.5rem;
-        }
-        button {
-            background-color: var(--blue-highlight);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        button:hover {
-            background-color: var(--picton-blue);
-            transform: translateY(-2px);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>{{error_title}}</h1>
-        <p>{{error_message}}</p>
-        <button onclick="window.history.back()">Go Back</button>
-    </div>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Captcha Verification Failed</title>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                    Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+                    "Helvetica Neue", sans-serif;
+                background-color: var(--background, #e3f2fd);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                text-align: center;
+            }
+            .container {
+                background-color: var(--baby-powder);
+                border-radius: 20px;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                padding: 2rem;
+                max-width: 400px;
+                width: 90%;
+            }
+            h1 {
+                color: var(--font-color);
+                margin-bottom: 1rem;
+            }
+            p {
+                color: var(--font-color);
+                margin-bottom: 1.5rem;
+            }
+            button {
+                background-color: var(--blue-highlight);
+                color: white;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 1rem;
+                transition:
+                    background-color 0.3s ease,
+                    transform 0.2s ease;
+            }
+            button:hover {
+                background-color: var(--picton-blue);
+                transform: translateY(-2px);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>{{error_title}}</h1>
+            <p>{{error_message}}</p>
+            <button onclick="window.history.back()">Go Back</button>
+        </div>
+    </body>
 </html>
 {% endblock %}
