@@ -118,29 +118,6 @@ def createDatabase():
                 columns = ", ".join(f"{colName} {colType}" for colName, colType in schema.items())
                 db.execute(f"CREATE TABLE IF NOT EXISTS {tableName} ({columns})")
                 logger.info(f"Created new table: {tableName}")
-            else:
-                # Handle column modifications
-                existingColumns = db.execute(f"PRAGMA table_info({tableName})").fetchall()
-                existingColumnNames = [col[1] for col in existingColumns]
-                existingColumnTypes = {col[1]: col[2] for col in existingColumns}
-
-                # Create a temp table with the new schema
-                tempTableName = f"temp_{tableName}"
-                columns = ", ".join(f"{colName} {colType}" for colName, colType in schema.items())
-                db.execute(f"CREATE TABLE {tempTableName} ({columns})")
-
-                # Transfer data for common columns
-                commonColumns = [col for col in schema.keys() if col in existingColumnNames]
-                commonColumnsStr = ", ".join(commonColumns)
-                db.execute(
-                    f"INSERT INTO {tempTableName} ({commonColumnsStr}) SELECT {commonColumnsStr} FROM {tableName}"
-                )
-
-                # Drop old table and rename temp table
-                db.execute(f"DROP TABLE {tableName}")
-                db.execute(f"ALTER TABLE {tempTableName} RENAME TO {tableName}")
-
-                logger.info(f"Updated schema for table: {tableName}")
 
         # Commit changes
         connection.commit()
