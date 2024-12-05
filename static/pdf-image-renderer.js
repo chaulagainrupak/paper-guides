@@ -46,7 +46,7 @@ function renderImageFromElement(element, base64Data) {
     element.innerHTML = `
       <div class="error-message" style="
         background-color: #f8d7da;
-        color: #721c24;
+        color: var(--font-color);
         padding: 15px;
         border-radius: 5px;
         text-align: center;
@@ -65,7 +65,7 @@ async function renderPDFElement(element, base64Data) {
     element.innerHTML = `
       <div class="error-message" style="
         background-color: #f8d7da;
-        color: #721c24;
+        color: var(--font-color);
         padding: 15px;
         border-radius: 5px;
         text-align: center;

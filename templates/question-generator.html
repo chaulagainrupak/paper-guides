@@ -35,7 +35,7 @@ block prompt %}
     #questionForm label {
         font-weight: bold;
         margin-bottom: 0.5rem;
-        color: var(--rich-black);
+        color: var(--font-color);
         display: block;
     }
 
@@ -43,12 +43,17 @@ block prompt %}
     .selectBox {
         width: 100%;
         padding: 0.75rem;
-        border: 1px solid #ccc;
         border-radius: 5px;
         font-size: 1rem;
-        background-color: var(--font-white);
+        background-color: var(--nav-background);
     }
 
+    .selectBox {
+        border: var(--font-color) 1px solid;
+    }
+    select {
+        border: var(--font-color) 1px solid;
+    }
     #questionForm select:focus,
     #questionForm input[type="checkbox"]:focus {
         outline: none;
@@ -58,7 +63,7 @@ block prompt %}
     #questionForm button[type="submit"] {
         padding: 0.75rem 1.5rem;
         background-color: var(--blue-highlight);
-        color: var(--font-white);
+        color: var(--font-color);
         border: none;
         border-radius: 5px;
         font-size: 1rem;
@@ -99,15 +104,14 @@ block prompt %}
 
     .checkboxes {
         display: none;
-        border: 1px solid #ccc;
-        background-color: var(--font-white);
+        border: none;
+        background-color: var(--baby-powder);
         max-height: 300px;
         overflow-y: auto;
         position: absolute;
         width: 100%;
         z-index: 1;
         border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     .checkboxes label {
@@ -122,7 +126,7 @@ block prompt %}
     }
 
     .checkboxes label:hover {
-        background-color: var(--background);
+        background-color: var(--nav-background);
     }
 
     .checkboxes input[type="checkbox"] {
@@ -135,20 +139,23 @@ block prompt %}
         top: 5px;
         cursor: pointer;
         font-size: 20px;
-        color: var(--rich-black);
+        color: var(--font-color);
     }
 
     .no-subject-message {
-        color: var(--rich-black);
+        color: var(--font-color);
         font-style: italic;
         padding: 0.5rem;
     }
-
-    
 </style>
 
 <div id="config" style="display: none">{{ config | tojson | safe }}</div>
-<form id="questionForm" action="/question-gen" method="post" enctype="multipart/form-data">
+<form
+    id="questionForm"
+    action="/question-gen"
+    method="post"
+    enctype="multipart/form-data"
+>
     <div class="form-row">
         <div class="form-group">
             <label for="board">Education System:</label>
@@ -170,7 +177,7 @@ block prompt %}
             </select>
         </div>
     </div>
-    
+
     <div class="multiselect">
         <div class="selectBox" onclick="toggleCheckboxes('topicCheckboxes')">
             <select>
@@ -179,40 +186,63 @@ block prompt %}
             <div class="overSelect"></div>
         </div>
         <div id="topicCheckboxes" class="checkboxes" required>
-            <span class="close-button" onclick="closeCheckboxes('topicCheckboxes')">×</span>
+            <span
+                class="close-button"
+                onclick="closeCheckboxes('topicCheckboxes')"
+                >×</span
+            >
         </div>
     </div>
-    
+
     <div class="multiselect">
-        <div class="selectBox" onclick="toggleCheckboxes('difficultyCheckboxes')">
+        <div
+            class="selectBox"
+            onclick="toggleCheckboxes('difficultyCheckboxes')"
+        >
             <select>
                 <option class="difficulty-title">Select Difficulty</option>
             </select>
             <div class="overSelect"></div>
         </div>
         <div id="difficultyCheckboxes" class="checkboxes" required>
-            <span class="close-button" onclick="closeCheckboxes('difficultyCheckboxes')">×</span>
+            <span
+                class="close-button"
+                onclick="closeCheckboxes('difficultyCheckboxes')"
+                >×</span
+            >
             {% for i in range(1, 6) %}
             <label>
-                <input type="checkbox" name="difficulty" value="{{ i }}" id="difficulty-checkbox">
+                <input
+                    type="checkbox"
+                    name="difficulty"
+                    value="{{ i }}"
+                    id="difficulty-checkbox"
+                />
                 <span>{{ i }}</span>
             </label>
             {% endfor %}
         </div>
     </div>
-    
+
     <div class="multiselect">
-        <div class="selectBox" onclick="toggleCheckboxes('componentCheckboxes')">
+        <div
+            class="selectBox"
+            onclick="toggleCheckboxes('componentCheckboxes')"
+        >
             <select>
                 <option class="component-title">Select Component(s)</option>
             </select>
             <div class="overSelect"></div>
         </div>
         <div id="componentCheckboxes" class="checkboxes" required>
-            <span class="close-button" onclick="closeCheckboxes('componentCheckboxes')">×</span>
+            <span
+                class="close-button"
+                onclick="closeCheckboxes('componentCheckboxes')"
+                >×</span
+            >
         </div>
     </div>
-    
+
     <button type="submit">Generate Questions</button>
 </form>
 
