@@ -716,7 +716,7 @@ def sitemap():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    logger.warning(f'404 Not Found error' + ' IP: ' + str(getClientIp()))
+    logger.warning(f"404 Not Found | URL: {request.url} | IP: {getClientIp()}")
     return render_template('404.html'), 404
 
 # Define a reusable function to get the client's IP address
