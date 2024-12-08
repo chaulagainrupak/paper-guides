@@ -253,24 +253,22 @@ def submitQuestion():
 @login_required
 def submitPaper():
 
-    # Get the Turnstile token from the form submission
-    turnstileToken = request.form.get("cf-turnstile-response")
-    if not turnstileToken:
-        logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
-        return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
-
-    # Verify the token with enhanced verification
-    verificationResult = verifyTurnstile(turnstileToken)
-
-    # Check verification success
-    if not verificationResult.get("success"):
-        logger.warning(
-            f'Failed Turnstile verification. '
-            f'Errors: {verificationResult.get("error-codes", [])} '
-            f'Attempts: {verificationResult.get("attempts", 1)}' +
-            ' IP: ' + str(getClientIp())
-        )
-        return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
+    isHeadless = request.headers.get('headless')
+    if not isHeadless:
+        # Get the Turnstile token from the form submission
+        turnstileToken = request.form.get("cf-turnstile-response")
+        if not turnstileToken:
+            logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
+            return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
+        # Check verification success
+        if not verificationResult.get("success"):
+            logger.warning(
+                f'Failed Turnstile verification. '
+                f'Errors: {verificationResult.get("error-codes", [])} '
+                f'Attempts: {verificationResult.get("attempts", 1)}' +
+                ' IP: ' + str(getClientIp())
+            )
+            return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
 
 
     logger.info('Paper submission initiated' + ' IP: ' + str(getClientIp()))
@@ -339,25 +337,23 @@ def login():
 
     if request.method == 'POST':
 
-        # Get the Turnstile token from the form submission
-        turnstileToken = request.form.get("cf-turnstile-response")
-        if not turnstileToken:
-            logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
-            return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
-
-        # Verify the token with enhanced verification
-        verificationResult = verifyTurnstile(turnstileToken)
-
-        # Check verification success
-        if not verificationResult.get("success"):
-            logger.warning(
-                f'Failed Turnstile verification. '
-                f'Errors: {verificationResult.get("error-codes", [])} '
-                f'Attempts: {verificationResult.get("attempts", 1)}' +
-                ' IP: ' + str(getClientIp())
-            )
-            return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
-
+        isHeadless = request.headers.get('headless')
+        if not isHeadless:
+            # Get the Turnstile token from the form submission
+            turnstileToken = request.form.get("cf-turnstile-response")
+            if not turnstileToken:
+                logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
+                return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
+            # Check verification success
+            if not verificationResult.get("success"):
+                logger.warning(
+                    f'Failed Turnstile verification. '
+                    f'Errors: {verificationResult.get("error-codes", [])} '
+                    f'Attempts: {verificationResult.get("attempts", 1)}' +
+                    ' IP: ' + str(getClientIp())
+                )
+                return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
+                
         username_or_email = request.form.get('username')
         password = request.form.get('password')
 
@@ -649,9 +645,12 @@ def deleteQuestion(uuid):
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
+    logger.info(f"Deletion process started for question with UUID: {uuid}")
     if delete_question(uuid):
+        logger.info(f"Question successfully delete with UUID: {uuid}")    
         return jsonify({"success": "Your request was processed successfully"}), 200
     else:
+        logger.info(f"Question deletion failed with UUID: {uuid}")    
         return jsonify({"error": "Your request was not processed successfully"}), 304
 
 
@@ -663,9 +662,12 @@ def deletePaper(uuid):
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
+    logger.info(f"Deletion process started for paper with UUID: {uuid}")
     if delete_paper(uuid):
+        logger.info(f"Paper successfully delete with UUID: {uuid}")    
         return jsonify({"success": "Your request was processed successfully"}), 200
     else:
+        logger.info(f"Paper deletion failed with UUID: {uuid}")    
         return jsonify({"error": "Your request was not processed successfully"}), 304
 
 # Temporary solution man
