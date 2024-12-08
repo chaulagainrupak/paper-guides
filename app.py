@@ -254,12 +254,17 @@ def submitQuestion():
 def submitPaper():
 
     isHeadless = request.headers.get('headless')
+
     if not isHeadless:
         # Get the Turnstile token from the form submission
         turnstileToken = request.form.get("cf-turnstile-response")
         if not turnstileToken:
             logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
             return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
+
+        # Verify the token with enhanced verification
+        verificationResult = verifyTurnstile(turnstileToken)
+
         # Check verification success
         if not verificationResult.get("success"):
             logger.warning(
@@ -338,12 +343,17 @@ def login():
     if request.method == 'POST':
 
         isHeadless = request.headers.get('headless')
+
         if not isHeadless:
             # Get the Turnstile token from the form submission
             turnstileToken = request.form.get("cf-turnstile-response")
             if not turnstileToken:
                 logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
                 return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
+
+            # Verify the token with enhanced verification
+            verificationResult = verifyTurnstile(turnstileToken)
+
             # Check verification success
             if not verificationResult.get("success"):
                 logger.warning(
@@ -353,7 +363,7 @@ def login():
                     ' IP: ' + str(getClientIp())
                 )
                 return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
-                
+
         username_or_email = request.form.get('username')
         password = request.form.get('password')
 
