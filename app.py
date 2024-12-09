@@ -101,7 +101,7 @@ def getSubjectYears(level, subject_name):
 def getSubjectQuestions(level ,subject_name, year):
     logger.info(f'Questions page accessed for level {level}, subject {subject_name}, year {year}' + ' IP: ' + str(getClientIp()))
     question_name = getQuestions(level, subject_name, year)
-    return render_template('questions.html', questions_name = question_name, year = year, config = config, level = level )
+    return render_template('questions.html', questions_name = question_name, subject_name = subject_name ,year = year, config = config, level = level )
 
 
 @app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
