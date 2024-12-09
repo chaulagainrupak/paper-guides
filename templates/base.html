@@ -121,7 +121,9 @@
 
             {% block prompt %} {% endblock %} {% if
             request.path.startswith('/level') or
-            request.path.startswith('/subjects') %}
+            request.path.startswith('/subjects') or 
+            request.path.startswith('/topicals')
+            %}
             <div class="promo-space">"Advertisement Space"</div>
             {% endif %}
         </div>

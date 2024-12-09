@@ -46,13 +46,14 @@ const overallCtx = document.getElementById('overallChart');
 new Chart(overallCtx, {
     type: 'bar',
     data: {
-        labels: ['Questions', 'Papers'],
+        labels: ['Questions', 'Papers', 'Topicals'],
         datasets: [
             {
                 label: 'Approved',
                 data: [
                     statsData.overall.questions.approved,
-                    statsData.overall.papers.approved
+                    statsData.overall.papers.approved,
+                    statsData.overall.topicals.approved
                 ],
                 backgroundColor: 'rgba(75, 192, 92, 0.2)', // Light green
                 borderColor: 'rgb(75, 192, 92)', // Green
@@ -62,7 +63,8 @@ new Chart(overallCtx, {
                 label: 'Unapproved',
                 data: [
                     statsData.overall.questions.unapproved,
-                    statsData.overall.papers.unapproved
+                    statsData.overall.papers.unapproved,
+                    statsData.overall.topicals.unapproved
                 ],
                 backgroundColor: 'rgba(255, 99, 132, 0.2)', // Light red
                 borderColor: 'rgb(255, 99, 132)', // Red
@@ -139,6 +141,20 @@ Object.keys(statsData.byBoard).forEach(board => {
                     {
                         label: 'Unapproved Papers',
                         data: subjects.map(subject => levelData.subjects[subject].unapprovedPapers),
+                        backgroundColor: subjects.map(() => 'rgba(255, 99, 132, 0.2)'), // Light red
+                        borderColor: subjects.map(() => 'rgb(255, 99, 132)'), // Red
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Approved Topicals',
+                        data: subjects.map(subject => levelData.subjects[subject].approvedTopicals),
+                        backgroundColor: subjects.map(() => getRandomColor()),
+                        borderColor: subjects.map(() => getRandomColor()),
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Unapproved Topicals',
+                        data: subjects.map(subject => levelData.subjects[subject].unapprovedTopicals),
                         backgroundColor: subjects.map(() => 'rgba(255, 99, 132, 0.2)'), // Light red
                         borderColor: subjects.map(() => 'rgb(255, 99, 132)'), // Red
                         borderWidth: 1

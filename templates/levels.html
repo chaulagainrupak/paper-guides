@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block section %}
-    <h1>Available Boards and Levels</h1>
+    <h1>Available Boards and Levels For: <span class="blue-highlight">{{mode}}</span></h1>
 
     {% for board, boardData in config.items() %}
         <div class="board-section">
@@ -15,7 +15,7 @@
             {% if board == "A Levels" %}
                 <div class="level-section">
                     <!-- Level Link -->
-                    <a href="/subjects/A level">
+                    <a href="/{% if mode | lower == 'topicals'%}topicals{%else%}subjects{%endif%}/A level">
                         CAIE: A Levels
                     </a>
                 </div>
@@ -23,7 +23,7 @@
                 {% for level in boardData.levels %}
                 <div class="level-section">
                     <!-- Level Link -->
-                    <a href="/subjects/{{level}}">
+                    <a href="/{% if mode | lower == 'topicals'%}topicals{%else%}subjects{%endif%}/{level}">
                         {{board}} Grade: {{ level }}
                     </a>
                 </div>
