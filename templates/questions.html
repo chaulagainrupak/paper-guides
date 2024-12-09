@@ -8,7 +8,7 @@
 
 {% block section %}
 <div class="section-title" style="display: flex; justify-content: space-between;">
-    <h1>Choose The Question Paper</h1>
+    <h1>Choose The Paper For: <span class="blue-highlight">{{subject_name}}</span>, <span class="pink-highlight">Year: {{year}}</span></h1>
     <div style="display: flex; justify-content: space-between;">
         <button onclick="goBack()" style="background: none; border: none; color: var(--blue-highlight); font-size: 1.5rem; cursor: pointer; margin: 10px;">← Back</button>
         <button onclick="getRandomQuestion()"
