@@ -21,10 +21,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Function to render the data (unchanged)
 function renderData(data) {
   // Get the existing question and paper sections
-  const questionSection = document.querySelector(".section:first-of-type");
-  const paperSection = document.querySelector(".section:last-of-type");
+  const questionSection = document.querySelector(".section-questions");
+  const paperSection = document.querySelector(".section-papers");
+  const topicalSection = document.querySelector(".section-topicals");
 
-  if (!questionSection || !paperSection) {
+
+  if (!questionSection || !paperSection || !topicalSection) {
     return;
   }
 
@@ -40,6 +42,10 @@ function renderData(data) {
     paperSection.appendChild(paperCard);
   });
 
+  data.topicals.forEach((topical, count) => {
+    const topicalCard = createTopicalCard(topical, count + 1);
+    topicalSection.appendChild(topicalCard);
+  })
 }
 
 // Function to create a question card (unchanged)
@@ -90,6 +96,23 @@ function createPaperCard(paper, count) {
   return card;
 }
 
+function createTopicalCard(topical, count){
+  const card = document.createElement("div");
+  card.classList.add("card");
+
+  const topicalDetailsDiv = document.createElement("div");
+  topicalDetailsDiv.innerHTML = `
+                    <a href='/admin/topical/${topical.uuid}' style='text-decoration: none; color: black;'>
+                    <h1 style='color: #F25C6A;'>${count}) Topical Details</h1>
+                    <h2><strong>Subject:</strong> ${topical.subject}</h2>
+                    <h2 style='color: #F25C6A;'><strong>Submitted by:</strong> ${topical.submittedBy}</h2>
+                    <h2><strong>Submitted on:</strong> ${topical.submittedOn}</h2>
+                    <h2><strong>UUID:</strong> ${topical.uuid}</h2>
+                    </a>
+                `;
+  card.appendChild(topicalDetailsDiv);
+  return card;
+}
 // Delete existing item function
 function deleteExistingItem() {
   const itemType = document.getElementById("itemType").value;

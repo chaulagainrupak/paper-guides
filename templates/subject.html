@@ -20,7 +20,7 @@
 </div>
 {% for board, boardData in config.items() %} {% if level in boardData.levels %}
 {% for subject in boardData.subjects|sort(attribute='name') %}
-<a href="/subjects/{{ level }}/{{ subject.name}}"> {{ subject.name }} </a>
+<a href="/{% if mode | lower == 'topicals'%}topicals{%else%}subjects{%endif%}/{{ level }}/{{ subject.name}}"> {{ subject.name }} </a>
 {% endfor %} {% endif %} {% endfor %}
 <a href="/submit"
   >Did not find the required paper?
