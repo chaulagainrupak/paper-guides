@@ -134,16 +134,40 @@ def getLevelSubjectsForTopicals(level):
     return render_template('subject.html', config = config, level = level, mode = "topicals")
 
 @app.route('/topicals/<level>/<subject_name>')
-def getSubjectYearsForTopicals(level, subject_name):
-    logger.info(f'Years page accessed for level {level}, subject {subject_name} IP: {getClientIp()}')
-    years = getYears(level,subject_name)
-    return render_template('years.html', subject_name = subject_name, level = level, years = years)
+def getTopicals(level, subject_name):
+    logger.info(f'Topicals page accessed for level {level}, subject {subject_name} IP: {getClientIp()}')
+    files = getTopicalFiles(level,subject_name)
+    config = loadConfig(configPath)
+
+    if level in ["A level", "AS level"]:
+        level = "A Levels"
+
+
+    subjects = config[level]["subjects"]
+
+    for subject in subjects:
+        if subject["name"] == subject_name:
+            topics = subject["topics"]
+            break
+
+    return render_template('topicals.html', subject_name = subject_name, level = level, topics = topics, files = files)
+
+@app.route('/topicals/<level>/<subject_name>/<uuid>')
+def renderTopical(level ,subject_name, uuid):
+    logger.info(f'Topical  page accessed for subject {subject_name}, uuid {uuid} IP: {getClientIp()}')
+
+    question = renderTopcial(uuid)
+    return render_template('qp.html', question=question[0], solution= question[1], file_data = f"Topical question paper for {subject_name} and topic: {question[3]}",  id=question[2], config=config)
 
 @app.route('/view-pdf/<type>/<uuid>')
 def viewPdf(type, uuid):
     logger.info(f'{type}: {uuid} rendered in full screen. IP: {getClientIp()}')
 
     paper = get_paper(uuid)
+
+    if paper == None:
+        paper = get_topical(uuid)
+        
     if type == "question":
         return render_template('qp-full.html', question = paper["questionFile"]), 200
     elif type == "solution":

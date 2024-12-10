@@ -320,7 +320,7 @@ def getQuestions(level, subject_name, year):
         # Close the connection
         connection.close()
 
-def getTopicalFiles(level, subject):
+def getTopicalFiles(level, subject_name):
     try:
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
@@ -328,27 +328,26 @@ def getTopicalFiles(level, subject):
         if level == 'A level' or level == 'AS level':
             query = '''
             SELECT uuid, topic
-            FROM papers
-            WHERE board = ?
-            AND subject = ?
+            FROM topicals
+            WHERE subject = ?
             AND approved = 1
             '''
-            result = db.execute(query, ( "A Levels" ,subject_name, year, component)).fetchall()
+            result = db.execute(query, (subject_name,)).fetchall()
         else:
             query = '''
             SELECT uuid, topic
-            FROM papers
+            FROM topicals
             WHERE level = ?
             AND subject = ?
             AND approved = 1
             '''
-            result = db.execute(query, (level, subject_name, year, component)).fetchall()
+            result = db.execute(query, (level, subject_name)).fetchall()
         # Check if results exist
         if not result:
-            logger.warning(f"No topical data found for level {level}, subject {subject_name}, year {year}, component {component}")
+            logger.warning(f"No topical data found for level {level}, subject {subject_name}")
             return None
         
-        return result[0]
+        return result
     
     except sqlite3.Error as e:
         logger.error(f"An error occurred while rendering question: {e}")
@@ -402,7 +401,20 @@ def renderQuestion(level, subject_name, year, component):
         connection.close()
 
 
+def renderTopcial(uuid):
+    try:
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
 
+        return db.execute("""
+                    SELECT questionFile, solutionFile, uuid, topic
+                    FROM topicals WHERE uuid = ? 
+                """, (uuid,)).fetchone()
+    except sqlite3.Error as e:
+        logger.error(f'Error while retriving topcial with uuid {uuid}: {e}')
+        return False
+    finally:
+        connection.close()
 def giveRating(user_id, question_UUID, rating):
     try:
         connection = sqlite3.connect(dbPath)
