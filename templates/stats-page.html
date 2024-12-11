@@ -5,7 +5,10 @@
 {% endblock %}
 
 {% block section %}
-    <h1>Statistics Overview</h1>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<h1>Statistics Overview</h1>
 
     <!-- Hidden div containing stats data as JSON -->
     <div id="chart-data" style="display: none;">{{ statsData | tojson }}</div>

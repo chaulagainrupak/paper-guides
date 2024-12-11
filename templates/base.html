@@ -37,8 +37,6 @@
             defer
         ></script>
         <script src="{{ url_for('static', filename='utils.js')}}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
         <script
             async
             src="https://www.googletagmanager.com/gtag/js?id=G-SZDFC8YDWK"
@@ -124,6 +122,8 @@
             request.path.startswith('/subjects') or 
             request.path.startswith('/topicals')
             %}
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
             <div class="promo-space">"Advertisement Space"</div>
             {% endif %}
         </div>
