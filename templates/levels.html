@@ -23,7 +23,7 @@
                 {% for level in boardData.levels %}
                 <div class="level-section">
                     <!-- Level Link -->
-                    <a href="/{% if mode | lower == 'topicals'%}topicals{%else%}subjects{%endif%}/{level}">
+                    <a href="/{% if mode | lower == 'topicals'%}topicals{%else%}subjects{%endif%}/{{level}}">
                         {{board}} Grade: {{ level }}
                     </a>
                 </div>
