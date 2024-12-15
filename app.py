@@ -803,6 +803,11 @@ def sitemap():
     logger.info(f'Sitemap accessed IP: {getClientIp()}')
     return send_from_directory(os.path.expanduser('~/paper-guides/static'), 'sitemap.xml', mimetype='application/xml'), 200
 
+@app.route('/ads.txt')
+def adsTxt():
+    logger.info(f'ads.txt accessed IP: {getClientIp()}')
+    return send_from_directory(os.path.expanduser('~/paper-guides/static'), 'ads.txt', mimetype='text/plain'), 200
+
 @app.errorhandler(404)
 def page_not_found(e):
     logger.warning(f"404 Not Found | URL: {request.url} | IP: {getClientIp()}")
