@@ -1064,6 +1064,7 @@ def getStat(config):
                             "approvedTopicals": approved_topicals,
                             "unapprovedTopicals": unapproved_topicals
                         })
+
                 else:
                     # Handle non-A-level statistics as before
                     boardStats["levels"][normalized_level]["approvedQuestions"] = db.execute(
@@ -1109,7 +1110,7 @@ def getStat(config):
         stats["overall"]["papers"]["unapproved"] = db.execute(
             "SELECT COUNT(*) FROM papers WHERE approved = ?", (False,)
         ).fetchone()[0]
-        stats["overall"]["topicals"]["appro ved"] = db.execute(
+        stats["overall"]["topicals"]["approved"] = db.execute(
             "SELECT COUNT(*) FROM topicals WHERE approved = ?", (True,)
         ).fetchone()[0]
         stats["overall"]["topicals"]["unapproved"] = db.execute(

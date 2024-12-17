@@ -367,4 +367,10 @@ block prompt %}
         {% endfor %}
     </div>
 </div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js" defer></script>
+<script src="{{ url_for('static', filename='image-renderer.js') }}" defer></script>
+<script src="{{ url_for('static', filename='pdf-image-renderer.js') }}" defer></script>
+
 {% endblock %}

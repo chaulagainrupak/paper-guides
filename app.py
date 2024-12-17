@@ -63,7 +63,7 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    logger.info('Home page accessed IP: {getClientIp()}')
+    logger.info(f'Home page accessed IP: {getClientIp()}')
     return render_template('index.html')
 
 

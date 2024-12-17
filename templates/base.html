@@ -26,7 +26,7 @@
         <meta name="author" content="Paper-Guides" />
         <meta name="robots" content="index, follow" />
 
-        <link rel="icon" type="image/png" href="/static/images/logo.svg" />
+        <link rel="icon" type="image/png" href="/static/images/logo.ico" />
         <link
             rel="stylesheet"
             href="{{ url_for('static', filename='styles.css') }}"
@@ -37,11 +37,35 @@
             defer
         ></script>
         <script src="{{ url_for('static', filename='utils.js')}}" defer></script>
-        <script
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=G-SZDFC8YDWK"
-        ></script>
-        <script>
+
+
+                <!-- Dynamically load analytics and Cloudflare Turnstile -->
+                <script>
+                    window.onload = function () {
+                        // Load Google Analytics
+                        let gaScript = document.createElement('script');
+                        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-SZDFC8YDWK';
+                        document.body.appendChild(gaScript);
+        
+                        gaScript.onload = function () {
+                            window.dataLayer = window.dataLayer || [];
+                            function gtag() {
+                                dataLayer.push(arguments);
+                            }
+                            gtag('js', new Date());
+                            gtag('config', 'G-SZDFC8YDWK');
+                        };
+        
+                        // Load Cloudflare Turnstile
+                        let cfScript = document.createElement('script');
+                        cfScript.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+                        cfScript.defer = true;
+                        document.body.appendChild(cfScript);
+                    };
+                </script>
+
+
+        <script defer>
             window.dataLayer = window.dataLayer || [];
             function gtag() {
                 dataLayer.push(arguments);
@@ -51,10 +75,6 @@
             gtag("config", "G-SZDFC8YDWK");
         </script>
 
-        <script
-            src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-            defer
-        ></script>
     </head>
 
     <body>
@@ -193,9 +213,4 @@
         }
     </style>
 
-    {% if request.path.startswith('/question-gen') %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js" defer></script>
-    <script src="{{ url_for('static', filename='image-renderer.js') }}" defer></script>
-    {% endif %}
-    <script src="{{ url_for('static', filename='pdf-image-renderer.js') }}" defer></script>
 </html>

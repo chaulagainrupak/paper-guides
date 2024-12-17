@@ -22,7 +22,7 @@ const commonOptions = {
         title: {
             display: true,
             font: {
-                size: 16
+                size: 24
             }
         }
     },
