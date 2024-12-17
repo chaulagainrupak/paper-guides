@@ -4,34 +4,68 @@
         <meta charset="UTF-8" />
         <title>{% block title %}base{% endblock %}</title>
         <meta
-        name="description"
-        content="Download free NEB and A Levels past papers for Grades 10, 11, and 12. Access SEE and A Level AS and A2 exam preparation materials, question banks, model papers, study guides, +2 resources, and question generators. Explore our comprehensive library of academic resources for NEB, SEE, and A Levels. Learn smarter with Paper-Guides!"
+            name="description"
+            content="Download free NEB and A Levels past papers for Grades 10, 11, and 12. Access SEE and A Level AS and A2 exam preparation materials, question banks, model papers, study guides, +2 resources, and question generators. Explore our comprehensive library of academic resources for NEB, SEE, and A Levels. Learn smarter with Paper-Guides!"
         />
         <meta
             name="keywords"
             content="NEB past papers, NEB Grade 10, NEB Grade 11, NEB Grade 12, SEE exam question generator, SEE model questions, SEE preparation tips, free study guides, A Level past papers, AS Level past papers, A2 Level resources, Mathematics past papers, Physics model questions, Chemistry study guides, Economics past papers, Accounting resources, free question generator, A Levels Nepal, NEB free textbooks, student academic materials, practice papers, academic support Nepal"
         />
-        <meta property="og:title" content="Free NEB and A Levels Past Papers, SEE Resources, and Study Guides for Grades 10, 11, and 12 and A Levels. Paper-Guides">
-        <meta property="og:description" content="Access NEB, SEE, and A Levels past papers and study resources for grades 10, 11, and 12. Prepare with question generators, model papers, and comprehensive materials for NEB, SEE, AS Level, and A Level exams!">
-        <meta property="og:image" content="{{ url_for('static', filename='images/logo.svg') }}">
-        <meta name="author" content="Paper-Guides">
-        <meta name="robots" content="index, follow">
-    
-    
-        <link rel="icon" type="image/png" href="/static/images/logo.svg" />
+        <meta
+            property="og:title"
+            content="Free NEB and A Levels Past Papers, SEE Resources, and Study Guides for Grades 10, 11, and 12 and A Levels. Paper-Guides"
+        />
+        <meta
+            property="og:description"
+            content="Access NEB, SEE, and A Levels past papers and study resources for grades 10, 11, and 12. Prepare with question generators, model papers, and comprehensive materials for NEB, SEE, AS Level, and A Level exams!"
+        />
+        <meta
+            property="og:image"
+            content="{{ url_for('static', filename='images/logo.svg') }}"
+        />
+        <meta name="author" content="Paper-Guides" />
+        <meta name="robots" content="index, follow" />
+
+        <link rel="icon" type="image/png" href="/static/images/logo.ico" />
         <link
             rel="stylesheet"
             href="{{ url_for('static', filename='styles.css') }}"
         />
 
-        <script src="{{ url_for('static', filename='utils.js')}}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
         <script
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=G-SZDFC8YDWK"
+            src="{{url_for('static', filename='darkmode.js')}}"
+            defer
         ></script>
-        <script>
+        <script src="{{ url_for('static', filename='utils.js')}}" defer></script>
+
+
+                <!-- Dynamically load analytics and Cloudflare Turnstile -->
+                <script>
+                    window.onload = function () {
+                        // Load Google Analytics
+                        let gaScript = document.createElement('script');
+                        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-SZDFC8YDWK';
+                        document.body.appendChild(gaScript);
+        
+                        gaScript.onload = function () {
+                            window.dataLayer = window.dataLayer || [];
+                            function gtag() {
+                                dataLayer.push(arguments);
+                            }
+                            gtag('js', new Date());
+                            gtag('config', 'G-SZDFC8YDWK');
+                        };
+        
+                        // Load Cloudflare Turnstile
+                        let cfScript = document.createElement('script');
+                        cfScript.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+                        cfScript.defer = true;
+                        document.body.appendChild(cfScript);
+                    };
+                </script>
+
+
+        <script defer>
             window.dataLayer = window.dataLayer || [];
             function gtag() {
                 dataLayer.push(arguments);
@@ -41,27 +75,9 @@
             gtag("config", "G-SZDFC8YDWK");
         </script>
 
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
     </head>
 
-    <style>
-        :root {
-            --rich-black: #0d1b2aff;
-            --plum: #92498fff;
-            --baby-powder: #fffffaff;
-            --picton-blue: #3eafe4ff;
-            --tickle-me-pink: #f08caeff;
-            --font-white: #ffffff;
-            --font-dark: #000000;
-            --nav-background: #fafcff;
-            --background: #e3f2fd;
-            --pink-highlight: #f25c6a;
-            --blue-highlight: #5d71e0;
-            --green-highlight: #3cb371;
-        }
-    </style>
     <body>
-
         <div class="cf-turnstile" data-sitekey="0x4AAAAAAA1LpisXytC6T07b"></div>
         <div class="navbar">
             <a href="{{ url_for('index')}}"
@@ -69,16 +85,19 @@
             >
             <div class="navlinks">
                 <a href="{{ url_for('getLevels') }}">Past Papers</a>
-                <a href="{{ url_for('modelQuestions') }}">Model Questions</a>
+                <a href="{{ url_for('modelQuestions') }}">Topical Papers</a>
                 <a href="{{ url_for('questionGenerator') }}"
                     >Question Generator</a
                 >
                 <a href="{{ url_for('submit') }}">Submit</a>
             </div>
             <div class="navright">
-                <a href="{{url_for('stats')}}"> <span class="blue-highlight">Statistics</span></a>
-                <a href="{{ url_for('about') }}"><span class="pink-highlight">About</span></a>
-
+                <a href="{{url_for('stats')}}">
+                    <span class="blue-highlight">Statistics</span></a
+                >
+                <a href="{{ url_for('about') }}"
+                    ><span class="pink-highlight">About</span></a
+                >
 
                 {%if not current_user.is_authenticated%}
                 <a href="{{url_for('login')}}">Login</a>
@@ -91,25 +110,25 @@
                 <label for="hamburger">&#9776;</label>
                 <div class="hamitems">
                     <a href="{{ url_for('getLevels') }}">Past Papers</a>
-                    <a href="{{ url_for('modelQuestions') }}"
-                        >Model Questions</a
-                    >
+                    <a href="{{ url_for('modelQuestions') }}">Topical Papers</a>
                     <a href="{{ url_for('questionGenerator') }}"
                         >Question Generator</a
                     >
                     <a href="{{ url_for('submit') }}">Submit</a>
 
-                <a href="{{url_for('stats')}}"> <span class="blue-highlight">Statistics</span></a>
+                    <a href="{{url_for('stats')}}">
+                        <span class="blue-highlight">Statistics</span></a
+                    >
 
                     <a href="{{ url_for('about') }}"
                         ><span class="pink-highlight">About</span></a
-                >
+                    >
 
-                {%if not current_user.is_authenticated%}
+                    {%if not current_user.is_authenticated%}
                     <a href="{{url_for('login')}}">Login</a>
-                {%else%}
+                    {%else%}
                     <a href="{{url_for('logout')}}">Log-Out</a>
-                {%endif%}
+                    {%endif%}
                 </div>
             </div>
         </div>
@@ -120,16 +139,78 @@
 
             {% block prompt %} {% endblock %} {% if
             request.path.startswith('/level') or
-            request.path.startswith('/subjects') %}
+            request.path.startswith('/subjects') or 
+            request.path.startswith('/topicals')
+            %}
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js" defer></script>
             <div class="promo-space">"Advertisement Space"</div>
+            
+            <head>
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007" crossorigin="anonymous"></script>
+            </head>
+
             {% endif %}
         </div>
 
         {% endblock %} {% endblock %}
-    </body>
 
-    {% if request.path.startswith('/question-gen') %}
-        <script src="{{ url_for('static', filename='image-renderer.js') }}"></script>
-   {% endif %}
-    <script src="{{ url_for('static', filename='pdf-image-renderer.js') }}"></script>
+        <button
+            style="
+                width: 50px;
+                height: 50px;
+                position: fixed;
+                z-index: 999999;
+                bottom: 20px;
+                right: 20px;
+                padding: 12px;
+                border: none;
+                border-radius: 50%;
+                background-color: var(--blue-highlight);
+                cursor: pointer;
+            "
+            id="theme-switch"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="currentColor"
+            >
+                <path
+                    d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"
+                />
+            </svg>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
+                fill="currentColor"
+            >
+                <path
+                    d="M480-280q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"
+                />
+            </svg>
+        </button>
+    </body>
+    <style>
+        #theme-switch {
+            color: #999999;
+        }
+        #theme-switch svg:last-child {
+            display: none;
+        }
+        .darkmode #theme-switch {
+            color: #eac452;
+        }
+        .darkmode #theme-switch svg:first-child {
+            display: none;
+        }
+        .darkmode #theme-switch svg:last-child {
+            display: block;
+        }
+    </style>
+
 </html>

@@ -1,37 +1,311 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block title %} Paper-Guides {% endblock %} {% block
+body %}
 
+<style>
 
-{% block title %}
-    Paper-Guides
-{% endblock %}
+    /* Hero Section Responsive Grid */
+    .hero-container {
+        display: flex;
+        min-height: 90dvh;
+        width: 100%;
+        padding: 20px;
+    }
 
+    .hero-container > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50%;
+    }
 
-{% block body %}
-    <div class="hero-container">
-        <div class="hero-left">
-            <div class="hero-slogan">
-                <h1>Prepare <span class="blue-highlight">Faster</span> Than Ever</h1>
-                <br>
-                <h3>
-                    Paper-<span class="blue-highlight">Guides</span> gives you easy access to Past-Papers and  Topical Questions along with a Question Generator to <span class="pink-highlight">prepare yourself faster than ever</span>.
-                </h3>
-                <br>
-                <H3>
-                    By the students for the students.
-                </H3>
-                <br>
-                 <button class="working">How it works?</button>
+    .hero-left {
+        transform: translate(0, -20dvh);
+    }
+    .hero-right-grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 20px;
+        align-items: center;
+    }
 
-            </div>
+    .hero-right-grid > div {
+        height: fit-content;
+        background: var(--baby-powder);
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+    .hero-right-grid > div > div {
+        margin: 4px;
+    }
 
+    .hero-right-grid > div > div > * {
+        margin: 4px;
+    }
+    .past-papers {
+        grid-area: 1 / 1 / 2 / 2;
+    }
+    .study-resources {
+        grid-area: 1 / 2 / 2 / 4;
+    }
+    .question-generator {
+        grid-area: 2 / 1 / 3 / 2;
+    }
+    .study-techniques {
+        grid-area: 2 / 2 / 3 / 3;
+    }
+    .topical-papers {
+        grid-area: 2 / 3 / 3 / 4;
+    }
+    .grid-item-description > button {
+        cursor: pointer;
+        width: 100%;
+        height: 4rem;
+        font-size: 1.5rem;
+        border: none;
+        color: var(--font-white);
+        border-radius: 8px;
+        background-color: var(--blue-highlight) !important;
+        transition: background-color 0.3s ease;
+    }
+
+    .grid-item-description > button:hover {
+        background-color: var(--picton-blue);
+    }
+
+    .hero-right-grid > div:hover {
+        transform: translateY(-5px);
+    }
+
+    .hero-right-grid img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        background-color: var(--background);
+        outline: var(--blue-highlight) 2px solid;
+    }
+
+    /* Hero Slogan Styling */
+    .hero-slogan {
+        width: 85%;
+    }
+
+    .hero-slogan > h1 {
+        font-size: 4rem;
+        line-height: 1.2;
+    }
+
+    .hero-slogan > h3 {
+        font-size: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    @media screen and (max-width: 1300px) {
+        .hero-container {
+            flex-direction: column;
+            min-height: auto;
+            padding: 0;
+        }
+
+        .hero-container > div {
+            width: 100%;
+        }
+
+        .hero-left {
+            transform: none;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .hero-slogan {
+            width: 90%;
+            text-align: center;
+        }
+
+        .hero-right {
+            width: 100%;
+            display: flex;
+        }
+
+        .hero-right-grid {
+            width: 80dvw;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .past-papers {
+            grid-area: 1 / 1 / 1 / 1;
+        }
+        .study-resources {
+            grid-area: 2 / 1 / 2 / -2;
+        }
+        .question-generator {
+            grid-area: 1 / 2 / 1 / 2;
+        }
+        .topical-papers {
+            grid-area: 1 / 3 / 1 / 3;
+        }
+        .study-techniques {
+            grid-area: 2 / 3 / 2 / 3;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        .hero-container {
+            flex-direction: column;
+            min-height: auto;
+            padding: 0;
+        }
+
+        .hero-container > div {
+            width: 100%;
+        }
+
+        .grid-image {
+            display: none !important;
+        }
+        .hero-left {
+            transform: none;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .hero-slogan {
+            width: 90%;
+            text-align: center;
+        }
+
+        .hero-right {
+            width: 100%;
+            display: flex;
+        }
+
+        .hero-right-grid {
+            width: 80dvw;
+            grid-template-columns: 1fr !important;
+            grid-template-rows: repeat(3, 0.2fr);
+            gap: 15px;
+            margin: 0px;
+            padding: 0px;
+        }
+        .past-papers {
+            grid-area: 1 / 1 / 1 / 1;
+        }
+        .question-generator {
+            grid-area: 2 / 1 / 2 / 1;
+        }
+        .topical-papers {
+            grid-area: 3 / 1 / 3 / 1;
+        }
+    }
+</style>
+
+<div class="hero-container">
+    <div class="hero-left">
+        <div class="hero-slogan">
+            <h1>
+                Prepare <span class="blue-highlight">Faster</span> Than Ever
+            </h1>
+            <h3>
+                Paper-<span class="blue-highlight">Guides</span> gives you easy
+                access to Past-Papers, Topical Questions along with a Question
+                Generator to
+                <span class="pink-highlight"
+                    >prepare yourself faster than ever</span
+                >.
+            </h3>
+            <h3>By the students for the students.</h3>
         </div>
+    </div>
 
-        <div class="hero-right">
-            <div class="image-container">
-                <div class="img1"></div>
-                <div class="img2"></div>
-                <div class="img3"></div>
+    <div class="hero-right">
+        <div class="hero-right-grid">
+            <div class="grid-item past-papers">
+                <div class="image-container">
+                    <img
+                        src="{{url_for('static', filename='images/compressed_past-papers.webp')}}"
+                        alt="Past Papers"
+                        loading="lazy"
+                    />
+                </div>
+                <div class="grid-item-description">
+                    <h3 class="blue-highlight">Exam Success Starts Here</h3>
+                    <p>
+                        Access past year papers to boost your exam preparation.
+                    </p>
+                    <button onclick="(location.href = '/levels')">
+                        Explore Past Papers
+                    </button>
+                </div>
+            </div>
+            <div class="grid-item study-resources grid-image">
+                <img
+                    src="{{url_for('static', filename='images/compressed_classroom.webp')}}"
+                    alt="Study Resources Collage"
+                    loading="lazy"
+                />
+            </div>
+            <div class="grid-item question-generator">
+                <div class="image-container">
+                    <img
+                        src="{{url_for('static', filename='images/compressed_question-generator.webp')}}"
+                        alt="Question Generator"
+                        loading="lazy"
+                    />
+                </div>
+                <div class="grid-item-description">
+                    <h3 class="blue-highlight">Smart Question Practice</h3>
+                    <p>
+                        Generate custom practice questions tailored to your
+                        needs.
+                    </p>
+                    <button onclick="(location.href = '/question-generator')">
+                        Start Generating
+                    </button>
+                </div>
+            </div>
+                <div class="grid-item study-techniques grid-image">
+                    <img
+                        src="{{url_for('static', filename='images/compressed_study.webp')}}"
+                        alt="Study Techniques Visualization"
+                        loading="lazy"
+                    />
+                </div>
+                <div class="grid-item topical-papers">
+                    <div class="image-container">
+                        <img
+                            src="{{url_for('static', filename='images/compressed_topicals.webp')}}"
+                            alt="Topical Papers"
+                            loading="lazy"
+                        />
+                    </div>
+                    <div class="grid-item-description">
+                        <h3 class="blue-highlight">Focused Topic Mastery</h3>
+                        <p>
+                            Dive deep with carefully curated topical practice
+                            papers.
+                        </p>
+                        <button onclick="(location.href = '/model-questions')">
+                            Discover Topical Papers
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-{% endblock %}
+    {% endblock %}
+</div>
