@@ -1,7 +1,10 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <script src="{{url_for('static', filename='darkmode.js')}}"></script>
+        <script
+            src="{{url_for('static', filename='darkmode.js')}}"
+            defer
+        ></script>
 
         <meta charset="UTF-8" />
         <title>{% block title %}base{% endblock %}</title>
@@ -142,10 +145,6 @@
             request.path.startswith('/subjects') or
             request.path.startswith('/topicals') %}
 
-            <script
-                src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"
-                defer
-            ></script>
             <div class="promo-space">"Advertisement Space"</div>
 
             <head>
