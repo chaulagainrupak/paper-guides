@@ -1,12 +1,10 @@
 <!doctype html>
 <html lang="en">
     <head>
-
         <script
             src="{{url_for('static', filename='darkmode.js')}}"
             defer
         ></script>
-        
 
         <meta charset="UTF-8" />
         <title>{% block title %}base{% endblock %}</title>
@@ -39,35 +37,37 @@
             href="{{ url_for('static', filename='styles.css') }}"
         />
 
+        <script
+            src="{{ url_for('static', filename='utils.js')}}"
+            defer
+        ></script>
 
-        <script src="{{ url_for('static', filename='utils.js')}}" defer></script>
+        <!-- Dynamically load analytics and Cloudflare Turnstile -->
+        <script>
+            window.onload = function () {
+                // Load Google Analytics
+                let gaScript = document.createElement("script");
+                gaScript.src =
+                    "https://www.googletagmanager.com/gtag/js?id=G-SZDFC8YDWK";
+                document.body.appendChild(gaScript);
 
+                gaScript.onload = function () {
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag() {
+                        dataLayer.push(arguments);
+                    }
+                    gtag("js", new Date());
+                    gtag("config", "G-SZDFC8YDWK");
+                };
 
-                <!-- Dynamically load analytics and Cloudflare Turnstile -->
-                <script>
-                    window.onload = function () {
-                        // Load Google Analytics
-                        let gaScript = document.createElement('script');
-                        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-SZDFC8YDWK';
-                        document.body.appendChild(gaScript);
-        
-                        gaScript.onload = function () {
-                            window.dataLayer = window.dataLayer || [];
-                            function gtag() {
-                                dataLayer.push(arguments);
-                            }
-                            gtag('js', new Date());
-                            gtag('config', 'G-SZDFC8YDWK');
-                        };
-        
-                        // Load Cloudflare Turnstile
-                        let cfScript = document.createElement('script');
-                        cfScript.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
-                        cfScript.defer = true;
-                        document.body.appendChild(cfScript);
-                    };
-                </script>
-
+                // Load Cloudflare Turnstile
+                let cfScript = document.createElement("script");
+                cfScript.src =
+                    "https://challenges.cloudflare.com/turnstile/v0/api.js";
+                cfScript.defer = true;
+                document.body.appendChild(cfScript);
+            };
+        </script>
 
         <script defer>
             window.dataLayer = window.dataLayer || [];
@@ -78,7 +78,6 @@
 
             gtag("config", "G-SZDFC8YDWK");
         </script>
-
     </head>
 
     <body>
@@ -143,15 +142,21 @@
 
             {% block prompt %} {% endblock %} {% if
             request.path.startswith('/level') or
-            request.path.startswith('/subjects') or 
-            request.path.startswith('/topicals')
-            %}
+            request.path.startswith('/subjects') or
+            request.path.startswith('/topicals') %}
 
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js" defer></script>
+            <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"
+                defer
+            ></script>
             <div class="promo-space">"Advertisement Space"</div>
-            
+
             <head>
-                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007" crossorigin="anonymous"></script>
+                <script
+                    async
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
+                    crossorigin="anonymous"
+                ></script>
             </head>
 
             {% endif %}
@@ -216,5 +221,4 @@
             display: block;
         }
     </style>
-
 </html>
