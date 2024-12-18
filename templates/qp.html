@@ -1,5 +1,9 @@
 {% extends 'base.html' %} {% block title %} Paper-Guides {% endblock %} {% block
 section %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
+<script src="{{ url_for('static', filename='pdf-image-renderer.js') }}"></script>
+
 <style>
     .btn {
         background: none;
@@ -114,6 +118,5 @@ section %}
     {%endif%}
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
-<script src="{{ url_for('static', filename='pdf-image-renderer.js') }}"></script>
+
 {% endblock %}

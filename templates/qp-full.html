@@ -1,9 +1,12 @@
 {% extends 'base.html' %} {% block title %} Paper-Guides {% endblock %} {% block
 body %}
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
+<script src="{{ url_for('static', filename='pdf-image-renderer.js') }}"></script>
+
+
 <div class="paper-pdf" data-compressed="{{ question }}">
     <object type="application/pdf" width="100%" height="600px"></object>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
-<script src="{{ url_for('static', filename='pdf-image-renderer.js') }}"></script>
+
 {%endblock%}

@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="en">
     <head>
+
+        <script
+            src="{{url_for('static', filename='darkmode.js')}}"
+            defer
+        ></script>
+        
+
         <meta charset="UTF-8" />
         <title>{% block title %}base{% endblock %}</title>
         <meta
@@ -32,10 +39,7 @@
             href="{{ url_for('static', filename='styles.css') }}"
         />
 
-        <script
-            src="{{url_for('static', filename='darkmode.js')}}"
-            defer
-        ></script>
+
         <script src="{{ url_for('static', filename='utils.js')}}" defer></script>
 
 
