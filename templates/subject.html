@@ -1,24 +1,29 @@
-{% extends 'base.html' %}
-
-{% block title %}
-    Subjects for {{ level }}
-{% endblock %}
-
-{% block section %}
-<div class="section-title" style="display: flex; justify-content: space-between;">
-    <h1>Choose The Subject for {{ level }}</h1>
-    <button onclick="goBack()" style="background: none; border: none; color: #5d71e0; font-size: 1.5rem; cursor: pointer;">← Back</button>
+{% extends 'base.html' %} {% block title %} Subjects for {{ level }} {% endblock
+%} {% block section %}
+<div
+  class="section-title"
+  style="display: flex; justify-content: space-between"
+>
+  <h1>Choose The Subject for {{ level }}</h1>
+  <button
+    onclick="goBack()"
+    style="
+      background: none;
+      border: none;
+      color: var(--blue-highlight);
+      font-size: 1.5rem;
+      cursor: pointer;
+    "
+  >
+    ← Back
+  </button>
 </div>
-
-    {% for board, boardData in config.items() %}
-        {% if level in boardData.levels %}
-            {% for subject in boardData.subjects %}
-                <a href="/subjects/{{ level }}/{{ subject.name}}">
-                    {{ subject.name }}
-                </a>
-            {% endfor %}
-        {% endif %}
-    {% endfor %}
-
-    <a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
+{% for board, boardData in config.items() %} {% if level in boardData.levels %}
+{% for subject in boardData.subjects|sort(attribute='name') %}
+<a href="/{% if mode | lower == 'topicals'%}topicals{%else%}subjects{%endif%}/{{ level }}/{{ subject.name}}"> {{ subject.name }} </a>
+{% endfor %} {% endif %} {% endfor %}
+<a href="/submit"
+  >Did not find the required paper?
+  <span class="blue-highlight">Submit-It</span></a
+>
 {% endblock %}

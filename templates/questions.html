@@ -8,11 +8,11 @@
 
 {% block section %}
 <div class="section-title" style="display: flex; justify-content: space-between;">
-    <h1>Choose The Question Paper</h1>
+    <h1>Choose The Paper For: <span class="blue-highlight">{{subject_name}}</span>, <span class="pink-highlight">Year: {{year}}</span></h1>
     <div style="display: flex; justify-content: space-between;">
-        <button onclick="goBack()" style="background: none; border: none; color: #5d71e0; font-size: 1.5rem; cursor: pointer; margin: 10px;">← Back</button>
-        <button onclick="getRandomQuestion()" 
-        style="background: none; border: none; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem; margin: 10px;" >
+        <button onclick="goBack()" style="background: none; border: none; color: var(--blue-highlight); font-size: 1.5rem; cursor: pointer; margin: 10px;">← Back</button>
+        <button onclick="getRandomQuestion()"
+        style=" background: transparent; border: none; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem; margin: 10px;" >
             <span style="font-size: 2rem;">🎲</span>
         </button>
     </div>
@@ -91,21 +91,21 @@
         .filter-btn {
             padding: 8px 16px;
         padding: 8px 16px;
-        border: 1px solid #5d71e0;
-        background: white;
-        color: #5d71e0;
+        border: 1px solid var(--blue-highlight);
+        background: transparent;
+        color: var(--blue-highlight);
         border-radius: 4px;
         cursor: pointer;
         transition: all 0.3s ease;
     }
 
     .filter-btn:hover {
-        background: #5d71e0;
+        background: var(--blue-highlight);
         color: white;
     }
 
     .filter-btn.active {
-        background: #5d71e0;
+        background: var(--blue-highlight);
         color: white;
     }
 

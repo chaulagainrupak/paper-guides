@@ -1,24 +1,34 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block title %} Paper-Guides {% endblock %} {% block
+section %}
 
-
-{% block title %}
-    Paper-Guides
-{% endblock %}
-
-
-{% block section %}
-
-<div class="section-title" style="display: flex; justify-content: space-between;">
-    <h1>Choose The Year</h1>
-    <button onclick="goBack()" style="background: none; border: none; color: #5d71e0; font-size: 1.5rem; cursor: pointer;">← Back</button>
+<div
+    class="section-title"
+    style="display: flex; justify-content: space-between"
+>
+    <h1>Choose The Year For: <span class="blue-highlight">{{subject_name}}</span></h1>
+    <button
+        onclick="goBack()"
+        style="
+            background: none;
+            border: none;
+            color: var(--blue-highlight);
+            font-size: 1.5rem;
+            cursor: pointer;
+        "
+    >
+        ← Back
+    </button>
 </div>
 
-    {%if years %}
-        {% for year in years%}
-            <a href="/subjects/{{level}}/{{subject_name}}/{{year}}" class="year-link">Year: {{year}}</a>
-        {%endfor%}
-        <a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
-    {%else%}
-    <h2>No Data Found!</h2>
-    {%endif%}
-{% endblock %}
+{%if years %} {% for year in years%}
+<a href="/subjects/{{level}}/{{subject_name}}/{{year}}" class="year-link"
+    >Year: {{year}}</a
+>
+{%endfor%}
+<a href="/submit"
+    >Did not find the required paper?
+    <span class="blue-highlight">Submit-It</span></a
+>
+{%else%}
+<h2>No Data Found!</h2>
+{%endif%} {% endblock %}

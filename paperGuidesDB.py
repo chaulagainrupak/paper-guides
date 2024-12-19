@@ -14,15 +14,13 @@ load_dotenv()
 from logHandler import getCustomLogger
 
 logger = getCustomLogger(__name__)
-
 dbPath = './instance/paper-guides-resources.db'
 
 def createDatabase():
     """
-    Safely creates and synchronizes the database schema.
-    - Ensures only one process accesses the schema update logic at a time.
+    Synchronizes the database schema with the defined schema.
     """
-    # Define table schemas
+    # Table schemas
     tableSchemas = {
         "papers": {
             "id": "INTEGER PRIMARY KEY",
@@ -69,8 +67,10 @@ def createDatabase():
             "uuid": "TEXT UNIQUE",
             "subject": "TEXT",
             "board": "TEXT",
+            "topic": "TEXT",
             "questionFile": "BLOB",
             "solutionFile": "BLOB",
+            "approved": "BOOLEAN DEFAULT 0",
             "submittedBy": "TEXT",
             "submittedFrom": "TEXT",
             "submitDate": "DATE",
@@ -84,78 +84,64 @@ def createDatabase():
             "rating": "INTEGER"
         }
     }
-    
-    # Lock file to prevent concurrent schema updates
+
     lockFile = "/tmp/db_lock"
-    if os.path.exists(lockFile):
-        logger.info("Database schema update already in progress.")
-        return
+    connection = None
 
     try:
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(dbPath), exist_ok=True)
+
         # Create lock file
-        open(lockFile, "w").close()
-        
-        # Connect to SQLite database
+        with open(lockFile, "w"):
+            pass
+
+        # Connect to database
         connection = sqlite3.connect(dbPath)
         db = connection.cursor()
 
-        # Get existing tables
-        existingTables = db.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
-        ).fetchall()
-        existingTables = [table[0] for table in existingTables]
+        # Fetch existing tables
+        db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+        existingTables = [table[0] for table in db.fetchall()]
 
-        # Drop tables no longer in schema
+        # Drop tables not in schema
         for table in existingTables:
             if table not in tableSchemas:
                 db.execute(f"DROP TABLE {table}")
-                logger.info(f"Dropped table: {table} (no longer in schema)")
+                logger.info(f"Dropped table: {table}")
 
-        # Create or update tables
+        # Sync each table in schema
         for tableName, schema in tableSchemas.items():
-            if tableName not in existingTables:
+            db.execute(f"PRAGMA table_info({tableName})")
+            existingColumns = {col[1]: col[2] for col in db.fetchall()}
+
+            if not existingColumns:
                 # Create table if it doesn't exist
-                columns = ", ".join(f"{colName} {colType}" for colName, colType in schema.items())
-                db.execute(f"CREATE TABLE IF NOT EXISTS {tableName} ({columns})")
-                logger.info(f"Created new table: {tableName}")
+                columnDefinitions = ", ".join(f"{colName} {colType}" for colName, colType in schema.items())
+                db.execute(f"CREATE TABLE {tableName} ({columnDefinitions})")
+                logger.info(f"Created table: {tableName}")
             else:
-                # Handle column modifications
-                existingColumns = db.execute(f"PRAGMA table_info({tableName})").fetchall()
-                existingColumnNames = [col[1] for col in existingColumns]
-                existingColumnTypes = {col[1]: col[2] for col in existingColumns}
-
-                # Create a temp table with the new schema
-                tempTableName = f"temp_{tableName}"
-                columns = ", ".join(f"{colName} {colType}" for colName, colType in schema.items())
-                db.execute(f"CREATE TABLE {tempTableName} ({columns})")
-
-                # Transfer data for common columns
-                commonColumns = [col for col in schema.keys() if col in existingColumnNames]
-                commonColumnsStr = ", ".join(commonColumns)
-                db.execute(
-                    f"INSERT INTO {tempTableName} ({commonColumnsStr}) SELECT {commonColumnsStr} FROM {tableName}"
-                )
-
-                # Drop old table and rename temp table
-                db.execute(f"DROP TABLE {tableName}")
-                db.execute(f"ALTER TABLE {tempTableName} RENAME TO {tableName}")
-
-                logger.info(f"Updated schema for table: {tableName}")
+                # Add missing columns
+                for colName, colType in schema.items():
+                    if colName not in existingColumns:
+                        db.execute(f"ALTER TABLE {tableName} ADD COLUMN {colName} {colType}")
+                        logger.info(f"Added column {colName} to {tableName}")
 
         # Commit changes
         connection.commit()
-        logger.info("Database schema update completed successfully.")
+        logger.info("Database schema synchronization completed successfully.")
 
     except sqlite3.Error as e:
         logger.error(f"SQLite error: {e}")
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
     finally:
-        # Remove lock file and close connection
+        # Clean up
         if os.path.exists(lockFile):
             os.remove(lockFile)
         if connection:
             connection.close()
+
 
 def insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile, user, ip):
     try:
@@ -227,7 +213,7 @@ def insertPaper(board: str, subject: str, year: str, level: str,
         logger.error(f"Error inserting paper into database: {e}")
         return False
 
-def insertTopical(board, subject, questionFile, solutionFile, user, ip):
+def insertTopical(board, subject, topic ,questionFile, solutionFile, user, ip):
     try:
         uuidStr = str(uuid.uuid4())
         connection = sqlite3.connect(dbPath)
@@ -241,13 +227,13 @@ def insertTopical(board, subject, questionFile, solutionFile, user, ip):
 
         db = connection.cursor()
         db.execute('''INSERT INTO topicals
-            (uuid, subject, board, questionFile, solutionFile, submittedBy, submittedFrom, submitDate)
-            VALUES (?, ?, ?, ?, ?, ?, , ?)''',
-            (uuidStr, subject, board, questionFile, solutionFile, user, ip, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            (uuid, subject, board, topic ,questionFile, solutionFile, submittedBy, submittedFrom, submitDate)
+            VALUES (?, ?, ?, ?, ? , ?, ?, ?, ?)''',
+            (uuidStr, subject, board, topic,questionFile, solutionFile, user, ip, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         connection.commit()
         connection.close()
         logger.info(f"Topical paper inserted successfully. UUID: {uuidStr}")
-        return True
+        return True, uuidStr
     except sqlite3.Error as e:
         logger.error(f"Error inserting topical paper into database: {e}")
         return False
@@ -334,6 +320,41 @@ def getQuestions(level, subject_name, year):
         # Close the connection
         connection.close()
 
+def getTopicalFiles(level, subject_name):
+    try:
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+
+        if level == 'A level' or level == 'AS level':
+            query = '''
+            SELECT uuid, topic
+            FROM topicals
+            WHERE subject = ?
+            AND approved = 1
+            '''
+            result = db.execute(query, (subject_name,)).fetchall()
+        else:
+            query = '''
+            SELECT uuid, topic
+            FROM topicals
+            WHERE level = ?
+            AND subject = ?
+            AND approved = 1
+            '''
+            result = db.execute(query, (level, subject_name)).fetchall()
+        # Check if results exist
+        if not result:
+            logger.warning(f"No topical data found for level {level}, subject {subject_name}")
+            return None
+        
+        return result
+    
+    except sqlite3.Error as e:
+        logger.error(f"An error occurred while rendering question: {e}")
+        return None
+    finally:
+        connection.close()
+               
 
 def renderQuestion(level, subject_name, year, component):
     try:
@@ -380,7 +401,20 @@ def renderQuestion(level, subject_name, year, component):
         connection.close()
 
 
+def renderTopcial(uuid):
+    try:
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
 
+        return db.execute("""
+                    SELECT questionFile, solutionFile, uuid, topic
+                    FROM topicals WHERE uuid = ? 
+                """, (uuid,)).fetchone()
+    except sqlite3.Error as e:
+        logger.error(f'Error while retriving topcial with uuid {uuid}: {e}')
+        return False
+    finally:
+        connection.close()
 def giveRating(user_id, question_UUID, rating):
     try:
         connection = sqlite3.connect(dbPath)
@@ -636,6 +670,25 @@ def get_unapproved_papers():
         if connection:
             connection.close()
 
+def get_unapproved_topicals():
+    try:
+        connection = sqlite3.connect(dbPath)
+        connection.row_factory = dict_factory
+        db = connection.cursor()
+
+        papers = db.execute('''
+            SELECT *
+            FROM topicals
+            WHERE approved = False
+        ''').fetchall()
+
+        return papers
+    except sqlite3.Error as e:
+        logger.error(f"Error fetching unapproved papers: {e}")
+        return []
+    finally:
+        if connection:
+            connection.close()
 def approve_question(username: str, uuid: str) -> bool:
     """Approve a question by UUID"""
     connection = None
@@ -724,6 +777,38 @@ def approve_paper(username : str,uuid: str) -> bool:
         if connection:
             connection.close()
 
+def approve_topical(username : str,uuid: str) -> bool:
+    connection = None
+    try:
+        logger.info(
+            f"Starting approval process for paper UUID: {uuid}",
+            extra={'http_request': True}
+        )
+        connection = sqlite3.connect(dbPath)
+
+        topical_data = get_topical(uuid)
+        if not topical_data:
+            logger.error(f"Topical {uuid} not found", extra={'http_request': True})
+            return False
+
+        # Update approval status
+        cursor = connection.cursor()
+        
+        cursor.execute('UPDATE topicals SET approved = True , approvedBy = ? , approvedOn = ? WHERE uuid = ?', (username, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), uuid))
+        connection.commit()
+
+        # Send webhook notification
+        send_to_discord("topical", topical_data)
+
+        return True
+    except sqlite3.Error as e:
+        logger.error(f"Error approving topical {uuid}: {e}",
+                    extra={'http_request': True})
+        return False
+    finally:
+        if connection:
+            connection.close()
+
 def delete_question(uuid: str) -> bool:
     """Delete a question by UUID"""
     try:
@@ -756,6 +841,21 @@ def delete_paper(uuid: str) -> bool:
         if connection:
             connection.close()
 
+def delete_topical(uuid: str) -> bool:
+    try:
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+
+        db.execute('DELETE FROM topicals WHERE uuid = ?', (uuid,))
+        connection.commit()
+        return True
+    except sqlite3.Error as e:
+        logger.error(f"Error deleting topical {uuid}: {e}")
+        return False
+    finally:
+        if connection:
+            connection.close()
+
 def get_question(uuid: str):
     """Get a single question by UUID"""
     try:
@@ -774,6 +874,7 @@ def get_question(uuid: str):
     finally:
         if connection:
             connection.close()
+
 def get_paper(uuid: str):
     """Get a single paper by UUID"""
     try:
@@ -792,6 +893,22 @@ def get_paper(uuid: str):
         if connection:
             connection.close()
 
+def get_topical(uuid: str):
+    try:
+        connection = sqlite3.connect(dbPath)
+        connection.row_factory = dict_factory
+        db = connection.cursor()
+
+        paper = db.execute('''
+            SELECT * FROM topicals WHERE uuid = ?
+        ''', (uuid,)).fetchone()
+        return paper
+    except sqlite3.Error as e:
+        logger.error(f"Error fetching paper {uuid}: {e}")
+        return None
+    finally:
+        if connection:
+            connection.close()
 
 # Discord web hook so the users are notified when a question is approved
 
@@ -855,6 +972,10 @@ def getStat(config):
                 "papers": {
                     "approved": 0,
                     "unapproved": 0
+                },
+                "topicals":{
+                    "approved": 0,
+                    "unapproved": 0
                 }
             },
             "byBoard": {}
@@ -902,7 +1023,9 @@ def getStat(config):
                                 "approved": 0,
                                 "unapproved": 0,
                                 "approvedPapers": 0,
-                                "unapprovedPapers": 0
+                                "unapprovedPapers": 0,
+                                "approvedTopicals": 0,
+                                "unapprovedTopicals": 0
                             }
                         
                         # Combine A and AS level counts for each subject
@@ -924,12 +1047,24 @@ def getStat(config):
                             ("A level", "AS level", "A Level", "AS Level", subjectName, False)
                         ).fetchone()[0]
 
+                        approved_topicals = db.execute(
+                            "SELECT COUNT(*) FROM topicals WHERE subject = ? AND approved = ?",
+                            (subjectName, True)
+                        ).fetchone()[0]
+
+                        unapproved_topicals = db.execute(
+                            "SELECT COUNT(*) FROM topicals WHERE subject = ? AND approved = ?",
+                            (subjectName, False)
+                        ).fetchone()[0]
                         boardStats["levels"][normalized_level]["subjects"][subjectName].update({
                             "approved": approved,
                             "unapproved": unapproved,
                             "approvedPapers": approved_papers,
-                            "unapprovedPapers": unapproved_papers
+                            "unapprovedPapers": unapproved_papers,
+                            "approvedTopicals": approved_topicals,
+                            "unapprovedTopicals": unapproved_topicals
                         })
+
                 else:
                     # Handle non-A-level statistics as before
                     boardStats["levels"][normalized_level]["approvedQuestions"] = db.execute(
@@ -975,7 +1110,12 @@ def getStat(config):
         stats["overall"]["papers"]["unapproved"] = db.execute(
             "SELECT COUNT(*) FROM papers WHERE approved = ?", (False,)
         ).fetchone()[0]
-
+        stats["overall"]["topicals"]["approved"] = db.execute(
+            "SELECT COUNT(*) FROM topicals WHERE approved = ?", (True,)
+        ).fetchone()[0]
+        stats["overall"]["topicals"]["unapproved"] = db.execute(
+            "SELECT COUNT(*) FROM topicals WHERE approved = ?", (False,)
+        ).fetchone()[0]
         connection.close()
         return stats
 

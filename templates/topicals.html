@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Paper-Guides
+{% endblock %}
+
+
+{% block section %}
+<div class="section-title" style="display: flex; justify-content: space-between;">
+    <h1>Choose The Topical Paper For: <span class="blue-highlight">{{subject_name}}</span></h1>
+    <div style="display: flex; justify-content: space-between;">
+        <button onclick="goBack()" style="background: none; border: none; color: var(--blue-highlight); font-size: 1.5rem; cursor: pointer; margin: 10px;">← Back</button>
+        <button onclick="getRandomQuestion()"
+        style=" background: transparent; border: none; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem; margin: 10px;" >
+            <span style="font-size: 2rem;">🎲</span>
+        </button>
+    </div>
+</div>
+<!-- <div class="filter-container" 
+    style="display: flex;
+    justify-content: space-evenly;"> -->
+
+    <!-- Filter Options -->
+    <!-- {% for topic in topics%}
+        <h1>{{topic}}</h1>
+    {%endfor%} -->
+    <!-- Clear Filters Button -->
+    <!-- <button onclick="filterPaper('clear')" class="clear-filter-btn">Clear All Filters</button>
+</div> -->
+{% if files == none %}
+<h1>No Data Found!</h1>
+{%else%}
+{% for file in files%}
+    <a href="{{subject_name}}/{{file[0]}}">Q.No {{loop.index}} Topical For: {{file[1]}}</a>
+{%endfor%}
+{%endif%}
+<a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
+
+    <style>
+        .filter-btn {
+            padding: 8px 16px;
+        padding: 8px 16px;
+        border: 1px solid var(--blue-highlight);
+        background: transparent;
+        color: var(--blue-highlight);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover {
+        background: var(--blue-highlight);
+        color: white;
+    }
+
+    .filter-btn.active {
+        background: var(--blue-highlight);
+        color: white;
+    }
+
+    .clear-filter-btn {
+        padding: 8px 16px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .clear-filter-btn:hover {
+        background: #c82333;
+    }
+
+
+  @media screen and (max-width: 1000px) {
+    .filter-container {
+      flex-wrap: wrap;
+    }
+  }
+    </style>
+{% endblock %}

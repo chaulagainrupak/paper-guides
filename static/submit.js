@@ -31,7 +31,8 @@ document.addEventListener("DOMContentLoaded", function () {
     subject: paperForm.querySelector('select[name="subject"]'),
     level: paperForm.querySelector('select[name="level"]'),
     component: paperForm.querySelector('select[name="component"]'),
-    paperType: paperForm.querySelector('select[name="paper_type"]')
+    paperType: paperForm.querySelector('select[name="paper_type"]'),
+    topic: paperForm.querySelector('select[name="topic"]'),
   };
 
   const config = JSON.parse(document.getElementById("config").textContent);
@@ -168,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
     populateSubjects(paperSelects.subject, selectedBoard);
     populateLevels(paperSelects.level, selectedBoard);
     populateComponents(paperSelects.component, selectedBoard);
-    
+    populateTopics(questionSelects.topic, paperSelects.subject.value, selectedBoard);
     if (selectedBoard === "A Levels") {
       sessionDiv.style.display = "block";
       levelDiv.style.display = "none";
@@ -176,7 +177,21 @@ document.addEventListener("DOMContentLoaded", function () {
       sessionDiv.style.display = "none";
       levelDiv.style.display = "block";
     }
+  });
 
+
+  paperSelects.paperType.addEventListener("change", function(){
+    if (this.value == 'topical'){
+      paperSelects.topic.parentElement.parentElement.style.display = 'block';
+    }else{
+      paperSelects.topic.parentElement.parentElement.style.display = 'none';
+    }
+  });
+
+
+  paperSelects.subject.addEventListener("change", function () {
+    const selectedBoard = paperSelects.board.value;
+    populateTopics(paperSelects.topic, this.value, selectedBoard);
   });
 
   // Initial population for both forms

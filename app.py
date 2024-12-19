@@ -63,7 +63,7 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    logger.info('Home page accessed' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Home page accessed IP: {getClientIp()}')
     return render_template('index.html')
 
 
@@ -75,38 +75,44 @@ allows papole that run wget / curl to spider the site easily and get the data
 Maybe in the future there will be a API endpoint to get the data or maybe even database dump torrent?
 
 This part may not require rewrites
+
+
+YK I realised that i can just do route(<mode>/) but I am in a bit of a *issue* here do I want to? 
+
+we can reduce a shit ton of lines but for the time frame I have untill 2025 (today is dec 08 24) so i just want to get topicals up and running 
+forgive me for this shit code.
 """
 
 @app.route('/levels')
 def getLevels():
-    logger.info('Levels page accessed' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Levels page accessed IP: {getClientIp()}')
     config = loadConfig(configPath)
-    return render_template('levels.html',config=config )
+    return render_template('levels.html',config=config, mode = "papers" )
 
 @app.route('/subjects/<level>')
 def getLevelSubjects(level):
-    logger.info(f'Subjects page accessed for level {level}' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Subjects page accessed for level {level} IP: {getClientIp()}')
     config = loadConfig(configPath)
-    return render_template('subject.html', config = config, level = level)
+    return render_template('subject.html', config = config, level = level, mode = "papers")
 
 
 @app.route('/subjects/<level>/<subject_name>')
 def getSubjectYears(level, subject_name):
-    logger.info(f'Years page accessed for level {level}, subject {subject_name}' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Years page accessed for level {level}, subject {subject_name} IP: {getClientIp()}')
     years = getYears(level,subject_name)
     return render_template('years.html', subject_name = subject_name, level = level, years = years)
 
 
 @app.route('/subjects/<level>/<subject_name>/<year>')
 def getSubjectQuestions(level ,subject_name, year):
-    logger.info(f'Questions page accessed for level {level}, subject {subject_name}, year {year}' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Questions page accessed for level {level}, subject {subject_name}, year {year} IP: {getClientIp()}')
     question_name = getQuestions(level, subject_name, year)
-    return render_template('questions.html', questions_name = question_name, year = year, config = config, level = level )
+    return render_template('questions.html', questions_name = question_name, subject_name = subject_name ,year = year, config = config, level = level )
 
 
 @app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
 def renderSubjectQuestion(level, subject_name, year, file_data):
-    logger.info(f'Question rendered for level {level}, subject {subject_name}, year {year}, file {file_data}' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Question rendered for level {level}, subject {subject_name}, year {year}, file {file_data} IP: {getClientIp()}')
 
     # Ensure `file_data` is properly decoded
     component = file_data.split(', ')[1]
@@ -114,11 +120,54 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
     question = renderQuestion(level, subject_name, full_year, component)
     return render_template('qp.html', question=question[0], solution= question[1], file_data=file_data, id=question[2], config=config)
 
+
+@app.route('/topicals')
+def modelQuestions():
+    logger.info(f'Topicals page accessed IP: {getClientIp()}')
+    config = loadConfig(configPath)
+    return render_template('levels.html',config=config, mode = "topicals" )
+
+@app.route('/topicals/<level>')
+def getLevelSubjectsForTopicals(level):
+    logger.info(f'Subjects page accessed for level {level} IP: {getClientIp()}')
+    config = loadConfig(configPath)
+    return render_template('subject.html', config = config, level = level, mode = "topicals")
+
+@app.route('/topicals/<level>/<subject_name>')
+def getTopicals(level, subject_name):
+    logger.info(f'Topicals page accessed for level {level}, subject {subject_name} IP: {getClientIp()}')
+    files = getTopicalFiles(level,subject_name)
+    config = loadConfig(configPath)
+
+    if level in ["A level", "AS level"]:
+        level = "A Levels"
+
+
+    subjects = config[level]["subjects"]
+
+    for subject in subjects:
+        if subject["name"] == subject_name:
+            topics = subject["topics"]
+            break
+
+    return render_template('topicals.html', subject_name = subject_name, level = level, topics = topics, files = files)
+
+@app.route('/topicals/<level>/<subject_name>/<uuid>')
+def renderTopical(level ,subject_name, uuid):
+    logger.info(f'Topical  page accessed for subject {subject_name}, uuid {uuid} IP: {getClientIp()}')
+
+    question = renderTopcial(uuid)
+    return render_template('qp.html', question=question[0], solution= question[1], file_data = f"Topical question paper for {subject_name} and topic: {question[3]}",  id=question[2], config=config)
+
 @app.route('/view-pdf/<type>/<uuid>')
 def viewPdf(type, uuid):
     logger.info(f'{type}: {uuid} rendered in full screen. IP: {getClientIp()}')
 
     paper = get_paper(uuid)
+
+    if paper == None:
+        paper = get_topical(uuid)
+        
     if type == "question":
         return render_template('qp-full.html', question = paper["questionFile"]), 200
     elif type == "solution":
@@ -130,7 +179,7 @@ def viewPdf(type, uuid):
 
 @app.route('/about')
 def about():
-    logger.info('About page accessed' + ' IP: ' + str(getClientIp()))
+    logger.info(f'About page accessed IP: {getClientIp()}')
     return render_template('about.html')
 
 
@@ -139,14 +188,14 @@ def about():
 
 @app.route('/question-generator')
 def questionGenerator():
-    logger.info('Question generator page accessed' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Question generator page accessed IP: {getClientIp()}')
     config = loadConfig(configPath)
     return render_template('question-generator.html', config = config)
 
 # This route displays the questions the uppper route genetated a diffrent page and route
 @app.route('/question-gen', methods=['POST', 'GET'])
 def questionGen():
-    logger.info('Question generation initiated' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Question generation initiated IP: {getClientIp()}')
     if request.method == 'POST':
         try:
             # Extract form data
@@ -177,7 +226,7 @@ def questionGen():
             rows = getQuestionsForGen(board, subject, level, topics, components, difficulties)
             return render_template('qpgen.html', rows=rows)
         except Exception as e:
-            logger.error(f'Error in question generation: {str(e)}' + ' IP: ' + str(getClientIp()))
+            logger.error(f'Error in question generation: {str(e)} IP: {getClientIp()}')
             return redirect(url_for('questionGenerator'))
     else:
         return redirect(url_for('questionGenerator'))
@@ -185,27 +234,9 @@ def questionGen():
 
 @app.route('/submit')
 def submit():
-    logger.info('Submit page accessed' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Submit page accessed IP: {getClientIp()}')
     config = loadConfig(configPath)
     return render_template('submit.html', config = config, year = int(datetime.now().year))
-
-
-@app.route('/model-questions')
-def modelQuestions():
-    logger.info('Model questions page accessed' + ' IP: ' + str(getClientIp()))
-    return render_template('model-questions.html')
-
-@app.route('/support')
-def support():
-    logger.info('Support page accessed' + ' IP: ' + str(getClientIp()))
-    return render_template('support.html')
-
-@app.route('/contact')
-def contact():
-    logger.info('Contact page accessed' + ' IP: ' + str(getClientIp()))
-    return render_template('contact.html')
-
-
 
 @app.route('/submitQuestion', methods=['POST'])
 @login_required
@@ -214,7 +245,7 @@ def submitQuestion():
     # Get the Turnstile token from the form submission
     turnstileToken = request.form.get("cf-turnstile-response")
     if not turnstileToken:
-        logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
+        logger.warning(f'Turnstile token missing IP: {getClientIp()}')
         return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
 
     # Verify the token with enhanced verification
@@ -231,7 +262,7 @@ def submitQuestion():
         return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
 
 
-    logger.info('Question submission initiated' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Question submission initiated IP: {getClientIp()}')
     board = request.form.get('board')
     subject = request.form.get('subject')
     topic = request.form.get('topic')
@@ -243,37 +274,40 @@ def submitQuestion():
 
 
     if insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile, current_user.username, getClientIp()):
-        logger.info('Question submitted successfully' + ' IP: ' + str(getClientIp()))
+        logger.info(f'Question submitted successfully IP: {getClientIp()}')
         return redirect(url_for('index'))
     else:
-        logger.error('Error occurred while submitting question' + ' IP: ' + str(getClientIp()))
+        logger.error(f'Error occurred while submitting question IP: {getClientIp()}')
         return "Error occurred while submitting question", 500
 
 @app.route('/submitPaper', methods=['POST'])
 @login_required
 def submitPaper():
 
-    # Get the Turnstile token from the form submission
-    turnstileToken = request.form.get("cf-turnstile-response")
-    if not turnstileToken:
-        logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
-        return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
+    isHeadless = request.headers.get('headless')
 
-    # Verify the token with enhanced verification
-    verificationResult = verifyTurnstile(turnstileToken)
+    if not isHeadless:
+        # Get the Turnstile token from the form submission
+        turnstileToken = request.form.get("cf-turnstile-response")
+        if not turnstileToken:
+            logger.warning(f'Turnstile token missing IP: {getClientIp()}')
+            return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
 
-    # Check verification success
-    if not verificationResult.get("success"):
-        logger.warning(
-            f'Failed Turnstile verification. '
-            f'Errors: {verificationResult.get("error-codes", [])} '
-            f'Attempts: {verificationResult.get("attempts", 1)}' +
-            ' IP: ' + str(getClientIp())
-        )
-        return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
+        # Verify the token with enhanced verification
+        verificationResult = verifyTurnstile(turnstileToken)
+
+        # Check verification success
+        if not verificationResult.get("success"):
+            logger.warning(
+                f'Failed Turnstile verification. '
+                f'Errors: {verificationResult.get("error-codes", [])} '
+                f'Attempts: {verificationResult.get("attempts", 1)}' +
+                ' IP: ' + str(getClientIp())
+            )
+            return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
 
 
-    logger.info('Paper submission initiated' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Paper submission initiated IP: {getClientIp()}')
     try:
         board = request.form.get('board')
         subject = request.form.get('subject')
@@ -284,9 +318,8 @@ def submitPaper():
         questionFile = request.files['questionFile'].read()
         solutionFile = request.files['solutionFile'].read()
         paper_type = request.form.get('paper_type')
+        topic = request.form.get('topic')
 
-        if not all([board, subject, level, component, questionFile, paper_type]):
-            raise ValueError("Missing required fields")
 
         # Format year with session for A Levels
         if board == "A Levels" and session:
@@ -306,31 +339,27 @@ def submitPaper():
                 raise ValueError("Year is required for yearly papers")
             result , uuid= insertPaper(board, subject, formatted_year, level, component, questionFile, solutionFile, current_user.username, getClientIp())
         elif paper_type == 'topical':
-            result = insertTopical(board, subject, questionFile, solutionFile, current_user.username, getClientIp())
+            result, uuidStr = insertTopical(board, subject, topic, questionFile, solutionFile, current_user.username, getClientIp())
         else:
             raise ValueError(f"Invalid paper type: {paper_type}")
 
         if result:
-            logger.info('Paper submitted successfully' + ' IP: ' + str(getClientIp()))
+            logger.info(f'Paper submitted successfully, Type: {paper_type} IP: {getClientIp()}')
+
+        if result and paper_type == 'yearly':
+            logger.info(f'Paper submitted successfully IP: {getClientIp()}')
             if current_user.role == 'admin':
                 if approvePaper(uuid)[1] == 400:
                     return redirect(f'admin/paper/{uuid}')
-            return redirect(url_for('index'))
-        else:
-            raise Exception("Insert operation failed")
+            return redirect(url_for('submit'))
+
     except Exception as e:
-        logger.error(f'Error in paper submission: {str(e)}' + ' IP: ' + str(getClientIp()))
+        logger.error(f'Error in paper submission: {str(e)} IP: {getClientIp()}')
         return f"Error occurred while submitting paper: {str(e)}", 500
 
-
-
-"""
-This functionality for the user login and authentication will be implemented later so this part of the code has been commented.
-
-This allows for more functionalities for uploading user submitted data and allowing users to post ratings for the questions.
-
-"""
-
+    finally:
+        if result:
+            return redirect(url_for('submit'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -339,24 +368,27 @@ def login():
 
     if request.method == 'POST':
 
-        # Get the Turnstile token from the form submission
-        turnstileToken = request.form.get("cf-turnstile-response")
-        if not turnstileToken:
-            logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
-            return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
+        isHeadless = request.headers.get('headless')
 
-        # Verify the token with enhanced verification
-        verificationResult = verifyTurnstile(turnstileToken)
+        if not isHeadless:
+            # Get the Turnstile token from the form submission
+            turnstileToken = request.form.get("cf-turnstile-response")
+            if not turnstileToken:
+                logger.warning(f'Turnstile token missing IP: {getClientIp()}')
+                return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
 
-        # Check verification success
-        if not verificationResult.get("success"):
-            logger.warning(
-                f'Failed Turnstile verification. '
-                f'Errors: {verificationResult.get("error-codes", [])} '
-                f'Attempts: {verificationResult.get("attempts", 1)}' +
-                ' IP: ' + str(getClientIp())
-            )
-            return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
+            # Verify the token with enhanced verification
+            verificationResult = verifyTurnstile(turnstileToken)
+
+            # Check verification success
+            if not verificationResult.get("success"):
+                logger.warning(
+                    f'Failed Turnstile verification. '
+                    f'Errors: {verificationResult.get("error-codes", [])} '
+                    f'Attempts: {verificationResult.get("attempts", 1)}' +
+                    ' IP: ' + str(getClientIp())
+                )
+                return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
 
         username_or_email = request.form.get('username')
         password = request.form.get('password')
@@ -370,11 +402,11 @@ def login():
         # Check if user exists and the password matches
         if user and check_password_hash(user.password, password):
             login_user(user)
-            logger.info(f'User {user.username} logged in' + ' IP: ' + str(getClientIp()))
+            logger.info(f'User {user.username} logged in IP: {getClientIp()}')
             next_page = request.args.get('next')
             return redirect(next_page or url_for('index'))
         else:
-            logger.warning(f'Failed login attempt for {username_or_email}' + ' IP: ' + str(getClientIp()))
+            logger.warning(f'Failed login attempt for {username_or_email} IP: {getClientIp()}')
             flash('Login unsuccessful. Please check your credentials.', 'danger')
 
     return render_template('login.html')
@@ -394,7 +426,7 @@ def signup():
         # Get the Turnstile token from the form submission
         turnstileToken = request.form.get("cf-turnstile-response")
         if not turnstileToken:
-            logger.warning('Turnstile token missing' + ' IP: ' + str(getClientIp()))
+            logger.warning(f'Turnstile token missing IP: {getClientIp()}')
             return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
 
         # Verify the token with enhanced verification
@@ -441,9 +473,9 @@ def profile():
 
     try:
         user = current_user
-        logger.info(f'User {user.username} accessed profile' + ' IP: ' + str(getClientIp()))
+        logger.info(f'User {user.username} accessed profile IP: {getClientIp()}')
     except Exception as e:
-        logger.error(f'Error in profile: {str(e)}' + ' IP: ' + str(getClientIp()))
+        logger.error(f'Error in profile: {str(e)} IP: {getClientIp()}')
     return render_template('profile.html')
 
 @app.route('/change-password', methods=['POST'])
@@ -460,17 +492,17 @@ def changePassword():
             current_user.password = hashed_password
             db.session.commit()
 
-            logger.info(f'User {current_user.username} changed password' + ' IP: ' + str(getClientIp()))
+            logger.info(f'User {current_user.username} changed password IP: {getClientIp()}')
 
             return redirect(url_for('logout'))
         else:
-            logger.warning(f'Failed to change password for user {current_user.username}' + ' IP: ' + str(getClientIp()))
+            logger.warning(f'Failed to change password for user {current_user.username} IP: {getClientIp()}')
             flash('Current password is incorrect.', 'error')
 
         return redirect(url_for('profile'))
 
     except Exception as e:
-        logger.error(f'Error in changing password: {str(e)}' + ' IP: ' + str(getClientIp()))
+        logger.error(f'Error in changing password: {str(e)} IP: {getClientIp()}')
         flash('An error occurred while changing password.', 'error')
         return redirect(url_for('profile'))
 
@@ -481,13 +513,13 @@ def changePassword():
 #     try:
 #         user = current_user.id
 #         if giveRating(user, question_UUID, rating):
-#             logger.info(f'User {user} rated question {question_UUID} with {rating}' + ' IP: ' + str(getClientIp()))
+#             logger.info(f'User {user} rated question {question_UUID} with {rating} IP: {getClientIp()}')
 #             return True
 #         else:
-#             logger.warning(f'Failed to rate question {question_UUID}' + ' IP: ' + str(getClientIp()))
+#             logger.warning(f'Failed to rate question {question_UUID} IP: {getClientIp()}')
 #             return False
 #     except Exception as e:
-#         logger.error(f'Error in rating: {str(e)}' + ' IP: ' + str(getClientIp()))
+#         logger.error(f'Error in rating: {str(e)} IP: {getClientIp()}')
 #         return False
 
 
@@ -504,31 +536,28 @@ def admin_dashboard():
     try:
         questions = get_unapproved_questions()
         papers = get_unapproved_papers()
+        topicals = get_unapproved_topicals()
 
         data = {
             "questions": [],
-            "papers": []
+            "papers": [],
+            "topicals": []
         }
 
         for question in questions:
             data["questions"].append({
-                "id": question["id"],
                 "uuid": question["uuid"],
-                "questionFileHash": getHash(question["questionFile"]),
-                "solutionFileHash": getHash(question["solutionFile"]),
-                "questionBlob": "none",
-                "solutionBlob": "none",
             })
 
         for paper in papers:
             data["papers"].append({
-                "id": paper["id"],
                 "uuid": paper["uuid"],
-                "questionFileHash": getHash(paper["questionFile"]),
-                "solutionFileHash": getHash(paper["solutionFile"]),
-                "questionBlob": "none",
-                "solutionBlob": "none",
             })
+
+        for topical in topicals:
+            data["topicals"].append({
+                "id": topical["uuid"],
+        })
 
         logger.info('Data sent to the admin page successfully')
         return render_template('admin.html', data=data)
@@ -560,21 +589,34 @@ def adminShowPaper(uuid):
     except Exception as e:
         logger.warning("Error retrieving paper: " + str(e))
 
+@app.route('/admin/topical/<uuid>', methods=['GET'])
+def adminShowTopical(uuid):
+    if current_user.role != 'admin':
+        logger.warning(f'Unauthorized access attempt by user: {current_user.username} from IP: ', getClientIp())
+        return redirect(url_for('index'))
+    try:
+        logger.info(f'Topical page addessed for paper {uuid} By: {current_user.username} with role: {current_user.role} IP: ' + str(getClientIp()))
+        return render_template('admin-topical.html', topical=get_topical(uuid))
+    except Exception as e:
+        logger.warning("Error retrieving paper: " + str(e))
+
 @app.route('/getNewData', methods=["POST"])
 @login_required
 def getNewData():
     if current_user.role != 'admin':
-        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
+        logger.warning(f'Admin page / endpoint is trying to be accessed by a non-admin IP: {getClientIp()}')
         logger.warning(f'Unauthorized access attempt by user: {current_user.username}')
         return redirect(url_for('index'))
 
     try:
             questions = get_unapproved_questions()
             papers = get_unapproved_papers()
+            topicals = get_unapproved_topicals()
 
             data = {
                 "questions": [],
-                "papers": []
+                "papers": [],
+                "topicals": []
             }
 
             for question in questions:
@@ -604,6 +646,15 @@ def getNewData():
                     "submittedOn": paper["submitDate"]
                 })
 
+            for topical in topicals:
+                data["topicals"].append({
+                    "id": topical["id"],
+                    "uuid": topical["uuid"],
+                    "subject": topical["subject"],
+                    "submittedBy": topical["submittedBy"],
+                    "submittedOn": topical["submitDate"]
+                })
+
             return jsonify(data)
     except Exception as e:
         logger.error(f'Error processing getNewData: {e}')
@@ -613,7 +664,7 @@ def getNewData():
 @login_required
 def approve(uuid):
     if current_user.role != 'admin':
-        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
+        logger.warning(f'Admin page / endpoint is trying to be accessed by a non-admin IP: {getClientIp()}')
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
@@ -639,19 +690,38 @@ def approvePaper(uuid):
         logger.error(f"Paper {uuid} was unable to be approved by {current_user.username}")
         return f"Paper {uuid} was unable to be approved", 400
 
+@app.route('/approve_topical/<uuid>', methods=["GET", "POST"])
+@login_required
+def approveTopical(uuid):
+    if current_user.role != 'admin':
+        logger.warning(
+            f"Admin page / endpoint is trying to be accessed by a non-admin user. IP: {getClientIp()}"
+        )
+        return redirect(url_for('index'))
+
+    if approve_topical(current_user.username, uuid):
+        logger.info(f"Topcial {uuid} was approved by {current_user.username}")
+        # Returning plain text for success with a 200 status
+        return f"Topcial {uuid} was approved by {current_user.username}", 200
+    else:
+        logger.error(f"Topcial {uuid} was unable to be approved by {current_user.username}")
+        return f"Topcial {uuid} was unable to be approved", 400
 
 
 @app.route('/delete_question/<uuid>', methods=["POST"])
 @login_required
 def deleteQuestion(uuid):
     if current_user.role != 'admin':
-        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
+        logger.warning(f'Admin page / endpoint is trying to be accessed by a non-admin IP: {getClientIp()}')
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
+    logger.info(f"Deletion process started for question with UUID: {uuid}")
     if delete_question(uuid):
+        logger.info(f"Question successfully delete with UUID: {uuid}")    
         return jsonify({"success": "Your request was processed successfully"}), 200
     else:
+        logger.info(f"Question deletion failed with UUID: {uuid}")    
         return jsonify({"error": "Your request was not processed successfully"}), 304
 
 
@@ -659,13 +729,32 @@ def deleteQuestion(uuid):
 @login_required
 def deletePaper(uuid):
     if current_user.role != 'admin':
-        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
+        logger.warning(f'Admin page / endpoint is trying to be accessed by a non-admin IP: {getClientIp()}')
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
+    logger.info(f"Deletion process started for paper with UUID: {uuid}")
     if delete_paper(uuid):
+        logger.info(f"Paper successfully delete with UUID: {uuid}")    
         return jsonify({"success": "Your request was processed successfully"}), 200
     else:
+        logger.info(f"Paper deletion failed with UUID: {uuid}")    
+        return jsonify({"error": "Your request was not processed successfully"}), 304
+
+@app.route('/delete_topical/<uuid>', methods=["POST"])
+@login_required
+def deleteTopical(uuid):
+    if current_user.role != 'admin':
+        logger.warning(f'Admin page / endpoint is trying to be accessed by a non-admin IP: {getClientIp()}')
+        flash('Access denied. Administrator privileges required.', 'error')
+        return redirect(url_for('index'))
+
+    logger.info(f"Deletion process started for topical with UUID: {uuid}")
+    if delete_topical(uuid):
+        logger.info(f"Topical successfully delete with UUID: {uuid}")    
+        return jsonify({"success": "Your request was processed successfully"}), 200
+    else:
+        logger.info(f"Topical deletion failed with UUID: {uuid}")    
         return jsonify({"error": "Your request was not processed successfully"}), 304
 
 # Temporary solution man
@@ -673,7 +762,7 @@ def deletePaper(uuid):
 @app.route('/admin/give_admin/<username>', methods=['POST'])
 def give_admin(username):
     if current_user.role != 'admin':
-        logger.warning('Admin page / endpoint is trying to be accessed by a non-admin' + ' IP: ' + str(getClientIp()))
+        logger.warning(f'Admin page / endpoint is trying to be accessed by a non-admin IP: {getClientIp()}')
         flash('Access denied. Administrator privileges required.', 'error')
         return redirect(url_for('index'))
 
@@ -700,23 +789,28 @@ def b64encode_filter(s):
 
 @app.route('/robots.txt')
 def robotsTxt():
-    logger.info('robots.txt accessed from' + ' IP: ' + str(getClientIp()))
+    logger.info(f'robots.txt accessed from IP: {getClientIp()}')
     return send_from_directory(app.static_folder, 'robots.txt')
 
 @app.route('/stats')
 def stats():
     statsData = getStat(config)
-    logger.info('Stats page accessed' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Stats page accessed IP: {getClientIp()}')
     return render_template('stats-page.html', statsData=statsData)
 
 @app.route('/sitemap.xml')
 def sitemap():
-    logger.info(f'Sitemap accessed' + ' IP: ' + str(getClientIp()))
+    logger.info(f'Sitemap accessed IP: {getClientIp()}')
     return send_from_directory(os.path.expanduser('~/paper-guides/static'), 'sitemap.xml', mimetype='application/xml'), 200
+
+@app.route('/ads.txt')
+def adsTxt():
+    logger.info(f'ads.txt accessed IP: {getClientIp()}')
+    return send_from_directory(os.path.expanduser('~/paper-guides/static'), 'ads.txt', mimetype='text/plain'), 200
 
 @app.errorhandler(404)
 def page_not_found(e):
-    logger.warning(f'404 Not Found error' + ' IP: ' + str(getClientIp()))
+    logger.warning(f"404 Not Found | URL: {request.url} | IP: {getClientIp()}")
     return render_template('404.html'), 404
 
 # Define a reusable function to get the client's IP address

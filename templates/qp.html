@@ -1,5 +1,18 @@
 {% extends 'base.html' %} {% block title %} Paper-Guides {% endblock %} {% block
 section %}
+
+<head>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"
+        defer
+    ></script>
+
+    <script
+        src="{{ url_for('static', filename='pdf-image-renderer.js') }}"
+        defer
+    ></script>
+</head>
+
 <style>
     .btn {
         background: none;
@@ -110,7 +123,7 @@ section %}
         </button>
     </div>
 
-    <script src="{{ url_for('static', filename='admin.js') }}"></script>
+    <script src="{{ url_for('static', filename='admin.js') }}" defer></script>
     {%endif%}
 </div>
 
