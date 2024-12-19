@@ -3,6 +3,16 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}base{% endblock %}</title>
+
+        <script>
+            window.onload = function() {
+                let darkmode = localStorage.getItem("darkmode");
+                if (darkmode === "active") {
+                    document.body.classList.add("darkmode");
+                }
+            }
+        </script>
+        
         <meta
             name="description"
             content="Download free NEB and A Levels past papers for Grades 10, 11, and 12. Access SEE and A Level AS and A2 exam preparation materials, question banks, model papers, study guides, +2 resources, and question generators. Explore our comprehensive library of academic resources for NEB, SEE, and A Levels. Learn smarter with Paper-Guides!"
@@ -31,6 +41,11 @@
             rel="stylesheet"
             href="{{ url_for('static', filename='styles.css') }}"
         />
+
+        <script
+            src="{{ url_for('static', filename='darkmode.js')}}"
+            defer
+        ></script>
 
         <script
             src="{{ url_for('static', filename='utils.js')}}"
