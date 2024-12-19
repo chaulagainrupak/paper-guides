@@ -1,16 +1,6 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <script>
-            // Check the user's dark mode preference and apply it immediately
-            const darkmode = localStorage.getItem("darkmode");
-            if (darkmode === "active") {
-                document.documentElement.classList.add("darkmode"); // Apply the dark mode class early
-            }
-        </script>
-
-        
-
         <meta charset="UTF-8" />
         <title>{% block title %}base{% endblock %}</title>
         <meta
@@ -204,8 +194,8 @@
                 />
             </svg>
         </button>
-        <script src="{{url_for('static', filename='darkmode.js')}}" defer></script>
     </body>
+    <script src="{{url_for('static', filename='darkmode.js')}}" defer></script>
     <style>
         #theme-switch svg:last-child {
             display: none;
