@@ -36,6 +36,10 @@ function getRandomQuestion() {
 function showSolution(button) {
   const questionContainer = document.querySelector(".question-pdf");
   const solutionContainer = document.querySelector(".solution-pdf");
+
+  const downloadQuestion = document.querySelector(".download-question");
+  const downloadSolution = document.querySelector(".download-solution");
+  
   const paperTitle = document.querySelector(".paper-title");
 
   const questionFull = document.querySelector(".question-full");
@@ -43,7 +47,11 @@ function showSolution(button) {
 
   if (solutionContainer.style.display === "none") {
     questionContainer.style.display = "none";
+    downloadQuestion.style.display = "none"
+
     solutionContainer.style.display = "block";
+    downloadSolution.style.display = "block"
+
     button.setAttribute("style", "background-color: #F25C6A;");
     button.innerText = "Hide Solution";
     questionFull.style.display = "none";
@@ -54,7 +62,11 @@ function showSolution(button) {
     );
   } else {
     questionContainer.style.display = "block";
+    downloadQuestion.style.display = "block"
+
     solutionContainer.style.display = "none";
+    downloadSolution.style.display = "none"
+
     button.setAttribute("style", "background-color:#5d71e0;");
     button.innerText = "Show Solution";
     questionFull.style.display = "block";
