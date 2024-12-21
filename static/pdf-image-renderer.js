@@ -104,20 +104,28 @@ async function renderPDFElement(element, base64Data) {
     object.height = "100%";
     object.data = pdfDataUrl;
 
-    const questionFull = document.querySelector(".question-full");
-    const solutionFull = document.querySelector(".solution-full");
+// Get the download buttons
+const downloadQuestion = document.querySelector(".download-question");
+const downloadSolution = document.querySelector(".download-solution");
 
-    // if (element.classList.contains("question-pdf")) {
-    //   questionFull.setAttribute(
-    //     "onclick",
-    //     `window.open('${pdfDataUrl}', '_blank')`,
-    //   );
-    // } else if (element.classList.contains("solution-pdf")) {
-    //   solutionFull.setAttribute(
-    //     "onclick",
-    //     `window.open('${pdfDataUrl}', '_blank')`,
-    //   );
-    // }
+// Assuming `pdfDataUrl` is available in your scope
+
+// Check if it's the question PDF
+if (downloadQuestion && element.classList.contains("question-pdf")) {
+  downloadQuestion.setAttribute(
+    "onclick",
+    `downloadFile("${pdfDataUrl}", "question.pdf");`  // Pass pdfDataUrl as a string
+  );
+}
+
+// Check if it's the solution PDF
+if (downloadSolution && element.classList.contains("solution-pdf")) {
+  downloadSolution.setAttribute(
+    "onclick",
+    `downloadFile("${pdfDataUrl}", "solution.pdf");`  // Pass pdfDataUrl as a string
+  );
+}
+
 
     // Add fallback handling
     object.onerror = async () => {
@@ -301,6 +309,15 @@ document.addEventListener("DOMContentLoaded", () => {
     renderPDFElement(element, base64Data);
   });
 });
+
+// downloadFile function
+function downloadFile(dataUrl, filename) {
+  const anchor = document.createElement("a");
+  anchor.href = dataUrl;
+  anchor.download = filename;
+  anchor.click();  // Trigger the download
+  anchor.remove(); // Clean up
+}
 
 // Utility function for base64 handling
 function cleanBase64(str) {

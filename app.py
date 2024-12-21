@@ -116,7 +116,14 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
 
     # Ensure `file_data` is properly decoded
     component = file_data.split(', ')[1]
-    full_year = file_data.split('Year: ')[1].split(' question')[0]
+    
+    print(file_data.split('Year: ')[1][:4])
+    if "question" in file_data:
+        full_year = file_data.split('Year: ')[1].split(' question')[0]
+    elif "mark" in file_data:
+        full_year = file_data.split('Year: ')[1].split(' mark')[0]
+    else:
+        return render_template('404.html'), 404
     question = renderQuestion(level, subject_name, full_year, component)
     return render_template('qp.html', question=question[0], solution= question[1], file_data=file_data, id=question[2], config=config)
 

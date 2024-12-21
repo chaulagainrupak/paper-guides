@@ -95,7 +95,7 @@ body {
 .content-wrapper {
     display: flex;
     justify-content: flex-start;
-    padding-top: 5rem; /* Adjust based on your navbar height */
+    padding-top: 5rem; 
 }
 
 /*
@@ -142,7 +142,7 @@ This is for the links for the link sections
     color: var(--font-color);
     text-decoration: none;
     transition: all 0.3s ease;
-    margin: 1rem 0;
+    margin: 8px 0;
     position: relative; /* For positioning the highlight bar */
     overflow: hidden; /* To hide the overflowing part of the highlight bar */
 }

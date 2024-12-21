@@ -1,10 +1,8 @@
 {% extends 'base.html' %}
 
-
 {% block title %}
     Paper-Guides
 {% endblock %}
-
 
 {% block section %}
 <div class="section-title" style="display: flex; justify-content: space-between;">
@@ -33,63 +31,36 @@
         {% endfor %}
     {% endif %}
 
-
     <!-- Clear Filters Button -->
     <button onclick="filterPaper('clear')" class="clear-filter-btn">Clear All Filters</button>
 </div>
-<!-- February/March Category -->
-{% set febMarchQuestions = [] %}
-{% for question in questions_name %}
-    {% if "Feb / Mar" in question %}
-        {% set _ = febMarchQuestions.append(question) %}
-    {% endif %}
-{% endfor %}
-{% if febMarchQuestions %}
-    <h2 style="font-size: 2rem; text-decoration: underline; margin-top: 20px;">• Feb/March</h2>
-    <div class="question-group">
-        {% for question in febMarchQuestions %}
-            <a href="{{ year }}/{{ question }}" class="question-link">{{ question }}</a>
-        {% endfor %}
-    </div>
-{% endif %}
 
-<!-- May/June Category -->
-{% set mayJuneQuestions = [] %}
-{% for question in questions_name %}
-    {% if "May / June" in question %}
-        {% set _ = mayJuneQuestions.append(question) %}
+<!-- Question Groups -->
+{% for category, label in [("Feb / Mar", "Feb/March"), ("May / June", "May/June"), ("Oct / Nov", "Oct/Nov")] %}
+    {% set categoryQuestions = [] %}
+    {% for question in questions_name %}
+        {% if category in question %}
+            {% set _ = categoryQuestions.append(question) %}
+        {% endif %}
+    {% endfor %}
+    {% if categoryQuestions %}
+        <h2 style="font-size: 2rem; text-decoration: underline; margin-top: 20px;">• {{ label }}</h2>
+        <div class="question-group">
+            {% for question in categoryQuestions %}
+            <div class="question-container">
+                <a href="{{ year }}/{{ question }}" class="question-link">{{ question }}</a>
+                <a href="{{ year }}/{{ question.replace('question paper', 'mark scheme') }}" 
+                   class="mark-scheme-link">Mark Scheme</a>
+            </div>
+            {% endfor %}
+        </div>
     {% endif %}
 {% endfor %}
-{% if mayJuneQuestions %}
-    <h2 style="font-size: 2rem; text-decoration: underline; margin-top: 20px;">• May/June</h2>
-    <div class="question-group">
-        {% for question in mayJuneQuestions %}
-            <a href="{{ year }}/{{ question }}" class="question-link">{{ question }}</a>
-        {% endfor %}
-    </div>
-{% endif %}
-
-<!-- October/November Category -->
-{% set octNovQuestions = [] %}
-{% for question in questions_name %}
-    {% if "Oct / Nov" in question %}
-        {% set _ = octNovQuestions.append(question) %}
-    {% endif %}
-{% endfor %}
-{% if octNovQuestions %}
-    <h2 style="font-size: 2rem; text-decoration: underline; margin-top: 20px;">• Oct/Nov</h2>
-    <div class="question-group">
-        {% for question in octNovQuestions %}
-            <a href="{{ year }}/{{ question }}" class="question-link">{{ question }}</a>
-        {% endfor %}
-    </div>
-{% endif %}
 
 <a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
 
-    <style>
-        .filter-btn {
-            padding: 8px 16px;
+<style>
+    .filter-btn {
         padding: 8px 16px;
         border: 1px solid var(--blue-highlight);
         background: transparent;
@@ -123,11 +94,31 @@
         background: #c82333;
     }
 
-
-  @media screen and (max-width: 1000px) {
-    .filter-container {
-      flex-wrap: wrap;
+    .question-container {
+        display: flex;
+        gap: 10px;
+        align-items: center;
     }
-  }
-    </style>
+
+    .question-link {
+        flex: 1;
+        text-decoration: none;
+        color: var(--blue-highlight);
+    }
+
+    .mark-scheme-link {
+        background: #dc3545 !important;
+        color: white !important;
+    }
+
+    .mark-scheme-link:hover {
+        background: #c82333;
+    }
+
+    @media screen and (max-width: 1000px) {
+        .filter-container {
+            flex-wrap: wrap;
+        }
+    }
+</style>
 {% endblock %}

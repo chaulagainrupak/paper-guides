@@ -11,6 +11,17 @@ section %}
         src="{{ url_for('static', filename='pdf-image-renderer.js') }}"
         defer
     ></script>
+
+    <script>
+        window.onload = function (){
+            
+            toggle = document.querySelector(".solution-toggle");
+            toggle.removeAttribute("disabled");
+            if (location.href.includes("mark%20scheme")){
+                    toggle.click();
+            }
+        }
+    </script>
 </head>
 
 <style>
@@ -64,13 +75,39 @@ section %}
     </div>
 
     <div class="tool-bar" style="display: flex; justify-content: space-between">
+    
+        <div style="
+            display: flex;
+            align-content: center;
+            gap: 4px;
+            ">
+        
+        
         <button
             onclick="openFullscreen('{{id}}', 'question')"
             class="btn question-full"
-            style="background-color: #3cb371; text-decoration: none"
+            style="background-color: #3cb371; 
+            text-decoration: none"
         >
             View question in fullscreen
         </button>
+
+
+        <button class="download-question"
+            style="
+            border-radius: 8px;
+            border: none;
+            width: 50px;
+            height: auto;
+            background-color: var(--blue-highlight);
+            cursor: pointer;
+            "
+            onclick=""
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>
+
+        </button>
+
         <button
             onclick="openFullscreen('{{id}}', 'solution')"
             class="btn solution-full"
@@ -79,16 +116,39 @@ section %}
                 text-decoration: none;
                 display: none;
             "
-        >
+            >
             View solution in fullscreen
         </button>
-        <button
-            onclick="showSolution(this)"
-            class="btn"
-            style="background-color: #5d71e0; border: none"
-        >
-            Show Solution
+
+
+        <button class="download-solution"
+            style="
+            display: none;
+            border-radius: 8px;
+            border: none;
+            width: 50px;
+            height: auto;
+            background-color: var(--pink-highlight);
+            cursor: pointer;
+            "
+            
+            onclick=""
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>
         </button>
+        </div>
+
+        <div>
+            <button
+                onclick="showSolution(this)"
+                class="btn solution-toggle"
+                style="background-color: #5d71e0; border: none"
+                disabled
+            >
+                Show Solution
+            </button> 
+        </div>
+
     </div>
     <div class="pdf-container">
         <div class="paper-pdf question-pdf" data-compressed="{{ question }}">
