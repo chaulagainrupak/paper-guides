@@ -76,7 +76,18 @@ def generate_sitemap(website_url):
 
 if __name__ == '__main__':
     # Configuration
-    websiteUrl = 'https://paperguides.xyz'
-    
+
+    print("\nPress [1] for .xyz")
+    print("\nPress [2] for .org")
+
+    option = int(input("\nOption: "))
+
+    if option == 1:
+        websiteUrl = 'https://paperguides.xyz'
+    elif option == 2:
+        websiteUrl = 'https://paperguides.org'
+    else:
+        print("Invalid option exiting...")
+        quit()
     # Generate sitemap
     print(generate_sitemap(websiteUrl))
