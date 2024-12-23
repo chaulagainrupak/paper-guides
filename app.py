@@ -818,7 +818,7 @@ def adsTxt():
 @app.errorhandler(404)
 def page_not_found(e):
 
-    if ".php" in request.url:
+    if ".php" in request.url.lower():
         logger.warning(f"Stupid wordpress scanner. Eat dirt | URL: {request.url} | IP: {getClientIp()}")
         return redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ") 
         
