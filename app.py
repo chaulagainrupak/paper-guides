@@ -13,7 +13,6 @@ import subprocess
 import random
 import time
 
-# is git working fine?
 # We are importing all the required functions from the following files inorder to make a huge app file?
 
 # Not the best way to put everything in one single file but, whaterver
