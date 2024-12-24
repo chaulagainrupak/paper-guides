@@ -99,7 +99,7 @@ function filterPaper(f, button) {
   // Handle the "clear" case
   if (filterValue === "clear") {
     questionLinks.forEach((link) => {
-      link.setAttribute("style", "display: block;");
+      link.parentElement.setAttribute("style", "display: flex;");
     });
     return;
   }
@@ -114,12 +114,12 @@ function filterPaper(f, button) {
       const pattern = new RegExp(`^${filterValue}\\d$`);
 
       if (pattern.test(paperNumber)) {
-        link.style.display = "block";
+        link.parentElement.style.display = "flex";
       } else {
-        link.style.display = "none";
+        link.parentElement.style.display = "none";
       }
     } else {
-      link.style.display = "none";
+      link.parentElement.style.display = "none";
     }
   });
 }

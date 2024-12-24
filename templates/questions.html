@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Paper-Guides
+    Paper-Guides: {{subject_name}}, {{year}}'s {{questions}}
 {% endblock %}
 
 {% block section %}
@@ -47,7 +47,7 @@
         <h2 style="font-size: 2rem; text-decoration: underline; margin-top: 20px;">• {{ label }}</h2>
         <div class="question-group">
             {% for question in categoryQuestions %}
-            <div class="question-container">
+            <div class="question-container" data="{{question}}">
                 <a href="{{ year }}/{{ question }}" class="question-link">{{ question }}</a>
                 <a href="{{ year }}/{{ question.replace('question paper', 'mark scheme') }}" 
                    class="mark-scheme-link">Mark Scheme</a>
