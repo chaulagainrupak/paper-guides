@@ -165,8 +165,8 @@ cython_debug/
 .instance/*
 
 .log 
-log 
-.log/*
+logs 
+.logs/*
 *.zip
 
 .vscode
