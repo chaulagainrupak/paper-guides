@@ -29,7 +29,6 @@ load_dotenv('.env')
 
 app = Flask(__name__)
 
-socketio = SocketIO(app)
 
 # Replace hardcoded values with environment variables
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
