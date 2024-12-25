@@ -6,7 +6,6 @@ from flask import Flask, render_template, redirect, url_for, flash, request, jso
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_socketio import SocketIO
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
@@ -794,50 +793,6 @@ def give_admin(username):
     except Exception as e:
         logger.error(f'Error giving admin privileges: {e}')
         return False
-
-
-
-# SocketIO real-time functionality
-@socketio.on('connect')
-@login_required
-def handle_connect():
-
-    if not current_user.is_authenticated:
-        logger.warning(f'Socket connection by non-logged-in user | IP: {getClientIp()}')
-        return False
-
-    if current_user.role != 'admin':
-        logger.warning(f'Socket connection by non-admin  user | IP: {getClientIp()}')
-        return redirect(url_for('index')), 405
-    else:
-        socketio.start_background_task(tailLogFile, f'./logs/{datetime.now().strftime("%Y-%m-%d")}.log')
-
-def tailLogFile(filePath):
-    """Send old log entries first, then new log entries as they are written to the log file."""
-    try:
-        # First, read all existing log entries (old entries)
-        with open(filePath, 'r') as file:
-            lines = file.readlines()
-            for line in lines:
-                if line.strip():  # Emit non-empty lines
-                    socketio.emit('logUpdate', line.strip())
-
-        # Then, tail the file for new entries
-        file_position = os.path.getsize(filePath)  # Start where the file ends (no repeats)
-        while True:
-            with open(filePath, 'r') as file:
-                file.seek(file_position)  # Move to the last read position
-                new_lines = file.readlines()
-                for line in new_lines:
-                    if line.strip():  # Emit non-empty lines
-                        socketio.emit('logUpdate', line.strip())
-                file_position = file.tell()  # Update the position for the next read
-
-            time.sleep(0.5)  
-    except Exception as e:
-        print(f"Error in tailLogFile: {e}")
-        socketio.emit('error', f"Error reading log file: {str(e)}")
-
 
 
 @app.template_filter('b64encode')

@@ -168,23 +168,6 @@
 
 
 
-<style>
-    #logDisplay {
-      font-family: monospace;
-      background: #1e1e1e !important;
-      padding: 12px;
-      height: 100dvh;
-      overflow-y: auto;
-      border-radius: 4px;
-      line-height: 1.5;
-      font-size: 18px;
-    }
-    .info { color: white; }
-    .warning { color: yellow; }
-    .log-error { color: red; }
-    .log-timestamp { color: lawngreen; }
-  </style>  
-  
     </head>
     <body>
         <div class="json-data" id="json-data">{{ data | tojson }}</div>
@@ -246,40 +229,6 @@
             <h1>Log Display: </h1>
             <div id="logDisplay"></div>
         </div>
-
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
-        <script>
-          const logDisplay = document.getElementById('logDisplay');
-          const socket = io();
-          const seenLines = new Set(); // Keeps track of lines already displayed
-        
-          socket.on('connect', () => {
-            socket.emit('startTail');
-          });
-        
-          socket.on('logUpdate', (line) => {
-            if (seenLines.has(line)) {
-              return; // Skip if the line is already displayed
-            }
-            seenLines.add(line); // Mark this line as seen
-        
-            const [timestamp, ...messageParts] = line.split(' - ');
-            const message = messageParts.join(' - ');
-        
-            // Format the new log line
-            const formattedLine = `<span class="log-timestamp">${timestamp}</span> - ` +
-                                  `<span class="${
-                                    line.includes('ERROR') ? 'log-error' :
-                                    line.includes('WARNING') ? 'warning' : 'info'
-                                  }">${message}</span>`;
-        
-            // Append the formatted log line
-            logDisplay.innerHTML += formattedLine + '<br>';
-            logDisplay.scrollTop = logDisplay.scrollHeight; // Scroll to the latest log
-          });
-        </script>
-
 
         <script src="{{ url_for('static', filename='admin.js')}}"></script>
         <script src="{{ url_for('static', filename='pdf-image-renderer.js')}}"></script>
