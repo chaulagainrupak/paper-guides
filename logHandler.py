@@ -20,16 +20,6 @@ class CustomLogHandler(TimedRotatingFileHandler):
             pass
         super().emit(record)
 
-def zipOldLogs(log_directory, today_filename):
-    log_files = glob.glob(os.path.join(log_directory, '*.log'))
-    for log_file in log_files:
-        # Skip zipping the sitemap_generator.log file
-        if os.path.basename(log_file) != today_filename and os.path.basename(log_file) != 'sitemap_generator.log' and os.path.basename(log_file) != 'upgrade_logs.log':
-            zip_filename = f"{log_file}.zip"
-            with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as log_zip:
-                log_zip.write(log_file, os.path.basename(log_file))
-            os.remove(log_file)
-
 def getCustomLogger(name):
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
@@ -37,9 +27,6 @@ def getCustomLogger(name):
     log_directory = 'logs'
     today_filename = f'{datetime.now().strftime("%Y-%m-%d")}.log'
     log_file = os.path.join(log_directory, today_filename)
-
-    # Zip old logs before creating the new handler
-    zipOldLogs(log_directory, today_filename)
 
     handler = CustomLogHandler(log_file)
     logger.addHandler(handler)
