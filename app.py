@@ -1,13 +1,17 @@
 import os
 from types import resolve_bases
 from dotenv import load_dotenv
+
 from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, send_from_directory, Response
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_socketio import SocketIO
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
 from datetime import datetime
+
 import base64
 import subprocess
 import random
@@ -26,6 +30,7 @@ load_dotenv('.env')
 
 app = Flask(__name__)
 
+socketio = SocketIO(app)
 
 # Replace hardcoded values with environment variables
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -790,6 +795,35 @@ def give_admin(username):
         logger.error(f'Error giving admin privileges: {e}')
         return False
 
+
+
+# SocketIO real-time functionality
+@socketio.on('connect')
+def handle_connect():
+    socketio.start_background_task(tailLogFile, f'./logs/{datetime.now().strftime("%Y-%m-%d")}.log')
+
+def tailLogFile(filePath):
+    """Send all log entries, then tail the file for new entries."""
+    try:
+        with open(filePath, 'r') as file:
+            # Start by reading all lines
+            lines = file.readlines()
+            for line in lines:
+                if line.strip():  # Emit non-empty lines
+                    socketio.emit('logUpdate', line.strip())
+
+            # Tail the file for new lines
+            while True:
+                line = file.readline()
+                if line.strip():  # Emit non-empty new lines
+                    socketio.emit('logUpdate', line.strip())
+                else:
+                    time.sleep(0.5)  # Prevent busy-waiting
+    except Exception as e:
+        print(f"Error in tailLogFile: {e}")
+        socketio.emit('error', f"Error reading log file: {str(e)}")
+
+
 @app.template_filter('b64encode')
 def b64encode_filter(s):
     return base64.b64encode(s).decode('utf-8') if s else ''
@@ -804,6 +838,13 @@ def stats():
     statsData = getStat(config)
     logger.info(f'Stats page accessed IP: {getClientIp()}')
     return render_template('stats-page.html', statsData=statsData)
+
+
+
+
+# SPECIALS 
+
+
 
 @app.route('/sitemap.xml')
 def sitemap():
@@ -923,4 +964,4 @@ def verifyTurnstile(token, max_retries=3):
     }
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(debug=True)
