@@ -153,7 +153,7 @@ def getTopicals(level, subject_name):
         level = "A Levels"
     else:
         level = "NEB"
-        
+
     subjects = config[level]["subjects"]
 
     for subject in subjects:
@@ -461,6 +461,8 @@ def signup():
         existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
         if existing_user:
             flash('Username or email already exists. Please choose another.', 'danger')
+        elif len(username) < 3 or len(username) > 30:
+            flash('Username is not long enough or really short. Please choose another.', 'danger')
         else:
             # Hash the password before storing it
             hashed_password = generate_password_hash(password)
