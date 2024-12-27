@@ -22,25 +22,37 @@ body %}
         transform: translate(0, -20dvh);
     }
     .hero-right-grid {
-        width: 100%;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(2, 1fr);
         gap: 20px;
-        align-items: center;
+        align-items: stretch; /* Ensures grid items fill their allocated space */
+        grid-auto-rows: 1fr; /* Uniform row height */
     }
-
+    
     .hero-right-grid > div {
-        height: fit-content;
-        background: var(--baby-powder);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Align content within items */
+        align-items: center;
+        height: 100%; /* Make all items fill the row height */
+        background: var(--sea-salt);
         border-radius: 12px;
         padding: 15px;
         text-align: center;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         transition: transform 0.3s ease;
-        display: flex;
-        flex-direction: column;
     }
+    
+    .hero-right-grid img {
+        width: 100%;
+        aspect-ratio: 16 / 9; /* Consistent image aspect ratio */
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        background-color: var(--background);
+        outline: var(--blue-highlight) 2px solid;
+    }
+    
     .hero-right-grid > div > div {
         margin: 4px;
     }
@@ -51,17 +63,11 @@ body %}
     .past-papers {
         grid-area: 1 / 1 / 2 / 2;
     }
-    .study-resources {
-        grid-area: 1 / 2 / 2 / 4;
-    }
     .question-generator {
-        grid-area: 2 / 1 / 3 / 2;
-    }
-    .study-techniques {
-        grid-area: 2 / 2 / 3 / 3;
+        grid-area: 1 / 2 / 2 / 2;
     }
     .topical-papers {
-        grid-area: 2 / 3 / 3 / 4;
+        grid-area: 1 / 3 / 2  / 3;
     }
     .grid-item-description > button {
         cursor: pointer;
@@ -81,16 +87,6 @@ body %}
 
     .hero-right-grid > div:hover {
         transform: translateY(-5px);
-    }
-
-    .hero-right-grid img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        background-color: var(--background);
-        outline: var(--blue-highlight) 2px solid;
     }
 
     /* Hero Slogan Styling */
@@ -147,17 +143,11 @@ body %}
         .past-papers {
             grid-area: 1 / 1 / 1 / 1;
         }
-        .study-resources {
-            grid-area: 2 / 1 / 2 / -2;
-        }
         .question-generator {
             grid-area: 1 / 2 / 1 / 2;
         }
         .topical-papers {
             grid-area: 1 / 3 / 1 / 3;
-        }
-        .study-techniques {
-            grid-area: 2 / 3 / 2 / 3;
         }
     }
 
@@ -245,20 +235,16 @@ body %}
                 <div class="grid-item-description">
                     <h3 class="blue-highlight">Exam Success Starts Here</h3>
                     <p>
-                        Access past year papers to boost your exam preparation.
+                        Access past-papers to boost your exam preparation.
                     </p>
-                    <button onclick="(location.href = '/levels')">
+                    <button onclick="(location.href = '/levels')"
+                        style="color: white;"
+                        >
                         Explore Past Papers
                     </button>
                 </div>
             </div>
-            <div class="grid-item study-resources grid-image">
-                <img
-                    src="{{url_for('static', filename='images/compressed_classroom.webp')}}"
-                    alt="Study Resources Collage"
-                    loading="lazy"
-                />
-            </div>
+
             <div class="grid-item question-generator">
                 <div class="image-container">
                     <img
@@ -273,18 +259,14 @@ body %}
                         Generate custom practice questions tailored to your
                         needs.
                     </p>
-                    <button onclick="(location.href = '/question-generator')">
+                    <button onclick="(location.href = '/question-generator')"
+                        style="color: white;"
+                        >
                         Start Generating
                     </button>
                 </div>
             </div>
-                <div class="grid-item study-techniques grid-image">
-                    <img
-                        src="{{url_for('static', filename='images/compressed_study.webp')}}"
-                        alt="Study Techniques Visualization"
-                        loading="lazy"
-                    />
-                </div>
+
                 <div class="grid-item topical-papers">
                     <div class="image-container">
                         <img
@@ -299,7 +281,9 @@ body %}
                             Dive deep with carefully curated topical practice
                             papers.
                         </p>
-                        <button onclick="(location.href = '/topicals')">
+                        <button onclick="(location.href = '/topicals')"
+                            style="color: white;"
+                            >
                             Discover Topical Papers
                         </button>
                     </div>
