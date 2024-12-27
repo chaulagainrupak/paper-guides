@@ -151,9 +151,15 @@
             <div class="section">{% block section %} {% endblock %}</div>
 
             {% block prompt %} {% endblock %} {% if
+            
+            (
             request.path.startswith('/level') or
             request.path.startswith('/subjects') or
-            request.path.startswith('/topicals') %}
+            request.path.startswith('/topicals') 
+
+            )and 
+            current_user.role in ["admin", "moderator", "adFree"] 
+            %}
 
             <div class="promo-space">"Advertisement Space"</div>
 

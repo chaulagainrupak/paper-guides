@@ -194,7 +194,8 @@
                     required
                 />
             </div>
-
+            
+            <h6 class="pink-highlight">*from 3-30 characters allowed</h6>
             <div class="form-group">
                 <label for="new-email">Email</label>
                 <input
@@ -279,6 +280,9 @@
 </div>
 
 <script>
+
+    const newUsernameInput = document.getElementById("new-username");
+    
     // Disable submit buttons on page load
     document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".submit-btn").forEach((button) => {
@@ -353,7 +357,9 @@
             confirmPassword &&
             newPassword === confirmPassword &&
             strength >= 50 &&
-            newPassword.length >= 8
+            newPassword.length >= 8 && 
+            newUsernameInput.value.length >= 3 &&  // Add username length minimum check
+            newUsernameInput.value.length <= 30    // Add username length maximum check
         ) {
             submitButton.disabled = false;
             submitButton.style.cursor = "pointer";
