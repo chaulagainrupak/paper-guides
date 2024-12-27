@@ -151,8 +151,9 @@ def getTopicals(level, subject_name):
 
     if level in ["A level", "AS level"]:
         level = "A Levels"
-
-
+    else:
+        level = "NEB"
+        
     subjects = config[level]["subjects"]
 
     for subject in subjects:
