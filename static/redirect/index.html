@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitemap Links</title>
+    <style>
+        :root {
+            --rich-black: #0d1b2aff;
+            --plum: #92498fff;
+            --baby-powder: #fffffaff;
+            --picton-blue: #3eafe4ff;
+            --font-color: #0d1b2aff;
+            --nav-background: #eff5ff;
+            --background: #ffffff;
+            --pink-highlight: #f25c6a;
+            --blue-highlight: #5d71e0;
+            --green-highlight: #020504;
+            --sea-salt: #F7F7F7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+                         Helvetica, Arial, sans-serif;
+            color: var(--font-color);
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--background);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23c0c4c6' fill-opacity='0.6'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .moved-container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .header-section {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--baby-powder);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .moved-message {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+
+        .moved-link {
+            display: inline-block;
+            font-size: 1.5rem;
+            color: var(--blue-highlight);
+            text-decoration: none;
+            border-bottom: 2px solid var(--blue-highlight);
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .moved-link:hover {
+            background-color: var(--blue-highlight);
+            color: var(--baby-powder);
+            border-radius: 4px;
+        }
+
+        .redirect-timer {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            color: var(--pink-highlight);
+        }
+
+        .url-section {
+            background-color: var(--baby-powder);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .url-section h2 {
+            margin-bottom: 1.5rem;
+            color: var(--rich-black);
+            font-size: 1.5rem;
+        }
+
+        .url-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .url-list li {
+            padding: 0.5rem;
+            background-color: var(--sea-salt);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .url-list li:hover {
+            transform: translateX(5px);
+            background-color: var(--nav-background);
+        }
+
+        .url-list a {
+            color: var(--blue-highlight);
+            text-decoration: none;
+            display: block;
+            word-break: break-all;
+        }
+
+        .error-message {
+            color: var(--pink-highlight);
+            padding: 1rem;
+            text-align: center;
+            background-color: var(--sea-salt);
+            border-radius: 6px;
+        }
+
+        .darkmode {
+            --font-color: #ececec;
+            --nav-background: #202123;
+            --background: #18191c;
+            --baby-powder: #353839;
+            --sea-salt: #2a2d2e;
+        }
+    </style>
+</head>
+<body>
+    <div class="moved-container">
+        <section class="header-section">
+            <div class="moved-message">
+                <strong>We Have Moved!</strong>
+                <br>
+                Please visit our new website at
+            </div>
+            <a class="moved-link" href="https://paperguides.org" target="_blank">paperguides.org</a>
+            <div class="redirect-timer" id="redirectTimer">Redirecting in 5 seconds...</div>
+        </section>
+
+        <section class="url-section">
+            <h2>Sitemap Links</h2>
+            <ul id="urlContainer" class="url-list">Loading links...</ul>
+        </section>
+    </div>
+
+    <script>
+        async function fetchSitemap() {
+            const urlContainer = document.getElementById('urlContainer');
+        
+            try {
+                const response = await fetch('https://paperguides.org/sitemap.xml', {
+                    headers: {
+                        'Content-Type': 'application/xml',
+                    },
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch sitemap: ${response.statusText}`);
+                    
+                }
+        
+                const text = await response.text();
+        
+                // Use regex to extract URLs and optional last modified dates
+                const urlRegex = /<url>.*?<loc>(.*?)<\/loc>.*?(<lastmod>(.*?)<\/lastmod>)?.*?<\/url>/gs;
+        
+                const urls = [...text.matchAll(urlRegex)];
+                urlContainer.innerHTML = '';
+        
+                if (urls.length === 0) {
+                    throw new Error('No URLs found in sitemap');
+                }
+        
+                urls.forEach(match => {
+                    const loc = match[1];
+                    const lastmod = match[3];
+        
+                    if (loc) {
+                        const listItem = document.createElement('li');
+                        const anchor = document.createElement('a');
+                        anchor.href = loc;
+                        anchor.textContent = loc.replace('https://paperguides.org/', '');
+                        anchor.target = '_blank';
+        
+                        if (lastmod) {
+                            anchor.title = `Last modified: ${new Date(lastmod).toLocaleDateString()}`;
+                        }
+        
+                        listItem.appendChild(anchor);
+                        urlContainer.appendChild(listItem);
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching sitemap:', error);
+                urlContainer.innerHTML = `
+                    <li class="error-message">
+                        Unable to load links. Please visit 
+                        <a href="https://paperguides.org" target="_blank">paperguides.org</a> 
+                        directly.
+                    </li>`;
+            }
+        }
+        
+
+        function startRedirectCountdown() {
+            const timerElement = document.getElementById('redirectTimer');
+            let countdown = 5;
+
+            const interval = setInterval(() => {
+                countdown--;
+                timerElement.textContent = `Redirecting in ${countdown} seconds...`;
+                if (countdown === 0) {
+                    clearInterval(interval);
+                    window.location.href = 'https://paperguides.org';
+                }
+            }, 1000);
+        }
+
+        fetchSitemap();
+        startRedirectCountdown();
+    </script>
+</body>
+</html>
