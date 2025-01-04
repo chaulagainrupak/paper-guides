@@ -6,6 +6,7 @@ from flask import Flask, render_template, redirect, url_for, flash, request, jso
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
@@ -28,7 +29,7 @@ from logHandler import getCustomLogger
 load_dotenv('.env')
 
 app = Flask(__name__)
-
+CORS(app)
 
 # Replace hardcoded values with environment variables
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
