@@ -283,8 +283,9 @@ This is for the links for the link sections
     }
 
     .hamburger label {
+        padding: 1.5rem;
         cursor: pointer;
-        transform: scale(1.5);
+        scale: 2;
         display: inline-block;
     }
 
