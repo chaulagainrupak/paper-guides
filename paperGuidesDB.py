@@ -623,6 +623,29 @@ def dbDump():
 # ADMIN USAGE
 
 
+
+
+def upadte_rating(uuid, rating):
+
+    try:
+        connection = sqlite3.connect(dbPath)
+        connection.row_factory = dict_factory
+        db = connection.cursor()
+
+        db.execute("""UPDATE difficulty 
+                    FROM questions
+                    WHERE uuid = ? 
+                     """, (uuid,))
+
+        return True
+
+    except sqlite3.Error as e:
+        logger.error(f"Error fetching unapproved questions: {e}")
+        return False
+    finally:
+        if connection:
+            connection.close()
+
 def dict_factory(cursor, row):
     """Convert database row objects into a dict"""
     fields = [column[0] for column in cursor.description]
