@@ -320,6 +320,41 @@ def getQuestions(level, subject_name, year):
         # Close the connection
         connection.close()
 
+
+def countQuestions(subject, level):
+    try:
+        # Connect to the database
+        connection = sqlite3.connect(dbPath)
+        db = connection.cursor()
+        
+        if level == "A level" or level == "AS level":
+            query = '''
+                SELECT COUNT (*) 
+                FROM questions 
+                WHERE board = ? 
+                AND subject = ? 
+                AND approved = 1
+            '''
+            result = db.execute(query, ("A Levels", subject)).fetchone()
+            return result[0] if result else 0  # Return count or 0 if no result
+        else:
+            query = '''
+                SELECT COUNT (*)
+                FROM papers 
+                WHERE level = ? 
+                AND subject = ? 
+                AND approved = 1
+            '''
+            result = db.execute(query, (level, subject)).fetchone()
+            return result[0] if result else 0  # Return count or 0 if no result
+    except sqlite3.Error as e:
+        logger.error(f"An error occurred while getting questions: {e}")
+        return None
+        
+    finally:
+        # Close the connection
+        connection.close()
+
 def getTopicalFiles(level, subject_name):
     try:
         connection = sqlite3.connect(dbPath)
