@@ -581,6 +581,7 @@ def admin_dashboard():
         return render_template('admin.html', data={"error": "An error occurred while retrieving data."})
 
 @app.route('/admin/question/<uuid>', methods=['GET'])
+@login_required
 def adminShowQuestion(uuid):
     if current_user.role != 'admin':
         logger.warning(f'Unauthorized access attempt by user: {current_user.username} from IP: ', getClientIp())
@@ -593,6 +594,7 @@ def adminShowQuestion(uuid):
         logger.warning("Error retrieving question: " + str(e))
 
 @app.route('/admin/paper/<uuid>', methods=['GET'])
+@login_required
 def adminShowPaper(uuid):
     if current_user.role != 'admin':
         logger.warning(f'Unauthorized access attempt by user: {current_user.username} from IP: ', getClientIp())
@@ -604,6 +606,7 @@ def adminShowPaper(uuid):
         logger.warning("Error retrieving paper: " + str(e))
 
 @app.route('/admin/topical/<uuid>', methods=['GET'])
+@login_required
 def adminShowTopical(uuid):
     if current_user.role != 'admin':
         logger.warning(f'Unauthorized access attempt by user: {current_user.username} from IP: ', getClientIp())
@@ -613,6 +616,20 @@ def adminShowTopical(uuid):
         return render_template('admin-topical.html', topical=get_topical(uuid))
     except Exception as e:
         logger.warning("Error retrieving paper: " + str(e))
+
+
+@app.route('/admin/<uuid>/<rating>', methods=['POST'])
+@login_required
+def updateRatingAdmin(uuid, rating):
+
+    if current_user.role != 'admin':
+        logger.warning(f'Unauthorized access attempt by user: {current_user.username} from IP: ', getClientIp())
+
+    if upadte_rating(uuid, rating):
+        logger.info(f'Question {uuid} rating updated to {rating}' )
+        return redirect(url_for('admin'))
+    else:
+        return redirect(url_for('index'))
 
 @app.route('/getNewData', methods=["POST"])
 @login_required
@@ -774,6 +791,7 @@ def deleteTopical(uuid):
 # Temporary solution man
 # A route to give admin access to user accounts
 @app.route('/admin/give_admin/<username>', methods=['POST'])
+@login_required
 def give_admin(username):
     if current_user.role != 'admin':
         logger.warning(f'Admin page / endpoint is trying to be accessed by a non-admin IP: {getClientIp()}')

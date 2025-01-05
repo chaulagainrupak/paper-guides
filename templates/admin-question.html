@@ -3,11 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="{{ url_for('static', filename='pdf-image-renderer.js') }}"></script>
     <script src="{{ url_for('static', filename='admin.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
-    <title>{% if question.approved == 1 %}Approved Question{% else %}Unapproved Question{% endif %}</title>
-
+    <title>Admin Panel</title>
     <style>
       * {
         box-sizing: border-box;
@@ -27,53 +24,41 @@
         border-radius: 8px;
         background-color: #f8f9fa;
       }
-      .image-container div {
-        width: 100%;
-        background: #eee;
+      .rating-editor {
+        display: none; /* Initially hidden */
+        margin-top: 10px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        color: #333;
-        border-radius: 4px;
-        overflow: hidden; 
-      }
-
-      .image-container img {
-        max-width: 100%; 
-        height: auto; 
-        display: block;
-        object-fit: contain;
-      }
-
-      .actions {
-        margin-top: 15px;
-        display: flex;
         gap: 10px;
       }
-      .button {
-        padding: 8px 16px;
+      .rating-editor select {
+        padding: 5px;
+        font-size: 16px;
         border-radius: 4px;
-        cursor: pointer;
-        border: none;
+      }
+      .rating-editor button {
+        padding: 8px 16px;
         font-size: 14px;
-        transition: all 0.2s ease;
-      }
-      .button:hover {
-        opacity: 0.9;
-        transform: translateY(-1px);
-      }
-      .approve {
-        background-color: #4caf50;
-        color: white;
-      }
-      .delete {
-        background-color: #f44336;
-        color: white;
-      }
-      .edit {
+        border: none;
+        border-radius: 4px;
         background-color: #2196f3;
         color: white;
+        cursor: pointer;
+      }
+      .rating-editor button:hover {
+        opacity: 0.9;
+      }
+      .edit-rating-btn {
+        margin-top: 10px;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        background-color: #2196f3;
+        color: white;
+        cursor: pointer;
+      }
+      .edit-rating-btn:hover {
+        opacity: 0.9;
       }
     </style>
   </head>
@@ -81,45 +66,43 @@
     <button class="button" onclick="history.back()" style="background-color: #f44336; color: white;">
       Back to Dashboard
     </button>
+
     <div class="card">
-      <div>
-        <h1>Question Details</h1>
-        <h2><strong>Subject:</strong> {{ question.subject }}</h2>
-        <h2><strong>Topic:</strong> {{ question.topic }}</h2>
-        <h2><strong>Difficulty:</strong> {{ question.difficulty }}/5</h2>
-        <h2><strong>Board:</strong> {{ question.board }}</h2>
-        <h2><strong>Level:</strong> {{ question.level }}</h2>
-        <h2><strong>Component:</strong> {{ question.component }}</h2>
-        <h2><strong>Submitted by:</strong> {{ question.submittedBy }}</h2>
-      </div>
+      <h1>Question Details</h1>
+      <h2><strong>Subject:</strong> {{ question.subject }}</h2>
+      <h2><strong>Topic:</strong> {{ question.topic }}</h2>
+      <h2><strong>Difficulty:</strong> {{ question.difficulty }}/5</h2>
+      <h2><strong>Rating:</strong> <span id="current-rating">{{ question.rating }}/5</span></h2>
 
-      <div class="image-container">
-        <h4>Question:</h4>
-        <div
-          class="question-image"
-          data-compressed="{{ question.questionFile }}"
-        >
-          Placeholder for question image
-        </div>
-      </div>
+<!-- Edit Rating Button -->
+<button
+  class="edit-rating-btn"
+  onclick="toggleRatingEditor()"
+>
+  ✏️ Edit Rating
+</button>
 
-      <div class="image-container">
-        <h4>Solution:</h4>
-        <div
-          class="solution-image"
-          data-compressed="{{ question.solutionFile }}"
-        ></div>
-      </div>
+<!-- Rating Editor -->
+<div id="rating-editor" class="rating-editor">
+  <form
+    id="rating-form"
+    action="/admin/{{ question.uuid }}/{{ question.rating }}"
+    method="POST"
+  >
+    <label for="rating-select">New Rating:</label>
+    <select id="rating-select" name="rating">
+      <option value="1" {% if question.rating == 1 %}selected{% endif %}>1</option>
+      <option value="2" {% if question.rating == 2 %}selected{% endif %}>2</option>
+      <option value="3" {% if question.rating == 3 %}selected{% endif %}>3</option>
+      <option value="4" {% if question.rating == 4 %}selected{% endif %}>4</option>
+      <option value="5" {% if question.rating == 5 %}selected{% endif %}>5</option>
+    </select>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
 
       <div class="actions">
-        {% if question.approved == 0%}
-        <button
-          onclick="approveItem('question', '{{ question.uuid }}')"
-          class="button approve"
-        >
-          Approve
-        </button>
-        {%endif%}
         <button
           onclick="deleteItem('question', '{{ question.uuid }}')"
           class="button delete"
@@ -128,5 +111,14 @@
         </button>
       </div>
     </div>
+
+    <script>
+      // JavaScript to toggle the visibility of the rating editor
+      function toggleRatingEditor() {
+        const editor = document.getElementById('rating-editor');
+        const isHidden = editor.style.display === 'none' || editor.style.display === '';
+        editor.style.display = isHidden ? 'flex' : 'none';
+      }
+    </script>
   </body>
 </html>
