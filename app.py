@@ -618,17 +618,24 @@ def adminShowTopical(uuid):
         logger.warning("Error retrieving paper: " + str(e))
 
 
-@app.route('/admin/<uuid>/<rating>', methods=['POST'])
+@app.route('/admin/update_rating/<uuid>', methods=['POST'])
 @login_required
-def updateRatingAdmin(uuid, rating):
+def updateRatingAdmin(uuid):
+    rating = request.form.get('rating')
+
+    if not rating or not rating.isdigit() or int(rating) not in range(1, 6):
+        logger.error(f"Invalid rating received: {rating}")
+        return redirect(url_for('index'))
 
     if current_user.role != 'admin':
-        logger.warning(f'Unauthorized access attempt by user: {current_user.username} from IP: ', getClientIp())
+        logger.warning(f"Unauthorized access attempt by user: {current_user.username} from IP: {getClientIp()}")
+        return redirect(url_for('index'))
 
-    if upadte_rating(uuid, rating):
-        logger.info(f'Question {uuid} rating updated to {rating}' )
-        return redirect(url_for('admin'))
+    if upadte_rating(uuid, int(rating)):
+        logger.info(f"Question {uuid} rating updated to {rating}")
+        return redirect(url_for('admin_dashboard'))
     else:
+        logger.error(f"Failed to update question {uuid} rating to {rating}")
         return redirect(url_for('index'))
 
 @app.route('/getNewData', methods=["POST"])
