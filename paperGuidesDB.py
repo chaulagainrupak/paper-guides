@@ -632,11 +632,14 @@ def upadte_rating(uuid, rating):
         connection.row_factory = dict_factory
         db = connection.cursor()
 
-        db.execute("""UPDATE difficulty 
-                    FROM questions
-                    WHERE uuid = ? 
-                     """, (uuid,))
+        db.execute(
+            """UPDATE questions
+               SET difficulty = ?
+               WHERE uuid = ?""",
+            (rating, uuid)
+        )
 
+        connection.commit()
         return True
 
     except sqlite3.Error as e:
