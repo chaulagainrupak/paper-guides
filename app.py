@@ -236,7 +236,9 @@ def questionGen():
 
             # Get questions
             rows = getQuestionsForGen(board, subject, level, topics, components, difficulties)
-            return render_template('qpgen.html', rows=rows)
+
+            count = countQuestions(subject, level)
+            return render_template('qpgen.html', rows=rows, count = count)
         except Exception as e:
             logger.error(f'Error in question generation: {str(e)} IP: {getClientIp()}')
             return redirect(url_for('questionGenerator'))
