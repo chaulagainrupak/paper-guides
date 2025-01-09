@@ -116,20 +116,110 @@ def getSubjectQuestions(level ,subject_name, year):
 
 @app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
 def renderSubjectQuestion(level, subject_name, year, file_data):
+    # Log the request
     logger.info(f'Question rendered for level {level}, subject {subject_name}, year {year}, file {file_data} IP: {getClientIp()}')
 
-    # Ensure `file_data` is properly decoded
-    component = file_data.split(', ')[1]
-    
-    print(file_data.split('Year: ')[1][:4])
-    if "question" in file_data:
-        full_year = file_data.split('Year: ')[1].split(' question')[0]
-    elif "mark" in file_data:
-        full_year = file_data.split('Year: ')[1].split(' mark')[0]
-    else:
+    try:
+        # Extract component number
+        component = file_data.split(', ')[1]
+
+        # Extract subject code (e.g., "9618" from "Computer Science (9618)")
+        subject_code = file_data.split('(')[1].split(')')[0]
+
+        # Extract session (e.g., "May / June" from "Year: 2023 (May / June)")
+        session = file_data.split('(')[2].split(')')[0].strip()
+
+        # Extract and validate full year
+        if "question" in file_data:
+            full_year = file_data.split('Year: ')[1].split(' question')[0]
+        elif "mark" in file_data:
+            full_year = file_data.split('Year: ')[1].split(' mark')[0]
+        else:
+            return render_template('404.html'), 404
+
+        # Generate SEO keywords
+        session_clean = session.lower().replace(' / ', '/')
+        session_short = session_clean.replace('may/june', 'm/j').replace('october/november', 'o/n')
+        
+        keywords = [
+            # Original format
+            f"{file_data}",
+            f"{subject_name} {full_year}",
+            f"{level} {subject_name}",
+            
+            # Code-based formats
+            f"{subject_code} past papers",
+            f"{subject_code} {full_year}",
+            f"{subject_code} {session_clean} {full_year}",
+            f"{subject_code} {session_short} {full_year}",
+            
+            # Component variations
+            f"{subject_code} {component}",
+            f"{subject_code} {component} {session_clean} {full_year}",
+            f"{subject_code} {component} {session_short} {full_year}",
+            
+            # Short formats (matching real search patterns)
+            f"{subject_code} {component} mj {full_year[-2:]}",
+            f"{subject_code} {component} on {full_year[-2:]}",
+            f"{subject_code}{component}mj{full_year[-2:]}",
+            f"{subject_code}{component}on{full_year[-2:]}",
+            
+            # Board variations
+            f"cambridge {subject_name} {full_year}",
+            f"caie {subject_code}",
+            f"cie {subject_code}",
+            
+            # Resource types
+            f"{subject_code} past papers {full_year}",
+            f"{subject_code} question paper {full_year}",
+            f"{subject_code} mark scheme {full_year}",
+            
+            # Component specific
+            f"paper {component} {full_year}",
+            f"{subject_name} paper {component}",
+            
+            # Study materials
+            f"{subject_code} revision materials",
+            f"{subject_code} study guide",
+            f"{level} {subject_name} resources"
+        ]
+        
+        # Remove duplicates while preserving order
+        unique_keywords = []
+        seen = set()
+        for k in keywords:
+            if k not in seen and k.strip():
+                seen.add(k)
+                unique_keywords.append(k)
+        
+        # Generate meta description
+        meta_description = (
+            f"Access {level} {subject_name} ({subject_code}) {component} {session} {full_year} "
+            f"past papers, mark schemes, and study resources. Free download available for "
+            f"{subject_name} Paper {component} {full_year}."
+        )
+
+        # Render question
+        question = renderQuestion(level, subject_name, full_year, component)
+        
+        # Return template with all necessary data
+        return render_template(
+            'qp.html',
+            question=question[0],
+            solution=question[1],
+            file_data=file_data,
+            id=question[2],
+            config=config,
+            keywords=", ".join(unique_keywords),
+            meta_description=meta_description,
+            subject_code=subject_code,
+            session=session,
+            component=component
+        )
+
+    except Exception as e:
+        logger.error(f"Error processing question: {str(e)}")
         return render_template('404.html'), 404
-    question = renderQuestion(level, subject_name, full_year, component)
-    return render_template('qp.html', question=question[0], solution= question[1], file_data=file_data, id=question[2], config=config)
 
 
 @app.route('/topicals')

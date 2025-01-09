@@ -10,6 +10,8 @@ from datetime import datetime
 from dotenv import load_dotenv
 import hashlib
 
+from config import *
+
 load_dotenv()
 from logHandler import getCustomLogger
 
@@ -582,10 +584,15 @@ def getQuestionsForGen(board, subject, level, topics, components, difficulties):
         rows = cursor.fetchall()
 
         # Process results
+
+        generatorConfig = loadConfig('./configs/generator.json')
+
+        questionsToGenerate = generatorConfig["questionsToGenerate"]
+
         if rows:
-            # If more than 12 questions, randomly select 12
-            if len(rows) > 12:
-                rows = random.sample(rows, 12)
+            # If more than questionsToGenerate questions, randomly select questionsToGenerate number in the config file
+            if len(rows) > questionsToGenerate:
+                rows = random.sample(rows, questionsToGenerate)
             else:
                 random.shuffle(rows)
 

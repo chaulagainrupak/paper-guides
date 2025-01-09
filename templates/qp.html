@@ -1,6 +1,17 @@
-{% extends 'base.html' %} {% block title %} Paper-Guides {% endblock %} {% block
-section %}
+{% extends 'base.html' %}
 
+{% block title %} {{file_data}} | Paper-Guides {% endblock %}
+
+{% block metaDescription %} 
+    {{meta_description}}. Download the {{file_data}} for {{level}} {{subject_name}}. Access free past papers, question papers, and resources for effective exam preparation. Perfect for {{year}} students studying {{subject_name}} at the {{level}} level. 
+{% endblock %}
+
+{% block metaKeywords %}
+    {{keywords}},{{file_data}}, {{subject_name}}, {{year}} past papers, {{year}} question papers, {{level}} {{subject_name}}, free study materials, exam preparation, {{level}} resources, academic support, {{subject_name}} question paper {{year}}, past questions {{year}}
+{% endblock %}
+
+
+{% block section %}
 <head>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"
