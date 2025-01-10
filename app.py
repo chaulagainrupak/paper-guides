@@ -29,12 +29,16 @@ from logHandler import getCustomLogger
 load_dotenv('.env')
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["https://paperguides.org"])
 
 # Replace hardcoded values with environment variables
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS', default=False)
+
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True
+
 
 TURNSTILE_SECRET_KEY = os.getenv('TURNSTILE_SECRET_KEY')
 
