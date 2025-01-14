@@ -153,12 +153,21 @@
             <div class="section">{% block section %} {% endblock %}</div>
 
             {% block prompt %} {% endblock %}
-            {% if (
-                request.path.startswith('/level') or
-                request.path.startswith('/subjects') or
-                request.path.startswith('/topicals')
-            ) and current_user.role not in ["admin", "moderator", "adFree"] %}
-
+            
+        {% if request.path in ['/question-generator', '/question-gen'] and current_user.role not in ["admin", "moderator", "adFree"] %}
+            <head>
+                <script
+                    async
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
+                    crossorigin="anonymous"
+                ></script>
+            </head>
+        {% elif (
+            (request.path.startswith('/level') or
+            request.path.startswith('/subjects') or
+            request.path.startswith('/topicals'))
+            and current_user.role not in ["admin", "moderator", "adFree"]
+        ) %}
             <div class="promo-space">"Advertisement Space"</div>
 
             <head>
@@ -168,8 +177,8 @@
                     crossorigin="anonymous"
                 ></script>
             </head>
+        {% endif %}
 
-            {% endif %}
         </div>
 
         {% endblock %} {% endblock %}
