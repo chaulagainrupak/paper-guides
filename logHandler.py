@@ -72,7 +72,7 @@ class CustomLogHandler(TimedRotatingFileHandler):
         # Open new file
         self.stream = self._open()
 
-def get_custom_logger(name, log_directory='logs'):
+def getCustomLogger(name, log_directory='logs'):
     """
     Creates or retrieves a logger with custom configuration
     """
