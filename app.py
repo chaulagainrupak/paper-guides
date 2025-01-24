@@ -294,9 +294,18 @@ def about():
 
 @app.route('/question-generator')
 def questionGenerator():
+    allowedSubjects = ["Mathematics (9709)", "Physics (9702)", "Chemistry (9701)", "Biology (9700)"]
     logger.info(f'Question generator page accessed IP: {getClientIp()}')
+
     config = loadConfig(configPath)
-    return render_template('question-generator.html', config = config)
+
+    # Filter subjects for A Levels
+    config["A Levels"]["subjects"] = [
+        subject for subject in config["A Levels"]["subjects"] if subject["name"] in allowedSubjects
+    ]
+
+    return render_template('question-generator.html', config=config)
+
 
 # This route displays the questions the uppper route genetated a diffrent page and route
 @app.route('/question-gen', methods=['POST', 'GET'])
