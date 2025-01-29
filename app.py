@@ -10,7 +10,7 @@ from flask_cors import CORS
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import base64
 import subprocess
@@ -39,6 +39,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIF
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 app.config['SESSION_COOKIE_SECURE'] = True
 
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
 TURNSTILE_SECRET_KEY = os.getenv('TURNSTILE_SECRET_KEY')
 
