@@ -519,6 +519,9 @@ def login():
 
         # Check if user exists and the password matches
         if user and check_password_hash(user.password, password):
+
+            session['user_id'] = user
+            session.permanent = True
             login_user(user)
             logger.info(f'User {user.username} logged in IP: {getClientIp()}')
             next_page = request.args.get('next')
