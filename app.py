@@ -2,7 +2,7 @@ import os
 from types import resolve_bases
 from dotenv import load_dotenv
 
-from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, send_from_directory, Response
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, send_from_directory, Response, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
