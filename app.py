@@ -284,9 +284,9 @@ def viewPdf(type, uuid):
     else:
         if paper["board"].lower() in ["a level", "as level", "a levels"]:
             if type == "solution":
-                title = f'{paper["subject"]}, {paper["component"]}, {str(paper["year"])[-2:]} MS'
+                title = f'{paper["subject"]}, {paper["component"]}, {str(paper["year"])} MS'
             elif type == "question":
-                title = f'{paper["subject"]}, {paper["component"]}, {str(paper["year"])[-2:]} QP'
+                title = f'{paper["subject"]}, {paper["component"]}, {str(paper["year"])} QP'
         else:
             if type == "solution":
                 title = f'{paper["subject"]} MS'
