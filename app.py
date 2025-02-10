@@ -272,13 +272,34 @@ def viewPdf(type, uuid):
 
     paper = get_paper(uuid)
 
+    # Not the most beautiful code or the best but gets the job done and i do not want to write more code
+    
     if paper == None:
         paper = get_topical(uuid)
-        
+
+        if type == "solution":
+            title = f'{paper["subject"]} MS'
+        elif type == "question":
+            title = f'{paper["subject"]} QP'
+    else:
+        if paper["board"].lower() in ["a level", "as level", "a levels"]:
+            if type == "solution":
+                title = f'{paper["subject"]}, {paper["component"]}, {str(paper["year"])[-2:]} MS'
+            elif type == "question":
+                title = f'{paper["subject"]}, {paper["component"]}, {str(paper["year"])[-2:]} QP'
+        else:
+            if type == "solution":
+                title = f'{paper["subject"]} MS'
+            elif type == "question":
+                title = f'{paper["subject"]} QP'
+    
+    if paper == None:
+        return render_template('404.html'), 404
+                    
     if type == "question":
-        return render_template('qp-full.html', question = paper["questionFile"]), 200
+        return render_template('qp-full.html', question = paper["questionFile"], title = title), 200
     elif type == "solution":
-        return render_template('qp-full.html', question = paper["solutionFile"]), 200
+        return render_template('qp-full.html', question = paper["solutionFile"], title = title), 200
     else:
         return redirect(url_for('index')), 304
 
