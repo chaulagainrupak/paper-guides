@@ -284,8 +284,9 @@ def viewPdf(type, uuid):
             title = f'{paper["subject"]} QP'
     else:
         if paper["board"].lower() in ["a level", "as level", "a levels"]:
+
             # Extract the number inside parentheses using regex
-            subjectCodeMatch = re.search(r'(\d+)', paper["subject"])
+            subjectCodeMatch = re.search(r'\((.*?)\)', paper["subject"])
             subjectCode = subjectCodeMatch.group(0) if subjectCodeMatch else paper["subject"]
 
             if type == "solution":
@@ -307,6 +308,7 @@ def viewPdf(type, uuid):
         return render_template('qp-full.html', question=paper["solutionFile"], title=title), 200
     else:
         return redirect(url_for('index')), 304
+
 
 # Reders the about page. Duh
 
