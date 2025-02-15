@@ -16,6 +16,8 @@ import base64
 import subprocess
 import random
 import time
+import re
+
 
 # We are importing all the required functions from the following files inorder to make a huge app file?
 
@@ -266,14 +268,13 @@ def renderTopical(level ,subject_name, uuid):
     question = renderTopcial(uuid)
     return render_template('qp.html', question=question[0], solution= question[1], file_data = f"Topical question paper for {subject_name} and topic: {question[3]}",  id=question[2], config=config)
 
+
 @app.route('/view-pdf/<type>/<uuid>')
 def viewPdf(type, uuid):
     logger.info(f'{type}: {uuid} rendered in full screen. IP: {getClientIp()}')
 
     paper = get_paper(uuid)
 
-    # Not the most beautiful code or the best but gets the job done and i do not want to write more code
-    
     if paper == None:
         paper = get_topical(uuid)
 
@@ -283,23 +284,27 @@ def viewPdf(type, uuid):
             title = f'{paper["subject"]} QP'
     else:
         if paper["board"].lower() in ["a level", "as level", "a levels"]:
+            # Extract the number inside parentheses using regex
+            subjectCodeMatch = re.search(r'(\d+)', paper["subject"])
+            subjectCode = subjectCodeMatch.group(0) if subjectCodeMatch else paper["subject"]
+
             if type == "solution":
-                title = f'{paper["subject"]}, {paper["component"]}, {str(paper["year"])} MS'
+                title = f'{subjectCode}, {paper["component"]}, {str(paper["year"])} MS'
             elif type == "question":
-                title = f'{paper["subject"]}, {paper["component"]}, {str(paper["year"])} QP'
+                title = f'{subjectCode}, {paper["component"]}, {str(paper["year"])} QP'
         else:
             if type == "solution":
                 title = f'{paper["subject"]} MS'
             elif type == "question":
                 title = f'{paper["subject"]} QP'
-    
+
     if paper == None:
         return render_template('404.html'), 404
-                    
+
     if type == "question":
-        return render_template('qp-full.html', question = paper["questionFile"], title = title), 200
+        return render_template('qp-full.html', question=paper["questionFile"], title=title), 200
     elif type == "solution":
-        return render_template('qp-full.html', question = paper["solutionFile"], title = title), 200
+        return render_template('qp-full.html', question=paper["solutionFile"], title=title), 200
     else:
         return redirect(url_for('index')), 304
 
