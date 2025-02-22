@@ -286,13 +286,17 @@ def viewPdf(type, uuid):
         if paper["board"].lower() in ["a level", "as level", "a levels"]:
 
             # Extract the number inside parentheses using regex
-            subjectCodeMatch = re.search(r'\((.*?)\)', paper["subject"])
+            subjectCodeMatch = re.search(r"\d+", paper["subject"])
             subjectCode = subjectCodeMatch.group(0) if subjectCodeMatch else paper["subject"]
 
+            yearStr = str(paper["year"])
+            session = "MJ" if "May / June" in yearStr else "ON" if "Oct / Nov" in yearStr else "FM"
+
+
             if type == "solution":
-                title = f'{subjectCode}, {paper["component"]}, {str(paper["year"])} MS'
+                title = f'{subjectCode},{paper["component"]},{yearStr[2:4]},{session} MS'
             elif type == "question":
-                title = f'{subjectCode}, {paper["component"]}, {str(paper["year"])} QP'
+                title = f'{subjectCode},{paper["component"]},{yearStr[2:4]},{session} QP'
         else:
             if type == "solution":
                 title = f'{paper["subject"]} MS'

@@ -91,7 +91,7 @@
     <!-- Left Side: Fullscreen & Download Buttons -->
     <div style="display: flex !important; align-items: center !important; gap: 6px !important;">
         <!-- Question Fullscreen Link -->
-        <a href="/view-pdf/question/{{ id }}" target="_blank" 
+        <button onclick="openFullscreen('{{id}}', 'question')" 
            class="btn question-full" 
            style="
                background-color: #3cb371 !important; 
@@ -104,7 +104,7 @@
                height: 40px !important;
                color: white !important;">
             View question in fullscreen
-        </a>
+        </button>
 
         <!-- Question Download Button -->
         <button class="download-question"
@@ -124,7 +124,7 @@
         </button>
 
         <!-- Solution Fullscreen Link (Initially Hidden) -->
-        <a href="/view-pdf/solution/{{ id }}" target="_blank" 
+        <button onclick="openFullscreen('{{id}}', 'solution')"
            class="btn solution-full" 
            style="
                background-color: #3cb371 !important; 
@@ -138,7 +138,7 @@
                display: none !important;
                color: white !important;">
             View solution in fullscreen
-        </a>
+    </button>
 
         <!-- Solution Download Button (Initially Hidden) -->
         <button class="download-solution"
