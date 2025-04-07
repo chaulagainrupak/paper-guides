@@ -106,7 +106,11 @@ def getLevelSubjects(level):
 
         logger.info(f'Subjects page accessed for level {level} IP: {getClientIp()}')
         config = loadConfig(configPath)
-        if level in config:
+
+        if level.lower() in ["a levels", "a level"]:
+            level = "a levels"
+
+        if level.lower() in config.lower():
             return render_template('subject.html', config = config, level = level, mode = "papers")
         else:
             return render_template('404.html'), 404
