@@ -107,7 +107,7 @@ def getLevelSubjects(level):
         config = loadConfig(configPath)
 
         if level.lower() in ["a levels", "a level"]:
-            level = "A Level"
+            level = "A Levels"
         
         levels = [level for level in config]
         
