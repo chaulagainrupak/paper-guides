@@ -102,21 +102,10 @@ def getLevels():
 
 @app.route('/subjects/<level>')
 def getLevelSubjects(level):
-    try:
-        logger.info(f'Subjects page accessed for level {level} IP: {getClientIp()}')
-        config = loadConfig(configPath)
+    logger.info(f'Subjects page accessed for level {level} IP: {getClientIp()}')
+    config = loadConfig(configPath)
+    return render_template('subject.html', config = config, level = level, mode = "papers")
 
-        if level.lower() in ["a levels", "a level"]:
-            level = "A Levels"
-        
-        levels = [level for level in config]
-        
-        if level in levels:
-            return render_template('subject.html', config = config, level = level, mode = "papers")
-        else:
-            return render_template('404.html'), 404
-    except Exception as e:
-        logger.warn(f'{e}')
 
 @app.route('/subjects/<level>/<subject_name>')
 def getSubjectYears(level, subject_name):
