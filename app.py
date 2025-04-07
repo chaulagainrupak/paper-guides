@@ -106,12 +106,11 @@ def getLevelSubjects(level):
         logger.info(f'Subjects page accessed for level {level} IP: {getClientIp()}')
         config = loadConfig(configPath)
 
-        level = level.lower()
-        if  level in ["a levels", "a level"]:
-            level = "a levels"
+        if level.lower() in ["a levels", "a level"]:
+            level = "A Level"
         
-        levels = [level.lower() for level in config]
-
+        levels = [level for level in config]
+        
         if level in levels:
             return render_template('subject.html', config = config, level = level, mode = "papers")
         else:
