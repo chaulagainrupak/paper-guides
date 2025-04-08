@@ -2,12 +2,12 @@
 
 {% block title %} {{file_data}} | Paper-Guides {% endblock %}
 
-{% block metaDescription %} 
-    {{meta_description}}. Download the {{file_data}} for {{level}} {{subject_name}}. Access free past papers, question papers, and resources for effective exam preparation. Perfect for {{year}} students studying {{subject_name}} at the {{level}} level. 
+{% block metaDescription %}     
+    Download the {{file_data}} for {{level}} {{subject_name}} for {{year}} students studying {{subject_name}} at the {{level}} level. 
 {% endblock %}
 
 {% block metaKeywords %}
-    {{keywords}},{{file_data}}, {{subject_name}}, {{year}} past papers, {{year}} question papers, {{level}} {{subject_name}}, free study materials, exam preparation, {{level}} resources, academic support, {{subject_name}} question paper {{year}}, past questions {{year}}
+    {{file_data}}, {{subject_name}} {{subject_code}}, {{year}} past papers, {{year}} question papers, {{level}} {{subject_name}} free study materials, exam preparation, {{level}} resources, academic support, {{subject_name}} question paper {{year}}, past questions {{year}}
 {% endblock %}
 
 
@@ -178,15 +178,12 @@
 
 
     <div class="pdf-container">
-        <div class="paper-pdf question-pdf" data-compressed="{{ question }}">
+        <div class="paper-pdf question-pdf">
             <object type="application/pdf" width="100%" height="600px"></object>
+            
         </div>
 
-        <div
-            class="paper-pdf solution-pdf"
-            data-compressed="{{ solution }}"
-            style="display: none"
-        >
+        <div class="paper-pdf solution-pdf" style="display: none">
             <object type="application/pdf" width="100%" height="600px"></object>
         </div>
     </div>

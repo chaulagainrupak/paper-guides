@@ -144,81 +144,22 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
         else:
             return render_template('404.html'), 404
 
-        # Generate SEO keywords
-        session_clean = session.lower().replace(' / ', '/')
-        session_short = session_clean.replace('may/june', 'm/j').replace('october/november', 'o/n')
-        
-        keywords = [
-            # Original format
-            f"{file_data}",
-            f"{subject_name} {full_year}",
-            f"{level} {subject_name}",
-            
-            # Code-based formats
-            f"{subject_code} past papers",
-            f"{subject_code} {full_year}",
-            f"{subject_code} {session_clean} {full_year}",
-            f"{subject_code} {session_short} {full_year}",
-            
-            # Component variations
-            f"{subject_code} {component}",
-            f"{subject_code} {component} {session_clean} {full_year}",
-            f"{subject_code} {component} {session_short} {full_year}",
-            
-            # Short formats (matching real search patterns)
-            f"{subject_code} {component} mj {full_year[-2:]}",
-            f"{subject_code} {component} on {full_year[-2:]}",
-            f"{subject_code}{component}mj{full_year[-2:]}",
-            f"{subject_code}{component}on{full_year[-2:]}",
-            
-            # Board variations
-            f"cambridge {subject_name} {full_year}",
-            f"caie {subject_code}",
-            f"cie {subject_code}",
-            
-            # Resource types
-            f"{subject_code} past papers {full_year}",
-            f"{subject_code} question paper {full_year}",
-            f"{subject_code} mark scheme {full_year}",
-            
-            # Component specific
-            f"paper {component} {full_year}",
-            f"{subject_name} paper {component}",
-            
-            # Study materials
-            f"{subject_code} revision materials",
-            f"{subject_code} study guide",
-            f"{level} {subject_name} resources"
-        ]
-        
-        # Remove duplicates while preserving order
-        unique_keywords = []
-        seen = set()
-        for k in keywords:
-            if k not in seen and k.strip():
-                seen.add(k)
-                unique_keywords.append(k)
-        
-        # Generate meta description
-        meta_description = (
-            f"Access {level} {subject_name} ({subject_code}) {component} {session} {full_year} "
-            f"past papers, mark schemes, and study resources. Free download available for "
-            f"{subject_name} Paper {component} {full_year}."
-        )
 
         # Render question
         question = renderQuestion(level, subject_name, full_year, component)
         
+
+        if request.headers.get("file-raw-data"):
+            return jsonify({
+                "question": question[0],
+                "solution": question[1] 
+            })
+
         # Return template with all necessary data
         return render_template(
             'qp.html',
-            question=question[0],
-            solution=question[1],
             file_data=file_data,
             id=question[2],
-            config=config,
-            keywords=", ".join(unique_keywords),
-            meta_description=meta_description,
             subject_code=subject_code,
             session=session,
             component=component
@@ -266,7 +207,14 @@ def renderTopical(level ,subject_name, uuid):
     logger.info(f'Topical  page accessed for subject {subject_name}, uuid {uuid} IP: {getClientIp()}')
 
     question = renderTopcial(uuid)
-    return render_template('qp.html', question=question[0], solution= question[1], file_data = f"Topical question paper for {subject_name} and topic: {question[3]}",  id=question[2], config=config)
+
+    if request.headers.get("file-raw-data"):
+        return jsonify({
+            "question": question[0],
+            "solution": question[1] 
+        })
+
+    return render_template('qp.html', file_data = f"Topical question paper for {subject_name} and topic: {question[3]}",  id=question[2], config=config)
 
 
 @app.route('/view-pdf/<type>/<uuid>')
@@ -307,9 +255,18 @@ def viewPdf(type, uuid):
         return render_template('404.html'), 404
 
     if type == "question":
-        return render_template('qp-full.html', question=paper["questionFile"], title=title), 200
+        if request.headers.get("file-raw-data"):
+            return jsonify({
+            "question": paper["questionFile"],
+            })
+        return render_template('qp-full.html', title=title), 200
     elif type == "solution":
-        return render_template('qp-full.html', question=paper["solutionFile"], title=title), 200
+
+        if request.headers.get("file-raw-data"):
+            return jsonify({
+            "question": paper["solutionFile"],
+            })
+        return render_template('qp-full.html', title=title), 200
     else:
         return redirect(url_for('index')), 304
 

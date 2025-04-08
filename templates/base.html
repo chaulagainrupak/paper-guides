@@ -71,15 +71,10 @@
                     gtag("js", new Date());
                     gtag("config", "G-2B6JNCMRZ4");
                 };
-
-                // Load Cloudflare Turnstile
-                let cfScript = document.createElement("script");
-                cfScript.src =
-                    "https://challenges.cloudflare.com/turnstile/v0/api.js";
-                cfScript.defer = true;
-                document.body.appendChild(cfScript);
             };
         </script>
+
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
 
         <script defer>
             window.dataLayer = window.dataLayer || [];
