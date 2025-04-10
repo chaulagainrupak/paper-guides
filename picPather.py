@@ -57,3 +57,14 @@ def process_images(image_files, padding=20, quality=85):
     output_buffer = io.BytesIO()
     final_image.save(output_buffer, format='JPEG', quality=quality, optimize=True)
     return output_buffer.getvalue()
+
+
+def convert_single_image(file, quality=85):
+    try:
+        image = Image.open(file.stream).convert("RGB")
+        buffer = io.BytesIO()
+        image.save(buffer, format='JPEG', quality=quality)
+        return buffer.getvalue()
+    except Exception as e:
+        logger.exception("Failed to convert single image")
+        return None
