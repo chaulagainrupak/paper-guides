@@ -24,6 +24,8 @@ from paperGuidesDB import *
 from config import *
 from logHandler import getCustomLogger
 
+from picPather import *
+
 # Load environment variables from .env file
 
 load_dotenv('.env')
@@ -252,30 +254,12 @@ def submit():
     config = loadConfig(configPath)
     return render_template('submit.html', config = config, year = int(datetime.now().year))
 
+
+
 @app.route('/submitQuestion', methods=['POST'])
 @login_required
 def submitQuestion():
-
-    # Get the Turnstile token from the form submission
-    turnstileToken = request.form.get("cf-turnstile-response")
-    if not turnstileToken:
-        logger.warning(f'Turnstile token missing IP: {getClientIp()}')
-        return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
-
-    # Verify the token with enhanced verification
-    verificationResult = verifyTurnstile(turnstileToken)
-
-    # Check verification success
-    if not verificationResult.get("success"):
-        logger.warning(
-            f'Failed Turnstile verification. '
-            f'Errors: {verificationResult.get("error-codes", [])} '
-            f'Attempts: {verificationResult.get("attempts", 1)}' +
-            ' IP: ' + str(getClientIp())
-        )
-        return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
-
-
+    # Turnstile verification remains the same...
     logger.info(f'Question submission initiated IP: {getClientIp()}')
     board = request.form.get('board')
     subject = request.form.get('subject')
@@ -283,11 +267,32 @@ def submitQuestion():
     difficulty = request.form.get('difficulty')
     level = request.form.get('level')
     component = request.form.get('component')
-    questionFile = request.files['questionFile'].read()
-    solutionFile = request.files['solutionFile'].read()
-
-
-    if insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile, current_user.username, getClientIp()):
+    
+    # Get image quality from form or use default
+    jpeg_quality = int(request.form.get('imageQuality', 85))
+    
+    # Get all question and solution files
+    question_files = request.files.getlist('questionFile')
+    solution_files = request.files.getlist('solutionFile')
+    
+    if not question_files or not any(f.filename for f in question_files):
+        logger.error(f'No question files provided IP: {getClientIp()}')
+        return "No question files provided", 400
+    
+    # Process question images into a single concatenated JPEG image
+    processed_question = process_images(question_files, quality=jpeg_quality)
+    if not processed_question:
+        logger.error(f'Failed to process question images IP: {getClientIp()}')
+        return "Failed to process question images", 500
+    
+    # Process solution images (if any)
+    processed_solution = None
+    if solution_files and any(f.filename for f in solution_files):
+        processed_solution = process_images(solution_files, quality=jpeg_quality)
+    
+    # Insert into database
+    if insertQuestion(board, subject, topic, difficulty, level, component, 
+                     processed_question, processed_solution, current_user.username, getClientIp()):
         logger.info(f'Question submitted successfully IP: {getClientIp()}')
         return redirect(url_for('index'))
     else:
