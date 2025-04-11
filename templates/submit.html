@@ -208,7 +208,7 @@
     .file-label span {
         font-size: 1.1rem;
         margin-bottom: 0.5rem;
-        color: var(--rich-black);
+        color: var(--font-color);
     }
 
     .file-label small {
@@ -370,6 +370,7 @@
                     id="questionFile"
                     name="questionFile"
                     accept="image/*"
+                    multiple
                     required
                     data-max-file-size="5242880"
                 />
@@ -386,6 +387,8 @@
                     id="solutionFile"
                     name="solutionFile"
                     accept="image/*"
+                    multiple
+                    required
                     data-max-file-size="5242880"
                 />
             </div>
