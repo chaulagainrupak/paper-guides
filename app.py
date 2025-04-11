@@ -2,7 +2,7 @@ import os
 from types import resolve_bases
 from dotenv import load_dotenv
 
-from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, send_from_directory, Response
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, send_from_directory, Response, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -10,12 +10,14 @@ from flask_cors import CORS
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import base64
 import subprocess
 import random
 import time
+import re
+
 
 # We are importing all the required functions from the following files inorder to make a huge app file?
 
@@ -23,20 +25,23 @@ import time
 from paperGuidesDB import *
 from config import *
 from logHandler import getCustomLogger
-
-from picPather import *
-
+from picPather import * 
 # Load environment variables from .env file
 
 load_dotenv('.env')
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["https://paperguides.org"])
 
 # Replace hardcoded values with environment variables
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS', default=False)
+
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True
+
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
 TURNSTILE_SECRET_KEY = os.getenv('TURNSTILE_SECRET_KEY')
 
@@ -118,20 +123,51 @@ def getSubjectQuestions(level ,subject_name, year):
 
 @app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
 def renderSubjectQuestion(level, subject_name, year, file_data):
+    # Log the request
     logger.info(f'Question rendered for level {level}, subject {subject_name}, year {year}, file {file_data} IP: {getClientIp()}')
 
-    # Ensure `file_data` is properly decoded
-    component = file_data.split(', ')[1]
-    
-    print(file_data.split('Year: ')[1][:4])
-    if "question" in file_data:
-        full_year = file_data.split('Year: ')[1].split(' question')[0]
-    elif "mark" in file_data:
-        full_year = file_data.split('Year: ')[1].split(' mark')[0]
-    else:
+    try:
+        # Extract component number
+        component = file_data.split(', ')[1]
+
+        # Extract subject code (e.g., "9618" from "Computer Science (9618)")
+        subject_code = file_data.split('(')[1].split(')')[0]
+
+        # Extract session (e.g., "May / June" from "Year: 2023 (May / June)")
+        session = file_data.split('(')[2].split(')')[0].strip()
+
+        # Extract and validate full year
+        if "question" in file_data:
+            full_year = file_data.split('Year: ')[1].split(' question')[0]
+        elif "mark" in file_data:
+            full_year = file_data.split('Year: ')[1].split(' mark')[0]
+        else:
+            return render_template('404.html'), 404
+
+
+        # Render question
+        question = renderQuestion(level, subject_name, full_year, component)
+        
+
+        if request.headers.get("file-raw-data"):
+            return jsonify({
+                "question": question[0],
+                "solution": question[1] 
+            })
+
+        # Return template with all necessary data
+        return render_template(
+            'qp.html',
+            file_data=file_data,
+            id=question[2],
+            subject_code=subject_code,
+            session=session,
+            component=component
+        )
+
+    except Exception as e:
+        logger.error(f"Error processing question: {str(e)}")
         return render_template('404.html'), 404
-    question = renderQuestion(level, subject_name, full_year, component)
-    return render_template('qp.html', question=question[0], solution= question[1], file_data=file_data, id=question[2], config=config)
 
 
 @app.route('/topicals')
@@ -171,7 +207,15 @@ def renderTopical(level ,subject_name, uuid):
     logger.info(f'Topical  page accessed for subject {subject_name}, uuid {uuid} IP: {getClientIp()}')
 
     question = renderTopcial(uuid)
-    return render_template('qp.html', question=question[0], solution= question[1], file_data = f"Topical question paper for {subject_name} and topic: {question[3]}",  id=question[2], config=config)
+
+    if request.headers.get("file-raw-data"):
+        return jsonify({
+            "question": question[0],
+            "solution": question[1] 
+        })
+
+    return render_template('qp.html', file_data = f"Topical question paper for {subject_name} and topic: {question[3]}",  id=question[2], config=config)
+
 
 @app.route('/view-pdf/<type>/<uuid>')
 def viewPdf(type, uuid):
@@ -181,13 +225,51 @@ def viewPdf(type, uuid):
 
     if paper == None:
         paper = get_topical(uuid)
-        
+
+        if type == "solution":
+            title = f'{paper["subject"]} MS'
+        elif type == "question":
+            title = f'{paper["subject"]} QP'
+    else:
+        if paper["board"].lower() in ["a level", "as level", "a levels"]:
+
+            # Extract the number inside parentheses using regex
+            subjectCodeMatch = re.search(r"\d+", paper["subject"])
+            subjectCode = subjectCodeMatch.group(0) if subjectCodeMatch else paper["subject"]
+
+            yearStr = str(paper["year"])
+            session = "MJ" if "May / June" in yearStr else "ON" if "Oct / Nov" in yearStr else "FM"
+
+
+            if type == "solution":
+                title = f'{subjectCode},{paper["component"]},{yearStr[2:4]},{session} MS'
+            elif type == "question":
+                title = f'{subjectCode},{paper["component"]},{yearStr[2:4]},{session} QP'
+        else:
+            if type == "solution":
+                title = f'{paper["subject"]} MS'
+            elif type == "question":
+                title = f'{paper["subject"]} QP'
+
+    if paper == None:
+        return render_template('404.html'), 404
+
     if type == "question":
-        return render_template('qp-full.html', question = paper["questionFile"]), 200
+        if request.headers.get("file-raw-data"):
+            return jsonify({
+            "question": paper["questionFile"],
+            })
+        return render_template('qp-full.html', title=title), 200
     elif type == "solution":
-        return render_template('qp-full.html', question = paper["solutionFile"]), 200
+
+        if request.headers.get("file-raw-data"):
+            return jsonify({
+            "question": paper["solutionFile"],
+            })
+        return render_template('qp-full.html', title=title), 200
     else:
         return redirect(url_for('index')), 304
+
 
 # Reders the about page. Duh
 
@@ -202,9 +284,18 @@ def about():
 
 @app.route('/question-generator')
 def questionGenerator():
+    allowedSubjects = ["Mathematics (9709)", "Physics (9702)", "Chemistry (9701)", "Biology (9700)"]
     logger.info(f'Question generator page accessed IP: {getClientIp()}')
+
     config = loadConfig(configPath)
-    return render_template('question-generator.html', config = config)
+
+    # Filter subjects for A Levels
+    config["A Levels"]["subjects"] = [
+        subject for subject in config["A Levels"]["subjects"] if subject["name"] in allowedSubjects
+    ]
+
+    return render_template('question-generator.html', config=config)
+
 
 # This route displays the questions the uppper route genetated a diffrent page and route
 @app.route('/question-gen', methods=['POST', 'GET'])
@@ -453,6 +544,9 @@ def login():
 
         # Check if user exists and the password matches
         if user and check_password_hash(user.password, password):
+
+            session.permanent = True
+
             login_user(user)
             logger.info(f'User {user.username} logged in IP: {getClientIp()}')
             next_page = request.args.get('next')

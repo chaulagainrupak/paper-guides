@@ -91,11 +91,6 @@ document.addEventListener("DOMContentLoaded", function () {
         questionImage.style.display = "none";
         button.textContent = "Hide Solution";
 
-        // Check if solution is missing
-        const solutionImage = solutionContainer.querySelector(".solution-image");
-        if (solutionImage && !solutionImage.querySelector("img")) {
-          solutionImage.innerHTML = '<div class="solution-not-found">Solution not found!</div>';
-        }
       } else {
         solutionContainer.style.display = "none";
         questionImage.style.display = "flex";

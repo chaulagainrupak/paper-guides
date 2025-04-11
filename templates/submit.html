@@ -180,9 +180,6 @@
         margin-bottom: 2rem;
     }
 
-    .file-upload-box > label > span {
-        color: var(--font-color);
-    }
     .file-upload-box {
         position: relative;
     }
@@ -365,8 +362,8 @@
             <div class="file-upload-box">
                 <label for="questionFile" class="file-label">
                     <div class="upload-icon">📷</div>
-                    <span>Question Images</span>
-                    <small>Click to upload or drag and drop (multiple images allowed)</small>
+                    <span>Question Image</span>
+                    <small>Click to upload or drag and drop</small>
                 </label>
                 <input
                     type="file"
@@ -374,23 +371,21 @@
                     name="questionFile"
                     accept="image/*"
                     required
-                    multiple
                     data-max-file-size="5242880"
                 />
             </div>
-        
+
             <div class="file-upload-box">
                 <label for="solutionFile" class="file-label">
                     <div class="upload-icon">✍️</div>
-                    <span>Solution Images</span>
-                    <small>Click to upload or drag and drop (multiple images allowed)</small>
+                    <span>Solution Image</span>
+                    <small>Click to upload or drag and drop</small>
                 </label>
                 <input
                     type="file"
                     id="solutionFile"
                     name="solutionFile"
                     accept="image/*"
-                    multiple
                     data-max-file-size="5242880"
                 />
             </div>
