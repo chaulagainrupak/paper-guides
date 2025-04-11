@@ -225,7 +225,7 @@ fileInputs.forEach((input) => {
       const span = label.querySelector("span");
       if (span) {
         if (this.files.length === 1) {
-          span.textContent = this.files[0].name;
+          span.textContent = "1 file selected";
         } else {
           span.textContent = `${this.files.length} files selected`;
         }
