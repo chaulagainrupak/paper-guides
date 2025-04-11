@@ -1,5 +1,5 @@
 Flask==3.1.0
-flask_cors==5.0.0
+Flask_Cors==5.0.0
 Flask_Login==0.6.3
 Flask_Migrate==4.0.7
 flask_sqlalchemy==3.1.1
