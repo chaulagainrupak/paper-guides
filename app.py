@@ -26,6 +26,8 @@ from paperGuidesDB import *
 from config import *
 from logHandler import getCustomLogger
 
+from picPather import *
+
 # Load environment variables from .env file
 
 load_dotenv('.env')
@@ -345,42 +347,78 @@ def submit():
     config = loadConfig(configPath)
     return render_template('submit.html', config = config, year = int(datetime.now().year))
 
+
 @app.route('/submitQuestion', methods=['POST'])
 @login_required
 def submitQuestion():
-
-    # Get the Turnstile token from the form submission
+    # Turnstile token validation
     turnstileToken = request.form.get("cf-turnstile-response")
     if not turnstileToken:
         logger.warning(f'Turnstile token missing IP: {getClientIp()}')
-        return render_template('error.html', error_title = "Did you forget the captcha!?", error_message = "Please try again by completing the captcha."), 400
+        return render_template(
+            'error.html',
+            error_title="Did you forget the captcha!?",
+            error_message="Please try again by completing the captcha."
+        ), 400
 
-    # Verify the token with enhanced verification
     verificationResult = verifyTurnstile(turnstileToken)
-
-    # Check verification success
     if not verificationResult.get("success"):
         logger.warning(
             f'Failed Turnstile verification. '
             f'Errors: {verificationResult.get("error-codes", [])} '
-            f'Attempts: {verificationResult.get("attempts", 1)}' +
-            ' IP: ' + str(getClientIp())
+            f'Attempts: {verificationResult.get("attempts", 1)} '
+            f'IP: {getClientIp()}'
         )
-        return render_template('error.html', error_title = "Failed to verify captcha.", error_message = f"Please try again. {verificationResult.get('message', 'Unknown error')}"), 403
-
+        return render_template(
+            'error.html',
+            error_title="Failed to verify captcha.",
+            error_message=f"Please try again. {verificationResult.get('message', 'Unknown error')}"
+        ), 403
 
     logger.info(f'Question submission initiated IP: {getClientIp()}')
+
+    # Basic metadata fields
     board = request.form.get('board')
     subject = request.form.get('subject')
     topic = request.form.get('topic')
     difficulty = request.form.get('difficulty')
     level = request.form.get('level')
     component = request.form.get('component')
-    questionFile = request.files['questionFile'].read()
-    solutionFile = request.files['solutionFile'].read()
+    jpegQuality = int(request.form.get('imageQuality', 85))
 
+    # File handling
+    questionFiles = [f for f in request.files.getlist('questionFile') if f.filename]
+    solutionFiles = [f for f in request.files.getlist('solutionFile') if f.filename]
 
-    if insertQuestion(board, subject, topic, difficulty, level, component, questionFile, solutionFile, current_user.username, getClientIp()):
+    if not questionFiles:
+        logger.error(f'No question files provided IP: {getClientIp()}')
+        return "No question files provided", 400
+
+    # Process question images
+    if len(questionFiles) == 1:
+        logger.info(f'Single question image uploaded, skipping concatenation IP: {getClientIp()}')
+        processedQuestion = convert_single_image(questionFiles[0], quality=jpegQuality)
+    else:
+        processedQuestion = process_images(questionFiles, quality=jpegQuality)
+
+    if not processedQuestion:
+        logger.error(f'Failed to process question images IP: {getClientIp()}')
+        return "Failed to process question images", 500
+
+    # Process solution images (optional)
+    processedSolution = None
+    if solutionFiles:
+        if len(solutionFiles) == 1:
+            logger.info(f'Single solution image uploaded, skipping concatenation IP: {getClientIp()}')
+            processedSolution = convert_single_image(solutionFiles[0], quality=jpegQuality)
+        else:
+            processedSolution = process_images(solutionFiles, quality=jpegQuality)
+
+    # Insert to DB
+    if insertQuestion(
+        board, subject, topic, difficulty, level, component,
+        processedQuestion, processedSolution, current_user.username, getClientIp()
+    ):
         logger.info(f'Question submitted successfully IP: {getClientIp()}')
         return redirect(url_for('index'))
     else:

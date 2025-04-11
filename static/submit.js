@@ -213,30 +213,35 @@ document.addEventListener("DOMContentLoaded", function () {
     
   }
 
-  // File upload visual feedback
-  const fileInputs = document.querySelectorAll('input[type="file"]');
-  fileInputs.forEach((input) => {
-    input.addEventListener("change", function () {
-      const label = input.previousElementSibling;
-      if (this.files.length > 0) {
-        label.style.borderColor = "var(--picton-blue)";
-        label.style.backgroundColor = "rgba(62, 175, 228, 0.05)";
-        const span = label.querySelector("span");
-        if (span) {
-          span.textContent = this.files[0].name;
-        }
-      } else {
-        label.style.borderColor = "#e0e0e0";
-        label.style.backgroundColor = "";
-        const span = label.querySelector("span");
-        if (span) {
-          span.textContent = input.id.includes("Solution")
-            ? "Solution Image"
-            : "Question Image";
+  
+// File upload visual feedback
+const fileInputs = document.querySelectorAll('input[type="file"]');
+fileInputs.forEach((input) => {
+  input.addEventListener("change", function () {
+    const label = input.previousElementSibling;
+    if (this.files.length > 0) {
+      label.style.borderColor = "var(--picton-blue)";
+      label.style.backgroundColor = "rgba(62, 175, 228, 0.05)";
+      const span = label.querySelector("span");
+      if (span) {
+        if (this.files.length === 1) {
+          span.textContent = "1 file selected";
+        } else {
+          span.textContent = `${this.files.length} files selected`;
         }
       }
-    });
+    } else {
+      label.style.borderColor = "#e0e0e0";
+      label.style.backgroundColor = "";
+      const span = label.querySelector("span");
+      if (span) {
+        span.textContent = input.id.includes("Solution")
+          ? "Solution Images"
+          : "Question Images";
+      }
+    }
   });
+});
 
   // Form validation
   const forms = document.querySelectorAll("form");
