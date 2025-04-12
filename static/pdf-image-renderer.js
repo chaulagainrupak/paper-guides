@@ -95,7 +95,7 @@ async function fetchDocumentData() {
       const solutionElements = document.querySelectorAll('.paper-pdf.solution-pdf');
       solutionElements.forEach(element => {
         
-          renderPDFElement(element, data.question);
+          renderPDFElement(element, data.solution);
 
           // Update download button if it exists
           const downloadSolution = document.querySelector(".download-solution");
