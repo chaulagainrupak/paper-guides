@@ -67,7 +67,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(toggleContainer);
   
     const toggleButton = document.getElementById("toggleViewButton");
-    let showingQuestion = true;
+
+    if (location.href.includes("mark%20scheme")){
+      let showingQuestion = false;
+    }else{
+      let showingQuestion = true;
+    }
   
     toggleButton.addEventListener("click", () => {
       showingQuestion = !showingQuestion;
