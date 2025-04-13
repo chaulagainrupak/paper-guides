@@ -39,44 +39,54 @@ function showSolution(button) {
 
   const downloadQuestion = document.querySelector(".download-question");
   const downloadSolution = document.querySelector(".download-solution");
-  
+
   const paperTitle = document.querySelector(".paper-title");
 
   const questionFull = document.querySelector(".question-full");
   const solutionFull = document.querySelector(".solution-full");
 
-  if (solutionContainer.style.display === "none") {
-    questionContainer.style.display = "none";
-    downloadQuestion.style.display = "none"
+  const desktopButton = document.querySelector(".btn.solution-toggle");
+  const mobileButton = document.getElementById("toggleViewMobileButton");
 
-    solutionContainer.style.display = "block";
-    downloadSolution.style.display = "block"
+  const isShowingSolution = solutionContainer.style.display === "none";
 
-    button.setAttribute("style", "background-color: #F25C6A;");
-    button.innerText = "Hide Solution";
-    questionFull.style.display = "none";
-    solutionFull.style.display = "block";
-    paperTitle.innerText = paperTitle.innerText.replace(
-      "question paper",
-      "mark scheme",
-    );
-  } else {
-    questionContainer.style.display = "block";
-    downloadQuestion.style.display = "block"
+  // Toggle content
+  questionContainer.style.display = isShowingSolution ? "none" : "block";
+  solutionContainer.style.display = isShowingSolution ? "block" : "none";
+  downloadQuestion.style.display = isShowingSolution ? "none" : "block";
+  downloadSolution.style.display = isShowingSolution ? "block" : "none";
+  questionFull.style.display = isShowingSolution ? "none" : "block";
+  solutionFull.style.display = isShowingSolution ? "block" : "none";
 
-    solutionContainer.style.display = "none";
-    downloadSolution.style.display = "none"
+  paperTitle.innerText = paperTitle.innerText.replace(
+    isShowingSolution ? "question paper" : "mark scheme",
+    isShowingSolution ? "mark scheme" : "question paper"
+  );
 
-    button.setAttribute("style", "background-color:#5d71e0;");
-    button.innerText = "Show Solution";
-    questionFull.style.display = "block";
-    solutionFull.style.display = "none";
-    paperTitle.innerText = paperTitle.innerText.replace(
-      "mark scheme",
-      "question paper",
-    );
+  const newBgColor = isShowingSolution ? "#F25C6A" : "#5d71e0";
+  const newText = isShowingSolution ? "Hide Solution" : "Show Solution";
+
+  // Update desktop button
+  if (desktopButton) {
+    desktopButton.style.backgroundColor = newBgColor;
+    desktopButton.innerText = newText;
+  }
+
+  // Update mobile button
+  if (mobileButton) {
+    mobileButton.style.backgroundColor = newBgColor;
+
+    // Find the <i> inside the button for Font Awesome
+    const icon = mobileButton.querySelector("i");
+    if (icon) {
+      icon.classList.remove("fa-eye", "fa-eye-slash");
+      icon.classList.add(isShowingSolution ? "fa-eye-slash" : "fa-eye");
+    }
   }
 }
+
+
+
 
 function filterPaper(f, button) {
   // Ensure the filter value is treated as a string
