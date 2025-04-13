@@ -57,7 +57,9 @@ document.addEventListener("DOMContentLoaded", () => {
         align-items: center;
         justify-content: center;
         scale: 1.5;
-      ">
+      "
+onclick="show solution(this)">
+
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <circle cx="12" cy="12" r="3"></circle>
@@ -65,48 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </button>
     `;
     document.body.appendChild(toggleContainer);
-  
-    const toggleButton = document.getElementById("toggleViewButton");
 
-    if (location.href.includes("mark%20scheme")){
-      let showingQuestion = false;
-    }else{
-      let showingQuestion = true;
-    }
-  
-    toggleButton.addEventListener("click", () => {
-      showingQuestion = !showingQuestion;
-      
-      // NICE we just click the buttton on top to preserver the sync state
-      showSolution(
-        document.querySelectorAll(".btn.solution-toggle")[0]
-      );
-
-      // Update the icon based on what's being shown
-      if (showingQuestion) {
-        // Show eye icon (view solution)
-        toggleButton.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-        `;
-        toggleButton.style.background = "#5d71e0"; // Blue for question (matches solution-toggle button)
-      } else {
-        // Show eye-off icon (hide solution/return to question)
-        toggleButton.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-            <line x1="1" y1="1" x2="23" y2="23"></line>
-          </svg>
-        `;
-        toggleButton.style.background = "#e91e63"; // Pink for solution (using var(--pink-highlight) equivalent)
-      }
-    });
-  
-    // Initial state: show question, hide solution
-    document.querySelectorAll(".question-pdf").forEach(el => el.style.display = "block");
-    document.querySelectorAll(".solution-pdf").forEach(el => el.style.display = "none");
   }
   
 });
