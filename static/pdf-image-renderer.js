@@ -1,274 +1,389 @@
-// Document Renderer - Improved version that fetches data after page load
-document.addEventListener("DOMContentLoaded", () => {
-  // Initialize placeholder loaders for PDFs and images
-  document.querySelectorAll('.paper-pdf').forEach(element => {
-    element.innerHTML = getLoaderHTML();
-  });
+let preservedScrollPositions = {};
+let uniqueIdCounter = 0;
 
-  document.querySelectorAll('.question-image').forEach(element =>{
-    renderImageFromElement(element, element.getAttribute('data-compressed'))
+function ensureElementHasId(el) {
+  if (!el.id) {
+    el.id = "container-" + uniqueIdCounter++;
+  }
+  return el.id;
+}
+
+function attachScrollPreservation(container) {
+  ensureElementHasId(container);
+  container.addEventListener("scroll", () => {
+    preservedScrollPositions[container.id] = container.scrollTop;
   });
-  
-  document.querySelectorAll('.solution-image').forEach(element =>{
-    renderImageFromElement(element, element.getAttribute('data-compressed'))
+}
+
+function restoreScroll(container) {
+  const saved = preservedScrollPositions[container.id];
+  if (saved !== undefined) {
+    container.scrollTop = saved;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('.paper-pdf').forEach(el => {
+    el.innerHTML = getLoaderHTML();
   });
-  // Fetch the data after initial page load
+  document.querySelectorAll('.question-image').forEach(el => {
+    renderImageFromElement(el, el.getAttribute('data-compressed'));
+  });
+  document.querySelectorAll('.solution-image').forEach(el => {
+    renderImageFromElement(el, el.getAttribute('data-compressed'));
+  });
   fetchDocumentData();
+
+  if (isMobile() && document.querySelectorAll(".btn.solution-toggle").length > 0) {
+    const toggleContainer = document.createElement("div");
+    toggleContainer.id = "mobileToggleContainer";
+    toggleContainer.innerHTML = `
+      <button id="toggleViewButton" style="
+        position: fixed;
+        bottom: 50px;
+        left: 50px;
+        width: 60px;
+        height: 60px;
+        padding: 18px;
+        font-size: 18px;
+        background: #5d71e0;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 999999;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        scale: 1.5;
+      ">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    `;
+    document.body.appendChild(toggleContainer);
+  
+    const toggleButton = document.getElementById("toggleViewButton");
+    let showingQuestion = true;
+  
+    toggleButton.addEventListener("click", () => {
+      showingQuestion = !showingQuestion;
+      
+      // NICE we just click the buttton on top to preserver the sync state
+      showSolution(
+        document.querySelectorAll(".btn.solution-toggle")[0]
+      );
+
+      // Update the icon based on what's being shown
+      if (showingQuestion) {
+        // Show eye icon (view solution)
+        toggleButton.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        `;
+        toggleButton.style.background = "#5d71e0"; // Blue for question (matches solution-toggle button)
+      } else {
+        // Show eye-off icon (hide solution/return to question)
+        toggleButton.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+        `;
+        toggleButton.style.background = "#e91e63"; // Pink for solution (using var(--pink-highlight) equivalent)
+      }
+    });
+  
+    // Initial state: show question, hide solution
+    document.querySelectorAll(".question-pdf").forEach(el => el.style.display = "block");
+    document.querySelectorAll(".solution-pdf").forEach(el => el.style.display = "none");
+  }
+  
 });
 
-// Loader HTML template
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+function isSafari() {
+  return /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+}
+function isMobile() {
+  return /Mobi|Android/i.test(navigator.userAgent);
+}
+
 function getLoaderHTML() {
   return `
     <div style="
-      text-align: center;
-      padding: 20px;
-      background-color: #f0f0f0;
-      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 30px;
+      background: linear-gradient(135deg, #ffffff, #f0f4f8);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: fadeIn 0.5s ease-in-out;
     ">
-      <div style="
-        font-size: 24px;
-        margin-bottom: 10px;
-        color: #333;
-      ">
-        🕒 Loading Document
+      <div style="font-size: 22px; font-weight: 600; color: #444; margin-bottom: 15px;">
+        🕒 Loading Document...
       </div>
-      <p style="color: #666;">
-        Please wait while we fetch the document data...
-      </p>
       <div style="
-        width: 50px;
-        height: 50px;
-        border: 5px solid #f3f3f3;
-        border-top: 5px solid #3498db;
+        width: 70px;
+        height: 70px;
+        border: 6px solid #e0e0e0;
+        border-top: 6px solid #3498db;
         border-radius: 50%;
         animation: spin 1s linear infinite;
-        margin: 20px auto;
+        margin-bottom: 15px;
       "></div>
+      <p style="font-size: 15px; color: #666; text-align: center; margin: 0;">
+        Please wait while we fetch and prepare your document.
+      </p>
     </div>
     <style>
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
   `;
 }
 
-// Fetch document data from API
+function getProcessingLoaderHTML(status, delayMessage) {
+  return `
+    <div style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+      background: linear-gradient(135deg, #ffffff, #f0f4f8);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: fadeIn 0.5s ease-in-out;
+    ">
+      <div style="font-size: 20px; color: #444; margin-bottom: 10px;">
+        Processing data...
+      </div>
+      <h1 style="font-size: 26px; color: #444; margin-bottom: 5px;">
+        ${delayMessage}
+      </h1>
+      <div style="font-size: 14px; color: #888; margin-bottom: 15px;">
+        ${status}
+      </div>
+      <div style="
+        width: 70px;
+        height: 70px;
+        border: 6px solid #e0e0e0;
+        border-top: 6px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      "></div>
+    </div>
+    <style>
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+  `;
+}
+
+function updateLoaderMessage(status) {
+  // Random delay between 3 and 6 seconds.
+  const randomSec = Math.floor(Math.random() * 4) + 3;
+  const delayMessage = `Please wait approximately ${randomSec} seconds`;
+  document.querySelectorAll('.paper-pdf').forEach(el => {
+    el.innerHTML = getProcessingLoaderHTML(status, delayMessage);
+  });
+}
+
 async function fetchDocumentData() {
   try {
-    
-    // Make API request to get raw data
+    updateLoaderMessage("Fetching document data...");
     const response = await fetch(window.location.pathname, {
       headers: {
+        'X-Requested-With': 'XMLHttpRequest',
         'file-raw-data': 'true'
       }
     });
-    
     if (!response.ok) {
       throw new Error('Failed to fetch document data');
     }
-    
     const data = await response.json();
-    
-    // Process question and solution data
-    if (data.question) {
-      const questionElements = document.querySelectorAll('.paper-pdf.question-pdf');
-      questionElements.forEach(element => {
-
-          renderPDFElement(element, data.question);
-          
-          // Update download button if it exists
-          const downloadQuestion = document.querySelector(".download-question");
-          if (downloadQuestion) {
-            const pdfDataUrl = createPDFDataUrl(data.question);
-            downloadQuestion.setAttribute(
-              "onclick",
-              `downloadFile("${pdfDataUrl}", "question.pdf");`
-            );
-          }
-      
-        });
-    }
-    
-    if (data.solution) {
-      const solutionElements = document.querySelectorAll('.paper-pdf.solution-pdf');
-      solutionElements.forEach(element => {
-        
-          renderPDFElement(element, data.solution);
-
-          // Update download button if it exists
-          const downloadSolution = document.querySelector(".download-solution");
-          if (downloadSolution) {
-            const pdfDataUrl = createPDFDataUrl(data.solution);
-            downloadSolution.setAttribute(
-              "onclick",
-              `downloadFile("${pdfDataUrl}", "solution.pdf");`
-            );
-          }
-          
-      });
-    }
+    updateLoaderMessage("Processing data...");
+    processDocumentData(data);
   } catch (error) {
     console.error('Error fetching document data:', error);
-    document.querySelectorAll('.paper-pdf').forEach(element => {
-      element.innerHTML = getErrorHTML('Failed to load document data');
+    document.querySelectorAll('.paper-pdf').forEach(el => {
+      el.innerHTML = getErrorHTML('Failed to load document data');
     });
   }
 }
 
-// Create PDF data URL from base64 data
+function processDocumentData(data) {
+  if (data.question) {
+    document.querySelectorAll('.paper-pdf.question-pdf').forEach(el => {
+      renderPDFElement(el, data.question);
+      const downloadQuestion = document.querySelector(".download-question");
+      if (downloadQuestion) {
+        const pdfDataUrl = createPDFDataUrl(data.question);
+        downloadQuestion.setAttribute("onclick", `downloadFile("${pdfDataUrl}", "question.pdf");`);
+      }
+    });
+  }
+  if (data.solution) {
+    document.querySelectorAll('.paper-pdf.solution-pdf').forEach(el => {
+      renderPDFElement(el, data.solution);
+      const downloadSolution = document.querySelector(".download-solution");
+      if (downloadSolution) {
+        const pdfDataUrl = createPDFDataUrl(data.solution);
+        downloadSolution.setAttribute("onclick", `downloadFile("${pdfDataUrl}", "solution.pdf");`);
+      }
+    });
+  }
+}
+
 function createPDFDataUrl(base64Data) {
   try {
     const binaryData = atob(base64Data);
-    const uint8Array = new Uint8Array(
-      binaryData.split("").map((char) => char.charCodeAt(0))
-    );
+    const uint8Array = new Uint8Array(binaryData.split("").map(c => c.charCodeAt(0)));
     const decompressedData = pako.inflate(uint8Array);
     let binary = "";
-    decompressedData.forEach((byte) => {
-      binary += String.fromCharCode(byte);
-    });
-    const base64PDF = btoa(binary);
-    return `data:application/pdf;base64,${base64PDF}`;
+    decompressedData.forEach(byte => binary += String.fromCharCode(byte));
+    return `data:application/pdf;base64,${btoa(binary)}`;
   } catch (error) {
     console.error('Error creating PDF data URL:', error);
     return null;
   }
 }
 
-// Image rendering function
-function renderImageFromElement(element, base64Data) {
-  if (!element || !base64Data) {
-    element.innerHTML = getErrorHTML('No image data available');
+function renderImageFromElement(el, base64Data) {
+  if (!el || !base64Data) {
+    el.innerHTML = getErrorHTML('No image data available');
     return;
   }
-
   try {
     const decoded = decodeURIComponent(base64Data);
     const cleaned = cleanBase64(decoded);
     const binaryString = atob(cleaned);
-    const uint8Array = new Uint8Array(
-      binaryString.split("").map((char) => char.charCodeAt(0))
-    );
+    const uint8Array = new Uint8Array(binaryString.split("").map(c => c.charCodeAt(0)));
     const decompressedData = pako.inflate(uint8Array);
-    const blob = new Blob([decompressedData], {
-      type: "image/png",
-    });
+    const blob = new Blob([decompressedData], { type: "image/png" });
     const imageUrl = URL.createObjectURL(blob);
-
-    const imgElement = document.createElement("img");
-    imgElement.src = imageUrl;
-    imgElement.style.maxWidth = "100%";
-    imgElement.style.height = "auto";
-    imgElement.style.display = "block";
-    imgElement.style.margin = "0 auto";
-
-    element.textContent = "";
-    element.appendChild(imgElement);
-
-    imgElement.onload = () => URL.revokeObjectURL(imageUrl);
+    const imgEl = document.createElement("img");
+    imgEl.src = imageUrl;
+    imgEl.style.cssText = "max-width: 100%; height: auto; display: block; margin: 0 auto";
+    el.textContent = "";
+    el.appendChild(imgEl);
+    imgEl.onload = () => URL.revokeObjectURL(imageUrl);
   } catch (error) {
     console.error("Failed to render image:", error);
-    element.innerHTML = getErrorHTML('Image load error');
+    el.innerHTML = getErrorHTML('Image load error');
   }
 }
 
-// PDF rendering function with image fallback
-async function renderPDFElement(element, base64Data) {
-  if (!element || !base64Data) {
-    element.innerHTML = getErrorHTML('No document data available');
+async function lazyRenderPdfPages(pdf, container) {
+  const imageContainer = document.createElement("div");
+  imageContainer.style.cssText = "width: 100%; height: 100%; overflow-y: auto";
+  container.innerHTML = "";
+  container.appendChild(imageContainer);
+  attachScrollPreservation(imageContainer);
+  restoreScroll(imageContainer);
+  
+  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+    const pagePlaceholder = document.createElement("div");
+    pagePlaceholder.id = `page-${pageNum}`;
+    pagePlaceholder.style.cssText =
+      "min-height: 400px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; border: 1px solid #eee; border-radius: 8px";
+    pagePlaceholder.innerHTML = `
+      <div style="font-size: 16px; color: #777; margin-bottom: 10px;">Rendering page ${pageNum}</div>
+      <div style="width: 40px; height: 40px; border: 4px solid #ddd; border-top: 4px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+      <style>
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      </style>
+    `;
+    imageContainer.appendChild(pagePlaceholder);
+  }
+  
+  const observerOptions = { root: imageContainer, threshold: 0.1 };
+  const observer = new IntersectionObserver(async (entries, obs) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        const pagePlaceholder = entry.target;
+        const pageNum = parseInt(pagePlaceholder.id.split("-")[1], 10);
+        if (!pagePlaceholder.getAttribute("data-loaded")) {
+          try {
+            const page = await pdf.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 1.5 });
+            const canvas = document.createElement("canvas");
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const context = canvas.getContext("2d");
+            await page.render({ canvasContext: context, viewport }).promise;
+            pagePlaceholder.innerHTML = "";
+            pagePlaceholder.appendChild(canvas);
+            pagePlaceholder.setAttribute("data-loaded", "true");
+            obs.unobserve(pagePlaceholder);
+          } catch (err) {
+            console.error(`Error loading page ${pageNum}:`, err);
+            pagePlaceholder.textContent = `Error loading page ${pageNum}`;
+          }
+        }
+      }
+    }
+  }, observerOptions);
+  imageContainer.childNodes.forEach(child => observer.observe(child));
+}
+
+async function renderPDFElement(el, base64Data) {
+  if (!el || !base64Data) {
+    el.innerHTML = getErrorHTML('No document data available');
     return;
   }
-
   try {
     const binaryData = atob(base64Data);
-    const uint8Array = new Uint8Array(
-      binaryData.split("").map((char) => char.charCodeAt(0))
-    );
+    const uint8Array = new Uint8Array(binaryData.split("").map(c => c.charCodeAt(0)));
     const decompressedData = pako.inflate(uint8Array);
     let binary = "";
-    decompressedData.forEach((byte) => {
-      binary += String.fromCharCode(byte);
-    });
-    const base64PDF = btoa(binary);
-    const pdfDataUrl = `data:application/pdf;base64,${base64PDF}`;
-
-    // Create container for PDF or images
+    decompressedData.forEach(byte => binary += String.fromCharCode(byte));
+    const pdfDataUrl = `data:application/pdf;base64,${btoa(binary)}`;
+    
     const container = document.createElement("div");
-    container.style.width = "100%";
-    container.style.height = "100%";
-    container.style.overflow = "auto";
-
-    // Create PDF object element
-    const object = document.createElement("object");
-    object.type = "application/pdf";
-    object.width = "100%";
-    object.height = "100%";
-    object.data = pdfDataUrl;
-
-    // Add fallback handling
-    object.onerror = async () => {
-      try {
-        // Load PDF.js library if not already loaded
-        if (!window.pdfjsLib) {
-          await loadPDFJS();
+    container.style.cssText = "width: 100%; min-height: 600px; overflow: auto; position: relative";
+    // Preserve scroll position for this container.
+    ensureElementHasId(container);
+    attachScrollPreservation(container);
+    
+    if (isMobile() && !(isIOS() && isSafari())) {
+      if (!window.pdfjsLib) await loadPDFJS();
+      container.innerHTML = "";
+      container.appendChild(document.createElement("div")).innerHTML = getLoaderHTML();
+      const loadingTask = pdfjsLib.getDocument({ data: decompressedData });
+      const pdf = await loadingTask.promise;
+      lazyRenderPdfPages(pdf, container);
+    } else {
+      const objectElement = document.createElement("object");
+      objectElement.type = "application/pdf";
+      objectElement.style.cssText = "width: 100%; min-height: 600px; overflow: auto; display: block";
+      objectElement.data = pdfDataUrl;
+      objectElement.onerror = async () => {
+        try {
+          if (!window.pdfjsLib) await loadPDFJS();
+          container.innerHTML = "";
+          container.appendChild(document.createElement("div")).innerHTML = getLoaderHTML();
+          const loadingTask = pdfjsLib.getDocument({ data: decompressedData });
+          const pdf = await loadingTask.promise;
+          lazyRenderPdfPages(pdf, container);
+        } catch (error) {
+          console.error("Failed to render PDF as images lazily:", error);
+          container.innerHTML = getErrorHTML('Document conversion failed. Please try another browser.');
         }
-
-        // Create loading indicator
-        const loadingIndicator = document.createElement("div");
-        loadingIndicator.innerHTML = getLoaderHTML();
-        container.innerHTML = "";
-        container.appendChild(loadingIndicator);
-
-        // Load the PDF document
-        const loadingTask = pdfjsLib.getDocument({ data: decompressedData });
-        const pdf = await loadingTask.promise;
-
-        // Create scrollable container for images
-        const imageContainer = document.createElement("div");
-        imageContainer.style.width = "100%";
-        imageContainer.style.height = "100%";
-        imageContainer.style.overflowY = "auto";
-
-        // Render each page as an image
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-          const page = await pdf.getPage(pageNum);
-          const viewport = page.getViewport({ scale: 1.5 });
-
-          const canvas = document.createElement("canvas");
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-
-          const context = canvas.getContext("2d");
-          await page.render({
-            canvasContext: context,
-            viewport: viewport,
-          }).promise;
-
-          const img = document.createElement("img");
-          img.src = canvas.toDataURL();
-          img.style.width = "100%";
-          img.style.marginBottom = "20px";
-          imageContainer.appendChild(img);
-        }
-
-        // Replace loading indicator with image container
-        container.innerHTML = "";
-        container.appendChild(imageContainer);
-      } catch (error) {
-        console.error("Failed to render PDF as images:", error);
-        container.innerHTML = `
-          <div class="error-message" style="
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 5px;
-            text-align: center;
-            border: 1px solid #f5c6cb;
-          ">
-            <strong>📄 Document Conversion Failed</strong>
-            <p>We couldn't convert the document to images.</p>
+      };
+      objectElement.innerHTML = `
+        <div style="background-color: #e9ecef; padding: 15px; border-radius: 5px; text-align: center;">
+          <p style="color: #495057;">
+            Your browser doesn't support embedded PDFs.
             <a href="${pdfDataUrl}" style="
               display: inline-block;
               background-color: #007bff;
@@ -276,61 +391,36 @@ async function renderPDFElement(element, base64Data) {
               padding: 10px 15px;
               text-decoration: none;
               border-radius: 5px;
-              margin-top: 10px;
-            ">Download Document</a>
-          </div>
-        `;
-      }
-    };
-
-    // Add download link as fallback content
-    object.innerHTML = `
-      <div style="
-        background-color: #e9ecef;
-        padding: 15px;
-        border-radius: 5px;
-        text-align: center;
-      ">
-        <p style="color: #495057;">
-          Your browser doesn't support embedded PDFs.
-          <a href="${pdfDataUrl}" style="
-            display: inline-block;
-            background-color: #007bff;
-            color: white;
-            padding: 10px 15px;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-left: 10px;
-          ">Download the Document</a>
-        </p>
-      </div>
-    `;
-
-    container.appendChild(object);
-    element.innerHTML = "";
-    element.appendChild(container);
+              margin-left: 10px;
+            ">Download the Document</a>
+          </p>
+        </div>
+      `;
+      container.appendChild(objectElement);
+    }
+    
+    el.innerHTML = "";
+    el.appendChild(container);
+    restoreScroll(container);
   } catch (error) {
     console.error("Failed to render PDF:", error);
-    element.innerHTML = getErrorHTML('Document load error');
+    el.innerHTML = getErrorHTML('Document load error');
   }
 }
 
-// Helper function to load PDF.js library
 async function loadPDFJS() {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
     script.onload = resolve;
     script.onerror = reject;
     document.head.appendChild(script);
   });
 }
 
-// Error HTML template
 function getErrorHTML(message) {
   return `
-    <div class="error-message" style="
+    <div style="
       background-color: #f8d7da;
       color: #721c24;
       padding: 15px;
@@ -344,16 +434,14 @@ function getErrorHTML(message) {
   `;
 }
 
-// downloadFile function
 function downloadFile(dataUrl, filename) {
   const anchor = document.createElement("a");
   anchor.href = dataUrl;
   anchor.download = filename;
-  anchor.click();  // Trigger the download
-  anchor.remove(); // Clean up
+  anchor.click();
+  anchor.remove();
 }
 
-// Utility function for base64 handling
 function cleanBase64(str) {
   str = str.replace(/[^A-Za-z0-9+/=]/g, "");
   if (str.length % 4 !== 0) {
@@ -361,3 +449,4 @@ function cleanBase64(str) {
   }
   return str;
 }
+

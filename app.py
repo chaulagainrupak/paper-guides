@@ -149,7 +149,10 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
         question = renderQuestion(level, subject_name, full_year, component)
         
 
-        if request.headers.get("file-raw-data"):
+        isAjax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        wantsRawData = request.headers.get("file-raw-data")
+
+        if isAjax and wantsRawData:
             return jsonify({
                 "question": question[0],
                 "solution": question[1] 
@@ -208,13 +211,16 @@ def renderTopical(level ,subject_name, uuid):
 
     question = renderTopcial(uuid)
 
-    if request.headers.get("file-raw-data"):
+    isAjax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+    wantsRawData = request.headers.get("file-raw-data")
+
+    if isAjax and wantsRawData:
         return jsonify({
             "question": question[0],
             "solution": question[1] 
         })
 
-    return render_template('qp.html', file_data = f"Topical question paper for {subject_name} and topic: {question[3]}",  id=question[2], config=config)
+    return render_template('qp.html', file_data = f"Topical question paper for {subject_name} and topic: {question[3]}",  id=question[2])
 
 
 @app.route('/view-pdf/<type>/<uuid>')
@@ -254,15 +260,19 @@ def viewPdf(type, uuid):
     if paper == None:
         return render_template('404.html'), 404
 
+
+    isAjax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+    wantsRawData = request.headers.get("file-raw-data")
+
     if type == "question":
-        if request.headers.get("file-raw-data"):
+        if isAjax and wantsRawData:
             return jsonify({
             "question": paper["questionFile"],
             })
         return render_template('qp-full.html', title=title), 200
     elif type == "solution":
 
-        if request.headers.get("file-raw-data"):
+        if isAjax and wantsRawData:
             return jsonify({
             "question": paper["solutionFile"],
             })
