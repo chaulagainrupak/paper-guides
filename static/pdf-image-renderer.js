@@ -168,7 +168,8 @@ async function fetchDocumentData() {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
         'file-raw-data': 'true'
-      }
+      },
+      cache: 'no-store'
     });
     if (!response.ok) {
       throw new Error('Failed to fetch document data');
