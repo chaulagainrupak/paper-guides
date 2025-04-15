@@ -5,32 +5,101 @@
 {% endblock %}
 
 {% block section %}
-    <h1>Available Boards and Levels For: <span class="blue-highlight">{{mode}}</span></h1>
+  <h1>Available Boards and Levels For: <span class="blue-highlight mode">{{ mode }}</span></h1>
 
-    {% for board, boardData in config.items() %}
-        <div class="board-section">
-            <!-- Board Title -->
-            <h1>{{ board }}</h1>
+  <!-- This gets replaced entirely -->
+  <div id="dynamic-container">
+    <div id="loader" style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 30px;
+      background: linear-gradient(135deg, #ffffff, #f0f4f8);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: fadeIn 0.2s ease-in-out;
+      transition: opacity 0.2s ease-in-out;
+    ">
+      <div style="font-size: 22px; font-weight: 600; color: #444; margin-bottom: 15px;">
+        🕒 Loading Levels...
+      </div>
+    </div>
+  </div>
 
-            {% if board == "A Levels" %}
-                <div class="level-section">
-                    <!-- Level Link -->
-                    <a href="/{% if mode | lower == 'topicals'%}topicals{%else%}subjects{%endif%}/A level">
-                        CAIE: A Levels
-                    </a>
-                </div>
-            {% else %}
-                {% for level in boardData.levels %}
-                <div class="level-section">
-                    <!-- Level Link -->
-                    <a href="/{% if mode | lower == 'topicals'%}topicals{%else%}subjects{%endif%}/{{level}}">
-                        {{board}} Grade: {{ level }}
-                    </a>
-                </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-    {% endfor %}
+  <a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
 
-    <a href="/submit">Did not find the required paper? <span class="blue-highlight">Submit-It</span></a>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    .fade-out {
+      animation: fadeOut 0.2s ease-in-out;
+    }
+  </style>
+
+  <script src="{{ url_for('static', filename='utils.js') }}" defer></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const config = await getLocalConfig();
+      const mode = "{{ mode|lower }}";
+      const container = document.getElementById('dynamic-container');
+      const loader = document.getElementById('loader');
+
+      let html = "";
+
+      for (const board in config) {
+        const boardData = config[board];
+
+        html += `<div class="board-section"><h1>${board}</h1>`;
+
+        if (board === "A Levels") {
+          html += `
+            <div class="level-section">
+              <a href="/${mode === 'topicals' ? 'topicals' : 'subjects'}/A level">
+                CAIE: A Levels
+              </a>
+            </div>
+          `;
+        } else {
+          for (const level of boardData.levels) {
+            html += `
+              <div class="level-section">
+                <a href="/${mode === 'topicals' ? 'topicals' : 'subjects'}/${level}">
+                  ${board} Grade: ${level}
+                </a>
+              </div>
+            `;
+          }
+        }
+
+        html += `</div>`;
+      }
+
+      // Create a new div for content with fade-in
+      const newContent = document.createElement("div");
+      newContent.classList.add("fade-in");
+      newContent.innerHTML = html;
+
+      // Fade out loader first
+      loader.classList.add("fade-out");
+
+      // Wait for fade-out animation, then replace
+      setTimeout(() => {
+        container.innerHTML = "";
+        container.appendChild(newContent);
+      }, 200); // Adjusted to match the faster animation duration
+    });
+  </script>
 {% endblock %}
