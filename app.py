@@ -77,7 +77,9 @@ def index():
     logger.info(f'Home page accessed IP: {getClientIp()}')
     return render_template('index.html')
 
-
+@app.route('/getConfig', methods = ["GET"])
+def getConfig():
+    return (config), 200 
 """
 These routes handle the question papers list and link all the questions in a neat way
 
@@ -97,14 +99,12 @@ forgive me for this shit code.
 @app.route('/levels')
 def getLevels():
     logger.info(f'Levels page accessed IP: {getClientIp()}')
-    config = loadConfig(configPath)
-    return render_template('levels.html',config=config, mode = "papers" )
+    return render_template('levels.html', mode = "papers" )
 
 @app.route('/subjects/<level>')
 def getLevelSubjects(level):
     logger.info(f'Subjects page accessed for level {level} IP: {getClientIp()}')
-    config = loadConfig(configPath)
-    return render_template('subject.html', config = config, level = level, mode = "papers")
+    return render_template('subject.html', level = level)
 
 
 @app.route('/subjects/<level>/<subject_name>')

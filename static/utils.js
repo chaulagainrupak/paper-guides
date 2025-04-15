@@ -137,3 +137,36 @@ function filterPaper(f, button) {
 function openFullscreen(uuid, type) {
   window.open(`/view-pdf/${type}/${uuid}`);
 }
+
+
+document.addEventListener("DOMContentLoaded", getConfigServer);
+
+async function getConfigServer() {
+  let config = localStorage.getItem("config");
+  let configTTL = localStorage.getItem("configTTL");
+
+  // We store the config for 7 dayas as to reduce the amount of data the server has to send
+  if (!config || !configTTL || Number(configTTL) < Date.now()) {
+    response = await fetch('/getConfig');
+    
+    if (response){
+      configJson = await response.json();
+      localStorage.setItem("config", JSON.stringify(configJson));
+      localStorage.setItem("configTTL", Date.now() + 60 * 60 * 24 *7);
+    }
+  }
+}
+
+async function getLocalConfig() {
+  let config = localStorage.getItem("config");
+  let configTTL = localStorage.getItem("configTTL");
+  
+  if(config && configTTL > Date.now()){
+    return JSON.parse(config);
+  }else{
+    await getConfigServer();
+    
+    return JSON.parse(localStorage.getItem("config"));
+  }
+  
+}
