@@ -152,7 +152,7 @@ async function getConfigServer() {
     if (response){
       configJson = await response.json();
       localStorage.setItem("config", JSON.stringify(configJson));
-      localStorage.setItem("configTTL", Date.now() + 60 * 60 * 24 *7);
+      localStorage.setItem("configTTL", Date.now() + 60 * 60 * 24 *7 * 1000);
     }
   }
 }
