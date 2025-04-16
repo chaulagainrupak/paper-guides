@@ -3,38 +3,29 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}base{% endblock %}</title>
-
-        <script>
-            window.onload = function() {
-                let darkmode = localStorage.getItem("darkmode");
-                if (darkmode === "active") {
-                    document.body.classList.add("darkmode");
-                }
-            }
-        </script>
         
-   <meta
-  name="description"
-  content="
-  {% block metaDescription %}{% endblock %}, Access NEB and A Levels past papers and study resources for Grades 10, 11, and 12. Find SEE and A Level AS and A2 exam preparation materials, question banks, and study guides for subjects including Mathematics (9709), Physics (9702), Chemistry (9701), Biology (9700), and Computer Science (9618). Paper-Guides offers resources for CAIE students worldwide."
-/>
-<meta
-  name="keywords"
-  content="
-  {% block metaKeywords %}{% endblock %}, Paper-Guides, Paper Guides, paper guide, paper guides, A levels, A Levels, A-levels, A levels past papers, A Levels past papers, A-levels past papers, CAIE past papers, NEB past papers, NEB Grade 10, NEB Grade 11, NEB Grade 12, SEE exam, A Level Mathematics, A Level Physics, A Level Chemistry, A Level Biology, A Level Computer Science, 9701, 9709, 9702, 9700, 9618, A level question generator, A level study guides"
-/>
-<meta
-  property="og:title"
-  content="Access NEB and A Levels Past Papers and Study Guides | Paper-Guides"
-/>
-<meta
-  property="og:description"
-  content="Access NEB, SEE, and A Levels past papers and study resources for grades 10, 11, and 12. Prepare with question generators, model papers, and comprehensive materials for NEB, SEE, and A Levels, including Mathematics (9709), Physics (9702), Chemistry (9701), Biology (9700), and Computer Science (9618)."
-/>
-<meta
-  property="og:image"
-  content="{{ url_for('static', filename='images/logo.svg') }}"
-/>
+        <meta
+          name="description"
+          content="
+          {% block metaDescription %}{% endblock %}, Access NEB and A Levels past papers and study resources for Grades 10, 11, and 12. Find SEE and A Level AS and A2 exam preparation materials, question banks, and study guides for subjects including Mathematics (9709), Physics (9702), Chemistry (9701), Biology (9700), and Computer Science (9618). Paper-Guides offers resources for CAIE students worldwide."
+        />
+        <meta
+          name="keywords"
+          content="
+          {% block metaKeywords %}{% endblock %}, Paper-Guides, Paper Guides, paper guide, paper guides, A levels, A Levels, A-levels, A levels past papers, A Levels past papers, A-levels past papers, CAIE past papers, NEB past papers, NEB Grade 10, NEB Grade 11, NEB Grade 12, SEE exam, A Level Mathematics, A Level Physics, A Level Chemistry, A Level Biology, A Level Computer Science, 9701, 9709, 9702, 9700, 9618, A level question generator, A level study guides"
+        />
+        <meta
+          property="og:title"
+          content="Access NEB and A Levels Past Papers and Study Guides | Paper-Guides"
+        />
+        <meta
+          property="og:description"
+          content="Access NEB, SEE, and A Levels past papers and study resources for grades 10, 11, and 12. Prepare with question generators, model papers, and comprehensive materials for NEB, SEE, and A Levels, including Mathematics (9709), Physics (9702), Chemistry (9701), Biology (9700), and Computer Science (9618)."
+        />
+        <meta
+          property="og:image"
+          content="{{ url_for('static', filename='images/logo.svg') }}"
+        />
 
         <meta name="author" content="Paper-Guides" />
         <meta name="robots" content="index, follow" />
@@ -45,52 +36,46 @@
             href="{{ url_for('static', filename='styles.css') }}"
         />
 
-        <script
-            src="{{ url_for('static', filename='darkmode.js')}}"
-            defer
-        ></script>
-
-        <script
-            src="{{ url_for('static', filename='utils.js')}}"
-            defer
-        ></script>
-
-        <!-- Dynamically load analytics and Cloudflare Turnstile -->
-        <script>
-            window.onload = function () {
-                // Load Google Analytics
-                let gaScript = document.createElement("script");
-                gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-2B6JNCMRZ4";
-                document.body.appendChild(gaScript);
-
-                gaScript.onload = function () {
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag() {
-                        dataLayer.push(arguments);
-                    }
-                    gtag("js", new Date());
-                    gtag("config", "G-2B6JNCMRZ4");
-                };
-            };
-        </script>
-
+        <!-- Load JS files -->
+        <script src="{{ url_for('static', filename='utils.js')}}" defer></script>
+        <script src="{{ url_for('static', filename='darkmode.js')}}" defer></script>
         <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
 
-        <script defer>
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag("js", new Date());
-
-            gtag("config", "G-SZDFC8YDWK");
+        <!-- Analytics setup with nonce properly applied -->
+        <script nonce="ZcW8rzUXG6Dc9OkZ">
+            // Initial dark mode check
+            document.addEventListener('DOMContentLoaded', function() {
+                const savedDarkMode = localStorage.getItem("darkmode");
+                if (savedDarkMode === "active") {
+                    document.body.classList.add("darkmode");
+                }
+                
+                // Load analytics asynchronously
+                const loadAnalytics = function() {
+                    // Google Analytics
+                    let gaScript = document.createElement("script");
+                    gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-2B6JNCMRZ4";
+                    gaScript.async = true;
+                    document.body.appendChild(gaScript);
+                    
+                    gaScript.onload = function() {
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag() { dataLayer.push(arguments); }
+                        gtag("js", new Date());
+                        gtag("config", "G-2B6JNCMRZ4");
+                        gtag("config", "G-SZDFC8YDWK");
+                    };
+                };
+                
+                // Load analytics with slight delay to prioritize page rendering
+                setTimeout(loadAnalytics, 100);
+            });
         </script>
 
         <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         />
-
     </head>
 
     <body>
@@ -156,13 +141,12 @@
             {% block prompt %} {% endblock %}
             
         {% if request.path in ['/question-generator', '/question-gen'] and current_user.role not in ["admin", "moderator", "adFree"] %}
-            <head>
-                <script
-                    async
-                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
-                    crossorigin="anonymous"
-                ></script>
-            </head>
+            <script
+                async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
+                crossorigin="anonymous"
+                nonce="ZcW8rzUXG6Dc9OkZ"
+            ></script>
         {% elif (
             (request.path.startswith('/level') or
             request.path.startswith('/subjects') or
@@ -171,13 +155,12 @@
         ) %}
             <div class="promo-space">"Advertisement Space"</div>
 
-            <head>
-                <script
-                    async
-                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
-                    crossorigin="anonymous"
-                ></script>
-            </head>
+            <script
+                async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
+                crossorigin="anonymous"
+                nonce="ZcW8rzUXG6Dc9OkZ"
+            ></script>
         {% endif %}
 
         </div>
@@ -225,7 +208,6 @@
             </svg>
         </button>
     </body>
-    <script src="{{url_for('static', filename='darkmode.js')}}" defer></script>
     <style>
         #theme-switch svg:last-child {
             display: none;
