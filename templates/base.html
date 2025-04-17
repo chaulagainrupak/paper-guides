@@ -40,7 +40,7 @@
             // Check dark mode before any rendering happens
             const savedDarkMode = localStorage.getItem("darkmode");
             if (savedDarkMode === "active") {
-                document.documentElement.classList.add("darkmode");
+                document.body.classList.add("darkmode");
             }
         </script>
 
