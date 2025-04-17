@@ -35,6 +35,14 @@
             rel="stylesheet"
             href="{{ url_for('static', filename='styles.css') }}"
         />
+        
+        <script>
+            // Check dark mode before any rendering happens
+            const savedDarkMode = localStorage.getItem("darkmode");
+            if (savedDarkMode === "active") {
+                document.documentElement.classList.add("darkmode");
+            }
+        </script>
 
         <!-- Load JS files -->
         <script src="{{ url_for('static', filename='utils.js')}}" defer></script>
