@@ -22,53 +22,52 @@
     ></script>
 </head>
 
-<div class="paper-pdf question-pdf">
-    <object type="application/pdf" width="100%" height="600px"></object>
+    <div class="paper-pdf question-pdf">
+        <object type="application/pdf" width="100%" height="600px"></object>
+    </div>
 
     <button id="fullscreenToogleQuesionAndSolution" style="
-        position: fixed;
-        bottom: 50px;
-        left: 50px;
-        width: 60px;
-        height: 60px;
-        padding: 18px;
-        font-size: 18px;
-        background: gray;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        z-index: 999999;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        scale: 1.5;
-    ">
-        <i id="toggleIcon" class="fas fa-eye"></i>
-    </button>
-</div>
+    position: fixed;
+    bottom: 50px;
+    left: 50px;
+    width: 60px;
+    height: 60px;
+    padding: 18px;
+    font-size: 18px;
+    background: gray;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 999999;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    scale: 1.2;
+">
+    <i id="toggleIcon" class="fas fa-eye"></i>
+</button>
 
-<script>
-    window.addEventListener('DOMContentLoaded', () => {
-        const url = window.location.href;
-        const button = document.getElementById('fullscreenToogleQuesionAndSolution');
-        const icon = document.getElementById('toggleIcon');
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const url = window.location.href;
+            const button = document.getElementById('fullscreenToogleQuesionAndSolution');
+            const icon = document.getElementById('toggleIcon');
 
-        if (url.includes('question')) {
-            button.style.background = 'var(--blue-highlight)';
-            icon.className = 'fas fa-eye';
-            button.onclick = () => {
-                window.open(url.replace('question', 'solution'), '_blank');
-            };
-        } else if (url.includes('solution')) {
-            button.style.background = 'var(--pink-highlight)';
-            icon.className = 'fas fa-eye-slash';
-            button.onclick = () => {
-                window.open(url.replace('solution', 'question'), '_blank');
-            };
-        }
-    });
-</script>   
+            if (url.includes('question')) {
+                button.style.background = 'var(--blue-highlight)';
+                icon.className = 'fas fa-eye';
+                button.onclick = () => {
+                    window.open(url.replace('question', 'solution'), '_blank');
+                };
+            } else if (url.includes('solution')) {
+                button.style.background = 'var(--pink-highlight)';
+                icon.className = 'fas fa-eye-slash';
+                button.onclick = () => {
+                    window.open(url.replace('solution', 'question'), '_blank');
+                };
+            }
+        });
+    </script>   
 
 {% endblock %}
