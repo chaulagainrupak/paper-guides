@@ -392,7 +392,6 @@ def submitQuestion():
     difficulty = request.form.get('difficulty')
     level = request.form.get('level')
     component = request.form.get('component')
-    jpegQuality = int(request.form.get('imageQuality', 85))
 
     # File handling
     questionFiles = [f for f in request.files.getlist('questionFile') if f.filename]
@@ -405,9 +404,9 @@ def submitQuestion():
     # Process question images
     if len(questionFiles) == 1:
         logger.info(f'Single question image uploaded, skipping concatenation IP: {getClientIp()}')
-        processedQuestion = convert_single_image(questionFiles[0], quality=jpegQuality)
+        processedQuestion = convert_single_image(questionFiles[0])
     else:
-        processedQuestion = process_images(questionFiles, quality=jpegQuality)
+        processedQuestion = process_images(questionFiles)
 
     if not processedQuestion:
         logger.error(f'Failed to process question images IP: {getClientIp()}')
@@ -418,9 +417,9 @@ def submitQuestion():
     if solutionFiles:
         if len(solutionFiles) == 1:
             logger.info(f'Single solution image uploaded, skipping concatenation IP: {getClientIp()}')
-            processedSolution = convert_single_image(solutionFiles[0], quality=jpegQuality)
+            processedSolution = convert_single_image(solutionFiles[0])
         else:
-            processedSolution = process_images(solutionFiles, quality=jpegQuality)
+            processedSolution = process_images(solutionFiles)
 
     # Insert to DB
     if insertQuestion(
