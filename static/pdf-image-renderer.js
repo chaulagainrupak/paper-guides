@@ -214,7 +214,7 @@ function renderImageFromElement(el, base64Data) {
     const imageUrl = URL.createObjectURL(blob);
     const imgEl = document.createElement("img");
     imgEl.src = imageUrl;
-    imgEl.style.cssText = "max-width: 100%; height: auto; display: block; margin: 0 auto";
+    imgEl.style.cssText = "width: 100%; height: auto; display: block; margin: 0 auto";
     el.textContent = "";
     el.appendChild(imgEl);
     imgEl.onload = () => URL.revokeObjectURL(imageUrl);
