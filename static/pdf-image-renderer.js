@@ -169,7 +169,7 @@ function processDocumentData(data) {
       const downloadQuestion = document.querySelector(".download-question");
       if (downloadQuestion) {
         const pdfDataUrl = createPDFDataUrl(data.question);
-        downloadQuestion.setAttribute("onclick", `downloadFile("${pdfDataUrl}", "question.pdf");`);
+        downloadQuestion.setAttribute("onclick", `downloadFile("${pdfDataUrl}", "${document.querySelector(".paper-title")}");`);
       }
     });
   }
@@ -179,7 +179,7 @@ function processDocumentData(data) {
       const downloadSolution = document.querySelector(".download-solution");
       if (downloadSolution) {
         const pdfDataUrl = createPDFDataUrl(data.solution);
-        downloadSolution.setAttribute("onclick", `downloadFile("${pdfDataUrl}", "solution.pdf");`);
+        downloadSolution.setAttribute("onclick", `downloadFile("${pdfDataUrl}", "${document.querySelector(".paper-title").replace('question paper', 'mark scheme')}");`);
       }
     });
   }
