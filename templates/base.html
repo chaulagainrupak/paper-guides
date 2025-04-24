@@ -88,6 +88,7 @@
 
     <body>
         <div class="cf-turnstile" data-sitekey="0x4AAAAAAA1LpisXytC6T07b"></div>
+
         <div class="navbar">
             <a href="{{ url_for('index')}}"
                 >Paper-<span class="blue-highlight">Guides</span></a
@@ -227,4 +228,14 @@
             display: block;
         }
     </style>
+
+    <script>
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '0.0.0.0') {
+            const turnstileElement = document.querySelectorAll('.cf-turnstile');
+
+            turnstileElement.forEach((element) => {
+                element.setAttribute('data-sitekey', '1x00000000000000000000AA'); 
+            });
+        }
+    </script>
 </html>
