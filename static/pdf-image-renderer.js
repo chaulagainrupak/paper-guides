@@ -1,3 +1,26 @@
+let preservedScrollPositions = {};
+let uniqueIdCounter = 0;
+
+function ensureElementHasId(el) {
+  if (!el.id) {
+    el.id = "container-" + uniqueIdCounter++;
+  }
+  return el.id;
+}
+
+function attachScrollPreservation(container) {
+  ensureElementHasId(container);
+  container.addEventListener("scroll", () => {
+    preservedScrollPositions[container.id] = container.scrollTop;
+  });
+}
+
+function restoreScroll(container) {
+  const saved = preservedScrollPositions[container.id];
+  if (saved !== undefined) {
+    container.scrollTop = saved;
+  }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll('.paper-pdf').forEach(el => {
@@ -33,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         display: flex;
         align-items: center;
         justify-content: center;
-        scale: 1.2;
+        scale: 1.5;
       "
       onclick="showSolution(this)">
         <i class="fas fa-eye"></i>
@@ -169,7 +192,7 @@ function processDocumentData(data) {
       const downloadQuestion = document.querySelector(".download-question");
       if (downloadQuestion) {
         const pdfDataUrl = createPDFDataUrl(data.question);
-        downloadQuestion.setAttribute("onclick", `downloadFile("${pdfDataUrl}", "${document.querySelector(".paper-title")}");`);
+        downloadQuestion.setAttribute("onclick", `downloadFile("${pdfDataUrl}", "${document.querySelector(".paper-title").textContent}");`);
       }
     });
   }
@@ -179,7 +202,7 @@ function processDocumentData(data) {
       const downloadSolution = document.querySelector(".download-solution");
       if (downloadSolution) {
         const pdfDataUrl = createPDFDataUrl(data.solution);
-        downloadSolution.setAttribute("onclick", `downloadFile("${pdfDataUrl}", "${document.querySelector(".paper-title").replace('question paper', 'mark scheme')}");`);
+        downloadSolution.setAttribute("onclick", `downloadFile("${pdfDataUrl}", "${document.querySelector(".paper-title").textContent.trim().replace("question paper", "mark scheme")}");`);
       }
     });
   }
@@ -229,6 +252,8 @@ async function lazyRenderPdfPages(pdf, container) {
   imageContainer.style.cssText = "width: 100%; height: 100%; overflow-y: auto";
   container.innerHTML = "";
   container.appendChild(imageContainer);
+  attachScrollPreservation(imageContainer);
+  restoreScroll(imageContainer);
   
   for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
     const pagePlaceholder = document.createElement("div");
@@ -290,6 +315,9 @@ async function renderPDFElement(el, base64Data) {
     
     const container = document.createElement("div");
     container.style.cssText = "width: 100%; min-height: 600px; overflow: auto; position: relative";
+    // Preserve scroll position for this container.
+    ensureElementHasId(container);
+    attachScrollPreservation(container);
     
     if (isMobile() && !(isIOS() && isSafari())) {
       if (!window.pdfjsLib) await loadPDFJS();
@@ -337,6 +365,7 @@ async function renderPDFElement(el, base64Data) {
     
     el.innerHTML = "";
     el.appendChild(container);
+    restoreScroll(container);
   } catch (error) {
     console.error("Failed to render PDF:", error);
     el.innerHTML = getErrorHTML('Document load error');
