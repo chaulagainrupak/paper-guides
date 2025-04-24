@@ -192,7 +192,7 @@ function processDocumentData(data) {
       const downloadQuestion = document.querySelector(".download-question");
       if (downloadQuestion) {
         const pdfDataUrl = createPDFDataUrl(data.question);
-        downloadQuestion.setAttribute("onclick", `downloadFile("${pdfDataUrl}", "${document.querySelector(".paper-title").textContent}");`);
+        downloadQuestion.setAttribute("onclick", `downloadFile("${pdfDataUrl}", "${document.querySelector(".paper-title").textContent.trim()}");`);
       }
     });
   }
@@ -398,13 +398,20 @@ function getErrorHTML(message) {
   `;
 }
 
-function downloadFile(dataUrl, filename) {
-  const anchor = document.createElement("a");
-  anchor.href = dataUrl;
-  anchor.download = filename;
-  anchor.click();
-  anchor.remove();
+function downloadFile(pdfDataUrl, fileName) {
+  if (!pdfDataUrl) {
+    console.error("Invalid or null PDF data URL");
+    alert("Download failed: No PDF data available.");
+    return;
+  }
+  const link = document.createElement('a');
+  link.href = pdfDataUrl;
+  link.download = fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
+
 
 function cleanBase64(str) {
   str = str.replace(/[^A-Za-z0-9+/=]/g, "");
