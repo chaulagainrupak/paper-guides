@@ -309,8 +309,12 @@ def getQuestions(level, subject_name, year):
         question_name = []
         
         for component, full_year in zip(components, full_years):
-            question_name.append(f'{subject_name}, {component}, Year: {full_year} question paper')
-            
+
+            if "insert" in  full_year.lower():
+                question_name.append(f'{subject_name}, {component}, Year: {full_year} insert')
+            else:
+                question_name.append(f'{subject_name}, {component}, Year: {full_year} question paper')
+                
         logger.info(f"Questions retrieved successfully for level {level}, subject {subject_name}, year {year}")
         return question_name
         
