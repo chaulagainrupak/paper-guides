@@ -141,6 +141,8 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
             full_year = file_data.split('Year: ')[1].split(' question')[0]
         elif "mark" in file_data:
             full_year = file_data.split('Year: ')[1].split(' mark')[0]
+        elif "topical" in file_data.lower():
+            full_year = file_data.split('Year: ')[1]
         else:
             return render_template('404.html'), 404
 
