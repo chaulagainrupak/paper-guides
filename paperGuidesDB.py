@@ -311,7 +311,7 @@ def getQuestions(level, subject_name, year):
         for component, full_year in zip(components, full_years):
 
             if "insert" in  full_year.lower():
-                question_name.append(f'{subject_name}, {component}, Year: {full_year} insert')
+                question_name.append(f'{subject_name}, {component}, Year: {full_year}')
             else:
                 question_name.append(f'{subject_name}, {component}, Year: {full_year} question paper')
                 
