@@ -136,20 +136,21 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
         # Extract session (e.g., "May / June" from "Year: 2023 (May / June)")
         session = file_data.split('(')[2].split(')')[0].strip()
 
+        isInsert = False
         # Extract and validate full year
         if "question" in file_data:
             full_year = file_data.split('Year: ')[1].split(' question')[0]
         elif "mark" in file_data:
             full_year = file_data.split('Year: ')[1].split(' mark')[0]
-        elif "topical" in file_data.lower():
+        elif "insert" in file_data.lower():
+            isInsert = True
             full_year = file_data.split('Year: ')[1]
         else:
             return render_template('404.html'), 404
 
 
-        # Render question
         question = renderQuestion(level, subject_name, full_year, component)
-        
+
 
         isAjax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
         wantsRawData = request.headers.get("file-raw-data")

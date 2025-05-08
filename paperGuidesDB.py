@@ -404,7 +404,7 @@ def renderQuestion(level, subject_name, year, component):
         db = connection.cursor()
         
         # Single query to fetch both questionFile and uuid
-        if level == 'A level' or level == 'AS level':
+        if level == 'A level' or level == 'AS level' or level == 'A Levels':
             query = '''
             SELECT questionFile, solutionFile, uuid
             FROM papers
