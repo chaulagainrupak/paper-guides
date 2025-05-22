@@ -1,113 +1,114 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}base{% endblock %}</title>
-        
-        <meta
-          name="description"
-          content="
-          {% block metaDescription %}{% endblock %}, Access NEB and A Levels past papers and study resources for Grades 10, 11, and 12. Find SEE and A Level AS and A2 exam preparation materials, question banks, and study guides for subjects including Mathematics (9709), Physics (9702), Chemistry (9701), Biology (9700), and Computer Science (9618). Paper-Guides offers resources for CAIE students worldwide."
-        />
-        <meta
-          name="keywords"
-          content="
-          {% block metaKeywords %}{% endblock %}, Paper-Guides, Paper Guides, paper guide, paper guides, A levels, A Levels, A-levels, A levels past papers, A Levels past papers, A-levels past papers, CAIE past papers, NEB past papers, NEB Grade 10, NEB Grade 11, NEB Grade 12, SEE exam, A Level Mathematics, A Level Physics, A Level Chemistry, A Level Biology, A Level Computer Science, 9701, 9709, 9702, 9700, 9618, A level question generator, A level study guides"
-        />
-        <meta
-          property="og:title"
-          content="Access NEB and A Levels Past Papers and Study Guides | Paper-Guides"
-        />
-        <meta
-          property="og:description"
-          content="Access NEB, SEE, and A Levels past papers and study resources for grades 10, 11, and 12. Prepare with question generators, model papers, and comprehensive materials for NEB, SEE, and A Levels, including Mathematics (9709), Physics (9702), Chemistry (9701), Biology (9700), and Computer Science (9618)."
-        />
-        <meta
-          property="og:image"
-          content="{{ url_for('static', filename='images/logo.svg') }}"
-        />
 
-        <meta name="author" content="Paper-Guides" />
-        <meta name="robots" content="index, follow" />
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}{% endblock %}</title>
 
-        <link rel="icon" type="image/png" href="/static/images/logo.ico" />
-        <link
-            rel="stylesheet"
-            href="{{ url_for('static', filename='styles.css') }}"
-        />
+    <meta name="description"
+        content="
+          {% block metaDescription %}{% endblock %}, Access NEB and A Levels past papers and study resources for Grades 10, 11, and 12. Find SEE and A Level AS and A2 exam preparation materials, question banks, and study guides for subjects including Mathematics (9709), Physics (9702), Chemistry (9701), Biology (9700), and Computer Science (9618). Paper-Guides offers resources for CAIE students worldwide." />
+    <meta name="keywords"
+        content="
+          {% block metaKeywords %}{% endblock %}, Paper-Guides, Paper Guides, paper guide, paper guides, A levels, A Levels, A-levels, A levels past papers, A Levels past papers, A-levels past papers, CAIE past papers, NEB past papers, NEB Grade 10, NEB Grade 11, NEB Grade 12, SEE exam, A Level Mathematics, A Level Physics, A Level Chemistry, A Level Biology, A Level Computer Science, 9701, 9709, 9702, 9700, 9618, A level question generator, A level study guides" />
+
         
-        <script>
-            // Check dark mode before any rendering happens
+    <meta property="og:type" content="website">
+    <meta property="og:title"
+        content="{{ ogTitle or 'Access NEB and A Levels Past Papers and Study Guides | Paper-Guides' }}" />
+    <meta property="og:description"
+        content="{{ ogDescription or 'Access NEB, SEE, and A Levels past papers and study resources for grades 10, 11, and 12. Prepare with question generators, model papers, and comprehensive materials for NEB, SEE, and A Levels, including Mathematics (9709), Physics (9702), Chemistry (9701), Biology (9700), and Computer Science (9618).' }}" />
+    <meta property="og:image" content="{{ ogImage or url_for('static', filename='images/logo.svg') }}" />
+
+
+    <meta name="author" content="Paper-Guides" />
+    <meta name="robots" content="index, follow" />
+
+    <link rel="icon" type="image/png" href="/static/images/logo.ico" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+
+    <script>
+        // Check dark mode before any rendering happens
+        const savedDarkMode = localStorage.getItem("darkmode");
+        if (savedDarkMode === "active") {
+            document.body.classList.add("darkmode");
+        }
+    </script>
+
+    <!-- Load JS files -->
+    <script src="{{ url_for('static', filename='utils.js')}}" defer></script>
+    <script src="{{ url_for('static', filename='darkmode.js')}}" defer></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
+
+    <!-- Analytics setup with nonce properly applied -->
+    <script nonce="ZcW8rzUXG6Dc9OkZ">
+        // Initial dark mode check
+        document.addEventListener('DOMContentLoaded', function () {
             const savedDarkMode = localStorage.getItem("darkmode");
             if (savedDarkMode === "active") {
                 document.body.classList.add("darkmode");
             }
-        </script>
 
-        <!-- Load JS files -->
-        <script src="{{ url_for('static', filename='utils.js')}}" defer></script>
-        <script src="{{ url_for('static', filename='darkmode.js')}}" defer></script>
-        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
+            // Load analytics asynchronously
+            const loadAnalytics = function () {
+                // Google Analytics
+                let gaScript = document.createElement("script");
+                gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-2B6JNCMRZ4";
+                gaScript.async = true;
+                document.body.appendChild(gaScript);
 
-        <!-- Analytics setup with nonce properly applied -->
-        <script nonce="ZcW8rzUXG6Dc9OkZ">
-            // Initial dark mode check
-            document.addEventListener('DOMContentLoaded', function() {
-                const savedDarkMode = localStorage.getItem("darkmode");
-                if (savedDarkMode === "active") {
-                    document.body.classList.add("darkmode");
-                }
-                
-                // Load analytics asynchronously
-                const loadAnalytics = function() {
-                    // Google Analytics
-                    let gaScript = document.createElement("script");
-                    gaScript.src = "https://www.googletagmanager.com/gtag/js?id=G-2B6JNCMRZ4";
-                    gaScript.async = true;
-                    document.body.appendChild(gaScript);
-                    
-                    gaScript.onload = function() {
-                        window.dataLayer = window.dataLayer || [];
-                        function gtag() { dataLayer.push(arguments); }
-                        gtag("js", new Date());
-                        gtag("config", "G-2B6JNCMRZ4");
-                        gtag("config", "G-SZDFC8YDWK");
-                    };
+                gaScript.onload = function () {
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag() { dataLayer.push(arguments); }
+                    gtag("js", new Date());
+                    gtag("config", "G-2B6JNCMRZ4");
+                    gtag("config", "G-SZDFC8YDWK");
                 };
-                
-                // Load analytics with slight delay to prioritize page rendering
-                setTimeout(loadAnalytics, 100);
-            });
-        </script>
+            };
 
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        />
-    </head>
+            // Load analytics with slight delay to prioritize page rendering
+            setTimeout(loadAnalytics, 100);
+        });
+    </script>
 
-    <body>
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAAA1LpisXytC6T07b"></div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
 
-        <div class="navbar">
-            <a href="{{ url_for('index')}}"
-                >Paper-<span class="blue-highlight">Guides</span></a
-            >
-            <div class="navlinks">
+<body>
+    <div class="cf-turnstile" data-sitekey="0x4AAAAAAA1LpisXytC6T07b"></div>
+
+    <div class="navbar">
+        <a href="{{ url_for('index')}}">Paper-<span class="blue-highlight">Guides</span></a>
+        <div class="navlinks">
+            <a href="{{ url_for('getLevels') }}">Past Papers</a>
+            <a href="{{ url_for('modelQuestions') }}">Topical Papers</a>
+            <a href="{{ url_for('questionGenerator') }}">Question Generator</a>
+            <a href="{{ url_for('submit') }}">Submit</a>
+        </div>
+        <div class="navright">
+            <a href="{{url_for('stats')}}">
+                <span class="blue-highlight">Statistics</span></a>
+            <a href="{{ url_for('about') }}"><span class="pink-highlight">About</span></a>
+
+            {%if not current_user.is_authenticated%}
+            <a href="{{url_for('login')}}">Login</a>
+            {%else%}
+            <a href="{{url_for('logout')}}">Log-Out</a>
+            {%endif%}
+        </div>
+        <div class="hamburger">
+            <input type="checkbox" id="hamburger" />
+            <label for="hamburger">&#9776;</label>
+            <div class="hamitems">
                 <a href="{{ url_for('getLevels') }}">Past Papers</a>
                 <a href="{{ url_for('modelQuestions') }}">Topical Papers</a>
-                <a href="{{ url_for('questionGenerator') }}"
-                    >Question Generator</a
-                >
+                <a href="{{ url_for('questionGenerator') }}">Question Generator</a>
                 <a href="{{ url_for('submit') }}">Submit</a>
-            </div>
-            <div class="navright">
+
                 <a href="{{url_for('stats')}}">
-                    <span class="blue-highlight">Statistics</span></a
-                >
-                <a href="{{ url_for('about') }}"
-                    ><span class="pink-highlight">About</span></a
-                >
+                    <span class="blue-highlight">Statistics</span></a>
+
+                <a href="{{ url_for('about') }}"><span class="pink-highlight">About</span></a>
 
                 {%if not current_user.is_authenticated%}
                 <a href="{{url_for('login')}}">Login</a>
@@ -115,69 +116,38 @@
                 <a href="{{url_for('logout')}}">Log-Out</a>
                 {%endif%}
             </div>
-            <div class="hamburger">
-                <input type="checkbox" id="hamburger" />
-                <label for="hamburger">&#9776;</label>
-                <div class="hamitems">
-                    <a href="{{ url_for('getLevels') }}">Past Papers</a>
-                    <a href="{{ url_for('modelQuestions') }}">Topical Papers</a>
-                    <a href="{{ url_for('questionGenerator') }}"
-                        >Question Generator</a
-                    >
-                    <a href="{{ url_for('submit') }}">Submit</a>
-
-                    <a href="{{url_for('stats')}}">
-                        <span class="blue-highlight">Statistics</span></a
-                    >
-
-                    <a href="{{ url_for('about') }}"
-                        ><span class="pink-highlight">About</span></a
-                    >
-
-                    {%if not current_user.is_authenticated%}
-                    <a href="{{url_for('login')}}">Login</a>
-                    {%else%}
-                    <a href="{{url_for('logout')}}">Log-Out</a>
-                    {%endif%}
-                </div>
-            </div>
         </div>
+    </div>
 
-        {% block body %} {% block content %}
-        <div class="content-wrapper">
-            <div class="section">{% block section %} {% endblock %}</div>
+    {% block body %} {% block content %}
+    <div class="content-wrapper">
+        <div class="section">{% block section %} {% endblock %}</div>
 
-            {% block prompt %} {% endblock %}
-            
-        {% if request.path in ['/question-generator', '/question-gen'] and current_user.role not in ["admin", "moderator", "adFree"] %}
-            <script
-                async
-                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
-                crossorigin="anonymous"
-                nonce="ZcW8rzUXG6Dc9OkZ"
-            ></script>
+        {% block prompt %} {% endblock %}
+
+        {% if request.path in ['/question-generator', '/question-gen'] and current_user.role not in ["admin",
+        "moderator", "adFree"] %}
+        <script async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
+            crossorigin="anonymous" nonce="ZcW8rzUXG6Dc9OkZ"></script>
         {% elif (
-            (request.path.startswith('/level') or
-            request.path.startswith('/subjects') or
-            request.path.startswith('/topicals'))
-            and current_user.role not in ["admin", "moderator", "adFree"]
+        (request.path.startswith('/level') or
+        request.path.startswith('/subjects') or
+        request.path.startswith('/topicals'))
+        and current_user.role not in ["admin", "moderator", "adFree"]
         ) %}
-            <div class="promo-space">"Advertisement Space"</div>
+        <div class="promo-space">"Advertisement Space"</div>
 
-            <script
-                async
-                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
-                crossorigin="anonymous"
-                nonce="ZcW8rzUXG6Dc9OkZ"
-            ></script>
+        <script async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
+            crossorigin="anonymous" nonce="ZcW8rzUXG6Dc9OkZ"></script>
         {% endif %}
 
-        </div>
+    </div>
 
-        {% endblock %} {% endblock %}
+    {% endblock %} {% endblock %}
 
-        <button
-            style="
+    <button style="
                 width: 60px;
                 height: 60px;
                 position: fixed;
@@ -190,52 +160,39 @@
                 background-color: var(--blue-highlight);
                 cursor: pointer;
                 scale: 1.2;
-            "
-            id="theme-switch"
-        >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 -960 960 960"
-                width="24px"
-                fill="currentColor"
-            >
-                <path
-                    d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"
-                />
-            </svg>
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 -960 960 960"
-                width="24px"
-                fill="currentColor"
-            >
-                <path
-                    d="M480-280q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"
-                />
-            </svg>
-        </button>
-    </body>
-    <style>
-        #theme-switch svg:last-child {
-            display: none;
-        }
-        .darkmode #theme-switch svg:first-child {
-            display: none;
-        }
-        .darkmode #theme-switch svg:last-child {
-            display: block;
-        }
-    </style>
+            " id="theme-switch">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+            <path
+                d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z" />
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+            <path
+                d="M480-280q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z" />
+        </svg>
+    </button>
+</body>
+<style>
+    #theme-switch svg:last-child {
+        display: none;
+    }
 
-    <script>
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '0.0.0.0') {
-            const turnstileElement = document.querySelectorAll('.cf-turnstile');
+    .darkmode #theme-switch svg:first-child {
+        display: none;
+    }
 
-            turnstileElement.forEach((element) => {
-                element.setAttribute('data-sitekey', '1x00000000000000000000AA'); 
-            });
-        }
-    </script>
+    .darkmode #theme-switch svg:last-child {
+        display: block;
+    }
+</style>
+
+<script>
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '0.0.0.0') {
+        const turnstileElement = document.querySelectorAll('.cf-turnstile');
+
+        turnstileElement.forEach((element) => {
+            element.setAttribute('data-sitekey', '1x00000000000000000000AA');
+        });
+    }
+</script>
+
 </html>

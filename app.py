@@ -99,26 +99,26 @@ forgive me for this shit code.
 @app.route('/levels')
 def getLevels():
     logger.info(f'Levels page accessed IP: {getClientIp()}')
-    return render_template('levels.html', mode = "papers" )
+    return render_template('levels.html', mode = "Papers", ogTitle = "Choose your exam board")
 
 @app.route('/subjects/<level>')
 def getLevelSubjects(level):
     logger.info(f'Subjects page accessed for level {level} IP: {getClientIp()}')
-    return render_template('subject.html', level = level)
+    return render_template('subject.html', level = level,ogTitle =f"Choose your subject for {level}", pageTitle =f"Choose your subject for {level}" )
 
 
 @app.route('/subjects/<level>/<subject_name>')
 def getSubjectYears(level, subject_name):
     logger.info(f'Years page accessed for level {level}, subject {subject_name} IP: {getClientIp()}')
     years = getYears(level,subject_name)
-    return render_template('years.html', subject_name = subject_name, level = level, years = years)
+    return render_template('years.html', subject_name = subject_name, level = level, years = years, pageTitle =f"{subject_name} Past Paper Years", ogTitle =f"{subject_name} Past Paper Years")
 
 
 @app.route('/subjects/<level>/<subject_name>/<year>')
 def getSubjectQuestions(level ,subject_name, year):
     logger.info(f'Questions page accessed for level {level}, subject {subject_name}, year {year} IP: {getClientIp()}')
     question_name = getQuestions(level, subject_name, year)
-    return render_template('questions.html', questions_name = question_name, subject_name = subject_name ,year = year, config = config, level = level )
+    return render_template('questions.html', questions_name = question_name, subject_name = subject_name ,year = year, config = config, level = level, ogTitle =f"{subject_name} {year} past paper questions")
 
 
 @app.route('/subjects/<level>/<subject_name>/<year>/<path:file_data>')
@@ -161,15 +161,49 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
                 "solution": question[1] 
             })
 
-        # Return template with all necessary data
+        # Normalize data for SEO generation
+        normalizedSession = session.lower().replace('/', ' ').replace('-', ' ').replace('_', ' ').replace('  ', ' ')
+        normalizedYear = full_year.strip()
+
+        # Construct variations
+        keywordTemplates = [
+            f"{subject_code} {component} {normalizedSession} {normalizedYear}",
+            f"{subject_code}/{component}/{normalizedSession}/{normalizedYear}",
+            f"{subject_code} {normalizedSession} {normalizedYear} {component}",
+            f"{subject_code} paper {component} {normalizedSession} {normalizedYear}",
+            f"{subject_code} {normalizedYear} paper {component} {normalizedSession}",
+            f"{subject_code} {normalizedYear} {component}",
+            f"{subject_code} {normalizedSession} {component} {normalizedYear}",
+            f"{subject_code} {normalizedYear} question paper",
+            f"{subject_code} {normalizedYear} mark scheme",
+            f"{subject_code} {normalizedYear} insert"
+        ]
+
+        # Append subject name and level variants
+        keywordTemplates += [
+            f"{level} {subject_name} {normalizedYear}",
+            f"{level} {subject_name} paper {component}",
+            f"{subject_name} {subject_code} past papers",
+            f"{subject_name} {subject_code} {normalizedYear} papers",
+        ]
+
+        metaKeywords = ", ".join(set(keywordTemplates))  # Use set to remove duplicates
+
+        # Open Graph description
+        ogDescription = f"Download the {file_data} for {level} {subject_name} ({subject_code}) — component {component}, session {session}, year {full_year}. Includes question paper and solution if available."
+
+        # Pass it to the template
         return render_template(
             'qp.html',
             file_data=file_data,
             id=question[2],
             subject_code=subject_code,
             session=session,
-            component=component
+            component=component,
+            ogDescription=ogDescription,
+            metaKeywords=metaKeywords
         )
+
 
     except Exception as e:
         logger.error(f"Error processing question: {str(e)}")
@@ -231,55 +265,81 @@ def viewPdf(type, uuid):
     logger.info(f'{type}: {uuid} rendered in full screen. IP: {getClientIp()}')
 
     paper = get_paper(uuid)
-
-    if paper == None:
+    if paper is None:
         paper = get_topical(uuid)
 
-        if type == "solution":
-            title = f'{paper["subject"]} MS'
-        elif type == "question":
-            title = f'{paper["subject"]} QP'
-    else:
-        if paper["board"].lower() in ["a level", "as level", "a levels"]:
-
-            # Extract the number inside parentheses using regex
-            subjectCodeMatch = re.search(r"\d+", paper["subject"])
-            subjectCode = subjectCodeMatch.group(0) if subjectCodeMatch else paper["subject"]
-
-            yearStr = str(paper["year"])
-            session = "MJ" if "May / June" in yearStr else "ON" if "Oct / Nov" in yearStr else "FM"
-
-
-            if type == "solution":
-                title = f'{subjectCode},{paper["component"]},{yearStr[2:4]},{session} MS'
-            elif type == "question":
-                title = f'{subjectCode},{paper["component"]},{yearStr[2:4]},{session} QP'
-        else:
-            if type == "solution":
-                title = f'{paper["subject"]} MS'
-            elif type == "question":
-                title = f'{paper["subject"]} QP'
-
-    if paper == None:
+    if paper is None:
         return render_template('404.html'), 404
 
+    title = ""
+    ogDescription = ""
+    metaKeywords = ""
+
+    # Handle A Level/AS Level papers
+    if paper["board"].lower() in ["a level", "as level", "a levels"]:
+        subjectCodeMatch = re.search(r"\d+", paper["subject"])
+        subjectCode = subjectCodeMatch.group(0) if subjectCodeMatch else paper["subject"]
+        component = paper["component"]
+        yearStr = str(paper["year"])
+        shortYear = yearStr[2:4]
+
+        # Normalize session
+        if "May / June" in yearStr:
+            session = "may june"
+            sessionShort = "mj"
+        elif "Oct / Nov" in yearStr:
+            session = "oct nov"
+            sessionShort = "ond"
+        elif "Feb / March" in yearStr:
+            session = "feb mar"
+            sessionShort = "fm"
+        else:
+            session = "unknown"
+            sessionShort = "unk"
+
+        level = paper["board"]
+        subjectName = re.sub(r"\(\d+\)", "", paper["subject"]).strip()
+
+        # Title
+        title = f"{subjectCode}, {component}, {shortYear}, {sessionShort} {'MS' if type == 'solution' else 'QP'}"
+
+        # SEO: generate keywords
+        keywordTemplates = [
+            f"{subjectCode} {component} {sessionShort} {shortYear}",
+            f"{subjectCode}/{component}/{sessionShort}/{shortYear}",
+            f"{subjectCode} {sessionShort} {shortYear} {component}",
+            f"{subjectCode} paper {component} {session} {yearStr}",
+            f"{subjectCode} {yearStr} question paper",
+            f"{subjectCode} {yearStr} mark scheme",
+            f"{subjectCode} {yearStr} insert",
+            f"{level} {subjectName} {yearStr}",
+            f"{level} {subjectName} paper {component}",
+            f"{subjectName} {subjectCode} past papers",
+            f"{subjectName} {subjectCode} {yearStr} papers",
+        ]
+        metaKeywords = ", ".join(set(keywordTemplates))
+
+        # SEO: OpenGraph Description
+        ogDescription = f"Download the {subjectName} ({subjectCode}) — component {component}, session {session}, year {yearStr}. Includes {'mark scheme' if type == 'solution' else 'question paper'}."
+
+    else:
+        # Fallback for other boards
+        subject = paper["subject"]
+        title = f"{subject} {'MS' if type == 'solution' else 'QP'}"
+        ogDescription = f"Download the {subject} {'mark scheme' if type == 'solution' else 'question paper'}."
+        metaKeywords = f"{subject} mark scheme, {subject} question paper, {subject} past papers"
 
     isAjax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     wantsRawData = request.headers.get("file-raw-data")
 
     if type == "question":
         if isAjax and wantsRawData:
-            return jsonify({
-            "question": paper["questionFile"],
-            })
-        return render_template('qp-full.html', title=title), 200
+            return jsonify({"question": paper["questionFile"]})
+        return render_template('qp-full.html', title=title, ogDescription=ogDescription, metaKeywords=metaKeywords), 200
     elif type == "solution":
-
         if isAjax and wantsRawData:
-            return jsonify({
-            "question": paper["solutionFile"],
-            })
-        return render_template('qp-full.html', title=title), 200
+            return jsonify({"question": paper["solutionFile"]})
+        return render_template('qp-full.html', title=title, ogDescription=ogDescription, metaKeywords=metaKeywords), 200
     else:
         return redirect(url_for('index')), 304
 
