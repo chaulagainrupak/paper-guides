@@ -189,6 +189,8 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
 
         metaKeywords = ", ".join(set(keywordTemplates))  # Use set to remove duplicates
 
+        ogTitle = f"{subject_code}/{component}/{session.upper()}/{full_year} — {level} {subject_name} | Question Paper & Mark Scheme"
+
         # Open Graph description
         ogDescription = f"Download the {file_data} for {level} {subject_name} ({subject_code}) — component {component}, session {session}, year {full_year}. Includes question paper and solution if available."
 
@@ -200,6 +202,7 @@ def renderSubjectQuestion(level, subject_name, year, file_data):
             subject_code=subject_code,
             session=session,
             component=component,
+            ogTitle=ogTitle,
             ogDescription=ogDescription,
             metaKeywords=metaKeywords
         )
@@ -272,6 +275,7 @@ def viewPdf(type, uuid):
         return render_template('404.html'), 404
 
     title = ""
+    ogTitle = ""
     ogDescription = ""
     metaKeywords = ""
 
@@ -279,9 +283,9 @@ def viewPdf(type, uuid):
     if paper["board"].lower() in ["a level", "as level", "a levels"]:
         subjectCodeMatch = re.search(r"\d+", paper["subject"])
         subjectCode = subjectCodeMatch.group(0) if subjectCodeMatch else paper["subject"]
-        component = paper["component"]
+        component = paper.get("component", "XX")
         yearStr = str(paper["year"])
-        shortYear = yearStr[2:4]
+        shortYear = yearStr[-2:]
 
         # Normalize session
         if "May / June" in yearStr:
@@ -289,7 +293,7 @@ def viewPdf(type, uuid):
             sessionShort = "mj"
         elif "Oct / Nov" in yearStr:
             session = "oct nov"
-            sessionShort = "ond"
+            sessionShort = "on"
         elif "Feb / March" in yearStr:
             session = "feb mar"
             sessionShort = "fm"
@@ -300,10 +304,19 @@ def viewPdf(type, uuid):
         level = paper["board"]
         subjectName = re.sub(r"\(\d+\)", "", paper["subject"]).strip()
 
-        # Title
-        title = f"{subjectCode}, {component}, {shortYear}, {sessionShort} {'MS' if type == 'solution' else 'QP'}"
+        paperType = "Mark Scheme" if type == "solution" else "Question Paper"
+        paperShort = "MS" if type == "solution" else "QP"
 
-        # SEO: generate keywords
+        # Title
+        title = f"{subjectCode}, {component}, {shortYear}, {sessionShort.upper()} {paperShort}"
+
+        # SEO: OpenGraph Title
+        ogTitle = f"{subjectCode}/{component}/{sessionShort.upper()}/{shortYear} — {level} {subjectName} | {paperType}"
+
+        # SEO: Description
+        ogDescription = f"Download the {paperType} for {subjectName} ({subjectCode}) — Component {component}, Session {session}, Year {yearStr}."
+
+        # SEO: Keywords
         keywordTemplates = [
             f"{subjectCode} {component} {sessionShort} {shortYear}",
             f"{subjectCode}/{component}/{sessionShort}/{shortYear}",
@@ -319,29 +332,46 @@ def viewPdf(type, uuid):
         ]
         metaKeywords = ", ".join(set(keywordTemplates))
 
-        # SEO: OpenGraph Description
-        ogDescription = f"Download the {subjectName} ({subjectCode}) — component {component}, session {session}, year {yearStr}. Includes {'mark scheme' if type == 'solution' else 'question paper'}."
-
     else:
         # Fallback for other boards
-        subject = paper["subject"]
-        title = f"{subject} {'MS' if type == 'solution' else 'QP'}"
-        ogDescription = f"Download the {subject} {'mark scheme' if type == 'solution' else 'question paper'}."
-        metaKeywords = f"{subject} mark scheme, {subject} question paper, {subject} past papers"
+        subjectName = paper["subject"]
+        paperType = "Mark Scheme" if type == "solution" else "Question Paper"
+        paperShort = "MS" if type == "solution" else "QP"
 
+        title = f"{subjectName} {paperShort}"
+        ogTitle = f"{subjectName} | {paperType}"
+        ogDescription = f"Download the {subjectName} {paperType.lower()}."
+        metaKeywords = f"{subjectName} mark scheme, {subjectName} question paper, {subjectName} past papers"
+
+    # Check for AJAX/raw data
     isAjax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     wantsRawData = request.headers.get("file-raw-data")
 
     if type == "question":
         if isAjax and wantsRawData:
             return jsonify({"question": paper["questionFile"]})
-        return render_template('qp-full.html', title=title, ogDescription=ogDescription, metaKeywords=metaKeywords), 200
+        return render_template(
+            'qp-full.html',
+            title=title,
+            ogTitle=ogTitle,
+            ogDescription=ogDescription,
+            metaKeywords=metaKeywords
+        ), 200
+
     elif type == "solution":
         if isAjax and wantsRawData:
             return jsonify({"question": paper["solutionFile"]})
-        return render_template('qp-full.html', title=title, ogDescription=ogDescription, metaKeywords=metaKeywords), 200
+        return render_template(
+            'qp-full.html',
+            title=title,
+            ogTitle=ogTitle,
+            ogDescription=ogDescription,
+            metaKeywords=metaKeywords
+        ), 200
+
     else:
         return redirect(url_for('index')), 304
+
 
 
 # Reders the about page. Duh
