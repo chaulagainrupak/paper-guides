@@ -1,11 +1,13 @@
 <script lang="ts">
   import "../app.css";
-    import { onMount } from "svelte";
+  import { onMount } from "svelte";
+  import isLocal from "../config";
+
 
   let { children } = $props();
 
     onMount(() => {
-
+      console.log(isLocal);
     // Get dark mode setting from localStorage
     let darkmode = localStorage.getItem("darkmode");
     const themeSwitch = document.getElementById("theme-switch");
