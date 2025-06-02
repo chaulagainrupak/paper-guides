@@ -19,6 +19,8 @@ export default function LoginPage() {
     document.body.appendChild(script);
 
     script.onload = () => {
+
+        console.log(getSiteKey(isLocal));
       const win = window as any;
       if (win.turnstile && document.getElementById("turnstile-container")) {
         win.turnstile.render("#turnstile-container", {
