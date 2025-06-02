@@ -1,14 +1,6 @@
-// pages/about.tsx
-
-import Head from 'next/head'
-
 export default function AboutPage() {
   return (
     <>
-      <Head>
-        <title>About - Paper-Guides</title>
-      </Head>
-
       <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-12">
         <div className="max-w-3xl mx-auto p-10 shadow-xl rounded-2xl border bg-[var(--color-nav)] text-center">
           <h1 className="text-4xl font-bold mb-6">
@@ -74,8 +66,8 @@ export default function AboutPage() {
 
           <h2 className="text-2xl font-semibold mb-2">Contact Us</h2>
           <p className="mb-2">
-            Email us at <span style={{ color: 'var(--pink-highlight)' }}>contact@paperguides.org</span> or{' '}
-            <span style={{ color: 'var(--blue-highlight)' }}>paperguides.official@proton.me</span>
+            Email us at <span style={{ color: 'var(--pink-highlight)' }}><a href='mailto:contact@paperguides.org'>contact@paperguides.org</a></span> or{' '}
+            <span style={{ color: 'var(--blue-highlight)' }}><a href='mailto:paperguides.official@proton.me'>paperguides.official@proton.me</a></span>
           </p>
 
           <p className="text-center mt-8 text-sm opacity-75">Thank you for supporting accessible education 🙌</p>

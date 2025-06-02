@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Paper Guides",
   description: "Free exam preparation resources",
-  icons : "/images/logo.ico"
+  icons: "/images/logo.ico",
 };
 
 export default function RootLayout({
@@ -27,6 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+
       <body>
         <nav className="bg-[var(--color-nav)] fixed top-0 w-full z-50 shadow-sm">
           <div className="flex justify-between items-center px-6 py-4 text-2xl font-bold">
