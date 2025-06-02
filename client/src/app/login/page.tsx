@@ -20,16 +20,16 @@ export default function LoginPage() {
 
     script.onload = () => {
 
-        console.log(getSiteKey(isLocal));
+        console.log(getSiteKey());
       const win = window as any;
       if (win.turnstile && document.getElementById("turnstile-container")) {
         win.turnstile.render("#turnstile-container", {
-          sitekey: getSiteKey(isLocal),
+          sitekey: getSiteKey(),
           theme: darkModeOn()? "dark": "light",
         });
       }
     };
-  }, [isLocal]);
+  }, []);
 
   return (
     <div className="flex justify-center items-center min-h-dvh p-4">

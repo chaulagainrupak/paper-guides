@@ -6,10 +6,10 @@ export function isLocalhost(): boolean {
   );
 }
 
-export function getSiteKey(isLocal: boolean): string {
+export function getSiteKey(): string {
   const localSiteKey = "1x00000000000000000000AA";
   const prodSiteKey = "0x4AAAAAAA1LpisXytC6T07b";
-  return isLocal ? localSiteKey : prodSiteKey;
+  return isLocalhost() ? localSiteKey : prodSiteKey;
 }
 
 export function getApiUrl(){
