@@ -44,9 +44,6 @@ export default function RootLayout({
             </div>
 
             <div className="flex gap-4 hidden xl:flex">
-              <Link href="/stats" className="text-[var(--blue-highlight)]">
-                Statistics
-              </Link>
               <Link href="/about" className="text-[var(--pink-highlight)]">
                 About
               </Link>
@@ -68,9 +65,6 @@ export default function RootLayout({
                 <Link href="/notes">Notes</Link>
                 <Link href="/generator">Question Generator</Link>
                 <Link href="/submit">Submit</Link>
-                <Link href="/stats" className="text-[var(--blue-highlight)]">
-                  Statistics
-                </Link>
                 <Link href="/about" className="text-[var(--pink-highlight)]">
                   About
                 </Link>
@@ -81,7 +75,7 @@ export default function RootLayout({
         </nav>
 
         <ThemeToggleButton />
-        <main className="mx-auto max-w-5xl px-4 py-6">{children}</main>
+        <main className="">{children}</main>
       </body>
     </html>
   );

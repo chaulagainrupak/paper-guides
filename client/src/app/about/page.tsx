@@ -1,7 +1,7 @@
 export default function AboutPage() {
   return (
     <>
-      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-12">
+      <div className="min-h-screen mt-[64] px-4 sm:px-6 lg:px-12">
         <div className="max-w-3xl mx-auto p-10 shadow-xl rounded-2xl border bg-[var(--color-nav)] text-center">
           <h1 className="text-4xl font-bold mb-6">
             Welcome to <span style={{ color: 'var(--blue-highlight)' }}>Paper-Guides</span>!

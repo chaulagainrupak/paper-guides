@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <section className="min-h-screen text-[var(--font-color)] flex flex-col items-center justify-center px-4">
+    <section className="mt-[64] min-h-screen text-[var(--font-color)] flex flex-col items-center justify-center px-4">
       {/* Hero Section */}
       <div className="text-center max-w-4xl mb-16">
         <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-4">

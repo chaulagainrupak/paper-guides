@@ -6,7 +6,7 @@ export function isLocalhost(): boolean {
 
 export function getSiteKey(): string {
   const localSiteKey = "1x00000000000000000000AA";
-  const prodSiteKey = "0x4AAAAAAA1LpisXytC6T07b";
+  const prodSiteKey = "0x4AAAAAAA1LsUg4unsYRplP";
   return isLocalhost() ? localSiteKey : prodSiteKey;
 }
 
