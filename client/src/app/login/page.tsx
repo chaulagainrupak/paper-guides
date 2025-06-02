@@ -4,12 +4,7 @@ import { useEffect, useState } from "react";
 import { isLocalhost, getSiteKey, darkModeOn } from "../config";
 
 export default function LoginPage() {
-  const [isLocal, setIsLocal] = useState(true);
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
-
-  useEffect(() => {
-    setIsLocal(isLocalhost());
-  }, []);
 
   useEffect(() => {
     const script = document.createElement("script");
