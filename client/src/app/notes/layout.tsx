@@ -1,9 +1,7 @@
 export default function LevelsLayout({
   children,
-  sidebar,
 }: {
   children: React.ReactNode;
-  sidebar: React.ReactNode;
 }) {
   return (
     <div className="mt-[64] h-screen px-6 py-6 flex xl:flex-row flex-col gap-6">
