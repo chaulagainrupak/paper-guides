@@ -25,7 +25,7 @@ export default function HomePage() {
       {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl">
         {/* Card 1 */}
-        <div className="bg-[var(--color-nav)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
+        <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
           <Image
             src="/images/compressed_past-papers.webp"
             alt="Past Papers"
@@ -40,7 +40,7 @@ export default function HomePage() {
             Access past-papers to boost your exam preparation.
           </p>
           <Link
-            href="/levels"
+            href="/pastpapers"
             className="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
           >
             Past Papers
@@ -48,7 +48,7 @@ export default function HomePage() {
         </div>
 
         {/* Card 2 */}
-        <div className="bg-[var(--color-nav)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
+        <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
           <Image
             src="/images/compressed_question-generator.webp"
             alt="Question Generator"
@@ -71,7 +71,7 @@ export default function HomePage() {
         </div>
 
         {/* Card 4 */}
-        <div className="bg-[var(--color-nav)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
+        <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
           <Image
             src="/images/compressed_notes.webp"
             alt="Notes"
@@ -94,7 +94,7 @@ export default function HomePage() {
         </div>
 
         {/* Card 3 */}
-        <div className="bg-[var(--color-nav)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
+        <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
           <Image
             src="/images/compressed_topicals.webp"
             alt="Topical Papers"

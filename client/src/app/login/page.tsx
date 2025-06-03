@@ -102,7 +102,7 @@ export default function LoginPage() {
                     border: "1px solid var(--color-border)",
                     color: "var(--color-text)",
                   }}
-                  placeholder="Enter your username"
+                  placeholder="eg: paperboy024"
                 />
               </div>
               <div>
@@ -123,7 +123,7 @@ export default function LoginPage() {
                     border: "1px solid var(--color-border)",
                     color: "var(--color-text)",
                   }}
-                  placeholder="Enter your email"
+                  placeholder="eg: bigman@paperguides.org"
                 />
               </div>
               <div>
@@ -172,7 +172,7 @@ export default function LoginPage() {
                     border: "1px solid var(--color-border)",
                     color: "var(--color-text)",
                   }}
-                  placeholder="Create a username"
+                  placeholder="eg: paperboy024"
                 />
               </div>
               <div>
@@ -193,7 +193,7 @@ export default function LoginPage() {
                     border: "1px solid var(--color-border)",
                     color: "var(--color-text)",
                   }}
-                  placeholder="Enter your email"
+                  placeholder="eg: bigman@paperguides.org"
                 />
               </div>
               <div>
@@ -250,7 +250,7 @@ export default function LoginPage() {
               className="w-full py-3 px-4 font-medium rounded-lg transition-colors shadow-md hover:shadow-lg"
               style={{
                 backgroundColor: "var(--blue-highlight)",
-                color: "var(--baby-powder)",
+                color: "var(--text-color)",
               }}
             >
               {activeTab === "login" ? "Login" : "Create Account"}

@@ -1,7 +1,9 @@
 export function isLocalhost(): boolean {
-  return (
-    window.location.hostname === "localhost"
-  );
+  try {
+    return window.location.hostname === "localhost";
+  } catch (error) {
+    return false;
+  }
 }
 
 export function getSiteKey(): string {
@@ -10,15 +12,14 @@ export function getSiteKey(): string {
   return isLocalhost() ? localSiteKey : prodSiteKey;
 }
 
-export function getApiUrl(){
-
-    if(isLocalhost()){
-        return 'http://localhost:8000';
-    }else{
-        return 'https://api.paperguides.org';
-    }
+export function getApiUrl(isLocal: boolean) {
+  if (isLocal) {
+    return "http://localhost:8000";
+  } else {
+    return "https://api.paperguides.org";
+  }
 }
 
 export function darkModeOn() {
-    return (localStorage.getItem("darkmode") === "active");
+  return localStorage.getItem("darkmode") === "active";
 }

@@ -36,7 +36,7 @@ export default function RootLayout({
             </Link>
 
             <div className="flex gap-4 hidden xl:flex">
-              <Link href="/levels">Past Papers</Link>
+              <Link href="/pastpapers">Past Papers</Link>
               <Link href="/topicals">Topical Papers</Link>
               <Link href="/notes">Notes</Link>
               <Link href="/generator">Question Generator</Link>
@@ -60,7 +60,7 @@ export default function RootLayout({
               </label>
 
               <div className="bg-[var(--color-nav)] absolute right-0 top-12 w-52 shadow-lg border rounded-lg p-4 flex flex-col gap-3 peer-checked:flex hidden">
-                <Link href="/levels">Past Papers</Link>
+                <Link href="/pastpapers">Past Papers</Link>
                 <Link href="/topicals">Topical Papers</Link>
                 <Link href="/notes">Notes</Link>
                 <Link href="/generator">Question Generator</Link>
