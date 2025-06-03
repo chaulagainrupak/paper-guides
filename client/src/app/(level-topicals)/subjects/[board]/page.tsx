@@ -1,11 +1,11 @@
-
 import { redirect } from "next/navigation";
 
-export default async function BoardPage( props: {  params: { board: string } }) {
-  const {board} = props.params;
+export default function BoardPage({ params }: { params: { board: string } }) {
+  const board = params.board.toLowerCase();
 
-  if (board.toLowerCase() === "neb") {
+  if (board === "neb") {
     redirect(`/pastpapers`);
   }
 
+  return null; 
 }
