@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getApiUrl, isLocalhost } from "@/app/config";
+import { Loader } from "@/app/utils";
 
 export default function PastPapersPage() {
   const [data, setData] = useState<any>(null);
@@ -31,14 +32,7 @@ export default function PastPapersPage() {
 
       <div id="dynamic-container">
         {loading ? (
-          <div
-            id="loader"
-            className="bg-[var(--color-nav)] flex flex-col items-center justify-center p-10 rounded-xl shadow-md animate-fade-in transition-opacity"
-          >
-            <div className="text-xl font-semibold text-[var(--font-color)] mb-4">
-              🕒 Loading Levels...
-            </div>
-          </div>
+          <Loader/>
         ) : (
           <div className="animate-fade-in space-y-6">
             {Object.entries(data || {}).map(([boardName, boardData]: any) => (

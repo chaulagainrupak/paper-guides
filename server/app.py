@@ -119,7 +119,7 @@ async def signup(body: Request):
     # Verify Turnstile token
     isValid =  verifyTurnstileToken(token)
     if not isValid:
-        raise HTTPException(status_code=400, detail="Turnstile verification failed")
+        raise HTTPException(status_code=400, detail="Turnstile Captcha verification failed, reload the page and try again!")
     
     cur.execute("SELECT * FROM users WHERE username = ? OR email = ?", (username, email))
     if cur.fetchone():
@@ -151,7 +151,7 @@ async def login(body: Request):
     # Verify Turnstile token
     isValid =  verifyTurnstileToken(token)
     if not isValid:
-        raise HTTPException(status_code=400, detail="Turnstile verification failed")
+        raise HTTPException(status_code=400, detail="Turnstile Captcha verification failed, reload the page and try again!")
 
     cur.execute("SELECT * FROM users WHERE username = ? AND email  = ? ", (username,email))
     user = cur.fetchone()

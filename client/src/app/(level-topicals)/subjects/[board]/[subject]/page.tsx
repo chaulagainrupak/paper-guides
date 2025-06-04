@@ -4,6 +4,6 @@
 export default function singleBoardLevel(){
 
     return(<>
-        NEB Levels
+        SUB page
     </>);
 }
