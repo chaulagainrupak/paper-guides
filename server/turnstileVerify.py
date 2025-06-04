@@ -9,7 +9,6 @@ TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY")
 
 def verifyTurnstileToken(token: str) -> bool:
     try:
-        print(token)
         payload = {
             "secret": TURNSTILE_SECRET_KEY,
             "response": token
@@ -22,13 +21,10 @@ def verifyTurnstileToken(token: str) -> bool:
         )
 
         result = response.json()
-        if str(result.get('success')) == 'true':
-            return True
-        else:
-            return False 
-
+        return (result.get('success'))
 
     except Exception as e:
         print("Turnstile verification failed:", e)
         return False
+
 

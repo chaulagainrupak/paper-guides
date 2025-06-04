@@ -117,7 +117,7 @@ async def signup(body: Request):
     token = data.get("token") 
 
     # Verify Turnstile token
-    isValid = await verifyTurnstileToken(token)
+    isValid =  verifyTurnstileToken(token)
     if not isValid:
         raise HTTPException(status_code=400, detail="Turnstile verification failed")
     
@@ -149,7 +149,7 @@ async def login(body: Request):
 
 
     # Verify Turnstile token
-    isValid = await verifyTurnstileToken(token)
+    isValid =  verifyTurnstileToken(token)
     if not isValid:
         raise HTTPException(status_code=400, detail="Turnstile verification failed")
 
