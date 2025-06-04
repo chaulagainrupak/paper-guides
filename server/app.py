@@ -147,6 +147,7 @@ async def login(body: Request):
     password = data.get("password")
     token = data.get("token") 
 
+
     # Verify Turnstile token
     isValid = await verifyTurnstileToken(token)
     if not isValid:
@@ -179,7 +180,7 @@ async def validateToken(body: Request):
         cur = conn.cursor()
         data = await body.json()
 
-        token = data.get("accessToken")
+        token = data["accessToken"]
         tokenData = jwt.decode(token, SECRET_KEY)
 
         username = tokenData["username"]
