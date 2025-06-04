@@ -1,25 +1,33 @@
-import httpx  
+import requests
 import os
 from dotenv import load_dotenv
 
 load_dotenv('.env')
 
-TURNSTILE_SECRET = os.getenv("TURNSTILE_SECRET_KEY")
+TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY")
 
 
 async def verifyTurnstileToken(token: str) -> bool:
     try:
-        data = {
-            "secret": TURNSTILE_SECRET,
+        payload = {
+            "secret": TURNSTILE_SECRET_KEY,
             "response": token,
         }
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
+        
+        response = requests.post(
                 "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-                data=data
-            )
-            result = response.json()
-            return result.get("success", False)
+                data=payload,
+                timeout=5
+        )
+
+        result = response.json()
+
+        if str(result.get('success')) == 'true':
+            return True
+        else:
+            return False 
+
+
     except Exception as e:
         print("Turnstile verification failed:", e)
         return False
