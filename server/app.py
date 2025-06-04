@@ -73,9 +73,6 @@ def hashPassword(password):
 @app.get('/pastpapers')
 def pastpapers():
     data = {
-        "NEB": {
-            "levels": ["10", "11", "12"]
-        },
         "A Levels": {
             "levels": ["As Level", "A Level"]
         }

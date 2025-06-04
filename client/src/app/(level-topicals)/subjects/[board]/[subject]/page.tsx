@@ -1,9 +1,25 @@
-'use client';
+"use client";
 
+import { useEffect, useState } from "react";
 
-export default function singleBoardLevel(){
+export default function singleBoardLevel({
+  params,
+}: {
+  params: Promise<{ subject: string }>;
+}) {
+  let [subjectName, setSubjectName] = useState("");
 
-    return(<>
-        SUB page
-    </>);
+  useEffect(() => {
+    const slug = async () => {
+      const { subject } = await params;
+      setSubjectName(subject);
+    };
+    slug();
+  });
+
+  return(
+    <div>
+        
+    </div>
+  );
 }

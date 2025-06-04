@@ -25,7 +25,7 @@ export default function PastPapersPage() {
 
   return (
     <div>
-      <h1 className="text-6xl font-semibold mb-6">
+      <h1 className="text-4xl font-semibold mb-6">
         Available <span className="text-[var(--blue-highlight)]">Boards</span>{" "}
         and <span className="text-[var(--blue-highlight)]">Levels</span>
       </h1>
@@ -48,18 +48,7 @@ export default function PastPapersPage() {
                       CAIE: A Levels
                     </a>
                   </div>
-                ) : (
-                  boardData.levels.map((level: string) => (
-                    <div key={level} className="level-section mb-4">
-                      <a
-                        href={`/subjects/${boardName}/${level}`}
-                        className="border-1 border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-2xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-2xl transition-all duration-200"
-                      >
-                        {boardName} Grade: {level}
-                      </a>
-                    </div>
-                  ))
-                )}
+                ) : ( null )}
               </div>
             ))}
           </div>
