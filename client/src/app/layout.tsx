@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
 import ThemeToggleButton from "./themeToggle";
-
+import LoginLink from "./loginLink";
 
 export const metadata: Metadata = {
   title: "Paper Guides",
@@ -17,7 +17,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-
       <body>
         <nav className="bg-[var(--color-nav)] fixed top-0 w-full z-50 shadow-sm">
           <div className="flex justify-between items-center px-6 py-4 text-2xl font-bold">
@@ -37,7 +36,7 @@ export default function RootLayout({
               <Link href="/about" className="text-[var(--pink-highlight)]">
                 About
               </Link>
-              <Link href="/login">Login</Link>
+              <LoginLink />
             </div>
 
             <div className="xl:hidden relative">
@@ -58,7 +57,7 @@ export default function RootLayout({
                 <Link href="/about" className="text-[var(--pink-highlight)]">
                   About
                 </Link>
-                <Link href="/login">Login</Link>
+                <LoginLink />
               </div>
             </div>
           </div>

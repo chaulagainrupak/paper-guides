@@ -1,12 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { isLocalhost, getSiteKey, darkModeOn } from "../config";
-
+import { isLocalhost, getSiteKey, darkModeOn, getApiUrl } from "../config";
+import { isLoggedIn } from "../utils";
 export default function LoginPage() {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
 
+  const [turnstileSuccessToken, setTurnstileSuccessToken] = useState("");
+
+
   useEffect(() => {
+
+    const check = async () => {
+      if (await isLoggedIn()) {
+        window.location.href ='/';
+      }
+    };
+
+    check();
+
     const script = document.createElement("script");
     script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
     script.async = true;
@@ -14,17 +26,51 @@ export default function LoginPage() {
     document.body.appendChild(script);
 
     script.onload = () => {
-
-        console.log(getSiteKey());
       const win = window as any;
       if (win.turnstile && document.getElementById("turnstile-container")) {
         win.turnstile.render("#turnstile-container", {
           sitekey: getSiteKey(),
-          theme: darkModeOn()? "dark": "light",
+          theme: darkModeOn() ? "dark" : "light",
+          callback: (token: string) => {
+            setTurnstileSuccessToken(token);
+          },
         });
       }
     };
   }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const data: Record<string, string> = {};
+    formData.forEach((value, key) => (data[key] = value.toString()));
+
+    const url = activeTab === "login" ? "/login" : "/signup";
+
+    const res = await fetch(getApiUrl(isLocalhost()) + url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        token: turnstileSuccessToken,
+      }),
+    });
+
+    const result = await res.json();
+
+    if (activeTab === "login") {
+      localStorage.setItem("authToken", JSON.stringify(result));
+      alert('Logged In');
+      window.location.href = '/';
+    } else {
+      alert(result.message);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-dvh p-4">
@@ -81,6 +127,7 @@ export default function LoginPage() {
           >
             {/* Login Form */}
             <form
+              onSubmit={handleSubmit}
               className={`space-y-4 ${activeTab !== "login" && "hidden"}`}
               action="#"
             >
@@ -103,6 +150,7 @@ export default function LoginPage() {
                     color: "var(--color-text)",
                   }}
                   placeholder="eg: paperboy024"
+                  required
                 />
               </div>
               <div>
@@ -124,6 +172,7 @@ export default function LoginPage() {
                     color: "var(--color-text)",
                   }}
                   placeholder="eg: bigman@paperguides.org"
+                  required
                 />
               </div>
               <div>
@@ -145,12 +194,25 @@ export default function LoginPage() {
                     color: "var(--color-text)",
                   }}
                   placeholder="••••••••"
+                  required
                 />
               </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 px-4 font-medium rounded-lg transition-colors shadow-md hover:shadow-lg"
+                style={{
+                  backgroundColor: "var(--blue-highlight)",
+                  color: "var(--text-color)",
+                }}
+              >
+                Login
+              </button>
             </form>
 
             {/* Signup Form */}
             <form
+              onSubmit={handleSubmit}
               className={`space-y-4 ${activeTab !== "signup" && "hidden"}`}
               action="#"
             >
@@ -173,6 +235,7 @@ export default function LoginPage() {
                     color: "var(--color-text)",
                   }}
                   placeholder="eg: paperboy024"
+                  required
                 />
               </div>
               <div>
@@ -194,6 +257,7 @@ export default function LoginPage() {
                     color: "var(--color-text)",
                   }}
                   placeholder="eg: bigman@paperguides.org"
+                  required
                 />
               </div>
               <div>
@@ -215,6 +279,7 @@ export default function LoginPage() {
                     color: "var(--color-text)",
                   }}
                   placeholder="••••••••"
+                  required
                 />
               </div>
               <div>
@@ -236,25 +301,26 @@ export default function LoginPage() {
                     color: "var(--color-text)",
                   }}
                   placeholder="••••••••"
+                  required
                 />
               </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 px-4 font-medium rounded-lg transition-colors shadow-md hover:shadow-lg"
+                style={{
+                  backgroundColor: "var(--blue-highlight)",
+                  color: "var(--text-color)",
+                }}
+              >
+                Create Account
+              </button>
             </form>
 
             {/* Turnstile CAPTCHA */}
             <div className="my-6 flex justify-center">
               <div id="turnstile-container" />
             </div>
-
-            {/* Submit Button */}
-            <button
-              className="w-full py-3 px-4 font-medium rounded-lg transition-colors shadow-md hover:shadow-lg"
-              style={{
-                backgroundColor: "var(--blue-highlight)",
-                color: "var(--text-color)",
-              }}
-            >
-              {activeTab === "login" ? "Login" : "Create Account"}
-            </button>
           </div>
         </div>
       </div>
