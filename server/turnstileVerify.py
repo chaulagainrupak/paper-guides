@@ -9,6 +9,7 @@ TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY")
 
 async def verifyTurnstileToken(token: str) -> bool:
     try:
+        print(token)
         payload = {
             "secret": TURNSTILE_SECRET_KEY,
             "response": token,

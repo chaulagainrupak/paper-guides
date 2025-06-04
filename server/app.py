@@ -179,7 +179,7 @@ async def validateToken(body: Request):
         cur = conn.cursor()
         data = await body.json()
 
-        token = data["accessToken"]
+        token = data.get("accessToken")
         tokenData = jwt.decode(token, SECRET_KEY)
 
         username = tokenData["username"]
@@ -201,3 +201,5 @@ async def validateToken(body: Request):
     except Exception as e:
         print(e)
         return {"message": "token verification failed"}, 429
+
+

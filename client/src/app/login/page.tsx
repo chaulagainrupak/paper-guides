@@ -63,12 +63,14 @@ export default function LoginPage() {
 
     const result = await res.json();
 
-    if (activeTab === "login") {
+    if (activeTab === "login" && res.status == 200) {
       localStorage.setItem("authToken", JSON.stringify(result));
       alert('Logged In');
       window.location.href = '/';
-    } else {
+    } else if (result.message) {
       alert(result.message);
+    }else if (result.detail){
+      alert(result.detail);
     }
   };
 
