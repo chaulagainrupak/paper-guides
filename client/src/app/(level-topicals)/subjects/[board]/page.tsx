@@ -40,7 +40,7 @@ export default function SubjectsPage() {
 
   return (
     <div>
-      <h1 className="text-6xl font-semibold mb-6">
+      <h1 className="text-4xl font-semibold mb-6">
         Available <span className="text-[var(--blue-highlight)]">Subjects</span>
       </h1>
 
@@ -63,17 +63,6 @@ export default function SubjectsPage() {
         </div>
       )}
 
-      <div className="mt-20">
-        <a
-          href="/submit"
-          className="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-center text-2xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-2xl transition-all duration-200"
-        >
-          🚀 Didn’t find your paper?{" "}
-          <span className="text-[var(--blue-highlight)] underline">
-            Submit-It
-          </span>
-        </a>
-      </div>
     </div>
   );
 }

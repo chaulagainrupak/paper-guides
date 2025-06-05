@@ -23,7 +23,7 @@ export default function HomePage() {
       </div>
 
       {/* Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl">
+      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-6xl">
         {/* Card 1 */}
         <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
           <Image
@@ -94,7 +94,7 @@ export default function HomePage() {
         </div>
 
         {/* Card 3 */}
-        <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
+        {/* <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
           <Image
             src="/images/compressed_topicals.webp"
             alt="Topical Papers"
@@ -114,7 +114,7 @@ export default function HomePage() {
           >
             Discover Topicals
           </Link>
-        </div>
+        </div> */}
       </div>
     </section>
   );

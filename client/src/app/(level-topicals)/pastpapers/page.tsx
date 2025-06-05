@@ -55,15 +55,6 @@ export default function PastPapersPage() {
         )}
       </div>
 
-      <div className="mt-20">
-        <a
-          href="/submit"
-          className="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-center text-2xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-2xl transition-all duration-200"
-        >
-          🚀 Didn’t find your paper?{" "}
-          <span className="text-[var(--blue-highlight)] underline">Submit-It</span>
-        </a>
-      </div>
     </div>
   );
 }

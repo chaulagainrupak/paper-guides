@@ -6,6 +6,7 @@
   --baby-powder: #fffffa;
   --picton-blue: #3eafe4;
   --pink-highlight: #f25c6a;
+  --red: #dc3545;
   --blue-highlight: #5d71e0;
   --green-highlight: #020504;
   --sea-salt: #f7f7f7;
@@ -37,3 +38,6 @@ body {
   color: var(--color-text);
   background-image: var(--bg-pattern);
 }
+
+.blue-highlight { color: var(--blue-highlight)}
+.pink-highlight { color: var(--pink-highlight)}
