@@ -7,8 +7,9 @@ import bcrypt
 from werkzeug.security import check_password_hash
 
 from config import loadConfig
+from databaseHandler import * 
 from turnstileVerify import verifyTurnstileToken
-
+import base64
 import time
 
 # Load configuration
@@ -91,7 +92,87 @@ async def getSubjects(board: str, optional_level=None):
                 return config[key]["subjects"]
     raise HTTPException(status_code=404, detail="Board not found")
 
+@app.get('/getYears/{subjectName}')
+async def geatYearsForSubject(subjectName: str):
 
+    try:
+        list = getYears('A Level', subjectName)
+        return {'years': list}, 200  
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=503, detail="No data found")
+
+
+@app.get('/getPapers/{subjectName}/{year}')
+async def getPapers(year: str, subjectName: str):
+
+    try:
+        list = getPaperComponents( year, subjectName , 'a level')
+        return {'components': list}, 200  
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=503, detail="No data found")
+
+@app.get("/getData/{details}")
+async def getData(details: str):
+    try:
+        details.replace('%20', ' ')
+        #    Because subjectSlug itself may contain "%20" but not a literal hyphen.
+        parts = details.split("-", 1)
+        if len(parts) < 2:
+            raise ValueError("Expected at least one '-' in details.")
+        subjectSlug, remainder = parts[0], parts[1]
+
+        subjectName = subjectSlug
+
+        if remainder.startswith("question-paper-"):
+            paperTypeDisplay = "Question Paper"
+            remainder = remainder[len("question-paper-"):]
+        elif remainder.startswith("mark-scheme-"):
+            paperTypeDisplay = "Mark Scheme"
+            remainder = remainder[len("mark-scheme-"):]
+        else:
+            raise ValueError("Expected 'question-paper-' or 'mark-scheme-' prefix.")
+
+        rem_parts = remainder.split("-")
+        if len(rem_parts) != 4:
+            raise ValueError("Expected remainder in form 'XX-YYYY-sss-sss'.")
+        componentCode = rem_parts[0]  
+        yearStr = rem_parts[1]       
+        sessionSlug = rem_parts[2] + "-" + rem_parts[3] 
+
+        session_map = {
+            "feb-mar": "Feb / Mar",
+            "may-june": "May / June",
+            "oct-nov": "Oct / Nov",
+        }
+        sessionDisplay = session_map.get(sessionSlug.lower())
+        if not sessionDisplay:
+            raise ValueError(f"Unknown session slug '{sessionSlug}'.")
+
+        yearForGetPaper = f"{yearStr} ({sessionDisplay})"
+        componentForGetPaper = f"{componentCode}"
+
+        data = getPaper(
+            "a level", subjectName, yearForGetPaper, componentForGetPaper
+        )
+
+
+
+        return {
+            "questionData": base64.b64encode(data[0]),
+            "markSchemeData": base64.b64encode(data[1]),
+        }, 200
+
+    except ValueError as ve:
+        # Bad format in details
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        # Any other failure
+        print("Error in getData:", e)
+        raise HTTPException(status_code=503, detail="No data found")
+
+        
 @app.get('/getAds')
 def getAds():
     data = {

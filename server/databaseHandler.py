@@ -193,13 +193,13 @@ def getPaper(level: str, subject: str, year: str, component: str) -> tuple:
         if level.lower() in ["a level", "as level"]:
             query = '''SELECT questionFile, solutionFile 
                     FROM papers 
-                    WHERE board = ? AND subject = ? 
+                    WHERE board = ? AND lower(subject) = ? 
                     AND year = ? AND component = ? AND approved = 1'''
             cursor.execute(query, ("A Levels", subject, year, component))
         else:
             query = '''SELECT questionFile, solutionFile 
                     FROM papers 
-                    WHERE level = ? AND subject = ? 
+                    WHERE level = ? AND lower(subject) = ? 
                     AND year = ? AND component = ? AND approved = 1'''
             cursor.execute(query, (level, subject, year, component))
         
@@ -212,10 +212,10 @@ def getPaper(level: str, subject: str, year: str, component: str) -> tuple:
         question_data = zlib.decompress(base64.b64decode(q_b64))
         solution_data = zlib.decompress(base64.b64decode(s_b64))
         
-        return question_data, solution_data
+        return [question_data, solution_data]
     except Exception as e:
         logger.error(f"Error getting paper: {e}")
-        return None, None
+        return [None, None]
     finally:
         if conn:
             conn.close()
@@ -227,19 +227,19 @@ def getPaperComponents(year: str, subject: str, level: str) -> list:
         cursor = conn.cursor()
         
         if level.lower() in ["a level", "as level"]:
-            query = '''SELECT component 
+            query = '''SELECT year, component 
                     FROM papers 
                     WHERE board = ? AND subject = ? 
-                    AND year = ? AND approved = 1'''
+                    AND substr(year, 1, 4) = ? AND approved = 1'''
             cursor.execute(query, ("A Levels", subject, year))
         else:
-            query = '''SELECT component 
+            query = '''SELECT year, component 
                     FROM papers 
                     WHERE level = ? AND subject = ? 
                     AND year = ? AND approved = 1'''
             cursor.execute(query, (level, subject, year))
         
-        components = [row[0] for row in cursor.fetchall()]
+        components = [row for row in cursor.fetchall()]
         return list(set(components))  # Return unique components
     except Exception as e:
         logger.error(f"Error getting components: {e}")
