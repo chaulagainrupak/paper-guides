@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { getApiUrl, isLocalhost } from "@/app/config";
 import { Loader } from "@/app/utils";
 import { redirect, usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function SubjectsPage() {
-  const [subjects, setSubjects] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const pathname = usePathname();
@@ -50,14 +51,14 @@ export default function SubjectsPage() {
         <p className="text-lg text-gray-400">No subjects found.</p>
       ) : (
         <div className="animate-fade-in space-y-6">
-          {subjects.map((subject) => (
+          {subjects.map((subject: any) => (
             <div key={subject.name} className="mb-4">
-              <a
+              <Link
                 href={`${pathname.replace(/\/$/, "")}/${subject.name}`}
                 className="border-1 border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
               >
                 {subject.name}
-              </a>
+              </Link>
             </div>
           ))}
         </div>

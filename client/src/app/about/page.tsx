@@ -13,31 +13,31 @@ export default function AboutPage() {
 
           <p className="mb-4 text-lg">
             We’re completely <strong>open-source</strong> and transparent — anyone can contribute, improve, or suggest. You’ll find us on{' '}
-            <a href="https://github.com/chaulagainrupak/paper-guides" className="underline" style={{ color: 'var(--pink-highlight)' }} target="_blank" rel="noopener noreferrer">
+            <Link href="https://github.com/chaulagainrupak/paper-guides" className="underline" style={{ color: 'var(--pink-highlight)' }} target="_blank" rel="noopener noreferrer">
               GitHub
-            </a>{' '}
+            </Link>{' '}
             and active across social platforms too.
           </p>
 
           <div className="flex flex-wrap justify-center gap-6 mt-6 mb-10">
-            <a href="https://github.com/chaulagainrupak/paper-guides" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--pink-highlight)' }}>
+            <Link href="https://github.com/chaulagainrupak/paper-guides" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--pink-highlight)' }}>
               GitHub Repository
-            </a>
-            <a href="https://instagram.com/paperguides.official" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--pink-highlight)' }}>
+            </Link>
+            <Link href="https://instagram.com/paperguides.official" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--pink-highlight)' }}>
               Instagram
-            </a>
-            <a href="https://instagram.com/ausernamehandle" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--pink-highlight)' }}>
+            </Link>
+            <Link href="https://instagram.com/ausernamehandle" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--pink-highlight)' }}>
               @ausernamehandle
-            </a>
-            <a href="https://instagram.com/shreenish_shakya" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--pink-highlight)' }}>
+            </Link>
+            <Link href="https://instagram.com/shreenish_shakya" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--pink-highlight)' }}>
               @shreenish_shakya
-            </a>
-            <a href="https://discord.gg/U9fAnCgcu3" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--blue-highlight)' }}>
+            </Link>
+            <Link href="https://discord.gg/U9fAnCgcu3" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--blue-highlight)' }}>
               Join us on Discord
-            </a>
-            <a href="https://www.youtube.com/@Paper-Guides" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--blue-highlight)' }}>
+            </Link>
+            <Link href="https://www.youtube.com/@Paper-Guides" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: 'var(--blue-highlight)' }}>
               YouTube Channel
-            </a>
+            </Link>
           </div>
 
           <h2 className="text-2xl font-semibold mb-2">Our Mission</h2>
@@ -66,8 +66,8 @@ export default function AboutPage() {
 
           <h2 className="text-2xl font-semibold mb-2">Contact Us</h2>
           <p className="mb-2">
-            Email us at <span style={{ color: 'var(--pink-highlight)' }}><a href='mailto:contact@paperguides.org'>contact@paperguides.org</a></span> or{' '}
-            <span style={{ color: 'var(--blue-highlight)' }}><a href='mailto:paperguides.official@proton.me'>paperguides.official@proton.me</a></span>
+            Email us at <span style={{ color: 'var(--pink-highlight)' }}><Link href='mailto:contact@paperguides.org'>contact@paperguides.org</Link></span> or{' '}
+            <span style={{ color: 'var(--blue-highlight)' }}><Link href='mailto:paperguides.official@proton.me'>paperguides.official@proton.me</Link></span>
           </p>
 
           <p className="text-center mt-8 text-sm opacity-75">Thank you for supporting accessible education 🙌</p>

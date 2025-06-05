@@ -114,7 +114,7 @@ export default function QuestionLinks({
                         item[1],
                         item[0]
                       )}`}
-                      className="border border-[var(--blue-highlight)] block p-4 rounded-xl w-2/3 text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
+                      className="border border-[var(--blue-highlight)] block p-4 rounded-xl w-4/3 text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
                     >
                       {subject.replaceAll("%20", " ")}, {item[1]}, Year: {item[0]} Question Paper
                     </Link>
@@ -125,7 +125,7 @@ export default function QuestionLinks({
                         item[1],
                         item[0]
                       )}`}
-                      className="ml-4 block p-4 rounded-xl w-1/3 text-xl font-bold bg-[var(--red)] text-white shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
+                      className="ml-4 block p-4 rounded-xl text-xl font-bold bg-[var(--red)] text-white shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
                       style={{ flexShrink: 0 }}
                     >
                       Mark Scheme

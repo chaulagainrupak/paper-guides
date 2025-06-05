@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getApiUrl, isLocalhost } from "@/app/config";
 import { Loader } from "@/app/utils";
+import Link from "next/link";
 
 export default function PastPapersPage() {
   const [data, setData] = useState<any>(null);
@@ -41,12 +42,12 @@ export default function PastPapersPage() {
 
                 {boardName.toLowerCase() === "a levels" ? (
                   <div className="level-section mb-4">
-                    <a
+                    <Link
                       href={`/subjects/A level`}
                       className="border-1 border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
                     >
                       CAIE: A Levels
-                    </a>
+                    </Link>
                   </div>
                 ) : ( null )}
               </div>

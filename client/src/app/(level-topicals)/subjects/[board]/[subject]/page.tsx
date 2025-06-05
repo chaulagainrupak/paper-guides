@@ -4,6 +4,7 @@ import { getApiUrl, isLocalhost } from "@/app/config";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader } from "@/app/utils";
+import Link from "next/link";
 
 export default function singleBoardLevel({
   params,
@@ -48,13 +49,13 @@ export default function singleBoardLevel({
       ) : (
         <div className="animate-fade-in space-y-4">
           {comp.map((item) => (
-            <a
+            <Link
               key={item}
               href={`${pathname.replace(/\/$/, "")}/${item}`}
               className="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-2xl transition-all duration-200"
             >
               {item}
-            </a>
+            </Link>
           ))}
         </div>
       )}

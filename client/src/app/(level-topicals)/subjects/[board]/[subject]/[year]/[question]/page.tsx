@@ -35,7 +35,7 @@ export default function PaperViewerClient({
   });
 
   return <div>{isLoading ? <Loader /> : <div>
-        <object data={`data:application/pdf;base64,${questionData}`} type="application/pdf" className="w-full h-200"></object>
-        <object data={`data:application/pdf;base64,${markSchemeData}`} type="application/pdf" className="w-full h-200"></object>
+        <object data={`data:application/pdf;base64,${questionData}`} type="application/pdf" className="question-pdf w-full h-200"></object>
+        <object data={`data:application/pdf;base64,${markSchemeData}`} type="application/pdf" className="soluton-pdf w-full h-200"></object>
     </div>}</div>;
 }
