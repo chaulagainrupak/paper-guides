@@ -160,6 +160,7 @@ async def getData(details: str):
 
 
         return {
+            "questionName": f"{subjectName.capitalize()}, {yearForGetPaper}, {componentForGetPaper}",
             "questionData": base64.b64encode(data[0]),
             "markSchemeData": base64.b64encode(data[1]),
         }, 200

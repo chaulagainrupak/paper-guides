@@ -86,7 +86,7 @@ export default function QuestionLinks({
   return (
     <div>
       <div className="flex justify-between border-b-2 border-[var(--blue-highlight)]">
-        <h1 className="text-4xl font-semibold mb-6">
+        <h1 className="text-4xl font-bold mb-6">
           Available <span className="text-[var(--blue-highlight)]">Papers</span> for{" "}
           <span className="text-[var(--blue-highlight)]">{subject.replaceAll("%20", " ")}</span>
         </h1>
@@ -96,9 +96,7 @@ export default function QuestionLinks({
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-40">
           <Loader />
-        </div>
       ) : (
         Object.entries(groupedPapers).map(([sessionName, papers]) =>
           papers.length > 0 ? (

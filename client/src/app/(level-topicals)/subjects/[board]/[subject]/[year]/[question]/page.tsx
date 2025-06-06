@@ -1,41 +1,160 @@
-// app/subjects/[level]/[subject]/[year]/[component]/PaperViewerClient.tsx
 "use client";
 
 import { getApiUrl, isLocalhost } from "@/app/config";
-import { Loader } from "@/app/utils";
-import { useRouter } from "next/navigation";
+import { BackButton, Loader } from "@/app/utils";
 import { useEffect, useState } from "react";
 
 export default function PaperViewerClient({
   params,
 }: {
-  params: Promise<{
-    question: string;
-  }>;
+  params: Promise<{question: string}>;
 }) {
-  const [questionName, setQuestionName] = useState("");
+  const [name, setName] = useState("");
   const [questionData, setQuestionData] = useState("");
   const [markSchemeData, setMarkSchemeData] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [showSolution, setShowSolution] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
   useEffect(() => {
-    const qName = async () => {
-      const { question } = await params;
-      setQuestionName(question);
+    const fetchData = async () => {
+      try {
+        const { question } = await params;
 
-      const res = await fetch(
-        getApiUrl(isLocalhost()) + `/getData/${questionName}`,
-        { cache: "no-store" }
-      );
-      let response = await res.json();
-      setQuestionData(await response[0]["questionData"]);
-      setMarkSchemeData(await response[0]["markSchemeData"]);
-      setIsLoading(false);
+        const res = await fetch(
+          `${getApiUrl(isLocalhost())}/getData/${question}`,
+          { cache: "no-store" }
+        );
+
+        const response = await res.json();
+
+        if (!Array.isArray(response) || response.length === 0) {
+          throw new Error("Empty response");
+        }
+
+        setName(response[0]["questionName"] || "Untitled Question");
+        setQuestionData(response[0]["questionData"] || "");
+        setMarkSchemeData(response[0]["markSchemeData"] || "");
+      } catch (error) {
+        console.error("Failed to fetch question data:", error);
+        setHasError(true);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    qName();
-  });
 
-  return <div>{isLoading ? <Loader /> : <div>
-        <object data={`data:application/pdf;base64,${questionData}`} type="application/pdf" className="question-pdf w-full h-200"></object>
-        <object data={`data:application/pdf;base64,${markSchemeData}`} type="application/pdf" className="soluton-pdf w-full h-200"></object>
-    </div>}</div>;
+    fetchData();
+  }, [params]);
+
+  const currentPdf = showSolution ? markSchemeData : questionData;
+
+  const handleDownload = () => {
+    try {
+      const byteCharacters = atob(currentPdf);
+      const byteNumbers = Array.from(byteCharacters, (char) =>
+        char.charCodeAt(0)
+      );
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = showSolution ? "solution.pdf" : "question.pdf";
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+    }
+  };
+
+  const handleFullscreen = () => {
+    try {
+      const byteArray = Uint8Array.from(atob(currentPdf), (char) =>
+        char.charCodeAt(0)
+      );
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    } catch (error) {
+      console.error("Error opening fullscreen PDF:", error);
+    }
+  };
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (hasError || !currentPdf) {
+    return (
+      <div className="text-red-600 text-center mt-10">
+        <h2 className="text-2xl font-bold">Failed to load the paper.</h2>
+        <p>Please check your internet connection or try again later.</p>
+        <BackButton />
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-screen">
+      <title>{name}</title>
+
+      {/* Title + Top Buttons */}
+      <div className="flex justify-between mb-4 items-center">
+        <h1 className="text-4xl font-bold mb-2">{name}</h1>
+        <div className="flex gap-2">
+          <BackButton />
+        </div>
+      </div>
+
+      {/* Tool Buttons */}
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex gap-2">
+          <button
+            onClick={handleFullscreen}
+            className="bg-[var(--green-highlight)] text-white text-lg font-bold px-4 py-2 rounded rounded-lg hover:opacity-80 transition"
+          >
+            {showSolution
+              ? "View solution in fullscreen"
+              : "View question in fullscreen"}
+          </button>
+
+          <button
+            onClick={handleDownload}
+            className={`${
+              showSolution
+                ? "bg-[var(--pink-highlight)]"
+                : "bg-[var(--blue-highlight)]"
+            } text-white text-lg font-bold px-4 py-2 rounded rounded-lg hover:opacity-80 transition`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#e8eaed"
+            >
+              <path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" />
+            </svg>
+          </button>
+        </div>
+
+        <button
+          onClick={() => setShowSolution(!showSolution)}
+          className={` ${showSolution
+                ? "bg-[var(--pink-highlight)]"
+                : "bg-[var(--blue-highlight)]"} text-white text-lg font-bold px-4 py-2 rounded rounded-lg hover:opacity-80 transition`}
+        >
+          {showSolution ? "Show Question" : "Show Solution"}
+        </button>
+      </div>
+
+      {/* PDF Viewer */}
+      <object
+        data={`data:application/pdf;base64,${currentPdf}`}
+        type="application/pdf"
+        className="w-full h-screen"
+      />
+    </div>
+  );
 }

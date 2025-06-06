@@ -64,7 +64,7 @@ export function BackButton() {
   return (
     <button
       onClick={handleClick}
-      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--blue-highlight)] text-white transition-colors"
+      className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--blue-highlight)] text-white text-lg font-bold px-4 py-2 rounded rounded-lg hover:opacity-80 transition transition-colors"
       aria-label="Go back"
     >
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
