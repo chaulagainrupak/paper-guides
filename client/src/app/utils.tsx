@@ -1,11 +1,11 @@
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { getApiUrl, isLocalhost } from "./config";
 
 export async function isLoggedIn() {
   const accessToken = localStorage.getItem("authToken");
+  
   if (!accessToken) return false;
   try {
-    1;
     const apiUrl = getApiUrl(isLocalhost());
     const response = await fetch(apiUrl + "/validateToken", {
       method: "POST",
@@ -16,7 +16,6 @@ export async function isLoggedIn() {
     });
 
     const result = await response.json();
-    console.log(result);
     if (response.status === 200) {
       return true;
     } else {
@@ -30,10 +29,39 @@ export async function isLoggedIn() {
   }
 }
 
+export async function getRole() {
+  const accessToken = localStorage.getItem("authToken");
+
+  if (!accessToken) return null;
+  try {
+    const apiUrl = getApiUrl(isLocalhost());
+    const response = await fetch(apiUrl + "/validateToken", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: accessToken,
+    });
+
+    if (response.status === 200) {
+      const result = await response.json();
+      return result[0]["role"];
+    } else {
+      localStorage.removeItem("authToken");
+      return null;
+    }
+  } catch (err) {
+    console.error("Failed to get role:", err);
+    localStorage.removeItem("authToken");
+    return null;
+  }
+}
+
+
 export function logOut() {
   localStorage.removeItem("authToken");
   alert("Logged Out");
-  window.location.reload();
+  redirect('/');
 }
 
 export function Loader() {

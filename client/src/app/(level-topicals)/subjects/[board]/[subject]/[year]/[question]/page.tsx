@@ -7,14 +7,27 @@ import { useEffect, useState } from "react";
 export default function PaperViewerClient({
   params,
 }: {
-  params: Promise<{question: string}>;
+  params: Promise<{ question: string }>;
 }) {
   const [name, setName] = useState("");
-  const [questionData, setQuestionData] = useState("");
-  const [markSchemeData, setMarkSchemeData] = useState("");
+  const [questionData, setQuestionData] = useState<string | string[]>(""); // single PDF (desktop) or array of images (mobile)
+  const [markSchemeData, setMarkSchemeData] = useState<string | string[]>("");
   const [isLoading, setIsLoading] = useState(true);
   const [showSolution, setShowSolution] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
+
+  useEffect(() => {
+    const detectMobile = () => /Mobi|Android/i.test(navigator.userAgent);
+    const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isSafari = () => /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+
+    if (isIOS() && isSafari()) {
+      alert("Please use a different browser. Safari on iPhone may not display documents correctly.");
+    }
+
+    setIsMobileView(detectMobile());
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,8 +46,18 @@ export default function PaperViewerClient({
         }
 
         setName(response[0]["questionName"] || "Untitled Question");
-        setQuestionData(response[0]["questionData"] || "");
-        setMarkSchemeData(response[0]["markSchemeData"] || "");
+
+        const qData = response[0]["questionData"] || "";
+        const sData = response[0]["markSchemeData"] || "";
+
+        // if mobile, assume it's an array of images
+        if (typeof qData === "string" && isMobileView) {
+          setQuestionData(splitBase64Pages(qData));
+          setMarkSchemeData(splitBase64Pages(sData));
+        } else {
+          setQuestionData(qData);
+          setMarkSchemeData(sData);
+        }
       } catch (error) {
         console.error("Failed to fetch question data:", error);
         setHasError(true);
@@ -44,48 +67,20 @@ export default function PaperViewerClient({
     };
 
     fetchData();
-  }, [params]);
+  }, [params, isMobileView]);
 
-  const currentPdf = showSolution ? markSchemeData : questionData;
+  const currentData = showSolution ? markSchemeData : questionData;
 
-  const handleDownload = () => {
-    try {
-      const byteCharacters = atob(currentPdf);
-      const byteNumbers = Array.from(byteCharacters, (char) =>
-        char.charCodeAt(0)
-      );
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: "application/pdf" });
-
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = showSolution ? "solution.pdf" : "question.pdf";
-      link.click();
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading PDF:", error);
-    }
+  // helper to split a single base64 into multiple page images
+  const splitBase64Pages = (data: string): string[] => {
+    // Placeholder: Your backend should ideally return an array directly
+    // This is a fallback, assuming delimiter for demo purposes
+    return data.split(";;PAGE;;"); // e.g. backend joins per-page base64s like 'page1;;PAGE;;page2'
   };
 
-  const handleFullscreen = () => {
-    try {
-      const byteArray = Uint8Array.from(atob(currentPdf), (char) =>
-        char.charCodeAt(0)
-      );
-      const blob = new Blob([byteArray], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
-      window.open(url, "_blank");
-    } catch (error) {
-      console.error("Error opening fullscreen PDF:", error);
-    }
-  };
+  if (isLoading) return <Loader />;
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
-  if (hasError || !currentPdf) {
+  if (hasError || !currentData) {
     return (
       <div className="text-red-600 text-center mt-10">
         <h2 className="text-2xl font-bold">Failed to load the paper.</h2>
@@ -96,10 +91,10 @@ export default function PaperViewerClient({
   }
 
   return (
-    <div className="h-screen">
+    <div className="h-screen relative">
       <title>{name}</title>
 
-      {/* Title + Top Buttons */}
+      {/* Title */}
       <div className="flex justify-between mb-4 items-center">
         <h1 className="text-4xl font-bold mb-2">{name}</h1>
         <div className="flex gap-2">
@@ -107,54 +102,35 @@ export default function PaperViewerClient({
         </div>
       </div>
 
-      {/* Tool Buttons */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex gap-2">
-          <button
-            onClick={handleFullscreen}
-            className="bg-[var(--green-highlight)] text-white text-lg font-bold px-4 py-2 rounded rounded-lg hover:opacity-80 transition"
-          >
-            {showSolution
-              ? "View solution in fullscreen"
-              : "View question in fullscreen"}
-          </button>
-
-          <button
-            onClick={handleDownload}
-            className={`${
-              showSolution
-                ? "bg-[var(--pink-highlight)]"
-                : "bg-[var(--blue-highlight)]"
-            } text-white text-lg font-bold px-4 py-2 rounded rounded-lg hover:opacity-80 transition`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="#e8eaed"
-            >
-              <path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" />
-            </svg>
-          </button>
-        </div>
-
+      {/* Mobile Toggle Button */}
+      {isMobileView && (
         <button
           onClick={() => setShowSolution(!showSolution)}
-          className={` ${showSolution
-                ? "bg-[var(--pink-highlight)]"
-                : "bg-[var(--blue-highlight)]"} text-white text-lg font-bold px-4 py-2 rounded rounded-lg hover:opacity-80 transition`}
+          className="fixed bottom-6 left-6 z-50 w-14 h-14 bg-[var(--blue-highlight)] text-white text-xl font-bold rounded-full shadow-lg flex items-center justify-center"
         >
-          {showSolution ? "Show Question" : "Show Solution"}
+          {showSolution ? "Q" : "S"}
         </button>
-      </div>
+      )}
 
-      {/* PDF Viewer */}
-      <object
-        data={`data:application/pdf;base64,${currentPdf}`}
-        type="application/pdf"
-        className="w-full h-screen"
-      />
+      {/* Render Content */}
+      {!isMobileView ? (
+        <object
+          data={`data:application/pdf;base64,${currentData as string}`}
+          type="application/pdf"
+          className="w-full h-full"
+        />
+      ) : (
+        <div className="flex flex-col items-center gap-4 pb-20">
+          {(currentData as string[]).map((imgBase64, index) => (
+            <img
+              key={index}
+              src={`data:image/jpeg;base64,${imgBase64}`}
+              alt={`Page ${index + 1}`}
+              className="max-w-full rounded shadow"
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

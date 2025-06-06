@@ -277,7 +277,7 @@ async def validateToken(body: Request):
         if not user:
             raise HTTPException(status_code=401, detail="Invalid username or password")
         else:
-            return {"message": "token verified"}, 200
+            return {"message": "token verified", "user": username, "role" : user["role"]   }, 200
     except Exception as e:
         print(e)
         return {"message": "token verification failed"}, 429

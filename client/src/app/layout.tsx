@@ -29,7 +29,7 @@ export default function RootLayout({
               {/* <Link href="/topicals">Topical Papers</Link> */}
               <Link href="/notes">Notes</Link>
               <Link href="/generator">Question Generator</Link>
-              <Link href="/submit">Submit</Link>
+              {/* <Link href="/submit">Submit</Link> */}
             </div>
 
             <div className="flex gap-4 hidden xl:flex">
@@ -53,7 +53,7 @@ export default function RootLayout({
                 {/* <Link href="/topicals">Topical Papers</Link> */}
                 <Link href="/notes">Notes</Link>
                 <Link href="/generator">Question Generator</Link>
-                <Link href="/submit">Submit</Link>
+                {/* <Link href="/submit">Submit</Link> */}
                 <Link href="/about" className="text-[var(--pink-highlight)]">
                   About
                 </Link>
