@@ -45,6 +45,7 @@ export async function getRole() {
 
     if (response.status === 200) {
       const result = await response.json();
+      console.log(`role found for ${result[0]["user"]}`)
       return result[0]["role"];
     } else {
       localStorage.removeItem("authToken");

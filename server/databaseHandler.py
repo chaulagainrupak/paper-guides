@@ -269,10 +269,10 @@ def insertQuestion(board: str, subject: str, topic: str, difficulty: int,
 
         cursor.execute('''INSERT INTO questions
             (uuid, subject, topic, difficulty, board, level, component, 
-            questionFile, solutionFile, submittedBy, submittedFrom, submitDate)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            questionFile, solutionFile, submittedBy, submittedFrom, submitDate, approved, approvedBy,approvedOn)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ?)''',
             (uuidStr, subject, topic, difficulty, board, level, component,
-             q_b64, s_b64, user, ip, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+             q_b64, s_b64, user, ip, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), True, user ,datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         
         conn.commit()
         logger.info(f"Question inserted: {uuidStr}")
