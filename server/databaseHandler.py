@@ -6,6 +6,7 @@ import base64
 import logging
 from datetime import datetime
 from dotenv import load_dotenv
+import random 
 
 load_dotenv('.env')
 
@@ -329,50 +330,59 @@ def giveRating(user_id: str, question_UUID: str, rating: int) -> bool:
         if conn:
             conn.close()
 
-def getQuestionsForGen(board: str, subject: str, level: str, topics: list, 
-                      components: list, difficulties: list) -> list:
-    """Get questions for question generator"""
+def getQuestionsForGen(board, subject, level, topics, components, difficulties):
     try:
         conn = sqlite3.connect(DB_QUESTION_GENERATOR_PATH)
         cursor = conn.cursor()
 
-        # Base query
         query = """
             SELECT * FROM questions
-            WHERE board = ? AND subject = ? AND level = ? AND approved = 1
+            WHERE board = ? AND subject = ? AND approved = 1
         """
-        params = [board, subject, level]
+        params = [board, subject]
 
-        # Add conditions for filters
+        # Handle level filter for list or single string
+        if isinstance(level, list) and level:
+            placeholders = ",".join(["?"] * len(level))
+            query += f" AND level IN ({placeholders})"
+            params.extend(level)
+        else:
+            query += " AND level = ?"
+            params.append(level if not isinstance(level, list) else level[0])
+
         def add_condition(field, values):
             if values and values != 'ALL':
                 placeholders = ','.join(['?'] * len(values))
                 return f" AND {field} IN ({placeholders})", values
             return "", []
 
-        # Add difficulty condition
         diff_cond, diff_params = add_condition("difficulty", difficulties)
         query += diff_cond
         params.extend(diff_params)
 
-        # Add topic condition
         topic_cond, topic_params = add_condition("topic", topics)
         query += topic_cond
         params.extend(topic_params)
 
-        # Add components condition
         comp_cond, comp_params = add_condition("component", components)
         query += comp_cond
         params.extend(comp_params)
 
-        # Execute query
+        query += " ORDER BY RANDOM() LIMIT 30"
+        
         cursor.execute(query, params)
         rows = cursor.fetchall()
+
+        finalRows = []
         
-        # Process results
-        if rows:
-            return rows
-        return []
+        for item in rows:    
+            itemList = list(item)
+            itemList[8] = base64.b64encode(zlib.decompress(base64.b64decode(item[8]))).decode('utf-8')
+            itemList[9] = base64.b64encode(zlib.decompress(base64.b64decode(item[9]))).decode('utf-8')
+
+            finalRows.append(itemList)
+
+        return finalRows if finalRows else []
 
     except Exception as e:
         logger.error(f"Error getting questions for generator: {e}")

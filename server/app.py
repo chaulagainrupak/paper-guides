@@ -93,11 +93,11 @@ def pastpapers():
 @app.get('/subjects/{board}/{optional_level}')
 async def getSubjects(board: str, optional_level=None):
     if board.lower() in ["a levels", "as level", "a level", "as levels"]:
-        return config["A Levels"]["subjects"]
+        return CONFIG["A Levels"]["subjects"]
     else:
         for key in config:
             if key.lower() == board.lower():
-                return config[key]["subjects"]
+                return CONFIG[key]["subjects"]
     raise HTTPException(status_code=404, detail="Board not found")
 
 @app.get('/getYears/{subjectName}')
@@ -358,6 +358,40 @@ async def submitQuestionToDb(request: Request):
         return {'message': e}
 
 
+@app.post('/question-gen')
+async def getQuestions(request: Request):
+    try:
+        body = await request.json()
+
+        board = body.get("board")
+        subject = body.get("subject")
+        topics = body.get("topics")
+        level = body.get("levels")
+        components = body.get("components")
+        difficulties = body.get("difficulties")
+
+        if not all([board, subject, level, topics, components, difficulties]):
+            return HTTPException(
+                status_code= 400,
+                detail={"error": "Missing one or more required fields."}
+            )
+
+        result = getQuestionsForGen(board, subject, level, topics, components, difficulties)
+
+        if len(result) == 0:
+            return HTTPException(
+                status_code= 401,
+                detail={"error": "No data found!"},
+            )
+
+        return result
+
+    except Exception as e:
+        print(f"Error in /question-gen: {e}")
+        return HTTPException(
+            status_code= 500,
+            detail={"error": "Internal server error"},
+        )
 
 def getClientIp(request):
     # Try to get the IP from the 'X-Forwarded-For' header (Cloudflare/proxy header)

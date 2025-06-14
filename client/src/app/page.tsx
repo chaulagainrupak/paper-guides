@@ -63,7 +63,7 @@ export default function HomePage() {
             Generate custom practice questions tailored to your needs.
           </p>
           <Link
-            href="/question-generator"
+            href="/generator"
             className="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
           >
             Start Generating
