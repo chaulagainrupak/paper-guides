@@ -10,6 +10,13 @@
   --blue-highlight: #5d71e0;
   --green-highlight: rgb(60, 179, 113);
   --sea-salt: #f7f7f7;
+
+
+  --diff-one: #177245;
+  --diff-two: #3CB371;
+  --diff-three: #FFD700;
+  --diff-four: #FF5800;
+  --diff-five: var(--red);
 }
 
 :root {

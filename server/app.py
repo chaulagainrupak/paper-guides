@@ -206,6 +206,9 @@ def getAds():
 
 @app.post('/signup')
 async def signup(body: Request):
+
+    HTTPException(status_code=500, detail="Sorry! New SignUps have been closed! For Now Check back later")
+    
     conn = getDbConnection()
     cur = conn.cursor()
 

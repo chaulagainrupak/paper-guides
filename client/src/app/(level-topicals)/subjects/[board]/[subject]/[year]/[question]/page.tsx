@@ -158,15 +158,17 @@ export default function PaperViewerClient({
           type="application/pdf"
           className="w-full h-full"
         >
-          {" "}
-          It looks like your device/browser cannot display PDFs inline. Please
-          download the PDF to view it.{" "}
-          <button
-            onClick={handleDownload}
-            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-          >
-            Download PDF
-          </button>
+          <iframe src={`data:application/pdf;base64,${currentPdf}`}>
+            {" "}
+            It looks like your device/browser cannot display PDFs inline. Please
+            download the PDF to view it.{" "}
+            <button
+              onClick={handleDownload}
+              className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Download PDF
+            </button>
+          </iframe>
         </object>
       </div>
     </div>

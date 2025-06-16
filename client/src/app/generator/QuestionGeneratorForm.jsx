@@ -393,7 +393,9 @@ export default function QuestionGeneratorForm() {
           </form>
         </div>
       ) : (
+        <>
           <GeneratedPage data={generatedResult} />
+        </>
       )}
     </>
   );
