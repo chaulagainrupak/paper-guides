@@ -15,6 +15,7 @@ export default function PaperViewerClient({
   const [isLoading, setIsLoading] = useState(true);
   const [showSolution, setShowSolution] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,8 +23,7 @@ export default function PaperViewerClient({
         const { question } = await params;
 
         const res = await fetch(
-          `
-          ${getApiUrl(isLocalhost())}/getData/${question}`,
+          `${getApiUrl(isLocalhost())}/getData/${question}`,
           { cache: "no-store" }
         );
 
@@ -49,55 +49,80 @@ export default function PaperViewerClient({
 
   const currentPdf = showSolution ? markSchemeData : questionData;
 
-const handleDownload = () => {
-  try {
-    const byteCharacters = atob(currentPdf);
-    const byteNumbers = Array.from(byteCharacters, (char) =>
-      char.charCodeAt(0)
-    );
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: "application/pdf" });
-    const fileName = showSolution ? "solution.pdf" : "question.pdf";
-
-    // Feature detection for IE/Edge
-    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
-      // IE & Edge download
-      (window.navigator as any).msSaveOrOpenBlob(blob, fileName);
+  // Create blob URL for current PDF to avoid auto-download on page load
+  useEffect(() => {
+    if (!currentPdf) {
+      setBlobUrl(null);
       return;
     }
 
-    // Detect if mobile Safari or other mobile browsers
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-    if (isMobile) {
-      // On mobile: open in new tab/window instead of forcing download
+    try {
+      const byteCharacters = atob(currentPdf);
+      const byteNumbers = Array.from(byteCharacters, (char) => char.charCodeAt(0));
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
-      window.open(url, "_blank");
-      // Optional: revoke URL after some delay to avoid immediate blob invalidation
-      setTimeout(() => URL.revokeObjectURL(url), 10000);
-      return;
+
+      setBlobUrl(url);
+
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } catch (error) {
+      console.error("Failed to create blob URL:", error);
+      setBlobUrl(null);
     }
+  }, [currentPdf]);
 
-    // Desktop: Create a link and trigger download
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = fileName;
+  const handleDownload = () => {
+    try {
+      if (!currentPdf) return;
 
-    // Append link to body to make click work in Firefox
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      const byteCharacters = atob(currentPdf);
+      const byteNumbers = Array.from(byteCharacters, (char) =>
+        char.charCodeAt(0)
+      );
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: "application/pdf" });
+      const fileName = showSolution ? "solution.pdf" : "question.pdf";
 
-    URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error("Error downloading PDF:", error);
-  }
-};
+      // Feature detection for IE/Edge
+      if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+        (window.navigator as any).msSaveOrOpenBlob(blob, fileName);
+        return;
+      }
 
+      // Detect if mobile Safari or other mobile browsers
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        // On mobile: open in new tab/window instead of forcing download
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank");
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+        return;
+      }
+
+      // Desktop: Create a link and trigger download
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+    }
+  };
 
   const handleFullscreen = () => {
     try {
+      if (!currentPdf) return;
+
       const byteArray = Uint8Array.from(atob(currentPdf), (char) =>
         char.charCodeAt(0)
       );
@@ -181,21 +206,20 @@ const handleDownload = () => {
         </div>
 
         <object
-          data={`data:application/pdf;base64,${currentPdf}`}
+          data={blobUrl || undefined}
           type="application/pdf"
           className="w-full h-full"
         >
-          <iframe src={`data:application/pdf;base64,${currentPdf}`}>
-            {" "}
+          <div className="text-center">
             It looks like your device/browser cannot display PDFs inline. Please
             download the PDF to view it.{" "}
             <button
               onClick={handleDownload}
-              className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
+              className="mt-2 px-4 py-2 bg-[var(--blue-highlight)] text-white rounded"
             >
               Download PDF
             </button>
-          </iframe>
+          </div>
         </object>
       </div>
     </div>
