@@ -58,7 +58,9 @@ export default function PaperViewerClient({
 
     try {
       const byteCharacters = atob(currentPdf);
-      const byteNumbers = Array.from(byteCharacters, (char) => char.charCodeAt(0));
+      const byteNumbers = Array.from(byteCharacters, (char) =>
+        char.charCodeAt(0)
+      );
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
@@ -86,34 +88,29 @@ export default function PaperViewerClient({
       const blob = new Blob([byteArray], { type: "application/pdf" });
       const fileName = showSolution ? "solution.pdf" : "question.pdf";
 
-      // Feature detection for IE/Edge
-      if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
-        (window.navigator as any).msSaveOrOpenBlob(blob, fileName);
-        return;
-      }
-
-      // Detect if mobile Safari or other mobile browsers
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
       if (isMobile) {
-        // On mobile: open in new tab/window instead of forcing download
         const url = URL.createObjectURL(blob);
         window.open(url, "_blank");
         setTimeout(() => URL.revokeObjectURL(url), 10000);
         return;
       }
 
-      // Desktop: Create a link and trigger download
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
       link.download = fileName;
 
       document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
 
-      URL.revokeObjectURL(url);
+      // Trigger click and then revoke URL after a short delay
+      link.click();
+
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
     } catch (error) {
       console.error("Error downloading PDF:", error);
     }
