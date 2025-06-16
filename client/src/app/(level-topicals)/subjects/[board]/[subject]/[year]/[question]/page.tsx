@@ -37,7 +37,6 @@ export default function PaperViewerClient({
         setQuestionData(response[0]["questionData"] || "");
         setMarkSchemeData(response[0]["markSchemeData"] || "");
       } catch (error) {
-        console.error("Failed to fetch question data:", error);
         setHasError(true);
       } finally {
         setIsLoading(false);
@@ -49,7 +48,6 @@ export default function PaperViewerClient({
 
   const currentPdf = showSolution ? markSchemeData : questionData;
 
-  // Create blob URL for current PDF to avoid auto-download on page load
   useEffect(() => {
     if (!currentPdf) {
       setBlobUrl(null);
@@ -70,50 +68,30 @@ export default function PaperViewerClient({
       return () => {
         URL.revokeObjectURL(url);
       };
-    } catch (error) {
-      console.error("Failed to create blob URL:", error);
+    } catch {
       setBlobUrl(null);
     }
   }, [currentPdf]);
 
   const handleDownload = () => {
     try {
-      if (!currentPdf) return;
+      if (!blobUrl) return;
 
-      const byteCharacters = atob(currentPdf);
-      const byteNumbers = Array.from(byteCharacters, (char) =>
-        char.charCodeAt(0)
-      );
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: "application/pdf" });
       const fileName = showSolution ? "solution.pdf" : "question.pdf";
-
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
       if (isMobile) {
-        const url = URL.createObjectURL(blob);
-        window.open(url, "_blank");
-        setTimeout(() => URL.revokeObjectURL(url), 10000);
+        window.open(blobUrl, "_blank");
         return;
       }
 
-      const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = url;
+      link.href = blobUrl;
       link.download = fileName;
-
       document.body.appendChild(link);
-
-      // Trigger click and then revoke URL after a short delay
       link.click();
-
-      setTimeout(() => {
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }, 100);
-    } catch (error) {
-      console.error("Error downloading PDF:", error);
-    }
+      document.body.removeChild(link);
+    } catch {}
   };
 
   const handleFullscreen = () => {
@@ -126,9 +104,7 @@ export default function PaperViewerClient({
       const blob = new Blob([byteArray], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       window.open(url, "_blank");
-    } catch (error) {
-      console.error("Error opening fullscreen PDF:", error);
-    }
+    } catch {}
   };
 
   if (isLoading) {
@@ -150,7 +126,6 @@ export default function PaperViewerClient({
       <title>{name}</title>
 
       <div className="flex flex-col h-full">
-        {/* Title + Top Buttons */}
         <div className="flex justify-between mb-4 items-center">
           <h1 className="text-4xl font-bold mb-2">{name}</h1>
           <div className="flex gap-2">
@@ -158,7 +133,6 @@ export default function PaperViewerClient({
           </div>
         </div>
 
-        {/* Tool Buttons */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex gap-2">
             <button
@@ -192,7 +166,7 @@ export default function PaperViewerClient({
 
           <button
             onClick={() => setShowSolution(!showSolution)}
-            className={` ${
+            className={`${
               showSolution
                 ? "bg-[var(--pink-highlight)]"
                 : "bg-[var(--blue-highlight)]"
