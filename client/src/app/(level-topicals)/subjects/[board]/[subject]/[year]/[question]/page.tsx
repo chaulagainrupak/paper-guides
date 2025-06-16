@@ -49,25 +49,52 @@ export default function PaperViewerClient({
 
   const currentPdf = showSolution ? markSchemeData : questionData;
 
-  const handleDownload = () => {
-    try {
-      const byteCharacters = atob(currentPdf);
-      const byteNumbers = Array.from(byteCharacters, (char) =>
-        char.charCodeAt(0)
-      );
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: "application/pdf" });
+const handleDownload = () => {
+  try {
+    const byteCharacters = atob(currentPdf);
+    const byteNumbers = Array.from(byteCharacters, (char) =>
+      char.charCodeAt(0)
+    );
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: "application/pdf" });
+    const fileName = showSolution ? "solution.pdf" : "question.pdf";
 
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = showSolution ? "solution.pdf" : "question.pdf";
-      link.click();
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading PDF:", error);
+    // Feature detection for IE/Edge
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      // IE & Edge download
+      (window.navigator as any).msSaveOrOpenBlob(blob, fileName);
+      return;
     }
-  };
+
+    // Detect if mobile Safari or other mobile browsers
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      // On mobile: open in new tab/window instead of forcing download
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+      // Optional: revoke URL after some delay to avoid immediate blob invalidation
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      return;
+    }
+
+    // Desktop: Create a link and trigger download
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+
+    // Append link to body to make click work in Firefox
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error downloading PDF:", error);
+  }
+};
+
 
   const handleFullscreen = () => {
     try {
