@@ -1,0 +1,390 @@
+{
+  "A Levels": {
+    "levels": ["AS level", "A level"],
+    "subjects": [
+      {
+        "name": "English General Paper (8021)",
+        "topics": [
+          "Economic, historical, moral, political, and social issues",
+          "Science, including its history, philosophy, ethics, general principles, and applications",
+          "Environmental issues",
+          "Technology and mathematics",
+          "Literature, language, arts, crafts, and the media"
+        ]
+      },
+      {
+        "name": "Mathematics (9709)",
+        "topics": [
+          "Binomial Expansion",
+          "Circular Measure",
+          "Complex Numbers",
+          "Coordinate Geometry",
+          "Differential Equations",
+          "Differentiation",
+          "Discrete Random Variables",
+          "Energy, Work, and Power",
+          "Exponential and Logarithmic Functions",
+          "Forces and Newton’s Laws",
+          "Functions",
+          "Further Calculus",
+          "Hypothesis Testing",
+          "Integration",
+          "Integration Techniques (e.g., by parts, substitution)",
+          "Kinematics",
+          "Linear Combinations of Random Variables",
+          "Mechanics",
+          "Normal Distribution",
+          "Numerical Methods",
+          "Parametric Differentiation",
+          "Permutations and Combinations",
+          "Poisson Distribution",
+          "Probability",
+          "Probability and Statistics (Extension)",
+          "Quadratics",
+          "Representation of Data",
+          "Series",
+          "The Normal Distribution",
+          "Trigonometry",
+          "Vectors"
+        ]
+      },
+      {
+        "name": "Physics (9702)",
+        "topics": [
+          "Physical Quantities and Units",
+          "Kinematics",
+          "Dynamics",
+          "Forces, Density, and Pressure",
+          "Work, Energy, and Power",
+          "Deformation of Solids",
+          "Waves",
+          "Superposition",
+          "Electricity",
+          "D.C. Circuits",
+          "Particle Physics",
+          "Newtonian Mechanics and Momentum",
+          "Thermodynamics",
+          "Oscillations and Waves",
+          "Electric and Magnetic Fields",
+          "Gravitation",
+          "Capacitors and RC Circuits",
+          "Magnetic Fields and Forces",
+          "Alternating Current and R.M.S. Values",
+          "Nuclear Physics",
+          "Special Relativity",
+          "Wave-Particle Duality"
+        ]
+      },
+      {
+        "name": "Chemistry (9701)",
+        "topics": [
+          "Atomic Structure",
+          "Atoms, Molecules, and Stoichiometry",
+          "Chemical Bonding",
+          "States of Matter",
+          "Chemical Energetics",
+          "Electrochemistry",
+          "Equilibria",
+          "Reaction Kinetics",
+          "The Periodic Table: Chemical Periodicity",
+          "Group 2",
+          "Group 17",
+          "Nitrogen and Sulfur",
+          "Introduction to AS Level Organic Chemistry",
+          "Hydrocarbons",
+          "Halogen Compounds",
+          "Hydroxy Compounds",
+          "Carbonyl Compounds",
+          "Carboxylic Acids and Derivatives",
+          "Nitrogen Compounds",
+          "Polymerisation",
+          "Organic Synthesis"
+        ]
+      },
+      {
+        "name": "Biology (9700)",
+        "topics": [
+          "Cell Structure",
+          "Biological Molecules",
+          "Enzymes",
+          "Cell Membranes and Transport",
+          "The Mitotic Cell Cycle",
+          "Nucleic Acids and Protein Synthesis",
+          "Transport in Plants",
+          "Transport in Mammals",
+          "Gas Exchange",
+          "Infectious Diseases",
+          "Immunity",
+          "Energy and Respiration",
+          "Photosynthesis",
+          "Homeostasis",
+          "Control and Coordination",
+          "Inheritance",
+          "Selection and Evolution",
+          "Biodiversity, Classification, and Conservation",
+          "Genetic Technology"
+        ]
+      },
+      {
+        "name": "Computer Science (9618)",
+        "topics": [
+          "Information Representation",
+          "Communication",
+          "Hardware",
+          "Processor Fundamentals",
+          "System Software",
+          "Security, Privacy, and Data Integrity",
+          "Ethics and Ownership",
+          "Databases",
+          "Algorithm Design and Problem-solving",
+          "Data Types and Structures",
+          "Programming",
+          "Software Development"
+        ]
+      },
+      {
+        "name": "Computer Science (9608)",
+        "topics": [
+          "Data Representation & Binary Systems",
+          "Communication & Networks",
+          "Hardware & Virtual Machines",
+          "System Software & Security",
+          "Processor Architecture & Assembly",
+          "Data Structures & Algorithms",
+          "Programming Concepts & OOP",
+          "Database Design & SQL",
+          "Boolean Algebra & Logic Gates",
+          "Software Development Lifecycle",
+          "Problem Solving & Program Design",
+          "Web Technologies & Standards"
+        ]
+      },
+      {
+        "name": "Economics (9708)",
+        "topics": [
+          "Basic Economic Principles",
+          "Demand and Supply Analysis",
+          "Elasticity of Demand and Supply",
+          "Market Structures and Types",
+          "Consumer and Producer Surplus",
+          "Labor Market",
+          "Macroeconomic Indicators",
+          "National Income Accounting",
+          "Fiscal and Monetary Policy",
+          "Inflation, Unemployment, and Growth",
+          "International Trade and Balance of Payments",
+          "Economic Development and Sustainability",
+          "Market Failure and Government Intervention"
+        ]
+      },
+      {
+        "name": "Accounting (9706)",
+        "topics": [
+          "Basic Accounting Principles",
+          "Double-Entry Bookkeeping",
+          "Preparation of Financial Statements",
+          "Non-current Assets",
+          "Inventory Valuation",
+          "Financial Ratios",
+          "Bank Reconciliation",
+          "Depreciation and Amortization",
+          "Control Accounts",
+          "Incorporated Business Accounts",
+          "Partnership Accounts",
+          "Costing and Budgeting"
+        ]
+      },
+      {
+        "name": "Psychology (9990)",
+        "topics": [
+          "Research Methods and Ethics",
+          "Biological Bases of Behavior",
+          "Cognitive Psychology",
+          "Developmental Psychology",
+          "Social Psychology",
+          "Abnormal Psychology",
+          "Personality Theories",
+          "Psychological Disorders",
+          "Treatment Approaches",
+          "Memory and Learning",
+          "Motivation and Emotion",
+          "Cross-Cultural Psychology"
+        ]
+      },
+      {
+        "name": "Sociology (9699)",
+        "topics": [
+          "Sociological Perspectives",
+          "Social Institutions",
+          "Culture and Society",
+          "Social Stratification",
+          "Family and Marriage",
+          "Education Systems",
+          "Crime and Deviance",
+          "Social Change",
+          "Gender and Society",
+          "Globalization",
+          "Research Methods in Sociology",
+          "Power and Politics"
+        ]
+      },
+      {
+        "name": "Information Technology (9626)",
+        "topics": [
+          "Database Design and Management",
+          "Networking Fundamentals",
+          "Web Technologies",
+          "System Analysis and Design",
+          "Computer Hardware",
+          "Software Development Methodologies",
+          "Information Systems Management",
+          "Cybersecurity Principles",
+          "Cloud Computing",
+          "Data Analytics",
+          "User Interface Design",
+          "Emerging Technology Trends"
+        ]
+      },
+      {
+        "name": "Art and Design (9479)",
+        "topics": [
+          "Visual Language and Communication",
+          "Drawing and Observational Skills",
+          "Experimental Media",
+          "Digital Design Techniques",
+          "Art History and Context",
+          "Conceptual Development",
+          "Printmaking",
+          "Photography",
+          "3D Design and Sculpture",
+          "Color Theory and Application",
+          "Portfolio Development",
+          "Critical and Contextual Studies"
+        ]
+      },
+      {
+        "name": "English Literature (9695)",
+        "topics": [
+          "Poetry Analysis",
+          "Prose Interpretation",
+          "Drama Study",
+          "Comparative Literature",
+          "Literary Theories",
+          "Historical and Cultural Contexts",
+          "Close Reading Techniques",
+          "Narrative Structures",
+          "Critical Writing",
+          "World Literature",
+          "Genre Studies",
+          "Literary Criticism"
+        ]
+      },
+      {
+        "name": "Geography (9696)",
+        "topics": [
+          "Physical Geography",
+          "Human Geography",
+          "Population Dynamics",
+          "Climate and Weather",
+          "Geomorphological Processes",
+          "Economic Geography",
+          "Environmental Issues",
+          "Urban and Rural Settlements",
+          "Cartography and GIS",
+          "Resource Management",
+          "Global Interconnections",
+          "Fieldwork and Research Methods"
+        ]
+      },
+      {
+        "name": "Japanese (8281)",
+        "topics": [
+          "Basic Language Structures",
+          "Grammar and Syntax",
+          "Conversation Skills",
+          "Reading Comprehension",
+          "Writing Systems (Hiragana, Katakana, Kanji)",
+          "Cultural Context and Communication",
+          "Listening Comprehension",
+          "Idiomatic Expressions",
+          "Business Japanese",
+          "Japanese Literature and Poetry",
+          "Translation Techniques",
+          "Linguistic Variations"
+        ]
+      },
+      {
+        "name": "Law (9084)",
+        "topics": [
+          "Legal Systems and Principles",
+          "Constitutional Law",
+          "Criminal Law",
+          "Contract Law",
+          "Tort Law",
+          "Human Rights",
+          "International Law",
+          "Legal Research Methods",
+          "Civil Procedure",
+          "Legal Ethics",
+          "Corporate Law",
+          "Comparative Legal Systems"
+        ]
+      },
+      {
+        "name": "Nepal Studies (8024)",
+        "topics": [
+          "Nepalese History",
+          "Political Systems",
+          "Cultural Diversity",
+          "Geography and Environment",
+          "Economic Development",
+          "Social Structures",
+          "Indigenous Communities",
+          "Religious Practices",
+          "Governance and Democracy",
+          "Foreign Relations",
+          "Contemporary Challenges",
+          "Arts and Literature"
+        ]
+      },
+      {
+        "name": "Urdu (8686)",
+        "topics": [
+          "Grammar and Language Structure",
+          "Reading Comprehension",
+          "Writing Skills",
+          "Listening Comprehension",
+          "Conversation Techniques",
+          "Literary Analysis",
+          "Poetry and Prose",
+          "Cultural Context",
+          "Translation Skills",
+          "Idiomatic Expressions",
+          "Linguistic Variations",
+          "Media and Communication"
+        ]
+      },
+      {
+        "name": "Urdu (9676)",
+        "topics": [
+          "Advanced Grammar",
+          "Complex Literary Analysis",
+          "Academic Writing",
+          "Critical Reading",
+          "Oral Presentation Skills",
+          "Classical Literature",
+          "Modern Literature Trends",
+          "Linguistic Research",
+          "Comparative Literature",
+          "Advanced Composition",
+          "Historical Linguistics",
+          "Dialectical Studies"
+        ]
+      }
+    ],
+    "components": [
+      "11", "12", "13", "21", "22", "23", "31", "32", "33", 
+      "41", "42", "43", "51", "52", "53", "61", "62", "63"
+    ]
+  }
+}

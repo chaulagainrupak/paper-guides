@@ -36,7 +36,7 @@ export default function RootLayout({
               <Link href="/about" className="text-[var(--pink-highlight)]">
                 About
               </Link>
-              <LoginLink />
+              {/* <LoginLink /> */}
             </div>
 
             <div className="xl:hidden relative">
@@ -57,7 +57,7 @@ export default function RootLayout({
                 <Link href="/about" className="text-[var(--pink-highlight)]">
                   About
                 </Link>
-                <LoginLink />
+                {/* <LoginLink /> */}
               </div>
             </div>
           </div>

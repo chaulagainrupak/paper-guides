@@ -111,6 +111,22 @@ async def geatYearsForSubject(subjectName: str):
         raise HTTPException(status_code=503, detail="No data found")
 
 
+@app.get('/getTopics/{subjectName}')
+async def geatTopicsForSubject(subjectName: str):
+
+    try:
+        subjectName = subjectName.replace("%20", " ")
+        list = []
+        for item in CONFIG["A Levels"]["subjects"]:
+            if item["name"] == subjectName:
+                list.extend(item["topics"])
+
+        return {'topics': list}, 200  
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=503, detail="No data found")
+
+
 @app.get('/getPapers/{subjectName}/{year}')
 async def getPapers(year: str, subjectName: str):
 
@@ -194,7 +210,15 @@ async def getData(details: str):
         print("Error in getData:", e)
         raise HTTPException(status_code=503, detail="No data found")
 
-        
+@app.get('/getNote/{subject}/{topic}')
+def getNoteForClient(subject, topic):
+
+    subject = subject.replace("%20", " ")
+    topic = topic.replace("%20", " ")
+
+    content = getNote(subject , topic )
+    return {"content": f"{content}"}
+
 @app.get('/getAds')
 def getAds():
     data = {
@@ -358,8 +382,59 @@ async def submitQuestionToDb(request: Request):
 
     except Exception as e:
         print(e)
-        return {'message': e}
+        HTTPException(status_code=500, detail='internal server error')
 
+
+
+
+@app.post('/postNote')
+async def postNote(request: Request):
+
+    try:
+        conn = getDbConnection()
+        cur = conn.cursor()
+        
+        authHeader = request.headers.get("authorization")
+
+        if not authHeader or not authHeader.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+
+        token = authHeader.split(" ")[1]
+
+
+        tokenData = jwt.decode(token, SECRET_KEY)
+
+        username = tokenData["username"]
+        email = tokenData["email"]
+        exp = tokenData["exp"]
+        if exp < time.time():
+            return {"message": "token expired"}, 429
+
+        cur.execute("SELECT * FROM users WHERE username = ? AND email  = ? ", (username,email))
+        user = cur.fetchone()
+        conn.close()
+
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+        if user["role"].lower() != 'admin':
+            raise HTTPException(status_code=401, detail="Unauthorized")
+
+        body = await request.json()
+        board = body.get('board')
+        level = body.get('level')
+        subject = body.get('subject')
+        topic = body.get('topic')
+        content = body.get('content').strip()
+
+
+        if len(content) < 1000:
+            raise HTTPException(status_code=401, detail="Not enough content!")
+            
+        insertNote(board, level, subject, topic, content, username)
+
+    except Exception as e:
+        print(e)
+        HTTPException(status_code=500, detail='internal server error')
 
 @app.post('/question-gen')
 async def getQuestions(request: Request):

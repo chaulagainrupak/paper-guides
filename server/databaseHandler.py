@@ -97,14 +97,13 @@ def initializeDatabases():
         """CREATE TABLE IF NOT EXISTS notes (
             id INTEGER PRIMARY KEY,
             uuid TEXT UNIQUE,
+            board TEXT,
+            level TEXT,
             subject TEXT,
             topic TEXT,
-            title TEXT,  -- Added for better display
-            description TEXT,  -- Added for better display
             content TEXT,
-            approved BOOLEAN DEFAULT 0,
+            approved BOOLEAN DEFAULT 1,
             submittedBy TEXT,
-            submittedFrom TEXT,
             submitDate DATE,
             approvedBy TEXT,
             approvedOn DATE,
@@ -395,48 +394,64 @@ def getQuestionsForGen(board, subject, level, topics, components, difficulties):
 # NOTES DATABASE FUNCTIONS
 # ======================
 
-def insertNote(subject: str, topic: str, title: str, description: str, 
-              content: str, user: str, ip: str) -> tuple[bool, str]:
+def insertNote(board: str, level: str, subject: str, topic: str, 
+              content: str, user: str) -> bool:
     """Insert a new note into the database"""
     try:
         uuidStr = str(uuid.uuid4())
         conn = sqlite3.connect(DB_NOTES_PATH)
         cursor = conn.cursor()
         
-        cursor.execute('''INSERT INTO notes
-            (uuid, subject, topic, title, description, content, 
-            submittedBy, submittedFrom, submitDate)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-            (uuidStr, subject, topic, title, description, content, 
-             user, ip, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-        
-        conn.commit()
-        logger.info(f"Note inserted: {uuidStr}")
-        return True, uuidStr
+        try:
+            DBcontent = cursor.execute('''SELECT content FROM notes WHERE board = ? AND level = ? AND subject = ? AND  topic = ? ''', (board, level, subject, topic)).fetchone()
+        except Exception as e:
+            return False
+
+        if DBcontent is not None and content.strip() == DBcontent[0].strip():
+            print("Duplicate content found, not inserting.")
+            return False
+
+
+        else:
+
+            cursor.execute('''INSERT INTO notes
+                (uuid, board, level, subject, topic, content,
+                submittedBy, submitDate, approvedBy, approvedOn)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ? , ?, ?)''',
+                (uuidStr, board, level, subject, topic, content, 
+                user, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), user, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            
+            conn.commit()
+            logger.info(f"Note inserted: {uuidStr}")
+            return True
+
     except Exception as e:
         logger.error(f"Error inserting note: {e}")
-        return False, ""
+        return False
     finally:
         if conn:
             conn.close()
 
-def getNote(uuid: str) -> dict:
+def getNote(subject: str, topic: str) -> dict:
     """Get a note by UUID"""
     try:
         conn = sqlite3.connect(DB_NOTES_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
-        cursor.execute('''SELECT * FROM notes WHERE uuid = ?''', (uuid,))
-        note = cursor.fetchone()
-        
-        # Increment view count
+        DBcontent = cursor.execute('''SELECT content FROM notes WHERE subject = ? AND topic = ? ''', (subject, topic) ).fetchone()
+
+        note = DBcontent[0]
         if note:
-            cursor.execute('''UPDATE notes SET views = views + 1 
-                           WHERE uuid = ?''', (uuid,))
-            conn.commit()
+            return note
+            
+        # Increment view count
+        # if note:
+            # cursor.execute('''UPDATE notes SET views = views + 1 
+                        #    WHERE uuid = ?''', (uuid,))
+            # conn.commit()
         
-        return note
+        return "No Data!"
     except Exception as e:
         logger.error(f"Error getting note: {e}")
         return None
