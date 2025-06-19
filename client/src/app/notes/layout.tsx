@@ -9,7 +9,7 @@ export default function LevelsLayout({
         <main>{children}</main>
       </div>
 
-        <div className="sidebar  xl:w-1/4 shadow-xl flex flex-col gap-4 top-20 sticky self-start">
+        <div className="sidebar  xl:w-1/4 shadow-xl flex flex-col gap-4 top-20 xl:sticky xl:self-start">
           <div className="p-6 xl:h-4/3 max-xl:hidden bg-[var(--baby-powder)] rounded-md" id="notes-navigation">
           </div>
 

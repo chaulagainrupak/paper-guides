@@ -96,16 +96,16 @@ export default function NoteSubmitter() {
           )}
         </select>
 
-        <div className="flex w-screen gap-2">
+        <div className="flex h-fit w-screen gap-2">
           <div
             id="note-editor"
             contentEditable
-            className="h-screen w-1/2 bg-[var(--baby-powder)]"
+            className="h-fit w-1/2 bg-[var(--baby-powder)]"
           ></div>
 
           <div
             id="note-render-section"
-            className="bg-[var(--baby-powder)] h-screen w-1/2"
+            className="bg-[var(--baby-powder)] h-fit w-1/2"
           >
             {noteRenderer(editorNoteContent)}
           </div>

@@ -439,7 +439,7 @@ def getNote(subject: str, topic: str) -> dict:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
-        DBcontent = cursor.execute('''SELECT content FROM notes WHERE subject = ? AND topic = ? ''', (subject, topic) ).fetchone()
+        DBcontent = cursor.execute('''SELECT content FROM notes WHERE subject = ? AND topic = ? order by submitDate DESC''', (subject, topic) ).fetchone()
 
         note = DBcontent[0]
         if note:

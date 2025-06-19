@@ -8,7 +8,7 @@
   --pink-highlight: #f25c6a;
   --red: #dc3545;
   --blue-highlight: #5d71e0;
-  --green-highlight: rgb(60, 179, 113);
+  --green-highlight: #3cb371;
   --sea-salt: #f7f7f7;
 
 
@@ -48,3 +48,9 @@ body {
 
 .blue-highlight { color: var(--blue-highlight)}
 .pink-highlight { color: var(--pink-highlight)}
+
+
+
+.bg-exp    { background-color: var(--green-highlight)  ; opacity: .8; color: white;}
+.bg-tip    { background-color: var(--picton-blue)      ; opacity: .8; color: white;}
+.bg-warning{ background-color: var(--pink-highlight)   ; opacity: .8; color: white;}
