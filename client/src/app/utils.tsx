@@ -1,5 +1,7 @@
 import { redirect, useRouter } from "next/navigation";
 import { getApiUrl, isLocalhost } from "./config";
+import { useEffect } from "react";
+import { jsx } from "react/jsx-runtime";
 
 export async function isLoggedIn() {
   const accessToken = localStorage.getItem("authToken");
@@ -65,15 +67,34 @@ export function logOut() {
   redirect('/');
 }
 
+
 export function Loader() {
   return (
     <div
       id="loader"
-      className="bg-[var(--color-nav)] flex flex-col items-center justify-center p-10 rounded-xl shadow-md animate-fade-in transition-opacity"
+      className="bg-[var(--color-nav)] flex flex-col items-center justify-center p-10 rounded-xl shadow-md animate-fade-in transition-opacity max-w-md mx-auto"
     >
       <div className="text-xl font-semibold text-[var(--font-color)] mb-4">
         🕒 Loading...
       </div>
+      <div className="animate-pulse space-y-2 w-full">
+        <div className="h-4 bg-gray-400 rounded w-5/6"></div>
+        <div className="h-4 bg-gray-400 rounded w-4/6"></div>
+        <div className="h-4 bg-gray-400 rounded w-2/3"></div>
+      </div>
+    </div>
+  );
+}
+
+
+export function SkeletonLoader() {
+  return (
+    <div className="animate-pulse space-y-3 p-4 max-w-lg mx-auto">
+      <div className="h-6 bg-gray-300 rounded w-3/4"></div>
+      <div className="h-4 bg-gray-300 rounded w-full"></div>
+      <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+      <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+      <div className="h-4 bg-gray-300 rounded w-3/4"></div>
     </div>
   );
 }
@@ -100,6 +121,34 @@ export function BackButton() {
         <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
       </svg>
       Back
+    </button>
+  );
+}
+
+export function PrintButton({ containerId } : {containerId: string}) {
+  function handlePrint() {
+    const container = document.getElementById(containerId);
+    if (!container) {
+      alert("Print container not found");
+      return;
+    }
+
+    const detailsList = container.querySelectorAll("details");
+    detailsList.forEach((detail) => {
+      detail.open = true;
+    });
+
+    window.print();
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handlePrint}
+      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+      aria-label="Print content"
+    >
+      Print
     </button>
   );
 }

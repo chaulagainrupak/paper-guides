@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { noteRenderer } from "../../../../noteRenderer";
+import { PrintButton } from "@/app/utils";
 
 export default function QuestionLinks({ params }) {
   const [subject, setSubject] = useState("");
@@ -51,9 +52,57 @@ export default function QuestionLinks({ params }) {
   }, [params]);
 
   return (
-    <div className="printable-area mx-4">
-      <div className="text-2xl mb-2 flex justify-between">{topic.replaceAll('%20', " ")} | {subject.replaceAll('%20', " ")} <span>Paper-<span className="blue-highlight">Guides</span></span></div>
-      <div id="note-render-dest" className="">{noteRenderer(noteContent)}</div>
+    <div className="printable-area mx-2">
+      <div className="printable-area-title-note font-bold mb-2">
+        <div>
+                  <div className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl">
+          {topic.replaceAll("%20", " ")} | {subject.replaceAll("%20", " ")}
+        </div>
+        <div className="text-lg sm:text-xl">
+          Paper-<span className="blue-highlight">Guides</span>
+        </div>
+
+        <div>
+          <BackButton></BackButton>
+          <PrintButton></PrintButton>
+        </div>
+        </div>
+      </div>
+      <div id="note-render-dest" className="">
+        {noteRenderer(noteContent)}
+      </div>
+      <div className="mt-6 text-center text-sm text-[text-color] leading-relaxed">
+        <div className="text-xl">
+          Notes curated by{" "}
+          <strong>
+            Paper-<span className="blue-highlight">Guides</span>
+          </strong>
+        </div>
+        <div className="text-lg">
+          <a
+            href="https://discord.gg/U9fAnCgcu3"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="blue-highlight"
+          >
+            Join our Discord
+          </a>
+        </div>
+        <div>
+          Curated with{" "}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -960 960 960"
+            width="18"
+            height="18"
+            fill="#5d71e0"
+            className="inline-block mx-1 align-middle"
+          >
+            <path d="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Z" />
+          </svg>{" "}
+          and effort from 🇳🇵
+        </div>
+      </div>
     </div>
   );
 }

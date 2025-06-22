@@ -83,7 +83,9 @@ body {
   .printable-area * {
     visibility: visible;
   }
-
+  .printable-area-title-note {
+    font-size: small;
+  }
   .printable-area {
     position: static;
     margin: 0;

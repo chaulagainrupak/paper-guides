@@ -443,7 +443,7 @@ def getNote(subject: str, topic: str) -> dict:
 
         note = DBcontent[0]
         if note:
-            return note
+            return note +"\n\n---"
             
         # Increment view count
         # if note:
@@ -454,7 +454,8 @@ def getNote(subject: str, topic: str) -> dict:
         return "No Data!"
     except Exception as e:
         logger.error(f"Error getting note: {e}")
-        return None
+        return '''No Note Data found! Want to help curate notes for this topic? Join our \n!(<a href="https://discord.gg/U9fAnCgcu3" target="_blank" class="blue-highlight" >Discord Server</a>)'''
+
     finally:
         if conn:
             conn.close()

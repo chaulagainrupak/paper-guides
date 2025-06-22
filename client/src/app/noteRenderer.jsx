@@ -31,12 +31,12 @@ export function noteRenderer(content) {
       styleMap: {
         default: "font-bold mb-4 mt-6",
         lengthMap: {
-          1: "text-4xl",
-          2: "text-3xl",
-          3: "text-2xl",
-          4: "text-xl",
-          5: "text-lg",
-          6: "text-base",
+          1: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl",
+          2: "text-xl sm:text-2xl md:text-3xl lg:text-4xl",
+          3: "text-lg sm:text-xl md:text-2xl lg:text-3xl",
+          4: "text-base sm:text-lg md:text-xl",
+          5: "text-sm sm:text-base md:text-lg",
+          6: "text-sm",
         },
       },
     },
@@ -79,11 +79,23 @@ export function noteRenderer(content) {
       styleMap: { default: "ml-4 mb-1" },
     },
     {
+      regex: /^-{3,}$/,
+      render: () => (
+        <hr
+          key={`hr-${Math.random().toString(36).slice(2)}`}
+          className="border-t border-gray-300 opacity-60"
+        />
+      ),
+    },
+
+    {
       regex: /!\[(.*?)]{(.*?)}/,
       contentPos: 1,
       tag: "span",
       dynamicLevelFrom: 2,
-      styleMap: { default: "" },
+      styleMap: {
+        default: "my-2 text-sm sm:text-base md:text-lg leading-relaxed",
+      },
       render: (tag, text, color) => {
         const Tag = tag;
         return (
@@ -97,7 +109,9 @@ export function noteRenderer(content) {
       regex: /!\[(.*?)\]\((.*?)\)\((.*?),(.*?)\){(.*?)}/,
       multiContentPos: [2, 5],
       multiDynamicFrom: [1, 3, 4],
-      styleMap: { default: "" },
+      styleMap: {
+        default: "my-2 text-sm sm:text-base md:text-lg leading-relaxed",
+      },
       render: (tag, alt, width, height, src) => {
         if (tag === "img") {
           const parsedWidth = parseInt(width) === 0 ? "auto" : `${width}px`;
@@ -145,25 +159,36 @@ export function noteRenderer(content) {
       multiContentPos: [1, 2],
       render: (type, content) => {
         const titles = { exp: "Explanation", tip: "Tip", warning: "Warning" };
-        const bgClass = {
-          exp: "bg-exp",
-          tip: "bg-tip",
-          warning: "bg-warning",
+        const bgColor = {
+          exp: "var(--green-highlight)",
+          tip: "var(--blue-highlight)",
+          warning: "var(--pink-highlight)",
         }[type];
 
         return (
           <details
             key={`${type}-${content.slice(0, 20)}`}
-            className={`m-6 p-4 rounded ${bgClass}`}
+            className={`m-6 rounded overflow-hidden outline-[${bgColor}]`}
           >
-            <summary className="cursor-pointer text-xl font-medium">
-              {titles[type]}
+            <summary className="relative px-4 py-2 font-bold text-white cursor-pointer text-xl text-center">
+              <div
+                className="absolute inset-0"
+                style={{ backgroundColor: bgColor, opacity: 0.6 }}
+              ></div>
+              <span className="relative z-10">{titles[type]}</span>
             </summary>
-            <div className="mt-2">{parseInline(content)}</div>
+            <div className="relative px-4 py-3 text-center">
+              <div
+                className="absolute inset-0"
+                style={{ backgroundColor: bgColor, opacity: 0.1 }}
+              ></div>
+              <div className="relative z-10">{parseInline(content)}</div>
+            </div>
           </details>
         );
       },
     },
+
     {
       regex: /:::\[(tip|exp|warning)\|box\]\(([\s\S]*?)\):::/,
       multiContentPos: [1, 2],
@@ -175,28 +200,40 @@ export function noteRenderer(content) {
         };
 
         const colors = {
-          tip: 'var(--blue-highlight)',
-          exp: 'var(--green-highlight)',
-          warning: 'var(--pink-highlight)',
+          tip: "var(--blue-highlight)",
+          exp: "var(--green-highlight)",
+          warning: "var(--pink-highlight)",
         };
 
         return (
-          <div key={`box-${type}-${content.slice(0, 10)}`} className={`${type}-box rounded my-4 overflow-hidden w-fit max-w-full outline outline-dashed outline-${colors[type]}`}>
-            <div 
-              className="px-4 py-2 font-bold text-white relative text-center"
+          <div
+            key={`box-${type}-${content.slice(0, 10)}`}
+            className={`${type}-box rounded my-4 overflow-hidden w-fit max-w-full`}
+            style={{
+              outline: `1px dashed ${colors[type]}`,
+            }}
+          >
+            <div
+              className="px-3 sm:px-4 py-2 font-bold text-white relative text-center text-sm sm:text-base md:text-lgpx-4 py-2 font-bold text-white relative text-center"
               style={{ backgroundColor: colors[type] }}
             >
-              <div className="absolute inset-0" style={{ backgroundColor: colors[type], opacity: 0.6 }}></div>
+              <div
+                className="absolute inset-0"
+                style={{ backgroundColor: colors[type], opacity: 0.6 }}
+              ></div>
               <span className="relative z-10">{titles[type]}</span>
             </div>
-            <div className={`${type}-box-text px-4 py-3 relative text-center`}>
-              <div className="absolute inset-0" style={{ backgroundColor: colors[type], opacity: 0.1 }}></div>
+            <div className={`${type}-box-text px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base md:text-lg relative text-center`}>
+              <div
+                className="absolute inset-0"
+                style={{ backgroundColor: colors[type], opacity: 0.1 }}
+              ></div>
               <div className="relative z-10">{parseInline(content)}</div>
             </div>
           </div>
         );
       },
-    }
+    },
   ];
 
   useEffect(() => {
@@ -307,11 +344,20 @@ export function noteRenderer(content) {
 
   const preprocessed = extractHtmlBlocks(content);
 
-  const parsedContent = preprocessed.split("\n").map((line, index) => {
-    const trimmedLine = line.trim();
-    if (trimmedLine === "") return <br key={index} />;
-    return <div key={index}>{parseInline(trimmedLine)}</div>;
-  });
+const parsedContent = preprocessed.split("\n").map((line, index) => {
+  const trimmedLine = line.trim();
+  if (trimmedLine === "") return <br key={index} />;
+  
+  return (
+    <div 
+      key={index} 
+      className="text-base sm:text-lg md:text-xl leading-relaxed max-w-full sm:px-0"
+    >
+      {parseInline(trimmedLine)}
+    </div>
+  );
+});
+
 
   return <>{parsedContent}</>;
 }
