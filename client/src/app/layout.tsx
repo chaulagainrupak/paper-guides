@@ -3,6 +3,8 @@ import Link from "next/link";
 import "./globals.css";
 import ThemeToggleButton from "./themeToggle";
 import LoginLink from "./loginLink";
+import SiteFooter from "./footer";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Paper Guides",
@@ -26,7 +28,6 @@ export const metadata: Metadata = {
   },
 };
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,27 +42,38 @@ export default function RootLayout({
           async
           src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
         ></script>
+
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-2B6JNCMRZ4"
+          strategy="afterInteractive"
+        />
+        <Script id="ga-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){ dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', 'G-2B6JNCMRZ4');
+            gtag('config', 'G-SZDFC8YDWK');
+          `}
+        </Script>
       </head>
-      <body>
-        <nav className="bg-[var(--color-nav)] fixed top-0 w-full z-50 shadow-sm">
-          <div className="flex justify-between items-center px-6 py-4 text-2xl font-bold">
+      <body className="flex flex-col min-h-screen">
+        <nav className="bg-[var(--color-nav)] fixed top-0 w-full z-50 shadow-sm h-16">
+          <div className="flex justify-between items-center px-6 py-4 text-2xl font-bold h-full">
             <Link href="/" className="text-xl sm:text-2xl">
               Paper-<span className="text-[var(--blue-highlight)]">Guides</span>
             </Link>
 
             <div className="flex gap-4 hidden xl:flex">
               <Link href="/pastpapers">Past Papers</Link>
-              {/* <Link href="/topicals">Topical Papers</Link> */}
               <Link href="/notes">Notes</Link>
               <Link href="/generator">Question Generator</Link>
-              {/* <Link href="/submit">Submit</Link> */}
             </div>
 
             <div className="flex gap-4 hidden xl:flex">
               <Link href="/about" className="text-[var(--pink-highlight)]">
                 About
               </Link>
-              {/* <LoginLink /> */}
             </div>
 
             <div className="xl:hidden relative">
@@ -73,23 +85,23 @@ export default function RootLayout({
                 &#9776;
               </label>
 
-              <div className="bg-[var(--color-nav)] absolute right-0 top-12 w-52 shadow-lg border rounded-lg p-4 flex flex-col gap-3 peer-checked:flex hidden">
+              <div className="bg-[var(--color-nav)] absolute right-0 top-16 w-52 shadow-lg border rounded-lg p-4 flex flex-col gap-3 peer-checked:flex hidden">
                 <Link href="/pastpapers">Past Papers</Link>
-                {/* <Link href="/topicals">Topical Papers</Link> */}
                 <Link href="/notes">Notes</Link>
                 <Link href="/generator">Question Generator</Link>
-                {/* <Link href="/submit">Submit</Link> */}
                 <Link href="/about" className="text-[var(--pink-highlight)]">
                   About
                 </Link>
-                {/* <LoginLink /> */}
               </div>
             </div>
           </div>
         </nav>
 
         <ThemeToggleButton />
-        <main className="">{children}</main>
+
+        <main className="flex-grow">{children}</main>
+
+        <SiteFooter />
       </body>
     </html>
   );

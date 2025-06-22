@@ -1,16 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-
-function slugify(text) {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-}
-
 export function noteRenderer(content) {
   const navList = [];
 
@@ -223,7 +212,9 @@ export function noteRenderer(content) {
               ></div>
               <span className="relative z-10">{titles[type]}</span>
             </div>
-            <div className={`${type}-box-text px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base md:text-lg relative text-center`}>
+            <div
+              className={`${type}-box-text px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base md:text-lg relative text-center`}
+            >
               <div
                 className="absolute inset-0"
                 style={{ backgroundColor: colors[type], opacity: 0.1 }}
@@ -235,27 +226,6 @@ export function noteRenderer(content) {
       },
     },
   ];
-
-  useEffect(() => {
-    const navigationDest = document.getElementById("notes-navigation");
-    if (!navigationDest) return;
-
-    navigationDest.innerHTML = "";
-
-    const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
-
-    headings.forEach((heading) => {
-      const text = heading.innerText;
-      const slug = slugify(text);
-      heading.id = slug;
-
-      const link = generateNavLink(text, slug);
-      navigationDest.appendChild(link);
-
-      window.MathJax.typesetClear();
-      window.MathJax.typeset();
-    });
-  }, [content]);
 
   function parseInline(text, depth = 0) {
     const children = [];
@@ -307,9 +277,6 @@ export function noteRenderer(content) {
 
           const Tag = tagName;
           const inner = parseInline(match[reg.contentPos], depth + 1);
-          navList.push(
-            generateNavLink(match[reg.contentPos], `${depth}-${pos}`)
-          );
           children.push(
             <Tag
               id={`${depth}-${pos}`}
@@ -344,51 +311,20 @@ export function noteRenderer(content) {
 
   const preprocessed = extractHtmlBlocks(content);
 
-const parsedContent = preprocessed.split("\n").map((line, index) => {
-  const trimmedLine = line.trim();
-  if (trimmedLine === "") return <br key={index} />;
-  
-  return (
-    <div 
-      key={index} 
-      className="text-base sm:text-lg md:text-xl leading-relaxed max-w-full sm:px-0"
-    >
-      {parseInline(trimmedLine)}
-    </div>
-  );
-});
+  const parsedContent = preprocessed.split("\n").map((line, index) => {
+    const trimmedLine = line.trim();
+    if (trimmedLine === "") return <br key={index} />;
 
+    return (
+      <div
+        key={index}
+        className="text-base sm:text-lg md:text-xl leading-relaxed max-w-full sm:px-0"
+      >
+        {parseInline(trimmedLine)}
+      </div>
+    );
+  });
 
   return <>{parsedContent}</>;
 }
 
-function generateNavLink(linkText, targetId) {
-  const link = document.createElement("a");
-  link.href = `#${targetId}`;
-  link.textContent = linkText;
-
-  link.style.display = "block";
-  link.style.padding = "6px 10px";
-  link.style.margin = "1px 0";
-  link.style.borderRadius = "4px";
-  link.style.fontSize = "13px";
-  link.style.fontWeight = "400";
-  link.style.color = "var(--color-text)";
-  link.style.textDecoration = "none";
-  link.style.transition = "all 0.1s ease";
-  link.style.borderLeft = "3px solid transparent";
-
-  link.addEventListener("mouseenter", () => {
-    link.style.backgroundColor = "var(--color-nav)";
-    link.style.borderLeftColor = "var(--blue-highlight)";
-    link.style.paddingLeft = "12px";
-  });
-
-  link.addEventListener("mouseleave", () => {
-    link.style.backgroundColor = "transparent";
-    link.style.borderLeftColor = "transparent";
-    link.style.paddingLeft = "10px";
-  });
-
-  return link;
-}

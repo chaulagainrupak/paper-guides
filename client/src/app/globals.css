@@ -79,6 +79,10 @@ body {
     visibility: hidden;
   }
 
+  .printing-toolbar{ 
+    display: none !important;
+  }
+
   .printable-area,
   .printable-area * {
     visibility: visible;
@@ -88,9 +92,8 @@ body {
   }
   .printable-area {
     position: static;
-    margin: 0;
-    padding: 0;
-    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
     background: white !important;
     color: black !important;
     box-shadow: none !important;

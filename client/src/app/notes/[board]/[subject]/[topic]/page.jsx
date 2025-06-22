@@ -15,19 +15,6 @@ export default function QuestionLinks({ params }) {
   const [noteContent, setNoteContent] = useState("");
   const pathname = usePathname();
 
-  function encodeUrlSegment(subject, paperType, componentCode, session) {
-    const cleanSubject = subject.toLowerCase().replace(/\s+/g, "-");
-    const cleanType = paperType.toLowerCase().replace(/\s+/g, "-");
-    const cleanCode = componentCode.toLowerCase();
-    const cleanSession = session
-      .toLowerCase()
-      .replace(/\//g, " ")
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "");
-
-    return `${cleanSubject}-${cleanType}-${cleanCode}-${cleanSession}`;
-  }
-
   useEffect(() => {
     const load = async () => {
       try {
@@ -41,6 +28,7 @@ export default function QuestionLinks({ params }) {
         );
         const result = await res.json();
         setNoteContent(result.content);
+        setLoading(false);
       } catch (err) {
         console.error("Failed to fetch or group papers:", err);
       } finally {
@@ -51,26 +39,104 @@ export default function QuestionLinks({ params }) {
     load();
   }, [params]);
 
+  useEffect(() => {
+    function slugify(text) {
+      return text
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+    }
+
+    function generateNavLink(linkText, targetId) {
+      const link = document.createElement("a");
+      link.href = `#${targetId}`;
+      link.textContent = linkText;
+
+      link.style.display = "block";
+      link.style.padding = "6px 10px";
+      link.style.margin = "1px 0";
+      link.style.borderRadius = "4px";
+      link.style.fontSize = "13px";
+      link.style.fontWeight = "400";
+      link.style.color = "var(--color-text)";
+      link.style.textDecoration = "none";
+      link.style.transition = "all 0.1s ease";
+      link.style.borderLeft = "3px solid transparent";
+
+      link.addEventListener("mouseenter", () => {
+        link.style.backgroundColor = "var(--color-nav)";
+        link.style.borderLeftColor = "var(--blue-highlight)";
+        link.style.paddingLeft = "12px";
+      });
+
+      link.addEventListener("mouseleave", () => {
+        link.style.backgroundColor = "transparent";
+        link.style.borderLeftColor = "transparent";
+        link.style.paddingLeft = "10px";
+      });
+
+      return link;
+    }
+
+    const navigationDest = document.getElementById("notes-navigation");
+    if (!navigationDest) return;
+
+    navigationDest.innerHTML = "";
+
+    const noteContainer = document.getElementById("note-render-dest");
+    if (!noteContainer) return;
+
+    const headings = noteContainer.querySelectorAll("h1");
+
+    headings.forEach((heading) => {
+      const text = heading.innerText;
+      const slug = slugify(text);
+      heading.id = slug;
+
+      const link = generateNavLink(text, slug);
+      navigationDest.appendChild(link);
+    });
+
+    if (window.MathJax) {
+      window.MathJax.typesetClear();
+      window.MathJax.typeset();
+    }
+  }, [noteContent]); 
+
   return (
     <div className="printable-area mx-2">
-      <div className="printable-area-title-note font-bold mb-2">
+      <div className="printable-area-title-note font-bold mb-2 flex flex-col">
         <div>
-                  <div className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl">
-          {topic.replaceAll("%20", " ")} | {subject.replaceAll("%20", " ")}
-        </div>
-        <div className="text-lg sm:text-xl">
-          Paper-<span className="blue-highlight">Guides</span>
+          <div className="text-xl sm:text-xl md:text-2xl lg:text-3xl xl:text-5xl">
+            {loading
+              ? ""
+              : `${topic.replaceAll("%20", " ")} | ${subject.replaceAll(
+                  "%20",
+                  " "
+                )}`}
+          </div>
+          <div className="mb-2 text-lg sm:text-xl">
+            Paper-<span className="blue-highlight">Guides</span>
+          </div>
         </div>
 
-        <div>
+        <div className="printing-toolbar flex justify-between">
+          <PrintButton containerId="note-render-dest"></PrintButton>
+
           <BackButton></BackButton>
-          <PrintButton></PrintButton>
-        </div>
         </div>
       </div>
-      <div id="note-render-dest" className="">
-        {noteRenderer(noteContent)}
-      </div>
+
+      {loading ? (
+        <Loader />
+      ) : (
+        <div id="note-render-dest" className="">
+          {noteRenderer(noteContent)}
+        </div>
+      )}
+
       <div className="mt-6 text-center text-sm text-[text-color] leading-relaxed">
         <div className="text-xl">
           Notes curated by{" "}

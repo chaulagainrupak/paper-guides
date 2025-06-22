@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getApiUrl, isLocalhost } from "@/app/config";
-import { Loader } from "@/app/utils";
+import { BackButton, Loader } from "@/app/utils";
 import { redirect, usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -41,9 +41,14 @@ export default function SubjectsPage() {
 
   return (
     <div>
-      <h1 className="text-4xl font-semibold mb-6">
-        Available <span className="text-[var(--blue-highlight)]">Subjects</span>
-      </h1>
+      <div className="flex justify-between align-center mb-6">
+        <h1 className="text-4xl font-semibold">
+          Available <span className="text-[var(--blue-highlight)]">Subjects</span>
+        </h1>
+
+        <BackButton></BackButton>
+      </div>
+
 
       {loading ? (
         <Loader />

@@ -207,6 +207,7 @@ def getPaper(level: str, subject: str, year: str, component: str) -> tuple:
         if not result:
             return None, None
         
+        
         # Decompress files
         q_b64, s_b64 = result
         question_data = zlib.decompress(base64.b64decode(q_b64))

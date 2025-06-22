@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Form, HTTPException, Depends, Request, Form, File,  UploadFile
 
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+
 from jose import jwt
 from datetime import datetime, timedelta
 import sqlite3
@@ -18,7 +20,7 @@ from picPatcher import process_images
 # Load configuration
 CONFIG_PATH = './configs/configs.json'
 CONFIG = loadConfig('./configs/configs.json')
-
+SITEMAP_PATH = "./configs/sitemap.xml"  
 # Constants
 SECRET_KEY = "super-secret-key"  
 ALGORITHM = "HS256"
@@ -189,17 +191,21 @@ async def getData(details: str):
             data = getPaper(
             "a level", subjectName, f"{yearForGetPaper} Insert Paper" , componentForGetPaper
             )
-
-        data = getPaper(
+        else:
+            data = getPaper(
             "a level", subjectName, yearForGetPaper, componentForGetPaper
-        )
+            )
 
 
-
+        qp = base64.b64encode(data[0])
+        if isInsert:
+            ms = base64.b64encode(data[0])
+        else:
+            ms = base64.b64encode(data[1])
         return {
             "questionName": f"{subjectName.capitalize()}, {yearForGetPaper}, {componentForGetPaper}",
-            "questionData": base64.b64encode(data[0]),
-            "markSchemeData": base64.b64encode(data[1]),
+            "questionData": qp,
+            "markSchemeData": ms,
         }, 200
 
     except ValueError as ve:
@@ -470,6 +476,16 @@ async def getQuestions(request: Request):
             status_code= 500,
             detail={"error": "Internal server error"},
         )
+
+
+
+@app.get("/sitemap.xml")
+async def sitemap():
+    if not os.path.exists(SITEMAP_PATH):
+        return Response(content="Not Found", status_code=404)
+    
+    return FileResponse(SITEMAP_PATH, media_type="application/xml")
+
 
 def getClientIp(request):
     # Try to get the IP from the 'X-Forwarded-For' header (Cloudflare/proxy header)

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getApiUrl, isLocalhost } from "@/app/config";
-import { Loader } from "@/app/utils";
+import { BackButton, Loader } from "@/app/utils";
 import Link from "next/link";
 
 export default function PastPapersPage() {
@@ -26,14 +26,17 @@ export default function PastPapersPage() {
 
   return (
     <div>
-      <h1 className="text-4xl font-semibold mb-6">
-        Available <span className="text-[var(--blue-highlight)]">Boards</span>{" "}
-        and <span className="text-[var(--blue-highlight)]">Levels</span>
-      </h1>
+      <div className="flex justify-between align-center mb-6">
+        <h1 className="text-4xl font-semibold">
+          Available <span className="text-[var(--blue-highlight)]">Boards</span>{" "}
+          and <span className="text-[var(--blue-highlight)]">Levels</span>
+        </h1>
+        <BackButton></BackButton>
+      </div>
 
       <div id="dynamic-container">
         {loading ? (
-          <Loader/>
+          <Loader />
         ) : (
           <div className="animate-fade-in space-y-6">
             {Object.entries(data || {}).map(([boardName, boardData]: any) => (
@@ -49,13 +52,12 @@ export default function PastPapersPage() {
                       CAIE: A Levels
                     </Link>
                   </div>
-                ) : ( null )}
+                ) : null}
               </div>
             ))}
           </div>
         )}
       </div>
-
     </div>
   );
 }

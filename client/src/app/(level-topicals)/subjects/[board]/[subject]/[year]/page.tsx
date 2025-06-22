@@ -13,7 +13,9 @@ export default function QuestionLinks({
 }) {
   const [subject, setSubject] = useState("");
   const [year, setYear] = useState("");
-  const [groupedPapers, setGroupedPapers] = useState<Record<string, [string, string][]>>({});
+  const [groupedPapers, setGroupedPapers] = useState<
+    Record<string, [string, string][]>
+  >({});
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
 
@@ -71,11 +73,18 @@ export default function QuestionLinks({
           }
         }
 
+        for (const sessionKey in grouped) {
+          grouped[sessionKey].sort((a, b) => {
+            const codeA = parseInt(a[1]);
+            const codeB = parseInt(b[1]);
+            return codeA - codeB;
+          });
+        }
+
         setGroupedPapers(grouped);
       } catch (err) {
         console.error("Failed to fetch or group papers:", err);
       } finally {
-        // Give a tiny delay if you want the fade‐out effect to align:
         setTimeout(() => setLoading(false), 200);
       }
     };
@@ -87,8 +96,11 @@ export default function QuestionLinks({
     <div>
       <div className="flex justify-between border-b-2 border-[var(--blue-highlight)]">
         <h1 className="text-4xl font-bold mb-6">
-          Available <span className="text-[var(--blue-highlight)]">Papers</span> for{" "}
-          <span className="text-[var(--blue-highlight)]">{subject.replaceAll("%20", " ")}</span>
+          Available <span className="text-[var(--blue-highlight)]">Papers</span>{" "}
+          for{" "}
+          <span className="text-[var(--blue-highlight)]">
+            {subject.replaceAll("%20", " ")}
+          </span>
         </h1>
         <div>
           <BackButton />
@@ -96,15 +108,20 @@ export default function QuestionLinks({
       </div>
 
       {loading ? (
-          <Loader />
+        <Loader />
       ) : (
         Object.entries(groupedPapers).map(([sessionName, papers]) =>
           papers.length > 0 ? (
             <div key={sessionName}>
-              <h2 className="text-3xl font-bold mt-6 underline">• {sessionName}</h2>
+              <h2 className="text-3xl font-bold mt-6 underline">
+                • {sessionName}
+              </h2>
               <div className="animate-fade-in space-y-4 mt-2">
                 {papers.map((item, index) => (
-                  <div className="flex w-full" key={`${item[0]}-${item[1]}-${index}`}>
+                  <div
+                    className="flex w-full"
+                    key={`${item[0]}-${item[1]}-${index}`}
+                  >
                     <Link
                       href={`${pathname.replace(/\/$/, "")}/${encodeUrlSegment(
                         subject,
@@ -112,9 +129,16 @@ export default function QuestionLinks({
                         item[1],
                         item[0]
                       )}`}
-                      className="border border-[var(--blue-highlight)] block p-4 rounded-xl w-4/3 text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
+                      className={`border block p-4 rounded-xl w-4/3 text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200 ${
+                        item[0].includes("Insert Paper")
+                          ? "border-[var(--diff-three)]"
+                          : "border-[var(--blue-highlight)]"
+                      }`}
                     >
-                      {subject.replaceAll("%20", " ")}, {item[1]}, Year: {item[0]} Question Paper
+                      {subject.replaceAll("%20", " ")}, {item[1]},{" "}
+                      {item[0].includes("Insert Paper")
+                        ? `Year: ${item[0]}`
+                        : `Year: ${item[0]} Question Paper`}
                     </Link>
                     <Link
                       href={`${pathname.replace(/\/$/, "")}/${encodeUrlSegment(

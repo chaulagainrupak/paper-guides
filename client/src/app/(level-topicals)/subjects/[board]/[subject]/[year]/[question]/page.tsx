@@ -46,6 +46,14 @@ export default function PaperViewerClient({
     fetchData();
   }, [params]);
 
+  useEffect(() => {
+  const urlPath = window.location.pathname;
+  if (urlPath.includes("mark-scheme")) {
+    setShowSolution(true);
+  }
+}, []);
+
+
   const currentPdf = showSolution ? markSchemeData : questionData;
 
   useEffect(() => {

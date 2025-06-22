@@ -3,7 +3,7 @@
 import { getApiUrl, isLocalhost } from "@/app/config";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Loader } from "@/app/utils";
+import { Loader, BackButton } from "@/app/utils";
 import Link from "next/link";
 
 export default function singleBoardLevel({
@@ -40,9 +40,13 @@ export default function singleBoardLevel({
 
   return (
     <div>
-      <h1 className="text-4xl font-semibold mb-6">
-        Available <span className="text-[var(--blue-highlight)]">Years</span>
-      </h1>
+      <div className="flex justify-between align-center mb-6">
+        <h1 className="text-4xl font-semibold">
+          Available <span className="text-[var(--blue-highlight)]">Years</span>
+        </h1>
+
+        <BackButton></BackButton>
+      </div>
 
       {loading ? (
         <Loader />
