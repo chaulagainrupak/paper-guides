@@ -9,7 +9,7 @@ DB_NOTES = "./instance/paper-guides-notes.db"
 
 # Constants
 today = datetime.today().strftime("%Y-%m-%d")
-baseUrl = "https://beta.paperguides.org"
+baseUrl = "https://paperguides.org"
 seasons = ["feb-mar", "may-june", "oct-nov"]
 
 mainLinks = [
