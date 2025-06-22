@@ -6,9 +6,26 @@ import LoginLink from "./loginLink";
 
 export const metadata: Metadata = {
   title: "Paper Guides",
-  description: "Free exam preparation resources",
+  description: "Free exam preparation resources, Notes, Past-Papers, Question",
   icons: "/images/logo.ico",
+  openGraph: {
+    title: "Paper Guides",
+    description: "Free exam preparation resources for students and learners.",
+    url: "https://paperguides.org",
+    siteName: "Paper Guides",
+    images: [
+      {
+        url: "/images/opg_paper_guides.png",
+        width: 1200,
+        height: 720,
+        alt: "Paper Guides Open Graph Image",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
 };
+
 
 export default function RootLayout({
   children,
@@ -17,6 +34,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="text/javascript"
+          id="MathJax-script"
+          async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+        ></script>
+      </head>
       <body>
         <nav className="bg-[var(--color-nav)] fixed top-0 w-full z-50 shadow-sm">
           <div className="flex justify-between items-center px-6 py-4 text-2xl font-bold">

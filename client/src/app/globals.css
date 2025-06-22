@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 :root {
   --rich-black: #0d1b2a;
@@ -11,11 +11,10 @@
   --green-highlight: #3cb371;
   --sea-salt: #f7f7f7;
 
-
   --diff-one: #177245;
-  --diff-two: #3CB371;
-  --diff-three: #FFD700;
-  --diff-four: #FF5800;
+  --diff-two: #3cb371;
+  --diff-three: #ffd700;
+  --diff-four: #ff5800;
   --diff-five: var(--red);
 }
 
@@ -25,7 +24,6 @@
   --color-nav: #eff5ff;
   --color-surface: var(--sea-salt);
   --color-border: #c5dfff;
-
 
   --bg-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23c0c4c6' fill-opacity='0.6'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
@@ -46,11 +44,65 @@ body {
   background-image: var(--bg-pattern);
 }
 
-.blue-highlight { color: var(--blue-highlight)}
-.pink-highlight { color: var(--pink-highlight)}
+.blue-highlight {
+  color: var(--blue-highlight);
+}
+.pink-highlight {
+  color: var(--pink-highlight);
+}
 
+.bg-exp {
+  background-color: var(--green-highlight);
+  opacity: 0.8;
+  color: white;
+}
+.bg-tip {
+  background-color: var(--picton-blue);
+  opacity: 0.8;
+  color: white;
+}
+.bg-warning {
+  background-color: var(--pink-highlight);
+  opacity: 0.8;
+  color: white;
+}
 
+@media print {
+  html, body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 
-.bg-exp    { background-color: var(--green-highlight)  ; opacity: .8; color: white;}
-.bg-tip    { background-color: var(--picton-blue)      ; opacity: .8; color: white;}
-.bg-warning{ background-color: var(--pink-highlight)   ; opacity: .8; color: white;}
+  body * {
+    visibility: hidden;
+  }
+
+  .printable-area,
+  .printable-area * {
+    visibility: visible;
+  }
+
+  .printable-area {
+    position: static;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background-image: none !important;
+  }
+
+  .bg-exp .exp-box,
+  .bg-tip .tip-box,
+  .bg-warning .warning-box {
+    opacity: 1 !important;
+    background-color: transparent !important;
+  }
+  .tip-box-text .exp-box-text .warning-box-text {
+    color: black !important;
+  }
+}

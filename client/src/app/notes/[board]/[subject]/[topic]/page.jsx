@@ -51,8 +51,9 @@ export default function QuestionLinks({ params }) {
   }, [params]);
 
   return (
-    <div>
-      <div id="note-render-dest">{noteRenderer(noteContent)}</div>
+    <div className="printable-area mx-4">
+      <div className="text-2xl mb-2 flex justify-between">{topic.replaceAll('%20', " ")} | {subject.replaceAll('%20', " ")} <span>Paper-<span className="blue-highlight">Guides</span></span></div>
+      <div id="note-render-dest" className="">{noteRenderer(noteContent)}</div>
     </div>
   );
 }

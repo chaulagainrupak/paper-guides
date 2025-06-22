@@ -1,3 +1,28 @@
+import { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Paper Guides",
+  description: "Free exam preparation resources, Notes, Past-Papers, Question",
+  icons: "/images/logo.ico",
+  openGraph: {
+    title: "Paper Guides",
+    description: "Access quality notes for free!.",
+    url: "https://paperguides.org/notes",
+    siteName: "Paper Guides",
+    images: [
+      {
+        url: "/images/notes.png",
+        width: 1200,
+        height: 720,
+        alt: "Paper Guides Open Graph Image",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+};
+
 export default function LevelsLayout({
   children,
 }: {
