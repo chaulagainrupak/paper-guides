@@ -29,7 +29,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="pt-[64px]">
+    <div className="pt-[64px] flex-grow">
         <div className="">
             <SubmitQuestion/>
         </div>
