@@ -7,7 +7,7 @@ export function noteRenderer(content) {
   function extractHtmlBlocks(content) {
     return content.replace(
       /!\(\s*((?:<[\s\S]*?>)+?)\s*\)/g,
-      (match, html) => [[RAWHTMLBLOCK:${btoa(html)}]]
+      (match, html) => `[[RAWHTMLBLOCK:${btoa(html)}]]`
     );
   }
 
@@ -71,7 +71,7 @@ export function noteRenderer(content) {
       regex: /^-{3,}$/,
       render: () => (
         <hr
-          key={hr-${Math.random().toString(36).slice(2)}}
+          key={`hr-${Math.random().toString(36).slice(2)}`}
           className="border-t border-gray-300 opacity-60"
         />
       ),
@@ -88,7 +88,7 @@ export function noteRenderer(content) {
       render: (tag, text, color) => {
         const Tag = tag;
         return (
-          <Tag key={${text}-${color}} style={{ color: var(--${color}) }}>
+          <Tag key={`${text}-${color}`} style={{ color: `var(--${color})` }}>
             {text}
           </Tag>
         );
@@ -103,11 +103,11 @@ export function noteRenderer(content) {
       },
       render: (tag, alt, width, height, src) => {
         if (tag === "img") {
-          const parsedWidth = parseInt(width) === 0 ? "auto" : ${width}px;
-          const parsedHeight = parseInt(height) === 0 ? "auto" : ${height}px;
+          const parsedWidth = parseInt(width) === 0 ? "auto" : `${width}px`;
+          const parsedHeight = parseInt(height) === 0 ? "auto" : `${height}px`;
           return (
             <div
-              key={${alt}-${src}}
+              key={`${alt}-${src}`}
               className="border rounded-md shadow-sm flex flex-col w-fit h-fit my-4"
             >
               <img
@@ -135,8 +135,8 @@ export function noteRenderer(content) {
       render: (content, className) => {
         return (
           <div
-            className={${className.trim()} p-3 my-2 rounded}
-            key={div-${content.slice(0, 10)}}
+            className={`${className.trim()} p-3 my-2 rounded`}
+            key={`div-${content.slice(0, 10)}`}
           >
             {parseInline(content)}
           </div>
@@ -156,8 +156,8 @@ export function noteRenderer(content) {
 
         return (
           <details
-            key={${type}-${content.slice(0, 20)}}
-            className={m-6 rounded overflow-hidden outline-[${bgColor}]}
+            key={`${type}-${content.slice(0, 20)}`}
+            className={`m-6 rounded overflow-hidden outline-[${bgColor}]`}
           >
             <summary className="relative px-4 py-2 font-bold text-white cursor-pointer text-xl text-center">
               <div
@@ -196,10 +196,10 @@ export function noteRenderer(content) {
 
         return (
           <div
-            key={box-${type}-${content.slice(0, 10)}}
-            className={${type}-box rounded my-4 overflow-hidden w-fit max-w-full}
+            key={`box-${type}-${content.slice(0, 10)}`}
+            className={`${type}-box rounded my-4 overflow-hidden w-fit max-w-full`}
             style={{
-              outline: 1px dashed ${colors[type]},
+              outline: `1px dashed ${colors[type]}`,
             }}
           >
             <div
@@ -213,7 +213,7 @@ export function noteRenderer(content) {
               <span className="relative z-10">{titles[type]}</span>
             </div>
             <div
-              className={${type}-box-text px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base md:text-lg relative text-center}
+              className={`${type}-box-text px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base md:text-lg relative text-center`}
             >
               <div
                 className="absolute inset-0"
@@ -235,7 +235,7 @@ export function noteRenderer(content) {
       const decodedHtml = atob(rawHtmlMatch[1]);
       return [
         <div
-          key={html-${decodedHtml.slice(0, 10)}}
+          key={`html-${decodedHtml.slice(0, 10)}`}
           dangerouslySetInnerHTML={{ __html: decodedHtml }}
         />,
       ];
@@ -271,16 +271,16 @@ export function noteRenderer(content) {
 
           if (reg.dynamicLevelFrom && reg.styleMap?.lengthMap) {
             const level = Math.min(match[reg.dynamicLevelFrom].length, 6);
-            tagName = ${reg.tag}${level};
-            className = ${reg.styleMap.lengthMap[level]} ${className};
+            tagName = `${reg.tag}${level}`;
+            className = `${reg.styleMap.lengthMap[level]} ${className}`;
           }
 
           const Tag = tagName;
           const inner = parseInline(match[reg.contentPos], depth + 1);
           children.push(
             <Tag
-              id={${depth}-${pos}}
-              key={${depth}-${pos}}
+              id={`${depth}-${pos}`}
+              key={`${depth}-${pos}`}
               className={className}
             >
               {inner}
