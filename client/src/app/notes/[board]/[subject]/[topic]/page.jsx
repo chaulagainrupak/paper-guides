@@ -53,7 +53,10 @@ export default function QuestionLinks({ params }) {
       const link = document.createElement("a");
       link.href = `#${targetId}`;
       link.textContent = linkText;
-
+      
+      const level = parseInt(headingTag.replace("H", ""));
+      const indent = (level - 1) * 10;
+      
       link.style.display = "block";
       link.style.padding = "6px 10px";
       link.style.margin = "1px 0";
@@ -64,17 +67,18 @@ export default function QuestionLinks({ params }) {
       link.style.textDecoration = "none";
       link.style.transition = "all 0.1s ease";
       link.style.borderLeft = "3px solid transparent";
+      link.style.paddingLeft = `${10 + indent}px`;
 
       link.addEventListener("mouseenter", () => {
         link.style.backgroundColor = "var(--color-nav)";
         link.style.borderLeftColor = "var(--blue-highlight)";
-        link.style.paddingLeft = "12px";
+        link.style.paddingLeft = `${12 + indent}px`;
       });
 
       link.addEventListener("mouseleave", () => {
         link.style.backgroundColor = "transparent";
         link.style.borderLeftColor = "transparent";
-        link.style.paddingLeft = "10px";
+        link.style.paddingLeft = `${10 + indent}px`;
       });
 
       return link;
@@ -88,7 +92,7 @@ export default function QuestionLinks({ params }) {
     const noteContainer = document.getElementById("note-render-dest");
     if (!noteContainer) return;
 
-    const headings = noteContainer.querySelectorAll("h1");
+    const headings = noteContainer.querySelectorAll("h1, h2, h3, h4, h5, h6");
 
     headings.forEach((heading) => {
       const text = heading.innerText;
