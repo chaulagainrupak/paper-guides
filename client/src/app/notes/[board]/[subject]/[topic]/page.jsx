@@ -49,7 +49,7 @@ export default function QuestionLinks({ params }) {
         .replace(/-+/g, "-");
     }
 
-    function generateNavLink(linkText, targetId) {
+    function generateNavLink(linkText, targetId, headingTag) {
       const link = document.createElement("a");
       link.href = `#${targetId}`;
       link.textContent = linkText;
@@ -99,7 +99,7 @@ export default function QuestionLinks({ params }) {
       const slug = slugify(text);
       heading.id = slug;
 
-      const link = generateNavLink(text, slug);
+      const link = generateNavLink(text, slug, heading.tagName);
       navigationDest.appendChild(link);
     });
 
