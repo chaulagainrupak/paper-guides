@@ -43,11 +43,11 @@ export default function RootLayout({
           src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
         ></script>
 
-        <Script
+        <script
           src="https://www.googletagmanager.com/gtag/js?id=G-2B6JNCMRZ4"
           strategy="afterInteractive"
         />
-        <Script id="ga-init" strategy="afterInteractive">
+        <script id="ga-init" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){ dataLayer.push(arguments); }
@@ -55,7 +55,7 @@ export default function RootLayout({
             gtag('config', 'G-2B6JNCMRZ4');
             gtag('config', 'G-SZDFC8YDWK');
           `}
-        </Script>
+        </script>
       </head>
       <body className="flex flex-col min-h-screen">
         <nav className="bg-[var(--color-nav)] fixed top-0 w-full z-50 shadow-sm h-16">
