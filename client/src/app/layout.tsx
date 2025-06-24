@@ -45,7 +45,6 @@ export default function RootLayout({
 
         <script
           src="https://www.googletagmanager.com/gtag/js?id=G-2B6JNCMRZ4"
-          strategy="afterInteractive"
         />
         <script id="ga-init" strategy="afterInteractive">
           {`
