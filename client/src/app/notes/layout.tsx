@@ -33,7 +33,6 @@ export default function LevelsLayout({
         <script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
       <div className="bg-[var(--baby-powder)] xl:w-full shadow-xl rounded-md p-6 min-h-full">
         <main>{children}</main>
