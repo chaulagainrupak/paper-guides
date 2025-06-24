@@ -37,7 +37,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
-     crossorigin="anonymous"></script>
+     crossOrigin="anonymous"></script>
         <script
           type="text/javascript"
           id="MathJax-script"
