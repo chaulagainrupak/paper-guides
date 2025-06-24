@@ -30,7 +30,7 @@ export default function LevelsLayout({
 }) {
   return (
     <div className="mt-16 flex flex-col xl:flex-row gap-4 px-6 py-6 min-h-full">
-        <Script
+        <script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
           crossOrigin="anonymous"
           strategy="afterInteractive"
