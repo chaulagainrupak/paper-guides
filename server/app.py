@@ -17,12 +17,18 @@ import time
 
 from picPatcher import process_images
 
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv('.env')
+
 # Load configuration
 CONFIG_PATH = './configs/configs.json'
 CONFIG = loadConfig('./configs/configs.json')
 SITEMAP_PATH = "./configs/sitemap.xml"  
 # Constants
-SECRET_KEY = "super-secret-key"  
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 
