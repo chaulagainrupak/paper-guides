@@ -5,12 +5,19 @@ export function noteRenderer(content) {
 
   // Extract raw HTML blocks from !( <...> )
 function extractHtmlBlocks(content) {
+  function base64EncodeUnicode(str) {
+    return btoa(
+      encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) =>
+        String.fromCharCode(parseInt(p1, 16))
+      )
+    );
+  }
+
   return content.replace(
     /!\(\s*((?:<[\s\S]*?>)+?)\s*\)/g,
-    (match, html) => `[[RAWHTMLBLOCK:${btoa(unescape(encodeURIComponent(html)))}]]`
+    (match, html) => `[[RAWHTMLBLOCK:${base64EncodeUnicode(html)}]]`
   );
 }
-
 
   const regList = [
     {
