@@ -4,12 +4,13 @@ export function noteRenderer(content) {
   const navList = [];
 
   // Extract raw HTML blocks from !( <...> )
-  function extractHtmlBlocks(content) {
-    return content.replace(
-      /!\(\s*((?:<[\s\S]*?>)+?)\s*\)/g,
-      (match, html) => `[[RAWHTMLBLOCK:${btoa(html)}]]`
-    );
-  }
+function extractHtmlBlocks(content) {
+  return content.replace(
+    /!\(\s*((?:<[\s\S]*?>)+?)\s*\)/g,
+    (match, html) => `[[RAWHTMLBLOCK:${btoa(unescape(encodeURIComponent(html)))}]]`
+  );
+}
+
 
   const regList = [
     {
