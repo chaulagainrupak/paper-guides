@@ -16,6 +16,20 @@ export default function PaperViewerClient({
   const [showSolution, setShowSolution] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
+  const [pdfImages, setPdfImages] = useState<string[]>([]);
+  const [fallbackTried, setFallbackTried] = useState(false);
+
+  // Load PDF.js from CDN
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src =
+      "https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js";
+    script.onload = () => {
+      (window as any).pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+    };
+    document.body.appendChild(script);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,12 +61,11 @@ export default function PaperViewerClient({
   }, [params]);
 
   useEffect(() => {
-  const urlPath = window.location.pathname;
-  if (urlPath.includes("mark-scheme")) {
-    setShowSolution(true);
-  }
-}, []);
-
+    const urlPath = window.location.pathname;
+    if (urlPath.includes("mark-scheme")) {
+      setShowSolution(true);
+    }
+  }, []);
 
   const currentPdf = showSolution ? markSchemeData : questionData;
 
@@ -80,6 +93,46 @@ export default function PaperViewerClient({
       setBlobUrl(null);
     }
   }, [currentPdf]);
+
+  const renderPdfToImages = async () => {
+    try {
+      if (!currentPdf || fallbackTried) return;
+
+      setFallbackTried(true);
+
+      const pdfjsLib = (window as any).pdfjsLib;
+      if (!pdfjsLib) return;
+
+      const byteArray = Uint8Array.from(atob(currentPdf), (char) =>
+        char.charCodeAt(0)
+      );
+
+      const loadingTask = pdfjsLib.getDocument({ data: byteArray });
+      const pdf = await loadingTask.promise;
+      const numPages = pdf.numPages;
+
+      const images: string[] = [];
+
+      for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+        const page = await pdf.getPage(pageNumber);
+        const viewport = page.getViewport({ scale: 2 });
+
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d")!;
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        await page.render({ canvasContext: context, viewport }).promise;
+
+        const imgData = canvas.toDataURL("image/png");
+        images.push(imgData);
+      }
+
+      setPdfImages(images);
+    } catch (err) {
+      console.error("PDF fallback failed:", err);
+    }
+  };
 
   const handleDownload = () => {
     try {
@@ -119,7 +172,7 @@ export default function PaperViewerClient({
     return <Loader />;
   }
 
-  if (hasError || !currentPdf) {
+  if (hasError || (!currentPdf && pdfImages.length === 0)) {
     return (
       <div className="text-red-600 text-center mt-10">
         <h2 className="text-2xl font-bold">Failed to load the paper.</h2>
@@ -184,22 +237,29 @@ export default function PaperViewerClient({
           </button>
         </div>
 
-        <object
-          data={blobUrl || undefined}
-          type="application/pdf"
-          className="w-full h-full"
-        >
-          <div className="text-center">
-            It looks like your device/browser cannot display PDFs inline. Please
-            download the PDF to view it.{" "}
-            <button
-              onClick={handleDownload}
-              className="mt-2 px-4 py-2 bg-[var(--blue-highlight)] text-white rounded"
-            >
-              Download PDF
-            </button>
+        {!pdfImages.length ? (
+          <object
+            data={blobUrl || undefined}
+            type="application/pdf"
+            className="w-full h-full"
+            onError={renderPdfToImages}
+          >
+            <div className="text-center">
+              Your browser can't display PDFs. Trying image fallback...
+            </div>
+          </object>
+        ) : (
+          <div className="space-y-4">
+            {pdfImages.map((src, index) => (
+              <img
+                key={index}
+                src={src}
+                alt={`Page ${index + 1}`}
+                className="w-full max-w-[800px] mx-auto shadow rounded"
+              />
+            ))}
           </div>
-        </object>
+        )}
       </div>
     </div>
   );
