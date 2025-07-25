@@ -5,7 +5,7 @@ import ThemeToggleButton from "./themeToggle";
 import LoginLink from "./loginLink";
 import SiteFooter from "./footer";
 import Script from "next/script";
-
+import { Analytics } from "@vercel/analytics/next"
 export const metadata: Metadata = {
   title: "Paper Guides",
   description: "Free exam preparation resources, Notes, Past-Papers, Question",
@@ -100,7 +100,7 @@ export default function RootLayout({
 
         <ThemeToggleButton />
 
-        <main className="flex-grow">{children}</main>
+        <main className="flex-grow"><Analytics/>{children}</main>
 
         <SiteFooter />
       </body>
