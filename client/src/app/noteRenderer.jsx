@@ -1,337 +1,508 @@
 "use client";
 
-export function noteRenderer(content) {
-  const navList = [];
-
-  // Extract raw HTML blocks from !( <...> )
-function extractHtmlBlocks(content) {
-  function base64EncodeUnicode(str) {
-    return btoa(
-      encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) =>
-        String.fromCharCode(parseInt(p1, 16))
-      )
-    );
-  }
-
-  return content.replace(
-    /!\(\s*((?:<[\s\S]*?>)+?)\s*\)/g,
-    (match, html) => `[[RAWHTMLBLOCK:${base64EncodeUnicode(html)}]]`
-  );
-}
-
-  const regList = [
+// MARKDOWN PARSER
+export function parseMarkdown(content) {
+  const ast = [];
+  const blockPatterns = [
+    // Raw blocks - must come first
     {
+      name: "rawBlock",
+      regex: /!{{([\s\S]*?)}}!/,
+      handler: (match) => ({
+        type: "rawBlock",
+        content: match[1],
+      }),
+      inline: true
+    },
+    // Headings
+    {
+      name: "heading",
       regex: /^(#{1,6})\s+(.*)/,
-      contentPos: 2,
-      tag: "h",
-      dynamicLevelFrom: 1,
-      styleMap: {
-        default: "font-bold mb-4 mt-6",
-        lengthMap: {
-          1: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl",
-          2: "text-xl sm:text-2xl md:text-3xl lg:text-4xl",
-          3: "text-lg sm:text-xl md:text-2xl lg:text-3xl",
-          4: "text-base sm:text-lg md:text-xl",
-          5: "text-sm sm:text-base md:text-lg",
-          6: "text-sm",
-        },
-      },
+      handler: (match) => ({
+        type: "heading",
+        level: match[1].length,
+        children: parseInline(match[2]),
+      }),
     },
+    // Horizontal rule must come before other patterns
     {
-      regex: /~~(.*?)~~/,
-      contentPos: 1,
-      tag: "del",
-      styleMap: { default: "line-through opacity-70" },
-    },
-    {
-      regex: /__(.*?)__/,
-      contentPos: 1,
-      tag: "u",
-      styleMap: { default: "underline" },
-    },
-    {
-      regex: /\*\*(.*?)\*\*/,
-      contentPos: 1,
-      tag: "strong",
-      styleMap: { default: "font-bold" },
-    },
-    {
-      regex: /_(.*?)_/,
-      contentPos: 1,
-      tag: "em",
-      styleMap: { default: "italic" },
-    },
-    {
-      regex: />\s+(.*)/,
-      contentPos: 1,
-      tag: "blockquote",
-      styleMap: {
-        default: "border-l-4 pl-4 italic opacity-80 my-3",
-      },
-    },
-    {
-      regex: /-\s+(.*)/,
-      contentPos: 1,
-      tag: "li",
-      styleMap: { default: "ml-4 mb-1" },
-    },
-    {
+      name: "horizontalRule",
       regex: /^-{3,}$/,
-      render: () => (
-        <hr
-          key={`hr-${Math.random().toString(36).slice(2)}`}
-          className="border-t border-gray-300 opacity-60"
-        />
-      ),
+      handler: () => ({ type: "horizontalRule" }),
     },
-
+    // Block elements
     {
-      regex: /!\[(.*?)]{(.*?)}/,
-      contentPos: 1,
-      tag: "span",
-      dynamicLevelFrom: 2,
-      styleMap: {
-        default: "my-2 text-sm sm:text-base md:text-lg leading-relaxed",
-      },
-      render: (tag, text, color) => {
-        const Tag = tag;
-        return (
-          <Tag key={`${text}-${color}`} style={{ color: `var(--${color})` }}>
-            {text}
-          </Tag>
-        );
-      },
+      name: "blockquote",
+      regex: />\s+(.*)/,
+      handler: (match) => ({
+        type: "blockquote",
+        children: parseInline(match[1]),
+      }),
     },
     {
-      regex: /!\[(.*?)\]\((.*?)\)\((.*?),(.*?)\){(.*?)}/,
-      multiContentPos: [2, 5],
-      multiDynamicFrom: [1, 3, 4],
-      styleMap: {
-        default: "my-2 text-sm sm:text-base md:text-lg leading-relaxed",
-      },
-      render: (tag, alt, width, height, src) => {
-        if (tag === "img") {
-          const parsedWidth = parseInt(width) === 0 ? "auto" : `${width}px`;
-          const parsedHeight = parseInt(height) === 0 ? "auto" : `${height}px`;
-          return (
-            <div
-              key={`${alt}-${src}`}
-              className="border rounded-md shadow-sm flex flex-col w-fit h-fit my-4"
-            >
-              <img
-                src={src}
-                alt={alt}
-                style={{
-                  width: parsedWidth,
-                  height: parsedHeight,
-                  objectFit: "contain",
-                }}
-                className="rounded-md mb-2"
-              />
-              <p className="text-center text-xs opacity-70 italic px-2 pb-2">
-                {alt}
-              </p>
-            </div>
-          );
-        }
-        return null;
-      },
+      name: "listItem",
+      regex: /-\s+(.*)/,
+      handler: (match) => ({
+        type: "listItem",
+        children: parseInline(match[1]),
+      }),
+    },
+    // Callouts - moved higher in priority
+    {
+      name: "callout",
+      regex: /:::\s*\[(exp|tip|warning)\]\((.*?)\)\s*:::/s,
+      handler: (match) => ({
+        type: "callout",
+        variant: match[1],
+        children: parseBlock(match[2]),
+      }),
     },
     {
-      regex: /!\((.+?)\)<(.+?)>/,
-      multiContentPos: [1, 2],
-      render: (content, className) => {
-        return (
-          <div
-            className={`${className.trim()} p-3 my-2 rounded`}
-            key={`div-${content.slice(0, 10)}`}
-          >
-            {parseInline(content)}
-          </div>
-        );
-      },
+      name: "featureBox",
+      regex: /:::\s*\[(tip|exp|warning)\|box\]\(([\s\S]*?)\)\s*:::/s,
+      handler: (match) => ({
+        type: "featureBox",
+        variant: match[1],
+        children: parseBlock(match[2]),
+      }),
+    },
+    // Custom styling blocks
+    {
+      name: "customStyleBlock",
+      regex: /!{([^}]*)}\s*<\s*([\s\S]*?)\s*>/s,
+      handler: (match) => ({
+        type: "customStyleBlock",
+        className: match[1],
+        children: parseBlock(match[2].trim()),
+      }),
     },
     {
-      regex: /:{3}\n?\[(exp|tip|warning)\]\n?\((.*?)\)\n?:{3}/,
-      multiContentPos: [1, 2],
-      render: (type, content) => {
-        const titles = { exp: "Explanation", tip: "Tip", warning: "Warning" };
-        const bgColor = {
-          exp: "var(--green-highlight)",
-          tip: "var(--blue-highlight)",
-          warning: "var(--pink-highlight)",
-        }[type];
-
-        return (
-          <details
-            key={`${type}-${content.slice(0, 20)}`}
-            className={`m-6 rounded overflow-hidden outline-[${bgColor}]`}
-          >
-            <summary className="relative px-4 py-2 font-bold text-white cursor-pointer text-xl text-center">
-              <div
-                className="absolute inset-0"
-                style={{ backgroundColor: bgColor, opacity: 0.6 }}
-              ></div>
-              <span className="relative z-10">{titles[type]}</span>
-            </summary>
-            <div className="relative px-4 py-3 text-center">
-              <div
-                className="absolute inset-0"
-                style={{ backgroundColor: bgColor, opacity: 0.1 }}
-              ></div>
-              <div className="relative z-10">{parseInline(content)}</div>
-            </div>
-          </details>
-        );
-      },
+      name: "styledBlock",
+      regex: /!\s*\(([\s\S]*?)\)\s*<\s*([^>]+)\s*>/s,
+      handler: (match) => ({
+        type: "styledBlock",
+        className: match[2],
+        children: parseBlock(match[1].trim()),
+      }),
     },
-
+    // Text decorations
     {
-      regex: /:::\[(tip|exp|warning)\|box\]\(([\s\S]*?)\):::/,
-      multiContentPos: [1, 2],
-      render: (type, content) => {
-        const titles = {
-          tip: "TIP!",
-          exp: "EXPLANATION",
-          warning: "WARNING!",
-        };
-
-        const colors = {
-          tip: "var(--blue-highlight)",
-          exp: "var(--green-highlight)",
-          warning: "var(--pink-highlight)",
-        };
-
-        return (
-          <div
-            key={`box-${type}-${content.slice(0, 10)}`}
-            className={`${type}-box rounded my-4 overflow-hidden w-fit max-w-full`}
-            style={{
-              outline: `1px dashed ${colors[type]}`,
-            }}
-          >
-            <div
-              className="px-3 sm:px-4 py-2 font-bold text-white relative text-center text-sm sm:text-base md:text-lgpx-4 py-2 font-bold text-white relative text-center"
-              style={{ backgroundColor: colors[type] }}
-            >
-              <div
-                className="absolute inset-0"
-                style={{ backgroundColor: colors[type], opacity: 0.6 }}
-              ></div>
-              <span className="relative z-10">{titles[type]}</span>
-            </div>
-            <div
-              className={`${type}-box-text px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base md:text-lg relative text-center`}
-            >
-              <div
-                className="absolute inset-0"
-                style={{ backgroundColor: colors[type], opacity: 0.1 }}
-              ></div>
-              <div className="relative z-10">{parseInline(content)}</div>
-            </div>
-          </div>
-        );
-      },
+      name: "strikethrough",
+      regex: /~~(.*?)~~/,
+      handler: (match) => ({
+        type: "strikethrough",
+        children: parseInline(match[1]),
+      }),
+      inline: true
+    },
+    {
+      name: "underline",
+      regex: /__(.*?)__/,
+      handler: (match) => ({
+        type: "underline",
+        children: parseInline(match[1]),
+      }),
+      inline: true
+    },
+    {
+      name: "bold",
+      regex: /\*\*(.*?)\*\*/,
+      handler: (match) => ({
+        type: "bold",
+        children: parseInline(match[1]),
+      }),
+      inline: true
+    },
+    {
+      name: "italic",
+      regex: /_(.*?)_/,
+      handler: (match) => ({
+        type: "italic",
+        children: parseInline(match[1]),
+      }),
+      inline: true
+    },
+    // Custom styling
+    {
+      name: "coloredText",
+      regex: /!\[(.*?)\]{(.*?)}/,
+      handler: (match) => ({
+        type: "coloredText",
+        children: parseInline(match[1]),
+        color: match[2],
+      }),
+      inline: true
+    },
+    {
+      name: "customStyle",
+      regex: /!{([^}]*)}\[(.*?)\]/,
+      handler: (match) => ({
+        type: "customStyle",
+        className: match[1],
+        children: parseInline(match[2]),
+      }),
+      inline: true
+    },
+    // Images
+    {
+      name: "image",
+      regex: /!\[(.*?)\]\((.*?)\)\s*(?:\((.*?),(.*?)\))/,
+      handler: (match) => ({
+        type: "image",
+        alt: match[1],
+        src: match[2],
+        width: match[3] ? parseInt(match[3]) : auto,
+        height: match[4] ? parseInt(match[4]) : auto,
+      }),
+    },
+    // Code blocks
+    {
+      name: "codeBlock",
+      regex: /```(\w*)\n([\s\S]*?)```/,
+      handler: (match) => ({
+        type: "codeBlock",
+        language: match[1] || "text",
+        code: match[2].trim(),
+      }),
+    },
+    {
+      name: "inlineCode",
+      regex: /`([^`]+)`/,
+      handler: (match) => ({
+        type: "inlineCode",
+        code: match[1],
+      }),
+      inline: true
     },
   ];
 
-  function parseInline(text, depth = 0) {
-    const children = [];
+  function parseBlock(text) {
+    const result = [];
+    const lines = text.split('\n');
 
-    const rawHtmlMatch = text.match(/\[\[RAWHTMLBLOCK:(.*?)\]\]/);
-    if (rawHtmlMatch) {
-      const decodedHtml = atob(rawHtmlMatch[1]);
-      return [
-        <div
-          key={`html-${decodedHtml.slice(0, 10)}`}
-          dangerouslySetInnerHTML={{ __html: decodedHtml }}
-        />,
-      ];
-    }
+    for (const line of lines) {
+      if (line.trim() === '') continue;
 
-    let pos = 0;
-    while (pos < text.length) {
       let matched = false;
-
-      for (const reg of regList) {
-        reg.regex.lastIndex = 0;
-        const slice = text.slice(pos);
-        const match = slice.match(reg.regex);
-        if (!match || match.index !== 0) continue;
-
-        matched = true;
-
-        if (typeof reg.render === "function") {
-          if (reg.multiContentPos || reg.multiDynamicFrom || reg.foreRender) {
-            children.push(reg.render(...match.slice(1)));
-          } else {
-            children.push(
-              reg.render(
-                reg.tag,
-                match[reg.contentPos],
-                match[reg.dynamicLevelFrom]
-              )
-            );
-          }
-        } else {
-          let tagName = reg.tag;
-          let className = reg.styleMap?.default || "";
-
-          if (reg.dynamicLevelFrom && reg.styleMap?.lengthMap) {
-            const level = Math.min(match[reg.dynamicLevelFrom].length, 6);
-            tagName = `${reg.tag}${level}`;
-            className = `${reg.styleMap.lengthMap[level]} ${className}`;
-          }
-
-          const Tag = tagName;
-          const inner = parseInline(match[reg.contentPos], depth + 1);
-          children.push(
-            <Tag
-              id={`${depth}-${pos}`}
-              key={`${depth}-${pos}`}
-              className={className}
-            >
-              {inner}
-            </Tag>
-          );
+      for (const pattern of blockPatterns) {
+        pattern.regex.lastIndex = 0;
+        const match = pattern.regex.exec(line);
+        if (match && match.index === 0) {
+          result.push(pattern.handler(match));
+          matched = true;
+          break;
         }
-
-        pos += match[0].length;
-        break;
       }
 
       if (!matched) {
-        let nextSpecialMatchPos = text.length;
-        for (const reg of regList) {
-          const m = text.slice(pos).match(reg.regex);
-          if (m && m.index >= 0) {
-            nextSpecialMatchPos = Math.min(nextSpecialMatchPos, pos + m.index);
-          }
-        }
-        const plainText = text.slice(pos, nextSpecialMatchPos);
-        children.push(plainText);
-        pos = nextSpecialMatchPos;
+        result.push({
+          type: "paragraph",
+          children: parseInline(line),
+        });
       }
     }
 
-    return children;
+    return result;
   }
 
-  const preprocessed = extractHtmlBlocks(content);
+  function parseInline(text) {
+    const result = [];
+    let position = 0;
+    let lastIndex = 0;
 
-  const parsedContent = preprocessed.split("\n").map((line, index) => {
-    const trimmedLine = line.trim();
-    if (trimmedLine === "") return <br key={index} />;
+    while (position < text.length) {
+      let matched = false;
 
-    return (
-      <div
-        key={index}
-        className="text-base sm:text-lg md:text-xl leading-relaxed max-w-full sm:px-0"
-      >
-        {parseInline(trimmedLine)}
-      </div>
-    );
-  });
+      for (const pattern of blockPatterns.filter(p => p.inline)) {
+        pattern.regex.lastIndex = 0;
+        const match = pattern.regex.exec(text.slice(position));
 
-  return <>{parsedContent}</>;
+        if (match && match.index === 0) {
+          if (position > lastIndex) {
+            result.push({
+              type: "text",
+              value: text.slice(lastIndex, position),
+            });
+          }
+
+          result.push(pattern.handler(match));
+          position += match[0].length;
+          lastIndex = position;
+          matched = true;
+          break;
+        }
+      }
+
+      if (!matched) position++;
+    }
+
+    if (lastIndex < text.length) {
+      result.push({
+        type: "text",
+        value: text.slice(lastIndex),
+      });
+    }
+
+    return result;
+  }
+
+  // Process content
+  return parseBlock(content);
+}
+
+// MARKDOWN RENDERER
+export function renderMarkdown(ast) {
+  const styleMap = {
+    heading: (level) =>
+      `font-bold mb-4 mt-6 ${["text-5xl sm:text-3xl", "text-4xl sm:text-2xl", "text-3lg sm:text-xl",
+        "text-base sm:text-lg", "text-sm sm:text-base", "text-xs"][level - 1]
+      }`,
+    strikethrough: "line-through opacity-70",
+    underline: "underline",
+    bold: "font-bold",
+    italic: "italic",
+    blockquote: "border-l-4 pl-4 italic opacity-80 my-3",
+    listItem: "ml-4 mb-1",
+    horizontalRule: "border-t border-gray-300 opacity-60 my-4",
+    coloredText: "my-2 text-sm sm:text-base md:text-lg leading-relaxed",
+    paragraph: "my-2 text-sm sm:text-base md:text-lg leading-relaxed",
+    codeBlock: "bg-gray-800 text-white p-4 rounded my-4 overflow-x-auto font-mono text-sm",
+    inlineCode: "bg-gray-200 px-1.5 py-0.5 rounded font-mono text-sm",
+    rawBlock: "", // No styling for raw blocks
+  };
+
+  const variantStyles = {
+    tip: {
+      color: "var(--blue-highlight)",
+      title: "TIP!"
+    },
+    exp: {
+      color: "var(--green-highlight)",
+      title: "EXPLANATION"
+    },
+    warning: {
+      color: "var(--pink-highlight)",
+      title: "WARNING!"
+    },
+  };
+
+  const renderNode = (node, index) => {
+    switch (node.type) {
+      case "heading":
+        const HeadingTag = `h${node.level}`;
+        return (
+          <HeadingTag
+            key={`heading-${index}`}
+            className={styleMap.heading(node.level)}
+          >
+            {renderMarkdown(node.children)}
+          </HeadingTag>
+        );
+
+      case "strikethrough":
+        return (
+          <del key={`del-${index}`} className={styleMap.strikethrough}>
+            {renderMarkdown(node.children)}
+          </del>
+        );
+
+      case "underline":
+        return (
+          <u key={`u-${index}`} className={styleMap.underline}>
+            {renderMarkdown(node.children)}
+          </u>
+        );
+
+      case "bold":
+        return (
+          <strong key={`strong-${index}`} className={styleMap.bold}>
+            {renderMarkdown(node.children)}
+          </strong>
+        );
+
+      case "italic":
+        return (
+          <em key={`em-${index}`} className={styleMap.italic}>
+            {renderMarkdown(node.children)}
+          </em>
+        );
+
+      case "blockquote":
+        return (
+          <blockquote key={`blockquote-${index}`} className={styleMap.blockquote}>
+            {renderMarkdown(node.children)}
+          </blockquote>
+        );
+
+      case "listItem":
+        return (
+          <li key={`li-${index}`} className={styleMap.listItem}>
+            {renderMarkdown(node.children)}
+          </li>
+        );
+
+      case "horizontalRule":
+        return <hr key={`hr-${index}`} className={styleMap.horizontalRule} />;
+
+      case "coloredText":
+        return (
+          <span
+            key={`color-${index}`}
+            className={styleMap.coloredText}
+            style={{ color: `var(--${node.color})` }}
+          >
+            {renderMarkdown(node.children)}
+          </span>
+        );
+
+      case "customStyle":
+      case "customStyleBlock":
+        return (
+          <div
+            key={`custom-${index}`}
+            className={`${node.className} p-3 my-2 rounded`}
+          >
+            {renderMarkdown(node.children)}
+          </div>
+        );
+
+      case "image":
+        const width = node.width || "auto";
+        const height = node.height || "auto";
+        return (
+          <div key={`img-${index}`} className="border rounded-md shadow-sm flex flex-col w-fit h-fit my-4">
+            <img
+              src={node.src}
+              alt={node.alt}
+              style={{ width, height, objectFit: "contain" }}
+              className="rounded-md mb-2"
+            />
+            <p className="text-center text-xs opacity-70 italic px-2 pb-2">
+              {node.alt}
+            </p>
+          </div>
+        );
+
+      case "styledBlock":
+        return (
+          <div
+            key={`styled-${index}`}
+            className={`${node.className} p-3 my-2 rounded`}
+          >
+            {renderMarkdown(node.children)}
+          </div>
+        );
+
+      case "callout":
+        const { color, title } = variantStyles[node.variant];
+        return (
+          <details
+            key={`callout-${index}`}
+            className="my-6 rounded-lg  w-full max-w-3xl mx-auto"
+            style={{}}
+          >
+            <summary className="relative px-4 py-3 font-bold text-2xl text-white cursor-pointer flex items-center justify-between rounded-lg">
+              <div
+                className="absolute inset-0 rounded-lg"
+                style={{ backgroundColor: color}}
+              />
+              <span className="relative z-10 text-center flex-grow">{title}</span>
+              <svg
+                className="relative z-10 w-5 h-5 transition-transform duration-200 transform"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </summary>
+            <div className="text-black relative px-4 py-3 bg-gray-100 rounded-b-lg">
+              <div className="relative z-10">
+                {renderMarkdown(node.children)}
+              </div>
+            </div>
+          </details>
+        );
+
+      case "featureBox":
+        const variant = variantStyles[node.variant];
+        return (
+          <div
+            key={`feature-${index}`}
+            className="rounded-lg my-4 overflow-hidden w-fit max-w-full mx-auto"
+            style={{ border: `1px dashed ${variant.color}` }}
+          >
+            <div
+              className="px-4 py-3 font-bold text-white text-2xl relative text-center flex items-center justify-center"
+              style={{ backgroundColor: variant.color }}
+            >
+              <div
+                className="absolute inset-0"
+                style={{ backgroundColor: variant.color, opacity: 0.6 }}
+              />
+              <span className="relative z-10">{variant.title}</span>
+            </div>
+            <div className="text-black px-4 py-3 bg-gray-100 relative">
+              <div
+                className="absolute inset-0"
+                style={{ backgroundColor: variant.color, opacity: 0.1 }}
+              />
+              <div className="relative z-10">
+                {renderMarkdown(node.children)}
+              </div>
+            </div>
+          </div>
+        );
+      case "codeBlock":
+        return (
+          <pre key={`pre-${index}`} className={styleMap.codeBlock}>
+            <code>{node.code}</code>
+          </pre>
+        );
+
+      case "inlineCode":
+        return (
+          <code key={`code-${index}`} className={styleMap.inlineCode}>
+            {node.code}
+          </code>
+        );
+
+      case "rawBlock":
+        return (
+          <span key={`raw-${index}`} className={styleMap.rawBlock}>
+            {node.content}
+          </span>
+        );
+
+      case "paragraph":
+        return (
+          <p key={`p-${index}`} className={styleMap.paragraph}>
+            {renderMarkdown(node.children)}
+          </p>
+        );
+
+      case "text":
+        return <span key={`text-${index}`}>{node.value}</span>;
+
+      default:
+        return null;
+    }
+  };
+
+  if (Array.isArray(ast)) {
+    return ast.map((node, index) => renderNode(node, index));
+  }
+  return renderNode(ast, 0);
+}
+
+// MAIN COMPONENT
+export function noteRenderer(content) {
+  const ast = parseMarkdown(content);
+  return <div className="markdown-content">{renderMarkdown(ast)}</div>;
 }
