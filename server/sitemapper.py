@@ -48,7 +48,8 @@ try:
         if "insert" in row[3].lower():
             continue
         for season in seasons:
-            paperUrl = f"{baseUrl}/subjects/{row[5]}/{row[2]}/{row[3][:4]}/{row[2].lower()}-question-paper-{row[4]}-{row[3][:4]}-{season}".replace(" ", "%20")
+            #remove tat s in row 5 idiot its fine when supporting a levels but not for otehr boards
+            paperUrl = f"{baseUrl}/subjects/{row[5]}s/{row[2]}/{row[3][:4]}/{row[2].lower()}-question-paper-{row[4]}-{row[3][:4]}-{season}".replace(" ", "%20")
             urlset.append(createUrlNode(paperUrl, changefreq="yearly", priority=0.6))
 except Exception as e:
     print("Paper DB Error:", e)
