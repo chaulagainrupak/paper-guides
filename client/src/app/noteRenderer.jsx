@@ -1,10 +1,85 @@
 "use client";
 
-// MARKDOWN PARSER
 export function parseMarkdown(content) {
   const ast = [];
+
   const blockPatterns = [
-    // Raw blocks - must come first
+    // Multiline patterns
+    {
+      name: "table",
+      regex: /!\[\n([\s\S]*?)\n\]/,
+      handler: (match) => {
+        const rows = [];
+        const lines = match[1].trim().split('\n');
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith('(') && trimmed.endsWith(')')) {
+            const content = trimmed.slice(1, -1).trim();
+            const cells = content.split(',').map(cell => cell.trim());
+            rows.push(cells);
+          }
+        }
+
+        return {
+          type: "table",
+          headers: rows[0] ? rows[0].map(cell => parseInline(cell)) : [],
+          rows: rows.slice(1).map(row => row.map(cell => parseInline(cell)))
+        };
+      },
+      multiline: true
+    },
+    {
+      name: "customStyleBlock",
+      regex: /!{([^}]*)}\s*<\s*([\s\S]*?)\s*>/,
+      handler: (match) => ({
+        type: "customStyleBlock",
+        className: match[1],
+        children: parseBlock(match[2].trim()),
+      }),
+      multiline: true
+    },
+    {
+      name: "styledBlock",
+      regex: /!\s*\(([\s\S]*?)\)\s*<\s*([^>]+)\s*>/,
+      handler: (match) => ({
+        type: "styledBlock",
+        className: match[2],
+        children: parseBlock(match[1].trim()),
+      }),
+      multiline: true
+    },
+    {
+      name: "callout",
+      regex: /:::\s*\[(exp|tip|warning)\]\(([\s\S]*?)\)\s*:::/,
+      handler: (match) => ({
+        type: "callout",
+        variant: match[1],
+        children: parseBlock(match[2]),
+      }),
+      multiline: true
+    },
+    {
+      name: "featureBox",
+      regex: /:::\s*\[(tip|exp|warning)\|box\]\(([\s\S]*?)\)\s*:::/,
+      handler: (match) => ({
+        type: "featureBox",
+        variant: match[1],
+        children: parseBlock(match[2]),
+      }),
+      multiline: true
+    },
+    {
+      name: "codeBlock",
+      regex: /```(\w*)\n([\s\S]*?)```/,
+      handler: (match) => ({
+        type: "codeBlock",
+        language: match[1] || "text",
+        code: match[2].trim(),
+      }),
+      multiline: true
+    },
+    // Single-line patterns
     {
       name: "rawBlock",
       regex: /!{{([\s\S]*?)}}!/,
@@ -14,7 +89,6 @@ export function parseMarkdown(content) {
       }),
       inline: true
     },
-    // Headings
     {
       name: "heading",
       regex: /^(#{1,6})\s+(.*)/,
@@ -24,13 +98,11 @@ export function parseMarkdown(content) {
         children: parseInline(match[2]),
       }),
     },
-    // Horizontal rule must come before other patterns
     {
       name: "horizontalRule",
       regex: /^-{3,}$/,
       handler: () => ({ type: "horizontalRule" }),
     },
-    // Block elements
     {
       name: "blockquote",
       regex: />\s+(.*)/,
@@ -47,45 +119,6 @@ export function parseMarkdown(content) {
         children: parseInline(match[1]),
       }),
     },
-    // Callouts - moved higher in priority
-    {
-      name: "callout",
-      regex: /:::\s*\[(exp|tip|warning)\]\((.*?)\)\s*:::/s,
-      handler: (match) => ({
-        type: "callout",
-        variant: match[1],
-        children: parseBlock(match[2]),
-      }),
-    },
-    {
-      name: "featureBox",
-      regex: /:::\s*\[(tip|exp|warning)\|box\]\(([\s\S]*?)\)\s*:::/s,
-      handler: (match) => ({
-        type: "featureBox",
-        variant: match[1],
-        children: parseBlock(match[2]),
-      }),
-    },
-    // Custom styling blocks
-    {
-      name: "customStyleBlock",
-      regex: /!{([^}]*)}\s*<\s*([\s\S]*?)\s*>/s,
-      handler: (match) => ({
-        type: "customStyleBlock",
-        className: match[1],
-        children: parseBlock(match[2].trim()),
-      }),
-    },
-    {
-      name: "styledBlock",
-      regex: /!\s*\(([\s\S]*?)\)\s*<\s*([^>]+)\s*>/s,
-      handler: (match) => ({
-        type: "styledBlock",
-        className: match[2],
-        children: parseBlock(match[1].trim()),
-      }),
-    },
-    // Text decorations
     {
       name: "strikethrough",
       regex: /~~(.*?)~~/,
@@ -122,7 +155,6 @@ export function parseMarkdown(content) {
       }),
       inline: true
     },
-    // Custom styling
     {
       name: "coloredText",
       regex: /!\[(.*?)\]{(.*?)}/,
@@ -143,26 +175,15 @@ export function parseMarkdown(content) {
       }),
       inline: true
     },
-    // Images
     {
       name: "image",
-      regex: /!\[(.*?)\]\((.*?)\)\s*(?:\((.*?),(.*?)\))/,
+      regex: /!\[(.*?)\]\((.*?)\)\s*(?:\((.*?),(.*?)\))?/,
       handler: (match) => ({
         type: "image",
         alt: match[1],
         src: match[2],
-        width: match[3] ? parseInt(match[3]) : auto,
-        height: match[4] ? parseInt(match[4]) : auto,
-      }),
-    },
-    // Code blocks
-    {
-      name: "codeBlock",
-      regex: /```(\w*)\n([\s\S]*?)```/,
-      handler: (match) => ({
-        type: "codeBlock",
-        language: match[1] || "text",
-        code: match[2].trim(),
+        width: match[3] ? parseInt(match[3]) : "auto",
+        height: match[4] ? parseInt(match[4]) : "auto",
       }),
     },
     {
@@ -176,25 +197,45 @@ export function parseMarkdown(content) {
     },
   ];
 
+  // New parsing approach - handles multiline blocks
   function parseBlock(text) {
     const result = [];
-    const lines = text.split('\n');
+    let remaining = text;
 
-    for (const line of lines) {
-      if (line.trim() === '') continue;
-
+    while (remaining.length > 0) {
       let matched = false;
-      for (const pattern of blockPatterns) {
-        pattern.regex.lastIndex = 0;
-        const match = pattern.regex.exec(line);
+
+      // Try multiline patterns first
+      for (const pattern of blockPatterns.filter(p => p.multiline)) {
+        const match = pattern.regex.exec(remaining);
         if (match && match.index === 0) {
           result.push(pattern.handler(match));
+          remaining = remaining.slice(match[0].length);
           matched = true;
           break;
         }
       }
 
-      if (!matched) {
+      if (matched) continue;
+
+      // Try single-line patterns
+      const lineEnd = remaining.indexOf('\n');
+      const line = lineEnd === -1 ? remaining : remaining.slice(0, lineEnd);
+      remaining = lineEnd === -1 ? '' : remaining.slice(lineEnd + 1);
+
+      if (line.trim() === '') continue;
+
+      let lineMatched = false;
+      for (const pattern of blockPatterns.filter(p => !p.multiline)) {
+        const match = pattern.regex.exec(line);
+        if (match && match.index === 0) {
+          result.push(pattern.handler(match));
+          lineMatched = true;
+          break;
+        }
+      }
+
+      if (!lineMatched) {
         result.push({
           type: "paragraph",
           children: parseInline(line),
@@ -214,9 +255,7 @@ export function parseMarkdown(content) {
       let matched = false;
 
       for (const pattern of blockPatterns.filter(p => p.inline)) {
-        pattern.regex.lastIndex = 0;
         const match = pattern.regex.exec(text.slice(position));
-
         if (match && match.index === 0) {
           if (position > lastIndex) {
             result.push({
@@ -246,11 +285,9 @@ export function parseMarkdown(content) {
     return result;
   }
 
-  // Process content
   return parseBlock(content);
 }
 
-// MARKDOWN RENDERER
 export function renderMarkdown(ast) {
   const styleMap = {
     heading: (level) =>
@@ -268,7 +305,10 @@ export function renderMarkdown(ast) {
     paragraph: "my-2 text-sm sm:text-base md:text-lg leading-relaxed",
     codeBlock: "bg-gray-800 text-white p-4 rounded my-4 overflow-x-auto font-mono text-sm",
     inlineCode: "bg-gray-200 px-1.5 py-0.5 rounded font-mono text-sm",
-    rawBlock: "", // No styling for raw blocks
+    rawBlock: "",
+    table: "table-auto border-collapse border border-gray-300 my-4 w-full",
+    tableHeader: "border border-gray-300 px-4 py-2 font-bold",
+    tableCell: "border border-gray-300 px-4 py-2",
   };
 
   const variantStyles = {
@@ -356,6 +396,15 @@ export function renderMarkdown(ast) {
         );
 
       case "customStyle":
+        return (
+          <span
+            key={`custom-${index}`}
+            className={`${node.className}`}
+          >
+            {renderMarkdown(node.children)}
+          </span>
+        );
+
       case "customStyleBlock":
         return (
           <div
@@ -370,16 +419,18 @@ export function renderMarkdown(ast) {
         const width = node.width || "auto";
         const height = node.height || "auto";
         return (
-          <div key={`img-${index}`} className="border rounded-md shadow-sm flex flex-col w-fit h-fit my-4">
+          <div key={`img-${index}`} className="border rounded-md shadow-sm flex flex-col w-fit h-fit my-4 mx-auto">
             <img
               src={node.src}
               alt={node.alt}
               style={{ width, height, objectFit: "contain" }}
               className="rounded-md mb-2"
             />
-            <p className="text-center text-xs opacity-70 italic px-2 pb-2">
-              {node.alt}
-            </p>
+            {node.alt && (
+              <p className="text-center text-xs opacity-70 italic px-2 pb-2">
+                {node.alt}
+              </p>
+            )}
           </div>
         );
 
@@ -394,19 +445,18 @@ export function renderMarkdown(ast) {
         );
 
       case "callout":
-        const { color, title } = variantStyles[node.variant];
+        const { color, title: calloutTitle } = variantStyles[node.variant];
         return (
           <details
             key={`callout-${index}`}
-            className="my-6 rounded-lg  w-full max-w-3xl mx-auto"
-            style={{}}
+            className="my-6 rounded-lg w-full max-w-3xl mx-auto"
           >
             <summary className="relative px-4 py-3 font-bold text-2xl text-white cursor-pointer flex items-center justify-between rounded-lg">
               <div
                 className="absolute inset-0 rounded-lg"
-                style={{ backgroundColor: color}}
+                style={{ backgroundColor: color }}
               />
-              <span className="relative z-10 text-center flex-grow">{title}</span>
+              <span className="relative z-10 text-center flex-grow">{calloutTitle}</span>
               <svg
                 className="relative z-10 w-5 h-5 transition-transform duration-200 transform"
                 fill="none"
@@ -435,7 +485,7 @@ export function renderMarkdown(ast) {
         return (
           <div
             key={`feature-${index}`}
-            className="rounded-lg my-4 overflow-hidden w-fit max-w-full mx-auto"
+            className="rounded-lg my-4 overflow-hidden w-full max-w-3xl mx-auto"
             style={{ border: `1px dashed ${variant.color}` }}
           >
             <div
@@ -459,6 +509,35 @@ export function renderMarkdown(ast) {
             </div>
           </div>
         );
+
+      case "table":
+        return (
+          <div key={`table-wrap-${index}`} className="overflow-x-auto">
+            <table key={`table-${index}`} className={styleMap.table}>
+              <thead>
+                <tr>
+                  {node.headers.map((header, i) => (
+                    <th key={`th-${i}`} className={styleMap.tableHeader}>
+                      {renderMarkdown(header)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {node.rows.map((row, rowIndex) => (
+                  <tr key={`tr-${rowIndex}`}>
+                    {row.map((cell, cellIndex) => (
+                      <td key={`td-${cellIndex}`} className={styleMap.tableCell}>
+                        {renderMarkdown(cell)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+
       case "codeBlock":
         return (
           <pre key={`pre-${index}`} className={styleMap.codeBlock}>
