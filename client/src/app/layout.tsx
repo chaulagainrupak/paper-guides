@@ -6,6 +6,8 @@ import LoginLink from "./loginLink";
 import SiteFooter from "./footer";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+
 export const metadata: Metadata = {
   title: "Paper Guides",
   description: "Free exam preparation resources, Notes, Past-Papers, Question",
@@ -37,7 +39,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
-     crossOrigin="anonymous"></script>
+          crossOrigin="anonymous"></script>
         <script
           type="text/javascript"
           id="MathJax-script"
@@ -100,7 +102,7 @@ export default function RootLayout({
 
         <ThemeToggleButton />
 
-        <main className="flex-grow"><Analytics/>{children}</main>
+        <main className="flex-grow"><Analytics /><SpeedInsights />{children}</main>
 
         <SiteFooter />
       </body>
