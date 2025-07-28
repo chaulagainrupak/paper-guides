@@ -91,10 +91,69 @@ export default function PaperViewerClient({
           <BackButton />
         </div>
 
-        {isMobile ? (
-          <div>
-            if (questionBlobUrl) {
-              <iframe src={questionBlobUrl || "eh"}>
+        <>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const currentBlob = showSolution
+                    ? markSchemeBlobUrl
+                    : questionBlobUrl;
+                  if (currentBlob) window.open(currentBlob, "_blank");
+                }}
+                className="bg-[var(--green-highlight)] text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition"
+              >
+                {showSolution
+                  ? "View solution in fullscreen"
+                  : "View question in fullscreen"}
+              </button>
+
+              <button
+                onClick={() => {
+                  const blobUrl = showSolution
+                    ? markSchemeBlobUrl
+                    : questionBlobUrl;
+                  if (!blobUrl) return;
+
+                  const link = document.createElement("a");
+                  link.href = blobUrl;
+                  link.download = showSolution
+                    ? "solution.pdf"
+                    : "question.pdf";
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }}
+                className={`${showSolution
+                  ? "bg-[var(--pink-highlight)]"
+                  : "bg-[var(--blue-highlight)]"
+                  } text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition`}
+              >
+                ⬇️ Download PDF
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowSolution(!showSolution)}
+              className={`${showSolution
+                ? "bg-[var(--pink-highlight)]"
+                : "bg-[var(--blue-highlight)]"
+                } text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition`}
+            >
+              {showSolution ? "Show Question" : "Show Solution"}
+            </button>
+          </div>
+
+          <object
+            data={
+              showSolution ? markSchemeBlobUrl ?? undefined : questionBlobUrl ?? undefined
+            }
+            type="application/pdf"
+            className="w-full h-full border rounded shadow"
+          >
+            <div className="text-center mt-4 text-gray-700">
+              Your browser does not support inline PDF viewing. Use the buttons above OR download the pdf.
+              <div className="flex flex-col">
                 <button
                   onClick={() => {
                     if (questionBlobUrl) window.open(questionBlobUrl, "_blank");
@@ -103,11 +162,7 @@ export default function PaperViewerClient({
                 >
                   📄 Open Question Paper in new tab
                 </button>
-              </iframe>
-            }
 
-            if (markSchemeBlobUrl) {
-              <iframe src={markSchemeBlobUrl || "eh"}>
                 <button
                   onClick={() => {
                     if (markSchemeBlobUrl) window.open(markSchemeBlobUrl, "_blank");
@@ -116,76 +171,10 @@ export default function PaperViewerClient({
                 >
                   ✅ Open Mark Scheme in new tab
                 </button>
-              </iframe>
-            }
-          </div>
-        ) : (
-          <>
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    const currentBlob = showSolution
-                      ? markSchemeBlobUrl
-                      : questionBlobUrl;
-                    if (currentBlob) window.open(currentBlob, "_blank");
-                  }}
-                  className="bg-[var(--green-highlight)] text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition"
-                >
-                  {showSolution
-                    ? "View solution in fullscreen"
-                    : "View question in fullscreen"}
-                </button>
-
-                <button
-                  onClick={() => {
-                    const blobUrl = showSolution
-                      ? markSchemeBlobUrl
-                      : questionBlobUrl;
-                    if (!blobUrl) return;
-
-                    const link = document.createElement("a");
-                    link.href = blobUrl;
-                    link.download = showSolution
-                      ? "solution.pdf"
-                      : "question.pdf";
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                  }}
-                  className={`${showSolution
-                    ? "bg-[var(--pink-highlight)]"
-                    : "bg-[var(--blue-highlight)]"
-                    } text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition`}
-                >
-                  ⬇️ Download PDF
-                </button>
               </div>
-
-              <button
-                onClick={() => setShowSolution(!showSolution)}
-                className={`${showSolution
-                  ? "bg-[var(--pink-highlight)]"
-                  : "bg-[var(--blue-highlight)]"
-                  } text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition`}
-              >
-                {showSolution ? "Show Question" : "Show Solution"}
-              </button>
             </div>
-
-            <object
-              data={
-                showSolution ? markSchemeBlobUrl ?? undefined : questionBlobUrl ?? undefined
-              }
-              type="application/pdf"
-              className="w-full h-full border rounded shadow"
-            >
-              <div className="text-center mt-4 text-gray-700">
-                Your browser does not support inline PDF viewing. Use the buttons above.
-              </div>
-            </object>
-          </>
-        )}
+          </object>
+        </>
       </div>
     </div>
   );
