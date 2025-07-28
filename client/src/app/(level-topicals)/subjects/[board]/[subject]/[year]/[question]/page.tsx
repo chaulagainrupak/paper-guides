@@ -92,24 +92,32 @@ export default function PaperViewerClient({
         </div>
 
         {isMobile ? (
-          <div className="flex flex-col gap-4 mt-6">
-            <button
-              onClick={() => {
-                if (questionBlobUrl) window.open(questionBlobUrl, "_blank");
-              }}
-              className="bg-[var(--blue-highlight)] text-white text-xl font-bold py-3 rounded-lg hover:opacity-80 transition"
-            >
-              📄 Open Question Paper in new tab
-            </button>
+          <div>
+            if (questionBlobUrl) {
+              <iframe src={questionBlobUrl || "eh"}>
+                <button
+                  onClick={() => {
+                    if (questionBlobUrl) window.open(questionBlobUrl, "_blank");
+                  }}
+                  className="bg-[var(--blue-highlight)] text-white text-xl font-bold py-3 rounded-lg hover:opacity-80 transition"
+                >
+                  📄 Open Question Paper in new tab
+                </button>
+              </iframe>
+            }
 
-            <button
-              onClick={() => {
-                if (markSchemeBlobUrl) window.open(markSchemeBlobUrl, "_blank");
-              }}
-              className="bg-[var(--pink-highlight)] text-white text-xl font-bold py-3 rounded-lg hover:opacity-80 transition"
-            >
-              ✅ Open Mark Scheme in new tab
-            </button>
+            if (markSchemeBlobUrl) {
+              <iframe src={markSchemeBlobUrl || "eh"}>
+                <button
+                  onClick={() => {
+                    if (markSchemeBlobUrl) window.open(markSchemeBlobUrl, "_blank");
+                  }}
+                  className="bg-[var(--pink-highlight)] text-white text-xl font-bold py-3 rounded-lg hover:opacity-80 transition"
+                >
+                  ✅ Open Mark Scheme in new tab
+                </button>
+              </iframe>
+            }
           </div>
         ) : (
           <>
@@ -145,11 +153,10 @@ export default function PaperViewerClient({
                     link.click();
                     document.body.removeChild(link);
                   }}
-                  className={`${
-                    showSolution
-                      ? "bg-[var(--pink-highlight)]"
-                      : "bg-[var(--blue-highlight)]"
-                  } text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition`}
+                  className={`${showSolution
+                    ? "bg-[var(--pink-highlight)]"
+                    : "bg-[var(--blue-highlight)]"
+                    } text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition`}
                 >
                   ⬇️ Download PDF
                 </button>
@@ -157,11 +164,10 @@ export default function PaperViewerClient({
 
               <button
                 onClick={() => setShowSolution(!showSolution)}
-                className={`${
-                  showSolution
-                    ? "bg-[var(--pink-highlight)]"
-                    : "bg-[var(--blue-highlight)]"
-                } text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition`}
+                className={`${showSolution
+                  ? "bg-[var(--pink-highlight)]"
+                  : "bg-[var(--blue-highlight)]"
+                  } text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition`}
               >
                 {showSolution ? "Show Question" : "Show Solution"}
               </button>
