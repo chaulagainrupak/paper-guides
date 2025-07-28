@@ -93,7 +93,8 @@ export default function PaperViewerClient({
 
         <>
           <div className="flex justify-between items-center mb-6">
-            <div className="flex gap-2">
+
+            {!isMobile ? (<div className="flex gap-2">
               <button
                 onClick={() => {
                   const currentBlob = showSolution
@@ -131,7 +132,7 @@ export default function PaperViewerClient({
               >
                 ⬇️ Download PDF
               </button>
-            </div>
+            </div>) : (null)}
 
             <button
               onClick={() => setShowSolution(!showSolution)}
