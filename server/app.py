@@ -34,7 +34,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 
 DATABASE_PATH = "instance/paper-guides.db"
 
-# Init FastAPI app
 app = FastAPI()
 
 # Enable CORS
@@ -83,6 +82,9 @@ def hashPassword(password):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
 
+@app.get('/')
+def index():
+    return {'details': 'were online'}
 @app.get('/config')
 def config():
     return CONFIG
