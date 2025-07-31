@@ -93,13 +93,51 @@ export default function PaperViewerClient({
 
         <>
           {!isMobile ? (<div className="flex justify-between items-center mb-6">
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const currentBlob = showSolution
+                    ? markSchemeBlobUrl
+                    : questionBlobUrl;
+                  if (currentBlob) window.open(currentBlob, "_blank");
+                }}
+                className="bg-[var(--green-highlight)] text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition"
+              >
+                {showSolution
+                  ? "View solution in fullscreen"
+                  : "View question in fullscreen"}
+              </button>
 
+              <button
+                onClick={() => {
+                  const blobUrl = showSolution
+                    ? markSchemeBlobUrl
+                    : questionBlobUrl;
+                  if (!blobUrl) return;
+
+                  const link = document.createElement("a");
+                  link.href = blobUrl;
+                  link.download = showSolution
+                    ? "solution.pdf"
+                    : "question.pdf";
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }}
+                className={`${showSolution
+                    ? "bg-[var(--pink-highlight)]"
+                    : "bg-[var(--blue-highlight)]"
+                  } text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition`}
+              >
+                ⬇️ Download PDF
+              </button>
+            </div>
 
             <button
               onClick={() => setShowSolution(!showSolution)}
               className={`${showSolution
-                ? "bg-[var(--pink-highlight)]"
-                : "bg-[var(--blue-highlight)]"
+                  ? "bg-[var(--pink-highlight)]"
+                  : "bg-[var(--blue-highlight)]"
                 } text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition`}
             >
               {showSolution ? "Show Question" : "Show Solution"}
