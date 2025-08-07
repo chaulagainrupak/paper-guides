@@ -1,12 +1,5 @@
 User-agent: *
 Disallow: /admin
-Disallow: api.paperguides.org
+Disallow: /api
 
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: *
-Disallow: /
+Sitemap: https://api.paperguides.org/sitemap.xml
