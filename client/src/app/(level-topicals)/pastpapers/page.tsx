@@ -4,7 +4,7 @@ import PastPapersPage from "./pastPaperPage";
 export default async function FetchPastPapers() {
   try {
     const apiUrl = getApiUrl(isLocalhost());
-    const response = await fetch(apiUrl + "/pastpapers", { cache: "no-store" });
+    const response = await fetch(apiUrl + "/pastpapers", { cache: "default" });
 
     const boardsData = await response.json();
 
