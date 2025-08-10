@@ -2,7 +2,9 @@
 
 # NEB Education Materials Provider
 
-Open-source project providing free educational materials for Nepal Education Board (NEB) students. This platform hosts PDFs, images, and study resources to aid students in their studies. It includes features for generating question papers, submitting question images, and rating them based on difficulty.
+Open-source project providing free educational materials for Nepal Education Board (NEB) students. This platform hosts PDFs, images, and study resources to aid students in their studies. It includes features for generating question papers, submitting question images, and rating them based on difficulty. It also provides resources for A - Level including Question papers, Past papers and Notes.
+
+
 
 
 ## Features
@@ -22,6 +24,7 @@ Open-source project providing free educational materials for Nepal Education Boa
 SECRET_KEY=your_secret_key_here
 TURNSTILE_SECRET_KEY=key_here
 ```
+
 
 ## License
 
