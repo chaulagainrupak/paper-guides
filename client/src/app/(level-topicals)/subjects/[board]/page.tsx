@@ -1,9 +1,18 @@
 import { getApiUrl, isLocalhost } from "@/app/config";
 import SubjectsPage from "./boardsPage";
+import { Metadata } from "next";
 
 interface PageProps {
   params: Promise<{ board: string }>;
 }
+
+
+export async function generateMetadata({params}: PageProps): Promise<Metadata>{
+    return {
+        title: `Available subjects for ${decodeURIComponent((await params).board)} | Paper Guidess`
+    }
+}
+
 export default async function fetchSubjects({ params }: PageProps) {
   const { board } = await params;
 

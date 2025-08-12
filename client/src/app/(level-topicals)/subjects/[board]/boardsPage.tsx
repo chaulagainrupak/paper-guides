@@ -8,6 +8,8 @@ interface SubjetcsProps {
     "board": string,
     "subjects": [],
 }
+
+
 export default function SubjectsPage({ board ,subjects }: SubjetcsProps) {
     const pathname = usePathname();
     return (

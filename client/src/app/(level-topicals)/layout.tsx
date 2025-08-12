@@ -1,12 +1,11 @@
 import { Metadata } from "next";
-import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Paper Guides",
+  title: "Paper Guides | Past Papers ",
   description: "Free exam preparation resources, Notes, Past-Papers, Question",
   icons: "/images/logo.ico",
   openGraph: {
-    title: "Paper Guides",
+    title: "Paper Guides | Past Papers",
     description: "Access Past-Papers for free!.",
     url: "https://paperguides.org/notes",
     siteName: "Paper Guides",

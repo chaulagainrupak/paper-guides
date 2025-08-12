@@ -1,5 +1,6 @@
 import { getApiUrl, isLocalhost } from "@/app/config";
 import QuestionLinks from "./questionLinksPage";
+import { Metadata } from "next";
 
 interface PageProps {
   params: Promise<{
@@ -7,6 +8,15 @@ interface PageProps {
     year: string;
   }>;
 }
+
+
+export async function generateMetadata({params}: PageProps): Promise<Metadata>{
+    return {
+        title: `Available papers for  ${decodeURIComponent((await params).subject)} at ${decodeURIComponent((await params).year)} | Paper Guides`
+    }
+}
+
+
 export default async function getQuestionLinks({ params }: PageProps) {
   try {
     const { subject, year } = await params;

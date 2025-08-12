@@ -1,8 +1,16 @@
 import { getApiUrl, isLocalhost } from "@/app/config";
 import SingleBoardLevel from "./subjectYears";
+import { Metadata } from "next";
 
 interface PageProps {
   params: Promise<{ subject: string }>;
+}
+
+
+export async function generateMetadata({params}: PageProps): Promise<Metadata>{
+    return {
+        title: `Available years for ${decodeURIComponent((await params).subject)} | Paper Guides`
+    }
 }
 
 export default async function getYearData({ params }: PageProps) {

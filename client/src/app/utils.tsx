@@ -109,19 +109,7 @@ export function BackButton() {
   const router = useRouter();
 
   const handleClick = () => {
-    try {
-      const nav = window.document.getElementById("notes-navigation");
-      nav!.innerHTML = "";
-    } catch {}
-
-    if (
-      document.referrer &&
-      document.referrer.startsWith(window.location.origin)
-    ) {
-      router.back();
-    } else {
-      router.push("/");
-    }
+    router.back();
   };
 
   return (
