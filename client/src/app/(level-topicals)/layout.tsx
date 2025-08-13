@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-
+import Script from "next/script";
 export const metadata: Metadata = {
   title: "Paper Guides | Past Papers ",
   description: "Free exam preparation resources, Notes, Past-Papers, Question",
@@ -29,10 +29,6 @@ export default function LevelsLayout({
 }) {
   return (
     <div className="mt-[64] h-auto px-6 py-6 flex xl:flex-row flex-col gap-6">
-      <script
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
-        crossOrigin="anonymous"
-      />
 
       <div className="bg-[var(--baby-powder)] h-full xl:w-4/3 shadow-xl rounded-md p-6">
         <main>{children}</main>

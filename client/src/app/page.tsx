@@ -27,6 +27,7 @@ export default function HomePage() {
         {/* Card 1 */}
         <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
           <Image
+          loading="lazy"
             src="/images/compressed_past-papers.webp"
             alt="Past Papers"
             width={600}
@@ -50,6 +51,7 @@ export default function HomePage() {
         {/* Card 2 */}
         <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
           <Image
+          loading="lazy"
             src="/images/compressed_question-generator.webp"
             alt="Question Generator"
             width={600}
@@ -73,6 +75,7 @@ export default function HomePage() {
         {/* Card 4 */}
         <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
           <Image
+          loading="lazy"
             src="/images/compressed_notes.webp"
             alt="Notes"
             width={600}
@@ -96,6 +99,7 @@ export default function HomePage() {
         {/* Card 3 */}
         {/* <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
           <Image
+          loading="lazy"
             src="/images/compressed_topicals.webp"
             alt="Topical Papers"
             width={600}

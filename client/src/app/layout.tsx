@@ -38,19 +38,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
-          crossOrigin="anonymous"></script>
-        <script
-          type="text/javascript"
-          id="MathJax-script"
-          async
-          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-        ></script>
+      <Script
+        strategy="lazyOnload"
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
+        crossOrigin="anonymous"
+      />
 
-        <script
+        <Script
+          strategy="lazyOnload"
           src="https://www.googletagmanager.com/gtag/js?id=G-2B6JNCMRZ4"
         />
-        <script id="ga-init">
+        
+        <Script id="ga-init" strategy="lazyOnload"> 
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){ dataLayer.push(arguments); }
@@ -58,7 +57,7 @@ export default function RootLayout({
             gtag('config', 'G-2B6JNCMRZ4');
             gtag('config', 'G-SZDFC8YDWK');
           `}
-        </script>
+        </Script>
       </head>
       <body className="flex flex-col min-h-screen">
         <nav className="bg-[var(--color-nav)] fixed top-0 w-full z-50 shadow-sm h-16">

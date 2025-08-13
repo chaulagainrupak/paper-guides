@@ -1,5 +1,4 @@
 User-agent: *
 Disallow: /admin
-Disallow: /api
 
-Sitemap: https://api.paperguides.org/sitemap.xml
+Sitemap: https://paperguides.org/sitemap.xml

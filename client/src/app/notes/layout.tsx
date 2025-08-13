@@ -30,10 +30,15 @@ export default function LevelsLayout({
 }) {
   return (
     <div className="mt-16 flex flex-col xl:flex-row gap-4 px-6 py-6 min-h-full">
-        <script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
-          crossOrigin="anonymous"
-        />
+              <Script
+              strategy="lazyOnload"
+              
+          type="text/javascript"
+          id="MathJax-script"
+          async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+        ></Script>
+
       <div className="bg-[var(--baby-powder)] xl:w-full shadow-xl rounded-md p-6 min-h-full">
         <main>{children}</main>
       </div>
