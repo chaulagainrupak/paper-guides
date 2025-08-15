@@ -452,10 +452,11 @@ def getNote(subject: str, topic: str) -> dict:
                         #    WHERE uuid = ?''', (uuid,))
             # conn.commit()
         
-        return "No Data!"
+        return '''# No Note Data found! Want to help curate notes for this topic? Join our discord server and submit your notes!'''
+
     except Exception as e:
         logger.error(f"Error getting note: {e}")
-        return '''#No Note Data found! Want to help curate notes for this topic? Join our discord server and submit your notes!'''
+        return '''# No Note Data found! Want to help curate notes for this topic? Join our discord server and submit your notes!'''
 
     finally:
         if conn:
