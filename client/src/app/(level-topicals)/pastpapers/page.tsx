@@ -3,17 +3,19 @@ import PastPapersPage from "./pastPaperPage";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Past Papers | Paper Guides",
-  description: "Free exam preparation resources, Notes, Past-Papers, Question",
+  title: "Paper Guides | Past Papers ",
+  description:
+    "Free exam preparation resources, Notes, Past-Papers, Question Papers, and more.  Find past papers for O-Level, A-Levels, NEB / TU / IOE and more.",
   icons: "/images/logo.ico",
   openGraph: {
-    title: "Paper Guides | Past Papers ",
-    description: "Free exam preparation resources for students and learners.",
-    url: "https://paperguides.org",
+    title: "Paper Guides | Past Papers",
+    description:
+      "Free exam preparation resources, Notes, Past-Papers, Question Papers, and more. Find past papers for O-Level, A-Levels, NEB / TU / IOEand more.",
+    url: "https://paperguides.org/pastpapers",
     siteName: "Paper Guides",
     images: [
       {
-        url: "/images/opg_paper_guides.png",
+        url: "/images/past_papers.png",
         width: 1200,
         height: 720,
         alt: "Paper Guides Open Graph Image",
@@ -23,7 +25,6 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
-
 
 export default async function FetchPastPapers() {
   try {

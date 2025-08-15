@@ -1,17 +1,18 @@
 import { Metadata } from "next";
-import Script from "next/script";
 export const metadata: Metadata = {
   title: "Paper Guides | Past Papers ",
-  description: "Free exam preparation resources, Notes, Past-Papers, Question",
+  description:
+    "Free exam preparation resources, Notes, Past-Papers, Question Papers, and more.  Find past papers for O-Level, A-Levels, NEB / TU / IOE and more.",
   icons: "/images/logo.ico",
   openGraph: {
     title: "Paper Guides | Past Papers",
-    description: "Access Past-Papers for free!.",
-    url: "https://paperguides.org/notes",
+    description:
+      "Free exam preparation resources, Notes, Past-Papers, Question Papers, and more. Find past papers for O-Level, A-Levels, NEB / TU / IOEand more.",
+    url: "https://paperguides.org/topicals",
     siteName: "Paper Guides",
     images: [
       {
-        url: "/images/past_papers.png",
+        url: "/images/topicals.png",
         width: 1200,
         height: 720,
         alt: "Paper Guides Open Graph Image",
@@ -29,7 +30,6 @@ export default function LevelsLayout({
 }) {
   return (
     <div className="mt-[64] h-auto px-6 py-6 flex xl:flex-row flex-col gap-6">
-
       <div className="bg-[var(--baby-powder)] h-full xl:w-4/3 shadow-xl rounded-md p-6">
         <main>{children}</main>
       </div>

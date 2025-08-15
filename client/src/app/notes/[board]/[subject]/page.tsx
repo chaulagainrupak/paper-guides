@@ -1,6 +1,24 @@
 import { getApiUrl, isLocalhost } from "@/app/config";
 import TopicsPage from "./TopicsPage";
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Paper Guides | Topics",
+  description:
+    "Free exam preparation resources, Notes, Past-Papers, Question Papers, and more. Find topics for O-Level, A-Levels, NEB / TU / IOE and more.",
+  icons: "/images/logo.ico",
+  openGraph: {
+    title: "Paper Guides | Topics",
+    description:
+      "Free exam preparation resources, Notes, Past-Papers, Question Papers, and more. Find topics for O-Level, A-Levels, NEB / TU / IOE and more.",
+    url: "https://paperguides.org/notes",
+    siteName: "Paper Guides",
+    locale: "en_US",
+    type: "website",
+  },
+};
+
 interface PageProps {
   params: Promise<{ subject: string }>;
 }

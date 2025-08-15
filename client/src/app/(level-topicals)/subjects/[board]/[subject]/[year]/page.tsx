@@ -9,13 +9,38 @@ interface PageProps {
   }>;
 }
 
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  return {
+    title: `Available papers for  ${decodeURIComponent(
+      (await params).subject
+    )} at ${decodeURIComponent((await params).year)} | Paper Guides`,
 
-export async function generateMetadata({params}: PageProps): Promise<Metadata>{
-    return {
-        title: `Available papers for  ${decodeURIComponent((await params).subject)} at ${decodeURIComponent((await params).year)} | Paper Guides`
-    }
+    description: `Explore the available papers for ${decodeURIComponent(
+      (await params).subject
+    )} at ${decodeURIComponent(
+      (await params).year
+    )}. Find past papers, notes, and resources to help you prepare for your exams.`,
+    icons: "/images/logo.ico",
+    openGraph: {
+      title: `Available papers for  ${decodeURIComponent(
+        (await params).subject
+      )} at ${decodeURIComponent((await params).year)} | Paper Guides`,
+      description: `Explore the available papers for ${decodeURIComponent(
+        (await params).subject
+      )} at ${decodeURIComponent(
+        (await params).year
+      )}. Find past papers, notes, and resources to help you prepare for your exams.`,
+      url: `https://paperguides.org/subjects/${decodeURIComponent(
+        (await params).subject
+      )}/${decodeURIComponent((await params).year)}`,
+      siteName: "Paper Guides",
+      locale: "en_US",
+      type: "website",
+    },
+  };
 }
-
 
 export default async function getQuestionLinks({ params }: PageProps) {
   try {
@@ -58,8 +83,8 @@ export default async function getQuestionLinks({ params }: PageProps) {
       });
     }
 
-    return (<QuestionLinks subject={subject} groupedPapers={grouped}/>)
+    return <QuestionLinks subject={subject} groupedPapers={grouped} />;
   } catch (err) {
     console.error("Failed to fetch or group papers:", err);
-  } 
+  }
 }

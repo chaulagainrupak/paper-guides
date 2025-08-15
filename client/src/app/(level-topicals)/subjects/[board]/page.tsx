@@ -6,11 +6,32 @@ interface PageProps {
   params: Promise<{ board: string }>;
 }
 
-
-export async function generateMetadata({params}: PageProps): Promise<Metadata>{
-    return {
-        title: `Available subjects for ${decodeURIComponent((await params).board)} | Paper Guidess`
-    }
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  return {
+    title: `Available subjects for ${decodeURIComponent(
+      (await params).board
+    )} | Paper Guidess`,
+    description: `Explore the subjects available for ${decodeURIComponent(
+      (await params).board
+    )}. Find past papers, notes, and resources to help you prepare for your exams.`,
+    icons: "/images/logo.ico",
+    openGraph: {
+      title: `Available subjects for ${decodeURIComponent(
+        (await params).board
+      )} | Paper Guides`,
+      description: `Explore the subjects available for ${decodeURIComponent(
+        (await params).board
+      )}. Find past papers, notes, and resources to help you prepare for your exams.`,
+      url: `https://paperguides.org/subjects/${decodeURIComponent(
+        (await params).board
+      )}`,
+      siteName: "Paper Guides",
+      locale: "en_US",
+      type: "website",
+    },
+  };
 }
 
 export default async function fetchSubjects({ params }: PageProps) {
@@ -24,7 +45,7 @@ export default async function fetchSubjects({ params }: PageProps) {
     const data = await response.json();
 
     const sortedSubjects = data.sort((a: any, b: any) =>
-          a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
     );
     return <SubjectsPage board={decodeURI(board)} subjects={sortedSubjects} />;
   } catch {
