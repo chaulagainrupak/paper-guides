@@ -65,7 +65,7 @@ export default function QuestionLinks({subject, topic, noteContent}) {
 
     navigationDest.innerHTML = "";
 
-    const noteContainer = document.getElementById("note-render-dest");
+    const noteContainer = document.getElementById("note-render-section");
     if (!noteContainer) return;
 
     const headings = noteContainer.querySelectorAll("h1, h2, h3, h4, h5, h6");
@@ -83,7 +83,7 @@ export default function QuestionLinks({subject, topic, noteContent}) {
       window.MathJax.typesetClear();
       window.MathJax.typeset();
     }
-  }, [noteContent]);
+  }, []);
 
   return (
     <div className="printable-area mx-2">
