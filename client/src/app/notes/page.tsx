@@ -7,6 +7,14 @@ export const metadata: Metadata = {
   description: "Free exam preparation resources, Notes, Past-Papers, Question Papers, and more. Find notes for O-Level, A-Levels, NEB / TU / IOE and more.",
   icons: "/images/logo.ico",
   openGraph: {
+        images: [
+      {
+        url: "/images/notes.png",
+        width: 1200,
+        height: 720,
+        alt: "Paper Guides Open Graph Image",
+      },
+    ],
     title: "Paper Guides | Notes",
     description: "Free exam preparation resources, Notes, Past-Papers, Question Papers, and more. Find notes for O-Level, A-Levels, NEB / TU / IOEand more.",
     url: "https://paperguides.org/notes",
