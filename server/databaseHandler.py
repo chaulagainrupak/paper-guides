@@ -13,6 +13,7 @@ load_dotenv('.env')
 # Database paths
 DB_PAST_PAPER_PATH = './instance/paper-guides-papers.db'
 DB_QUESTION_GENERATOR_PATH = './instance/paper-guides-questions.db'
+DB_OBJECTIVE_QUESTIONS_PATH = './instance/paper-guides-objective-questions.db'
 DB_NOTES_PATH = './instance/paper-guides-notes.db'
 
 # Initialize logger
@@ -91,8 +92,35 @@ def initializeDatabases():
             rating INTEGER
         )"""
     ]
+
+    objective_questions_queries = [
+        """CREATE TABLE IF NOT EXISTS mcq_questions (
+            id INTEGER PRIMARY KEY,
+            uuid TEXT UNIQUE,
+            subject TEXT,
+            topic TEXT,
+            points INTEGER,
+            board TEXT,
+            level TEXT,
+            component TEXT,
+            question TEXT,
+            answers TEXT,
+            options TEXT,
+            approved BOOLEAN DEFAULT 0,
+            submittedBy TEXT,
+            submittedFrom TEXT,
+            submitDate DATE,
+            approvedBy TEXT,
+            approvedOn DATE
+        )""",
+        """CREATE TABLE IF NOT EXISTS ratings (
+            id INTEGER PRIMARY KEY,
+            user_id TEXT,
+            question_UUID TEXT,
+            rating INTEGER
+        )"""
+    ]
     
-    # Enhanced Notes database schema
     notes_queries = [
         """CREATE TABLE IF NOT EXISTS notes (
             id INTEGER PRIMARY KEY,
@@ -120,6 +148,7 @@ def initializeDatabases():
     
     initializeDatabase(DB_PAST_PAPER_PATH, papers_queries)
     initializeDatabase(DB_QUESTION_GENERATOR_PATH, questions_queries)
+    initializeDatabase(DB_OBJECTIVE_QUESTIONS_PATH, objective_questions_queries)
     initializeDatabase(DB_NOTES_PATH, notes_queries)
 
 # ======================

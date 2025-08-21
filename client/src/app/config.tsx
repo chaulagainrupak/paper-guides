@@ -7,18 +7,13 @@ export function isLocalhost(): boolean {
 }
 
 export function getSiteKey(): string {
-  const localSiteKey = "1x00000000000000000000AA";
-  const prodSiteKey = "0x4AAAAAAA1LsUg4unsYRplP";
-  return isLocalhost() ? localSiteKey : prodSiteKey;
+  return process.env.SITE_KEY || "1x00000000000000000000AA";
 }
 
 export function getApiUrl(isLocal: boolean) {
-  if (isLocal) {
-    return "http://localhost:8000";
-  } else {
-    return "https://api.paperguides.org";
-  }
+  return process.env.API_URL || "http://localhost:8000"; 
 }
+
 
 export function darkModeOn() {
   return localStorage.getItem("darkmode") === "active";

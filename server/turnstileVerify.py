@@ -8,10 +8,10 @@ TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY")
 
 
 def verifyTurnstileToken(token: str) -> bool:
+    if TURNSTILE_SECRET_KEY == "DEV":
+        return True
+
     try:
-        if TURNSTILE_SECRET_KEY == "DEV":
-            return True
-            
         payload = {
             "secret": TURNSTILE_SECRET_KEY,
             "response": token
