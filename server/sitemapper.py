@@ -49,15 +49,12 @@ try:
             continue
         for season in seasons:
             if row[3][4:].replace(' ', '')[1:8].replace('/', '-').lower() == season:
-                #remove tat s in row 5 idiot its fine when supporting a levels but not for otehr boards
                 paperUrl = f"{baseUrl}/subjects/{row[5]}/{row[2]}/{row[3][:4]}/{row[2].lower()}-question-paper-{row[4]}-{row[3][:4]}-{season}".replace(" ", "%20")
-                urlset.append(createUrlNode(paperUrl, changefreq="yearly", priority=0.6))
+                urlset.append(createUrlNode(paperUrl, lastmod=today, changefreq="monthly", priority=0.8))
             continue 
-            
 except Exception as e:
     print("Paper DB Error:", e)
 
-# Add notes
 try:
     connNotes = sqlite3.connect(DB_NOTES)
     cur = connNotes.cursor()
@@ -67,7 +64,7 @@ try:
             continue
         path = f"/notes/{urllib.parse.quote(level)}/{urllib.parse.quote(subject)}/{urllib.parse.quote(topic)}"
         noteUrl = f"{baseUrl}{path}".replace(" ", "%20")
-        urlset.append(createUrlNode(noteUrl, changefreq="monthly", priority=0.8))
+        urlset.append(createUrlNode(noteUrl, lastmod=today, changefreq="monthly", priority=0.8))
 except Exception as e:
     print("Notes DB Error:", e)
 
