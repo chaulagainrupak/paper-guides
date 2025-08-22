@@ -94,31 +94,53 @@ def initializeDatabases():
     ]
 
     objective_questions_queries = [
-        """CREATE TABLE IF NOT EXISTS mcq_questions (
-            id INTEGER PRIMARY KEY,
-            uuid TEXT UNIQUE,
-            subject TEXT,
-            topic TEXT,
-            points INTEGER,
-            board TEXT,
-            level TEXT,
-            component TEXT,
-            question TEXT,
-            answers TEXT,
-            options TEXT,
-            approved BOOLEAN DEFAULT 0,
-            submittedBy TEXT,
-            submittedFrom TEXT,
-            submitDate DATE,
-            approvedBy TEXT,
-            approvedOn DATE
-        )""",
-        """CREATE TABLE IF NOT EXISTS ratings (
-            id INTEGER PRIMARY KEY,
-            user_id TEXT,
-            question_UUID TEXT,
-            rating INTEGER
-        )"""
+    """CREATE TABLE IF NOT EXISTS mcq_questions (
+        id INTEGER PRIMARY KEY,
+        uuid TEXT UNIQUE,
+        subject TEXT,
+        topic TEXT,
+        points INTEGER,
+        board TEXT,
+        level TEXT,
+        component TEXT,
+        question TEXT,
+        answers TEXT,
+        options TEXT,
+        explanation TEXT, 
+        approved INTEGER DEFAULT 0,
+        submittedBy TEXT,
+        submittedFrom TEXT,
+        submitDate INTEGER,
+        approvedBy TEXT,
+        approvedOn INTEGER
+    )""",
+
+    """CREATE TABLE IF NOT EXISTS generated_mcq_questions (
+        id INTEGER PRIMARY KEY,
+        uuid TEXT UNIQUE,
+        generatedTest TEXT,
+        answerKey TEXT,
+        generatedBy TEXT,
+        generatedOn INTEGER,
+        expiresAt INTEGER
+    )""",
+
+    """CREATE TABLE IF NOT EXISTS solved_mcq_questions (
+        id INTEGER PRIMARY KEY,
+        testUuid TEXT,
+        completedBy TEXT,
+        completedOn INTEGER,
+        completedAnswerKey TEXT,
+        score INTEGER,
+        FOREIGN KEY (testUuid) REFERENCES generated_mcq_questions(uuid) ON DELETE SET NULL
+    )""",
+
+    """CREATE TABLE IF NOT EXISTS ratings (
+        id INTEGER PRIMARY KEY,
+        user_id TEXT,
+        question_UUID TEXT,
+        rating INTEGER
+    )"""
     ]
     
     notes_queries = [
