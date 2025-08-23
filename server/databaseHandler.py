@@ -121,8 +121,7 @@ def initializeDatabases():
         generatedTest TEXT,
         answerKey TEXT,
         generatedBy TEXT,
-        generatedOn INTEGER,
-        expiresAt INTEGER
+        generatedOn INTEGE
     )""",
 
     """CREATE TABLE IF NOT EXISTS solved_mcq_questions (

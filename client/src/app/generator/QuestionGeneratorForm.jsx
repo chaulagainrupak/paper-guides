@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, cache } from "react";
 import { getApiUrl, isLocalhost } from "../config";
-import GeneratedPage from './generatedPage';
+import GeneratedPage from "./generatedPage";
+import { isLoggedIn, logOut } from "../utils";
 
 // Utility to toggle checkbox selections
 function toggleCheckbox(value, array, setArray) {
@@ -105,24 +106,49 @@ export default function QuestionGeneratorForm() {
               };
 
               try {
+                const loggedIn = await isLoggedIn();
+                if (!loggedIn) {
+                  alert(
+                    "Please login to generate questions! This restriction is placed to prevent spamming."
+                  );
+                  return;
+                }
+
+                // Retrieve and parse auth token from localStorage
+                const rawToken = localStorage.getItem("authToken");
+                if (!rawToken) {
+                  alert("Authentication token missing. Please login again.");
+                  return;
+                }
+
+                let tokenObj;
+                try {
+                  tokenObj = JSON.parse(rawToken);
+                } catch (err) {
+                  console.error("Invalid token format:", err);
+                  alert("Authentication token corrupted. Please login again.");
+                  return;
+                }
+
                 const res = await fetch(
                   getApiUrl(isLocalhost()) + "/question-gen",
                   {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
-                      "cache" : "no-store",
+                      Authorization: `${tokenObj.tokenType} ${tokenObj.accessToken}`,
+                      cache: "no-store",
                     },
                     body: JSON.stringify(payload),
                   }
                 );
 
-                if(res.status == 200){
-                      const result = await res.json();
-                setGeneratedResult(result);
-                setGenerating(false);
-                }else if(res.status == 401){
-                  alert("No data found for the subject OR topic!");
+                if (res.status === 200) {
+                  const result = await res.json();
+                  setGeneratedResult(result);
+                  setGenerating(false);
+                } else if (res.status === 401) {
+                  alert("Unauthorized or invalid token.");
                 }
               } catch (error) {
                 console.error("Failed to submit form:", error);

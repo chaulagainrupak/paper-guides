@@ -69,8 +69,8 @@ def generateMcqTest(
     board: str,
     level: str,
     totalPoints: int,
-    topics: list = None,
-    mode: str = "test",
+    topics: list,
+    generatedBy: str,
 ):
     conn = None
     try:
@@ -93,7 +93,6 @@ def generateMcqTest(
 
         cursor.execute(query, params)
         rows = cursor.fetchall()
-        print(query, params)
 
         if not rows:
             return {"error": "No questions found for given filters."}
@@ -116,61 +115,59 @@ def generateMcqTest(
                 "topic": topic,
             }
 
-            if mode == "practice":
-                questionObj["options"] = eval(options)
-                questionObj["answers"] = eval(answers)
-            elif mode == "test":
-                testOptions.extend(
-                    random.sample(
-                        eval(options),
-                        (
-                            3
-                            if len(eval(options)) >= 3
-                            else 2 if len(eval(options)) == 2 else 1
-                        ),
-                    )
+            testOptions.extend(
+                random.sample(
+                    eval(options),
+                    (
+                        3
+                        if len(eval(options)) >= 3
+                        else 2 if len(eval(options)) == 2 else 1
+                    ),
                 )
-                correctOption = random.sample(eval(answers), 1)
-                testOptions.extend(correctOption)
-                random.shuffle(testOptions)
-                questionObj["options"] =  testOptions
+            )
+            correctOption = random.sample(eval(answers), 1)
+            testOptions.extend(correctOption)
+            random.shuffle(testOptions)
+            questionObj["options"] = testOptions
 
-                testAnswers.append({"questionUuid": uuidStr, "answer": correctOption})
-                testOptions = []
+            testAnswers.append({"questionUuid": uuidStr, "answer": correctOption})
+            testOptions = []
 
-            selectedQuestions.append(questionObj)
-            accumulatedPoints += points
+        selectedQuestions.append(questionObj)
+        accumulatedPoints += points
 
         testUuid = str(uuid.uuid4())
+        testGenTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         testJson = {
             "testUuid": testUuid,
-            "subject": subjects,
+            "subjects": subjects,
             "board": board,
             "level": level,
             "topics": topics,
             "requestedPoints": totalPoints,
             "finalPoints": accumulatedPoints,
-            "generatedOn": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "mode": mode,
+            "generatedOn": testGenTime,
             "questions": selectedQuestions,
         }
 
         answerJson = {
             "testUuid": testUuid,
-            "subject": subjects,
+            "subjects": subjects,
             "board": board,
             "level": level,
             "topics": topics,
             "requestedPoints": totalPoints,
             "finalPoints": accumulatedPoints,
-            "generatedOn": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "mode": mode,
+            "generatedOn": testGenTime,
             "answers": testAnswers,
         }
-        testHash = hashlib.sha256(str(testJson).encode())
 
-        print(answerJson)
-        return testJson
+        cursor.execute(
+            """ INSERT INTO generated_mcq_questions (uuid, generatedTest, answerKey, generatedBy, generatedOn) VALUES (?,?,?,?,?)""",
+            (testUuid, str(testJson), str(answerJson), generatedBy, testGenTime),
+        )
+        conn.commit()
+        return {"questionSheet": testJson, "answerSheet": answerJson}
 
     except Exception as e:
         print("Error generating test:", e)
@@ -187,7 +184,7 @@ test = generateMcqTest(
     "A Levels",
     "AS level",
     10,
-    topics=["Binomial Expansion"],
-    mode="test",
+    ["Binomial Expansion"],
+    "StupidGut",
 )
 print(test)
