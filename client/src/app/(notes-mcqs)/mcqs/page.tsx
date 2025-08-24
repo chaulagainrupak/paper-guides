@@ -1,4 +1,3 @@
-// "use client";
 import { Metadata } from "next";
 import QuestionGeneratorForm from "./QuestionGeneratorForm.jsx";
 
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
     siteName: "Paper Guides",
     images: [
       {
-        url: "/images/opg_question_generator.png",
+        url: "/images/opg_mcqs_question_generator.png",
         width: 1200,
         height: 720,
         alt: "Paper Guides Open Graph Image",
@@ -26,12 +25,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
+export default async function mcqsPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-6xl p-6">
-        <QuestionGeneratorForm />
-      </div>
+    <div >
+      <QuestionGeneratorForm />
     </div>
   );
 }

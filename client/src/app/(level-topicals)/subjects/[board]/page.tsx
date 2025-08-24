@@ -30,6 +30,14 @@ export async function generateMetadata({
       siteName: "Paper Guides",
       locale: "en_US",
       type: "website",
+      images: [
+        {
+          url: "/images/past_papers.png",
+          width: 1200,
+          height: 720,
+          alt: "Paper Guides Open Graph Image",
+        },
+      ],
     },
   };
 }

@@ -1,7 +1,6 @@
-import { redirect, useRouter } from "next/navigation";
+
+import { redirect } from "next/navigation";
 import { getApiUrl, isLocalhost } from "./config";
-import { useEffect, useMemo } from "react";
-import { jsx } from "react/jsx-runtime";
 
 export async function isLoggedIn() {
   const accessToken = localStorage.getItem("authToken");
@@ -106,10 +105,9 @@ export function Loader() {
 }
 
 export function BackButton() {
-  const router = useRouter();
 
   const handleClick = () => {
-    router.back();
+    history.back();
   };
 
   return (

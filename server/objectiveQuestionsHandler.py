@@ -64,16 +64,17 @@ def insertMcqQuestion(
             conn.close()
 
 
+# i've removed levels too
 def generateMcqTest(
     subjects: list,
     board: str,
-    level: str,
     totalPoints: int,
     topics: list,
     generatedBy: str,
 ):
     conn = None
     try:
+
         conn = sqlite3.connect(DB_OBJECTIVE_QUESTIONS_PATH)
         cursor = conn.cursor()
 
@@ -85,9 +86,9 @@ def generateMcqTest(
         if board:
             query += " AND board = ?"
             params.append(board.lower())
-        if level:
-            query += " AND level = ?"
-            params.append(level.lower())
+        # if level:
+        #     query += " AND level = ?"
+        #     params.append(level.lower())
         if topics:
             query += f" AND topic IN ({', '.join([f'\'{topic.lower()}\'' for topic in topics])})"
 
@@ -142,7 +143,7 @@ def generateMcqTest(
             "testUuid": testUuid,
             "subjects": subjects,
             "board": board,
-            "level": level,
+            # "level": level,
             "topics": topics,
             "requestedPoints": totalPoints,
             "finalPoints": accumulatedPoints,
@@ -154,7 +155,7 @@ def generateMcqTest(
             "testUuid": testUuid,
             "subjects": subjects,
             "board": board,
-            "level": level,
+            # "level": level,
             "topics": topics,
             "requestedPoints": totalPoints,
             "finalPoints": accumulatedPoints,
@@ -179,12 +180,12 @@ def generateMcqTest(
 
 # insertMcqQuestion("A Levels", "Mathematics (9709)", "Binomial Expansion", 2, "AS level", 12, "Expand  this thing man...", ["correct1", "correct2", "correct3"], ["wronfg3", "wronfg2", "wronfg1", "wronfg4", "wronfg5"], "As this is the most bullshit thing and what not", "0.0.0.0", "usera")
 
-test = generateMcqTest(
-    ["Mathematics (9709)"],
-    "A Levels",
-    "AS level",
-    10,
-    ["Binomial Expansion"],
-    "StupidGut",
-)
-print(test)
+# test = generateMcqTest(
+#     ["Mathematics (9709)"],
+#     "A Levels",
+#     "AS level",
+#     10,
+#     ["Binomial Expansion"],
+#     "StupidGut",
+# )
+# print(test)

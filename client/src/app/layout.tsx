@@ -5,16 +5,19 @@ import ThemeToggleButton from "./themeToggle";
 import LoginLink from "./loginLink";
 import SiteFooter from "./footer";
 import Script from "next/script";
-import { Analytics } from "@vercel/analytics/next"
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { isLoggedIn, logOut } from "./utils";
 
 export const metadata: Metadata = {
-  title: "Paper Guides",
-  description: "Free exam preparation resources, Notes, Past-Papers, Question",
+  title: "Paper Guides | Past Papers ",
+  description:
+    "Free exam preparation resources, Notes, Past-Papers, Question Papers, Question Generator, MCQs practice and more.  Find past papers for O-Level, A-Levels, NEB / TU / IOE and more.",
   icons: "/images/logo.ico",
   openGraph: {
-    title: "Paper Guides",
-    description: "Free exam preparation resources for students and learners.",
+    title: "Paper Guides | Past Papers",
+    description:
+      "Free exam preparation resources, Notes, Past-Papers, Question Papers, Question Generator, MCQs practice and more. Find past papers for O-Level, A-Levels, NEB / TU / IOEand more.",
     url: "https://paperguides.org",
     siteName: "Paper Guides",
     images: [
@@ -30,6 +33,7 @@ export const metadata: Metadata = {
   },
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -38,18 +42,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-      <Script
-        strategy="lazyOnload"
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
-        crossOrigin="anonymous"
-      />
+        <Script
+          strategy="lazyOnload"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
+          crossOrigin="anonymous"
+        />
 
         <Script
           strategy="lazyOnload"
           src="https://www.googletagmanager.com/gtag/js?id=G-2B6JNCMRZ4"
         />
-        
-        <Script id="ga-init" strategy="lazyOnload"> 
+
+        <Script id="ga-init" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){ dataLayer.push(arguments); }
@@ -70,9 +74,12 @@ export default function RootLayout({
               <Link href="/pastpapers">Past Papers</Link>
               <Link href="/notes">Notes</Link>
               <Link href="/generator">Question Generator</Link>
+              <Link href="/mcqs">MCQs Generator</Link>
             </div>
 
             <div className="flex gap-4 hidden xl:flex">
+              <LoginLink />
+
               <Link href="/about" className="text-[var(--pink-highlight)]">
                 About
               </Link>
@@ -91,6 +98,9 @@ export default function RootLayout({
                 <Link href="/pastpapers">Past Papers</Link>
                 <Link href="/notes">Notes</Link>
                 <Link href="/generator">Question Generator</Link>
+                <Link href="/mcqs">MCQs Generator</Link>
+
+                <LoginLink />
                 <Link href="/about" className="text-[var(--pink-highlight)]">
                   About
                 </Link>
@@ -101,7 +111,11 @@ export default function RootLayout({
 
         <ThemeToggleButton />
 
-        <main className="flex-grow"><Analytics /><SpeedInsights />{children}</main>
+        <main className="flex-grow">
+          <Analytics />
+          <SpeedInsights />
+          {children}
+        </main>
 
         <SiteFooter />
       </body>

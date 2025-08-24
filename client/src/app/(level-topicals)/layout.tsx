@@ -8,11 +8,11 @@ export const metadata: Metadata = {
     title: "Paper Guides | Past Papers",
     description:
       "Free exam preparation resources, Notes, Past-Papers, Question Papers, and more. Find past papers for O-Level, A-Levels, NEB / TU / IOEand more.",
-    url: "https://paperguides.org/topicals",
+    url: "https://paperguides.org",
     siteName: "Paper Guides",
     images: [
       {
-        url: "/images/topicals.png",
+        url: "/images/past_papers.png",
         width: 1200,
         height: 720,
         alt: "Paper Guides Open Graph Image",
