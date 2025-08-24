@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Form, HTTPException, Depends, Request, Form, File,  UploadFile
 
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from jose import jwt
 from datetime import datetime, timedelta
@@ -105,7 +105,7 @@ async def getSubjects(board: str, optional_level=None):
     if board.lower() in ["a levels", "as level", "a level", "as levels"]:
         return CONFIG["A Levels"]["subjects"]
     else:
-        for key in config:
+        for key in CONFIG:
             if key.lower() == board.lower():
                 return CONFIG[key]["subjects"]
     raise HTTPException(status_code=404, detail="Board not found")
@@ -453,6 +453,27 @@ async def postNote(request: Request):
 @app.post('/question-gen')
 async def getQuestions(request: Request):
     try:
+        authHeader = request.headers.get("authorization")
+
+        if not authHeader or not authHeader.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+
+        token = authHeader.split(" ")[1]
+        tokenData = jwt.decode(token, SECRET_KEY)
+
+        username = tokenData["username"]
+        email = tokenData["email"]
+        exp = tokenData["exp"]
+        if exp < time.time():
+            return {"message": "token expired"}, 429
+
+        cur.execute("SELECT * FROM users WHERE username = ? AND email  = ? ", (username,email))
+        user = cur.fetchone()
+        conn.close()
+
+        if not user:
+            raise HTTPException(status_code=401, detail="You need to have a valid account to generate questions")
+        
         body = await request.json()
 
         board = body.get("board")
@@ -469,14 +490,13 @@ async def getQuestions(request: Request):
             )
 
         result = getQuestionsForGen(board, subject, level, topics, components, difficulties)
-
         if len(result) == 0:
-            return HTTPException(
-                status_code= 401,
-                detail={"error": "No data found!"},
+            return JSONResponse(
+                status_code= 404,
+                content={"error": "No data found!"},
             )
-
-        return result
+        else:
+            return result
 
     except Exception as e:
         print(f"Error in /question-gen: {e}")

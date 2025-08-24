@@ -32,8 +32,9 @@ export default async function fetchTopics({ params }: PageProps) {
       { cache: "no-store" }
     );
     const result = await response.json();
-    const topics = result[0]["topics"];
-
+    const topics = result[0]["topics"].sort((a: any, b: any) =>
+      a.localeCompare(b, undefined, { sensitivity: "base" })
+    );
     return <TopicsPage subjectName={subject} topics={topics} />;
   } catch (err) {
     console.error("Failed to fetch topics:", err);

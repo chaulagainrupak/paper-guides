@@ -3,7 +3,7 @@ import PaperViewerClient from "./PaperViewerClient";
 export async function generateMetadata({
   params
 }) {
-  const { question }  = params;
+  const { question }  = await params;
   return {
     title: `Paper Viewer | ${decodeURIComponent(question)}`,
     description: `View and download the question paper and its mark scheme for ${decodeURIComponent(question)}.`,
@@ -19,8 +19,9 @@ export async function generateMetadata({
   };
 }
 
-export default function PaperViewerPage({
+export default async function PaperViewerPage({
   params,
 }) {
-  return <PaperViewerClient question={params.question} />;
+  const {question} = await params; 
+  return <PaperViewerClient question={question} />;
 }

@@ -147,6 +147,10 @@ export default function QuestionGeneratorForm() {
                   const result = await res.json();
                   setGeneratedResult(result);
                   setGenerating(false);
+                } else if (res.status == 404) {
+                  alert(
+                    "No data found for your selection please try another subject / topic combination!"
+                  );
                 } else if (res.status === 401) {
                   alert("Unauthorized or invalid token.");
                 }
