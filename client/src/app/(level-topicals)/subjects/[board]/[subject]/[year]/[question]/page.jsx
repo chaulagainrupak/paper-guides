@@ -19,7 +19,7 @@ export async function generateMetadata({
   };
 }
 
-export default function PaperViewerPage({
+export default async function PaperViewerPage({
   params,
 }) {
   return <PaperViewerClient question={params.question} />;
