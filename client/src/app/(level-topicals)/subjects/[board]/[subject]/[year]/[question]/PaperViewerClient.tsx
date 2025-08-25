@@ -72,7 +72,8 @@ export default function PaperViewerClient({ question }: { question: string }) {
 
   return (
     <div className="h-screen px-4">
-      <title>{name}</title>
+      <meta property="og:title" content={`Paper Guides | ${name}`} />
+      <title>{`Paper Guides | ${name}`}</title>
 
       <div className="flex flex-col h-full">
         <div className="flex justify-between mb-4 items-center">
