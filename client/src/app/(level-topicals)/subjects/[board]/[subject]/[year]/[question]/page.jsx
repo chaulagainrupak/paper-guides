@@ -5,13 +5,11 @@ export async function generateMetadata({
 }) {
   const { question }  = await params;
   return {
-    title: `Paper Viewer | ${decodeURIComponent(question)}`,
-    description: `View and download the question paper and its mark scheme for ${decodeURIComponent(question)}.`,
+    description: `Access ${decodeURIComponent(question)} past papers with mark schemes for A-Level exam prep. Download PDFs to study and boost your grades.`,
     icons: "/images/logo.ico",
     openGraph: {
-      title: `Paper Viewer | ${decodeURIComponent(question)}`,
-      description: `View and download the question paper and its mark scheme for ${decodeURIComponent(question)}.`,
-      url: `https://paperguides.org/paper/${encodeURIComponent(question)}`,
+      description: `Access ${decodeURIComponent(question)} past papers with mark schemes for A-Level exam prep. Download PDFs to study and boost your grades.`,
+      url: `https://paperguides.org/pastpapers`,
       siteName: "Paper Guides",
       locale: "en_US",
       type: "website",

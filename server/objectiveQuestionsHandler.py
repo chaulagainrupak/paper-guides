@@ -11,7 +11,6 @@ def insertMcqQuestion(
     subject: str,
     topic: str,
     points: int,
-    level: str,
     component: str,
     question: str,
     answers: list,
@@ -28,16 +27,15 @@ def insertMcqQuestion(
         db_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         cursor.execute(
             """INSERT INTO mcq_questions
-            (uuid, subject, topic, points, board, level, component, 
+            (uuid, subject, topic, points, board, component, 
             question, answers, options, explanation,submittedFrom, submittedBy,submitDate, approved, approvedBy,approvedOn)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ?, ?)""",
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ?, ?)""",
             (
                 uuidStr,
                 subject.lower(),
                 topic.lower(),
-                points.lower(),
+                points,
                 board.lower(),
-                level.lower(),
                 component,
                 question,
                 str(answers),
@@ -133,12 +131,13 @@ def generateMcqTest(
 
             testAnswers.append({"questionUuid": uuidStr, "answer": correctOption})
             testOptions = []
-
-        selectedQuestions.append(questionObj)
-        accumulatedPoints += points
+        
+            selectedQuestions.append(questionObj)
+            accumulatedPoints += points
 
         testUuid = str(uuid.uuid4())
         testGenTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         testJson = {
             "testUuid": testUuid,
             "subjects": subjects,
@@ -162,11 +161,13 @@ def generateMcqTest(
             "generatedOn": testGenTime,
             "answers": testAnswers,
         }
-
-        cursor.execute(
-            """ INSERT INTO generated_mcq_questions (uuid, generatedTest, answerKey, generatedBy, generatedOn) VALUES (?,?,?,?,?)""",
-            (testUuid, str(testJson), str(answerJson), generatedBy, testGenTime),
-        )
+        
+        #  Lets not save the generated things yet as we don;t have much data and writing costs precious CPU time 
+        
+        # cursor.execute(
+        #     """ INSERT INTO generated_mcq_questions (uuid, generatedTest, answerKey, generatedBy, generatedOn) VALUES (?,?,?,?,?)""",
+        #     (testUuid, str(testJson), str(answerJson), generatedBy, testGenTime),
+        # )
         conn.commit()
         return {"questionSheet": testJson, "answerSheet": answerJson}
 
@@ -178,13 +179,16 @@ def generateMcqTest(
             conn.close()
 
 
-# insertMcqQuestion("A Levels", "Mathematics (9709)", "Binomial Expansion", 2, "AS level", 12, "Expand  this thing man...", ["correct1", "correct2", "correct3"], ["wronfg3", "wronfg2", "wronfg1", "wronfg4", "wronfg5"], "As this is the most bullshit thing and what not", "0.0.0.0", "usera")
+# insertMcqQuestion("A Levels", "Mathematics (9709)", "Binomial Expansion", 2, "12", "Expand as dasdthis thing man...", ["correct1", "correct2", "correct3"], ["wronfg3", "wronfg2", "wronfg1", "wronfg4", "wronfg5"], "As this is the most bullshit thing and what not", "0.0.0.0", "usera")
+
+# insertMcqQuestion("A Levels", "Mathematics (9709)", "Binomial Expansion", 2, "12", "Expand  9012380 this thing man...", ["correct1", "correct2", "correct3"], ["wronfg3", "wronfg2", "wronfg1", "wronfg4", "wronfg5"], "As this is the most bullshit thing and what not", "0.0.0.0", "usera")
+
+# insertMcqQuestion("A Levels", "Mathematics (9709)", "Binomial Expansion", 2, "12", "Expand  this thing man... 12903801928 ", ["correct1", "correct2", "correct3"], ["wronfg3", "wronfg2", "wronfg1", "wronfg4", "wronfg5"], "As this is the most bullshit thing and what not", "0.0.0.0", "usera")
 
 # test = generateMcqTest(
 #     ["Mathematics (9709)"],
 #     "A Levels",
-#     "AS level",
-#     10,
+#     6,
 #     ["Binomial Expansion"],
 #     "StupidGut",
 # )

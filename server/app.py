@@ -45,6 +45,27 @@ DATABASE_PATH = "instance/paper-guides.db"
 
 app = FastAPI()
 
+# rate limiting the generation of mcqs and papers
+
+lastGenTimes = {}
+RATE_LIMIT_SECONDS = 300
+
+
+def checkRateLimit(username: str):
+    currentTime = time.time()
+    lastTime = lastGenTimes.get(username)
+
+    if not lastTime or (currentTime - lastTime) >= RATE_LIMIT_SECONDS:
+        lastGenTimes[username] = currentTime
+        return
+
+    remaining = RATE_LIMIT_SECONDS - (currentTime - lastTime)
+    raise HTTPException(
+        status_code=429,
+        detail=f"Please try again after {round(remaining / 60, 2)} minutes."
+    )
+
+
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
@@ -543,6 +564,8 @@ async def getQuestions(request: Request):
                 detail="You need to have a valid account to generate questions",
             )
 
+        checkRateLimit(username)
+
         body = await request.json()
 
         board = body.get("board")
@@ -568,19 +591,16 @@ async def getQuestions(request: Request):
             )
         else:
             return result
-
+    except HTTPException:
+        raise
     except Exception as e:
-        print(f"Error in /question-gen: {e}")
-        return HTTPException(
-            status_code=500,
-            detail={"error": "Internal server error"},
-        )
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @app.post("/mcqs-gen")
 async def getQuestionsForMcqs(request: Request):
-    try:
 
+    try:
         conn = getDbConnection()
         cur = conn.cursor()
 
@@ -611,14 +631,17 @@ async def getQuestionsForMcqs(request: Request):
                 detail="You need to have a valid account to generate questions",
             )
 
+        # checkRateLimit(username)
+
         body = await request.json()
+
         board = body.get("board")
         subject = body.get("subject")
         topics = body.get("topics")
         components = body.get("components")
         # difficulties = body.get("difficulties")
         # level = body.get("levels")
-        
+
         if not all([board, subject, components, topics]):
             return HTTPException(
                 status_code=400,
@@ -626,9 +649,7 @@ async def getQuestionsForMcqs(request: Request):
             )
 
         # We are using 50 hardcoded as quick developlemt
-        result = generateMcqTest(
-            [subject], board, 50, topics, user["username"]
-        )
+        result = generateMcqTest([subject], board, 50, topics, user["username"])
         if len(result) == 0:
             return JSONResponse(
                 status_code=404,
@@ -636,14 +657,23 @@ async def getQuestionsForMcqs(request: Request):
             )
         else:
             return result
-
+            
+    except HTTPException:
+        raise
     except Exception as e:
-        print(f"Error in /mcqs-gen: {e}")
-        return HTTPException(
-            status_code=500,
-            detail={"error": "Internal server error"},
-        )
+        raise HTTPException(status_code=500, detail="Internal server error")
 
+
+# Disabled for the time being (UwU con)
+# @app.post("/submit-mcqs")
+# async def submitMcqsSolutions(request: Request):
+#     try:
+#         body = await request.json()
+#         print(body)
+#         raise Response(content='thing', status_code=200)
+#     except Exception as e:
+#         print(e)
+#         raise Response(content='error', status_code=500)
 
 @app.get("/sitemap.xml")
 async def sitemap():
