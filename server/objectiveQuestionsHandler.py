@@ -4,6 +4,7 @@ import uuid
 import random
 from databaseHandler import DB_OBJECTIVE_QUESTIONS_PATH
 import hashlib
+import ast
 
 
 def insertMcqQuestion(
@@ -63,16 +64,10 @@ def insertMcqQuestion(
 
 
 # i've removed levels too
-def generateMcqTest(
-    subjects: list,
-    board: str,
-    totalPoints: int,
-    topics: list,
-    generatedBy: str,
-):
+
+def generateMcqTest(subjects: list, board: str, totalPoints: int, topics: list, generatedBy: str):
     conn = None
     try:
-
         conn = sqlite3.connect(DB_OBJECTIVE_QUESTIONS_PATH)
         cursor = conn.cursor()
 
@@ -80,15 +75,16 @@ def generateMcqTest(
         params = []
 
         if subjects:
-            query += f" AND subject IN ({', '.join(["'" + {subject.lower()} + "'" for subject in subjects])})"
+            placeholders = ','.join('?' for _ in subjects)
+            query += f" AND subject IN ({placeholders})"
+            params.extend([subject.lower() for subject in subjects])
         if board:
             query += " AND board = ?"
             params.append(board.lower())
-        # if level:
-        #     query += " AND level = ?"
-        #     params.append(level.lower())
         if topics:
-            query += f" AND topic IN ({', '.join([f'\'{topic.lower()}\'' for topic in topics])})"
+            placeholders = ','.join('?' for _ in topics)
+            query += f" AND topic IN ({placeholders})"
+            params.extend([topic.lower() for topic in topics])
 
         cursor.execute(query, params)
         rows = cursor.fetchall()
@@ -100,38 +96,27 @@ def generateMcqTest(
         selectedQuestions = []
         testAnswers = []
         accumulatedPoints = 0
-        testOptions = []
 
         for row in rows:
             uuidStr, question, points, answers, options, topic = row
             if accumulatedPoints >= totalPoints:
                 break
 
-            questionObj = {
-                "uuid": uuidStr,
-                "question": question,
-                "points": points,
-                "topic": topic,
-            }
+            questionObj = {"uuid": uuidStr, "question": question, "points": points, "topic": topic}
 
-            testOptions.extend(
-                random.sample(
-                    eval(options),
-                    (
-                        3
-                        if len(eval(options)) >= 3
-                        else 2 if len(eval(options)) == 2 else 1
-                    ),
-                )
+            optionsList = ast.literal_eval(options)
+            answersList = ast.literal_eval(answers)
+
+            testOptions = random.sample(
+                optionsList,
+                min(3, len(optionsList))
             )
-            correctOption = random.sample(eval(answers), 1)
+            correctOption = random.sample(answersList, 1)
             testOptions.extend(correctOption)
             random.shuffle(testOptions)
             questionObj["options"] = testOptions
 
             testAnswers.append({"questionUuid": uuidStr, "answer": correctOption})
-            testOptions = []
-        
             selectedQuestions.append(questionObj)
             accumulatedPoints += points
 
@@ -142,7 +127,6 @@ def generateMcqTest(
             "testUuid": testUuid,
             "subjects": subjects,
             "board": board,
-            # "level": level,
             "topics": topics,
             "requestedPoints": totalPoints,
             "finalPoints": accumulatedPoints,
@@ -154,21 +138,13 @@ def generateMcqTest(
             "testUuid": testUuid,
             "subjects": subjects,
             "board": board,
-            # "level": level,
             "topics": topics,
             "requestedPoints": totalPoints,
             "finalPoints": accumulatedPoints,
             "generatedOn": testGenTime,
             "answers": testAnswers,
         }
-        
-        #  Lets not save the generated things yet as we don;t have much data and writing costs precious CPU time 
-        
-        # cursor.execute(
-        #     """ INSERT INTO generated_mcq_questions (uuid, generatedTest, answerKey, generatedBy, generatedOn) VALUES (?,?,?,?,?)""",
-        #     (testUuid, str(testJson), str(answerJson), generatedBy, testGenTime),
-        # )
-        conn.commit()
+
         return {"questionSheet": testJson, "answerSheet": answerJson}
 
     except Exception as e:
