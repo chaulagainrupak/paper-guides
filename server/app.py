@@ -1,7 +1,16 @@
-from fastapi import FastAPI, Form, HTTPException, Depends, Request, Form, File,  UploadFile
+from fastapi import (
+    FastAPI,
+    Form,
+    HTTPException,
+    Depends,
+    Request,
+    Form,
+    File,
+    UploadFile,
+)
 
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from jose import jwt
 from datetime import datetime, timedelta
@@ -10,23 +19,23 @@ import bcrypt
 from werkzeug.security import check_password_hash
 
 from config import loadConfig
-from databaseHandler import * 
+from databaseHandler import *
 from turnstileVerify import verifyTurnstileToken
 import base64
 import time
 
 from picPatcher import process_images
-
+from objectiveQuestionsHandler import generateMcqTest, insertMcqQuestion
 
 import os
 from dotenv import load_dotenv
 
-load_dotenv('.env')
+load_dotenv(".env")
 
 # Load configuration
-CONFIG_PATH = './configs/configs.json'
-CONFIG = loadConfig('./configs/configs.json')
-SITEMAP_PATH = "./configs/sitemap.xml"  
+CONFIG_PATH = "./configs/configs.json"
+CONFIG = loadConfig("./configs/configs.json")
+SITEMAP_PATH = "./configs/sitemap.xml"
 # Constants
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
@@ -36,16 +45,42 @@ DATABASE_PATH = "instance/paper-guides.db"
 
 app = FastAPI()
 
+# rate limiting the generation of mcqs and papers
+
+lastGenTimes = {}
+RATE_LIMIT_SECONDS = 300
+
+
+def checkRateLimit(username: str):
+    currentTime = time.time()
+    lastTime = lastGenTimes.get(username)
+
+    if not lastTime or (currentTime - lastTime) >= RATE_LIMIT_SECONDS:
+        lastGenTimes[username] = currentTime
+        return
+
+    remaining = RATE_LIMIT_SECONDS - (currentTime - lastTime)
+    raise HTTPException(
+        status_code=429,
+        detail=f"Please try again after {round(remaining / 60, 2)} minutes."
+    )
+
+
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://paperguides.org", "https://beta.paperguides.org"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://paperguides.org",
+        "https://beta.paperguides.org",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 initializeDatabases()
+
 
 # ---------- Utility Functions ----------
 def getDbConnection():
@@ -65,7 +100,7 @@ def verifyPassword(plainPassword, hashedPassword):
     if isinstance(hashedPassword, bytes):
         hashedPassword = hashedPassword.decode()
 
-    #detect our old password format and allow them to log in 
+    # detect our old password format and allow them to log in
     if hashedPassword.startswith("pbkdf2:") or hashedPassword.startswith("scrypt:"):
         try:
             return check_password_hash(hashedPassword, plainPassword)
@@ -79,49 +114,49 @@ def verifyPassword(plainPassword, hashedPassword):
 
 
 def hashPassword(password):
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    return bcrypt.hashpw(password, bcrypt.gensalt())
 
 
-@app.get('/')
+@app.get("/")
 def index():
-    return {'details': 'were online'}
-@app.get('/config')
+    return {"details": "were online"}
+
+
+@app.get("/config")
 def config():
     return CONFIG
 
-@app.get('/pastpapers')
+
+@app.get("/pastpapers")
 def pastpapers():
-    data = {
-        "A Levels": {
-            "levels": ["As Level", "A Level"]
-        }
-    }
+    data = {"A Levels": {"levels": ["As Level", "A Level"]}}
     return data
 
 
-@app.get('/subjects/{board}/')
-@app.get('/subjects/{board}/{optional_level}')
+@app.get("/subjects/{board}/")
+@app.get("/subjects/{board}/{optional_level}")
 async def getSubjects(board: str, optional_level=None):
     if board.lower() in ["a levels", "as level", "a level", "as levels"]:
         return CONFIG["A Levels"]["subjects"]
     else:
-        for key in config:
+        for key in CONFIG:
             if key.lower() == board.lower():
                 return CONFIG[key]["subjects"]
     raise HTTPException(status_code=404, detail="Board not found")
 
-@app.get('/getYears/{subjectName}')
+
+@app.get("/getYears/{subjectName}")
 async def geatYearsForSubject(subjectName: str):
 
     try:
-        list = getYears('A Level', subjectName)
-        return {'years': list}, 200  
+        list = getYears("A Level", subjectName)
+        return {"years": list}, 200
     except Exception as e:
         print(e)
         raise HTTPException(status_code=503, detail="No data found")
 
 
-@app.get('/getTopics/{subjectName}')
+@app.get("/getTopics/{subjectName}")
 async def geatTopicsForSubject(subjectName: str):
 
     try:
@@ -131,28 +166,29 @@ async def geatTopicsForSubject(subjectName: str):
             if item["name"] == subjectName:
                 list.extend(item["topics"])
 
-        return {'topics': list}, 200  
+        return {"topics": list}, 200
     except Exception as e:
         print(e)
         raise HTTPException(status_code=503, detail="No data found")
 
 
-@app.get('/getPapers/{subjectName}/{year}')
+@app.get("/getPapers/{subjectName}/{year}")
 async def getPapers(year: str, subjectName: str):
 
     try:
-        list = getPaperComponents( year, subjectName , 'a level')
-        return {'components': list}, 200  
+        list = getPaperComponents(year, subjectName, "a level")
+        return {"components": list}, 200
     except Exception as e:
         print(e)
         raise HTTPException(status_code=503, detail="No data found")
+
 
 @app.get("/getData/{details}")
 async def getData(details: str):
     try:
         isInsert = False
 
-        details.replace('%20', ' ')
+        details.replace("%20", " ")
         #    Because subjectSlug itself may contain "%20" but not a literal hyphen.
         parts = details.split("-", 1)
         if len(parts) < 2:
@@ -161,26 +197,26 @@ async def getData(details: str):
 
         subjectName = subjectSlug
 
-        if 'insert' in remainder:
+        if "insert" in remainder:
             isInsert = True
-            remainder = remainder.replace("-insert-paper", '')
+            remainder = remainder.replace("-insert-paper", "")
             print(remainder)
 
         if remainder.startswith("question-paper-"):
             paperTypeDisplay = "Question Paper"
-            remainder = remainder[len("question-paper-"):]
+            remainder = remainder[len("question-paper-") :]
         elif remainder.startswith("mark-scheme-"):
             paperTypeDisplay = "Mark Scheme"
-            remainder = remainder[len("mark-scheme-"):]
+            remainder = remainder[len("mark-scheme-") :]
         else:
             raise ValueError("Expected 'question-paper-' or 'mark-scheme-' prefix.")
 
         rem_parts = remainder.split("-")
         if len(rem_parts) != 4:
             raise ValueError("Expected remainder in form 'XX-YYYY-sss-sss'.")
-        componentCode = rem_parts[0]  
-        yearStr = rem_parts[1]       
-        sessionSlug = rem_parts[2] + "-" + rem_parts[3] 
+        componentCode = rem_parts[0]
+        yearStr = rem_parts[1]
+        sessionSlug = rem_parts[2] + "-" + rem_parts[3]
 
         session_map = {
             "feb-mar": "Feb / Mar",
@@ -195,15 +231,17 @@ async def getData(details: str):
         componentForGetPaper = f"{componentCode}"
 
         if isInsert:
-            print(f'{yearForGetPaper} Insert Paper')
+            print(f"{yearForGetPaper} Insert Paper")
             data = getPaper(
-            "a level", subjectName, f"{yearForGetPaper} Insert Paper" , componentForGetPaper
+                "a level",
+                subjectName,
+                f"{yearForGetPaper} Insert Paper",
+                componentForGetPaper,
             )
         else:
             data = getPaper(
-            "a level", subjectName, yearForGetPaper, componentForGetPaper
+                "a level", subjectName, yearForGetPaper, componentForGetPaper
             )
-
 
         qp = base64.b64encode(data[0])
         if isInsert:
@@ -224,16 +262,18 @@ async def getData(details: str):
         print("Error in getData:", e)
         raise HTTPException(status_code=503, detail="No data found")
 
-@app.get('/getNote/{subject}/{topic}')
+
+@app.get("/getNote/{subject}/{topic}")
 def getNoteForClient(subject, topic):
 
     subject = subject.replace("%20", " ")
     topic = topic.replace("%20", " ")
 
-    content = getNote(subject , topic )
+    content = getNote(subject, topic)
     return {"content": f"{content}"}
 
-@app.get('/getAds')
+
+@app.get("/getAds")
 def getAds():
     data = {
         "Title": "YouTube",
@@ -242,41 +282,62 @@ def getAds():
     return data
 
 
-@app.post('/signup')
+@app.post("/signup")
 async def signup(body: Request):
 
-    HTTPException(status_code=500, detail="Sorry! New SignUps have been closed! For Now Check back later")
-    
-    conn = getDbConnection()
-    cur = conn.cursor()
+    # closed signups , raise immediately
+    # raise HTTPException(
+    #     status_code=500,
+    #     detail="Sorry! New SignUps have been closed! For Now Check back later",
+    # )
 
-    data = await body.json()
+    conn = None
+    try:
+        conn = getDbConnection()
+        cur = conn.cursor()
 
-    username = data.get("username")
-    email = data.get("email")
-    password = data.get("password")
-    token = data.get("token") 
+        data = await body.json()
+        username = data.get("username")
+        email = data.get("email")
+        password = data.get("password")
+        token = data.get("token")
 
-    # Verify Turnstile token
-    isValid =  verifyTurnstileToken(token)
-    if not isValid:
-        raise HTTPException(status_code=400, detail="Turnstile Captcha verification failed, reload the page and try again!")
-    
-    cur.execute("SELECT * FROM users WHERE username = ? OR email = ?", (username, email))
-    if cur.fetchone():
-        conn.close()
-        raise HTTPException(status_code=400, detail="User already exists")
+        # Verify captcha
+        if not verifyTurnstileToken(token):
+            raise HTTPException(
+                status_code=400,
+                detail="Turnstile Captcha verification failed, reload and try again!",
+            )
 
-    hashedPw = hashPassword(password)
-    cur.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-                (username, email, hashedPw))
-    conn.commit()
-    conn.close()
+        # Check if user already exists
+        cur.execute(
+            "SELECT * FROM users WHERE username = ? OR email = ?", (username, email)
+        )
+        if cur.fetchone():
+            raise HTTPException(status_code=400, detail="User already exists")
 
-    return {"message": "User created successfully"}
+        # Insert new user
+        hashedPw = hashPassword(password)
+        cur.execute(
+            "INSERT INTO users (username, email, password, signup_time) VALUES (?, ?, ?, ?)",
+            (username, email, hashedPw, datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+        )
+        conn.commit()
+
+        return {"message": "User created successfully"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Internal server error! Don't Panic!"
+        )
+    finally:
+        if conn:
+            conn.close()
 
 
-@app.post('/login')
+@app.post("/login")
 async def login(body: Request):
     conn = getDbConnection()
     cur = conn.cursor()
@@ -286,15 +347,19 @@ async def login(body: Request):
     username = data.get("username")
     email = data.get("email")
     password = data.get("password")
-    token = data.get("token") 
-
+    token = data.get("token")
 
     # Verify Turnstile token
-    isValid =  verifyTurnstileToken(token)
+    isValid = verifyTurnstileToken(token)
     if not isValid:
-        raise HTTPException(status_code=400, detail="Turnstile Captcha verification failed, reload the page and try again!")
+        raise HTTPException(
+            status_code=400,
+            detail="Turnstile Captcha verification failed, reload the page and try again!",
+        )
 
-    cur.execute("SELECT * FROM users WHERE username = ? AND email  = ? ", (username,email))
+    cur.execute(
+        "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
+    )
     user = cur.fetchone()
     conn.close()
 
@@ -303,18 +368,14 @@ async def login(body: Request):
 
     accessToken = createAccessToken(
         data={"username": user["username"], "email": user["email"]},
-        expiresDelta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expiresDelta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
     )
 
-    return {
-        "accessToken": accessToken,
-        "tokenType": "bearer"
-    }
+    return {"accessToken": accessToken, "tokenType": "bearer"}
 
 
-@app.post('/validateToken')
+@app.post("/validateToken")
 async def validateToken(body: Request):
-
 
     try:
         conn = getDbConnection()
@@ -328,39 +389,43 @@ async def validateToken(body: Request):
         email = tokenData["email"]
         exp = tokenData["exp"]
 
-
         if exp < time.time():
             return {"message": "token expired"}, 429
 
-        cur.execute("SELECT * FROM users WHERE username = ? AND email  = ? ", (username,email))
+        cur.execute(
+            "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
+        )
         user = cur.fetchone()
         conn.close()
 
         if not user:
             raise HTTPException(status_code=401, detail="Invalid username or password")
         else:
-            return {"message": "token verified", "user": username, "role" : user["role"]   }, 200
+            return {
+                "message": "token verified",
+                "user": username,
+                "role": user["role"],
+            }, 200
     except Exception as e:
         print(e)
         return {"message": "token verification failed"}, 429
 
 
-
-
-@app.post('/submitQuestion')
+@app.post("/submitQuestion")
 async def submitQuestionToDb(request: Request):
 
     try:
         conn = getDbConnection()
         cur = conn.cursor()
-        
+
         authHeader = request.headers.get("authorization")
 
         if not authHeader or not authHeader.startswith("Bearer "):
-            raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+            raise HTTPException(
+                status_code=401, detail="Missing or invalid Authorization header"
+            )
 
         token = authHeader.split(" ")[1]
-
 
         tokenData = jwt.decode(token, SECRET_KEY)
 
@@ -370,13 +435,15 @@ async def submitQuestionToDb(request: Request):
         if exp < time.time():
             return {"message": "token expired"}, 429
 
-        cur.execute("SELECT * FROM users WHERE username = ? AND email  = ? ", (username,email))
+        cur.execute(
+            "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
+        )
         user = cur.fetchone()
         conn.close()
 
         if not user:
             raise HTTPException(status_code=401, detail="Invalid username or password")
-        if user["role"].lower() != 'admin':
+        if user["role"].lower() != "admin":
             raise HTTPException(status_code=401, detail="Unauthorized")
 
         form = await request.form()
@@ -391,30 +458,40 @@ async def submitQuestionToDb(request: Request):
         processedQuestion = await process_images(form.getlist("questionImages"))
         processedSolution = await process_images(form.getlist("solutionImages"))
 
-        insertQuestion(board, subject, topic, difficulty,  level, component, processedQuestion, processedSolution, username, ip=None)
+        insertQuestion(
+            board,
+            subject,
+            topic,
+            difficulty,
+            level,
+            component,
+            processedQuestion,
+            processedSolution,
+            username,
+            ip=None,
+        )
         return {"message": "got it"}, 200
 
     except Exception as e:
         print(e)
-        HTTPException(status_code=500, detail='internal server error')
+        HTTPException(status_code=500, detail="internal server error")
 
 
-
-
-@app.post('/postNote')
+@app.post("/postNote")
 async def postNote(request: Request):
 
     try:
         conn = getDbConnection()
         cur = conn.cursor()
-        
+
         authHeader = request.headers.get("authorization")
 
         if not authHeader or not authHeader.startswith("Bearer "):
-            raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+            raise HTTPException(
+                status_code=401, detail="Missing or invalid Authorization header"
+            )
 
         token = authHeader.split(" ")[1]
-
 
         tokenData = jwt.decode(token, SECRET_KEY)
 
@@ -424,35 +501,139 @@ async def postNote(request: Request):
         if exp < time.time():
             return {"message": "token expired"}, 429
 
-        cur.execute("SELECT * FROM users WHERE username = ? AND email  = ? ", (username,email))
+        cur.execute(
+            "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
+        )
         user = cur.fetchone()
         conn.close()
 
         if not user:
             raise HTTPException(status_code=401, detail="Invalid username or password")
-        if user["role"].lower() != 'admin':
+        if user["role"].lower() != "admin":
             raise HTTPException(status_code=401, detail="Unauthorized")
 
         body = await request.json()
-        board = body.get('board')
-        level = body.get('level')
-        subject = body.get('subject')
-        topic = body.get('topic')
-        content = body.get('content').strip()
-
+        board = body.get("board")
+        level = body.get("level")
+        subject = body.get("subject")
+        topic = body.get("topic")
+        content = body.get("content").strip()
 
         if len(content) < 1000:
             raise HTTPException(status_code=401, detail="Not enough content!")
-            
+
         insertNote(board, level, subject, topic, content, username)
 
     except Exception as e:
         print(e)
-        HTTPException(status_code=500, detail='internal server error')
+        HTTPException(status_code=500, detail="internal server error")
 
-@app.post('/question-gen')
+
+
+
+@app.post("/submit-mcqs-admin")
+async def submitQuestionToDb(request: Request):
+
+    try:
+        conn = getDbConnection()
+        cur = conn.cursor()
+
+        authHeader = request.headers.get("authorization")
+
+        if not authHeader or not authHeader.startswith("Bearer "):
+            raise HTTPException(
+                status_code=401, detail="Missing or invalid Authorization header"
+            )
+
+        token = authHeader.split(" ")[1]
+
+        tokenData = jwt.decode(token, SECRET_KEY)
+
+        username = tokenData["username"]
+        email = tokenData["email"]
+        exp = tokenData["exp"]
+        if exp < time.time():
+            return {"message": "token expired"}, 429
+
+        cur.execute(
+            "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
+        )
+        user = cur.fetchone()
+        conn.close()
+
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+        if user["role"].lower() != "admin":
+            raise HTTPException(status_code=401, detail="Unauthorized")
+
+        form = await request.form()
+
+        board = form.get("board")
+        subject = form.get("subject")
+        topic = form.get("topic")
+        component = form.get("component")
+        difficulty = form.get("difficulty")
+        level = form.get("level")
+
+        processedQuestion = await process_images(form.getlist("questionImages"))
+        processedSolution = await process_images(form.getlist("solutionImages"))
+
+        insertQuestion(
+            board,
+            subject,
+            topic,
+            difficulty,
+            level,
+            component,
+            processedQuestion,
+            processedSolution,
+            username,
+            ip=None,
+        )
+        return {"message": "got it"}, 200
+
+    except Exception as e:
+        print(e)
+        HTTPException(status_code=500, detail="internal server error")
+
+
+@app.post("/question-gen")
 async def getQuestions(request: Request):
     try:
+        conn = getDbConnection()
+        cur = conn.cursor()
+
+        authHeader = request.headers.get("authorization")
+
+        if not authHeader or not authHeader.startswith("Bearer "):
+            raise HTTPException(
+                status_code=401, detail="Missing or invalid Authorization header"
+            )
+
+        token = authHeader.split(" ")[1]
+
+        tokenData = jwt.decode(token, SECRET_KEY)
+
+        username = tokenData["username"]
+        email = tokenData["email"]
+        exp = tokenData["exp"]
+        if exp < time.time():
+            return {"message": "token expired"}, 429
+
+        cur.execute(
+            "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
+        )
+        user = cur.fetchone()
+        conn.close()
+
+        if not user:
+            raise HTTPException(
+                status_code=401,
+                detail="You need to have a valid account to generate questions",
+            )
+
+        checkRateLimit(username)
+
         body = await request.json()
 
         board = body.get("board")
@@ -464,37 +645,112 @@ async def getQuestions(request: Request):
 
         if not all([board, subject, level, topics, components, difficulties]):
             return HTTPException(
-                status_code= 400,
-                detail={"error": "Missing one or more required fields."}
+                status_code=400,
+                detail={"error": "Missing one or more required fields."},
             )
 
-        result = getQuestionsForGen(board, subject, level, topics, components, difficulties)
-
-        if len(result) == 0:
-            return HTTPException(
-                status_code= 401,
-                detail={"error": "No data found!"},
-            )
-
-        return result
-
-    except Exception as e:
-        print(f"Error in /question-gen: {e}")
-        return HTTPException(
-            status_code= 500,
-            detail={"error": "Internal server error"},
+        result = getQuestionsForGen(
+            board, subject, level, topics, components, difficulties
         )
+        if len(result) == 0:
+            return JSONResponse(
+                status_code=404,
+                content={"error": "No data found!"},
+            )
+        else:
+            return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
+@app.post("/mcqs-gen")
+async def getQuestionsForMcqs(request: Request):
+
+    try:
+        conn = getDbConnection()
+        cur = conn.cursor()
+
+        authHeader = request.headers.get("authorization")
+        if not authHeader or not authHeader.startswith("Bearer "):
+            raise HTTPException(
+                status_code=401, detail="Missing or invalid Authorization header"
+            )
+
+        token = authHeader.split(" ")[1]
+        tokenData = jwt.decode(token, SECRET_KEY)
+
+        username = tokenData["username"]
+        email = tokenData["email"]
+        exp = tokenData["exp"]
+        if exp < time.time():
+            return {"message": "token expired"}, 429
+
+        cur.execute(
+            "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
+        )
+        user = cur.fetchone()
+        conn.close()
+
+        if not user:
+            raise HTTPException(
+                status_code=401,
+                detail="You need to have a valid account to generate questions",
+            )
+
+        checkRateLimit(username)
+
+        body = await request.json()
+
+        board = body.get("board")
+        subject = body.get("subject")
+        topics = body.get("topics")
+        components = body.get("components")
+        # difficulties = body.get("difficulties")
+        # level = body.get("levels")
+
+        if not all([board, subject, components, topics]):
+            return HTTPException(
+                status_code=400,
+                detail={"error": "Missing one or more required fields."},
+            )
+
+        # We are using 50 hardcoded as quick developlemt
+        result = generateMcqTest([subject], board, 50, topics, user["username"])
+        if len(result) == 0:
+            return JSONResponse(
+                status_code=404,
+                content={"error": "No data found!"},
+            )
+        else:
+            return result
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+# Disabled for the time being (UwU con)
+# @app.post("/submit-mcqs")
+# async def submitMcqsSolutions(request: Request):
+#     try:
+#         body = await request.json()
+#         print(body)
+#         raise Response(content='thing', status_code=200)
+#     except Exception as e:
+#         print(e)
+#         raise Response(content='error', status_code=500)
 
 @app.get("/sitemap.xml")
 async def sitemap():
     if not os.path.exists(SITEMAP_PATH):
         return Response(content="Not Found", status_code=404)
-    
+
     return FileResponse(SITEMAP_PATH, media_type="application/xml")
 
 
 def getClientIp(request):
     # Try to get the IP from the 'X-Forwarded-For' header (Cloudflare/proxy header)
-    return request.headers.get('X-Forwarded-For', request.remote_addr)
+    return request.headers.get("X-Forwarded-For", request.remote_addr)

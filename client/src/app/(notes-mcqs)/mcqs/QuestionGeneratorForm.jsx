@@ -1,9 +1,12 @@
 "use client";
 
+// this shit has been pulled from the previous question generation form so the code is shit and what not.
+
 import { useState, useEffect, useRef, cache } from "react";
-import { getApiUrl, isLocalhost } from "../config";
+import { getApiUrl, isLocalhost } from "@/app/config";
 import GeneratedPage from "./generatedPage";
-import { isLoggedIn, logOut } from "../utils";
+import { isLoggedIn } from "@/app/utils";
+import { Link } from "next";
 
 // Utility to toggle checkbox selections
 function toggleCheckbox(value, array, setArray) {
@@ -20,13 +23,13 @@ export default function QuestionGeneratorForm() {
 
   const [config, setConfig] = useState({});
   const [boards, setBoards] = useState([]);
-  const [selectedBoard, setSelectedBoard] = useState("");
 
+  const [selectedBoard, setSelectedBoard] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [selectedComponents, setSelectedComponents] = useState([]);
-  const [selectedLevels, setSelectedLevels] = useState([]);
-  const [selectedDifficulties, setSelectedDifficulties] = useState([]);
+  // const [selectedLevels, setSelectedLevels] = useState([]);
+  // const [selectedDifficulties, setSelectedDifficulties] = useState([]);
 
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [availableTopics, setAvailableTopics] = useState([]);
@@ -82,11 +85,11 @@ export default function QuestionGeneratorForm() {
   return (
     <>
       {generating ? (
-        <div className="p-6 max-w-6xl mx-auto my-auto text-[var(--color-text)] font-bold rounded-lg shadow-md bg-[var(--baby-powder)]">
+        <div className="p-6 max-w-6xl mx-auto my-auto text-[var(--color-text)] font-bold rounded-lg bg-[var(--baby-powder)]">
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold mb-4 tracking-tight">
-              Question Generator
+              Mutiple-Choice Question Generator
             </h1>
             <p className="text-lg opacity-70">
               Configure your parameters to generate custom questions
@@ -101,8 +104,6 @@ export default function QuestionGeneratorForm() {
                 subject: selectedSubject,
                 topics: selectedTopics,
                 components: selectedComponents,
-                levels: selectedLevels,
-                difficulties: selectedDifficulties,
               };
 
               try {
@@ -131,7 +132,7 @@ export default function QuestionGeneratorForm() {
                 }
 
                 const res = await fetch(
-                  getApiUrl(isLocalhost()) + "/question-gen",
+                  getApiUrl(isLocalhost()) + "/mcqs-gen",
                   {
                     method: "POST",
                     headers: {
@@ -142,19 +143,18 @@ export default function QuestionGeneratorForm() {
                     body: JSON.stringify(payload),
                   }
                 );
-
                 if (res.status === 200) {
                   const result = await res.json();
                   setGeneratedResult(result);
                   setGenerating(false);
+                } else if (res.status == 404) {
+                  alert(
+                    "No data found for your selection please try another subject / topic combination!"
+                  );
                 } else if (res.status === 429) {
                   const result = await res.json();
                   alert(
                     `You are only allowed to generate questions once every 5 minutes. ${result.detail}`
-                  );
-                } else if (res.status == 404) {
-                  alert(
-                    "No data found for your selection please try another subject / topic combination!"
                   );
                 } else if (res.status === 401) {
                   alert("Unauthorized or invalid token.");
@@ -169,8 +169,6 @@ export default function QuestionGeneratorForm() {
             {[
               ["topics", selectedTopics],
               ["components", selectedComponents],
-              ["levels", selectedLevels],
-              ["difficulties", selectedDifficulties],
             ].map(([name, arr]) =>
               arr.map((val) => (
                 <input
@@ -196,8 +194,6 @@ export default function QuestionGeneratorForm() {
                     setSelectedSubject("");
                     setSelectedTopics([]);
                     setSelectedComponents([]);
-                    setSelectedLevels([]);
-                    setSelectedDifficulties([]);
                   }}
                   className="w-full p-2 text-lg border-2 border-[var(--blue-highlight)] rounded-xl focus:outline-none transition-all duration-300 bg-[var(--baby-powder)]"
                   required
@@ -341,81 +337,6 @@ export default function QuestionGeneratorForm() {
               </div>
             </div>
 
-            {/* Levels / Difficulties side by side */}
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="flex-1">
-                <label className="block text-2xl font-bold mb-3">
-                  📊 Levels:
-                </label>
-                <div className="flex justify-between">
-                  {availableLevels.map((lvl) => {
-                    const isChecked = selectedLevels.includes(lvl);
-                    return (
-                      <label
-                        key={lvl}
-                        className={`flex items-center cursor-pointer p-2 rounded-full font-semibold text-lg border-2 transition-all duration-300 hover:scale-105 select-none ${
-                          isChecked
-                            ? "bg-[var(--blue-highlight)] border-[var(--blue-highlight)] text-white rounded rounded-xl"
-                            : "border-gray-400 rounded rounded-xl"
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          value={lvl}
-                          checked={isChecked}
-                          className="appearance-none absolute opacity-0"
-                          onChange={() =>
-                            toggleCheckbox(
-                              lvl,
-                              selectedLevels,
-                              setSelectedLevels
-                            )
-                          }
-                        />
-                        <span>{lvl}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="flex-1">
-                <label className="block text-2xl font-bold mb-3">
-                  Difficulty:
-                </label>
-                <div className="flex justify-around">
-                  {[1, 2, 3, 4, 5].map((num) => {
-                    const isChecked = selectedDifficulties.includes(num);
-                    return (
-                      <label
-                        key={num}
-                        className={`flex items-center justify-center cursor-pointer p-2 w-10 h-10 rounded-full font-semibold text-lg border-2 transition-all duration-300 hover:scale-105 select-none ${
-                          isChecked
-                            ? "bg-[var(--blue-highlight)] border-[var(--blue-highlight)] text-white rounded rounded-xl"
-                            : "border-gray-400 rounded rounded-xl"
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          value={num}
-                          checked={isChecked}
-                          className="appearance-none absolute opacity-0"
-                          onChange={() =>
-                            toggleCheckbox(
-                              num,
-                              selectedDifficulties,
-                              setSelectedDifficulties
-                            )
-                          }
-                        />
-                        <span>{num}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
             {/* Submit */}
             <div className="text-center">
               <button
@@ -429,7 +350,7 @@ export default function QuestionGeneratorForm() {
         </div>
       ) : (
         <>
-          <GeneratedPage data={generatedResult} />
+          <GeneratedPage data={JSON.stringify(generatedResult)} />
         </>
       )}
     </>

@@ -7,18 +7,13 @@ export function isLocalhost(): boolean {
 }
 
 export function getSiteKey(): string {
-  const localSiteKey = "1x00000000000000000000AA";
-  const prodSiteKey = "0x4AAAAAAA1LsUg4unsYRplP";
-  return isLocalhost() ? localSiteKey : prodSiteKey;
+  return process.env.SITE_KEY || "1x00000000000000000000AA";
+}
+// this is done so "legacy" code still functions; else the parameter is not required 
+export function getApiUrl(isLocal: boolean) {
+  return process.env.API_URL || "http://localhost:8000"; 
 }
 
-export function getApiUrl(isLocal: boolean) {
-  if (isLocal) {
-    return "http://localhost:8000";
-  } else {
-    return "https://api.paperguides.org";
-  }
-}
 
 export function darkModeOn() {
   return localStorage.getItem("darkmode") === "active";

@@ -1,162 +1,69 @@
 "use client";
 
-import { getApiUrl, isLocalhost } from "@/app/config";
-import { BackButton, Loader } from "@/app/utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { BackButton } from "@/app/utils";
 
-export default function PaperViewerClient({ question }: { question: string }) {
-  const [name, setName] = useState("");
-  const [questionData, setQuestionData] = useState("");
-  const [markSchemeData, setMarkSchemeData] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
+interface PaperViewerClientProps {
+  questionName: string;
+  questionPdf: string; // base64
+  markSchemePdf: string; // base64
+  morePapers: { name: string; url: string }[];
+}
+
+export default function PaperViewerClient({ questionName, questionPdf, markSchemePdf, morePapers }: PaperViewerClientProps) {
   const [showSolution, setShowSolution] = useState(false);
 
-  const [questionBlobUrl, setQuestionBlobUrl] = useState<string | null>(null);
-  const [markSchemeBlobUrl, setMarkSchemeBlobUrl] = useState<string | null>(null);
-
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(
-          `${getApiUrl(isLocalhost())}/getData/${question}`,
-          { cache: "no-store" }
-        );
-
-        const response = await res.json();
-
-        if (!Array.isArray(response) || response.length === 0) {
-          throw new Error("Empty response");
-        }
-
-        const qp = response[0]["questionData"] || "";
-        const ms = response[0]["markSchemeData"] || "";
-        const title = response[0]["questionName"] || "Untitled Question";
-
-        setQuestionData(qp);
-        setMarkSchemeData(ms);
-        setName(title);
-
-        const generateBlobUrl = (base64: string): string => {
-          const byteArray = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
-          const blob = new Blob([byteArray], { type: "application/pdf" });
-          return URL.createObjectURL(blob);
-        };
-
-        if (qp) setQuestionBlobUrl(generateBlobUrl(qp));
-        if (ms) setMarkSchemeBlobUrl(generateBlobUrl(ms));
-      } catch (err) {
-        console.error("Error loading PDF:", err);
-        setHasError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [question]);
-
-  if (isLoading) return <Loader />;
-
-  if (hasError || (!questionData && !markSchemeData)) {
-    return (
-      <div className="text-red-600 text-center mt-10">
-        <h2 className="text-2xl font-bold">Failed to load the paper.</h2>
-        <p>Please check your internet connection or try again later.</p>
-        <BackButton />
-      </div>
-    );
-  }
+  const pdfToUrl = (base64: string | undefined) => {
+    if (!base64) return undefined;
+    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+    return URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
+  };
 
   return (
     <div className="h-screen px-4">
-      <meta property="og:title" content={`Paper Guides | ${name}`} />
-      <title>{`Paper Guides | ${name}`}</title>
+      <meta property="og:title" content={`Paper Guides | ${questionName}`} />
+      <title>{`Paper Guides | ${questionName}`}</title>
 
       <div className="flex flex-col h-full">
         <div className="flex justify-between mb-4 items-center">
-          <h1 className="text-4xl font-bold mb-2">{name}</h1>
+          <h1 className="text-4xl font-bold mb-2">{questionName}</h1>
           <BackButton />
         </div>
 
-        {!isMobile && (
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  const currentBlob = showSolution ? markSchemeBlobUrl : questionBlobUrl;
-                  if (currentBlob) window.open(currentBlob, "_blank");
-                }}
-                className="bg-[var(--green-highlight)] text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition"
-              >
-                {showSolution
-                  ? "View solution in fullscreen"
-                  : "View question in fullscreen"}
-              </button>
-
-              <button
-                onClick={() => {
-                  const blobUrl = showSolution ? markSchemeBlobUrl : questionBlobUrl;
-                  if (!blobUrl) return;
-
-                  const link = document.createElement("a");
-                  link.href = blobUrl;
-                  link.download = showSolution ? "solution.pdf" : "question.pdf";
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                }}
-                className={`${showSolution
-                  ? "bg-[var(--pink-highlight)]"
-                  : "bg-[var(--blue-highlight)]"
-                  } text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition`}
-              >
-                ⬇️ Download PDF
-              </button>
+        <div className="mb-6">
+          <object
+            data={showSolution ? pdfToUrl(markSchemePdf) : pdfToUrl(questionPdf)}
+            type="application/pdf"
+            className="w-full h-[600px] border rounded shadow"
+          >
+            <div className="text-center mt-4 text-gray-700">
+              Your browser does not support inline PDF viewing.
             </div>
+          </object>
 
-            <button
-              onClick={() => setShowSolution(!showSolution)}
-              className={`${showSolution
-                ? "bg-[var(--pink-highlight)]"
-                : "bg-[var(--blue-highlight)]"
-                } text-white text-lg font-bold px-4 py-2 rounded-lg hover:opacity-80 transition`}
-            >
+          <p className="mt-4 text-gray-800">
+            This paper covers detailed questions and solutions for {questionName}. Download and review to practice and prepare effectively for your exams.
+          </p>
+
+          <div className="flex gap-2 mt-4">
+            <button onClick={() => setShowSolution(!showSolution)} className="bg-[var(--blue-highlight)] text-white px-4 py-2 rounded">
               {showSolution ? "Show Question" : "Show Solution"}
             </button>
           </div>
-        )}
+        </div>
 
-        <object
-          data={showSolution ? markSchemeBlobUrl ?? undefined : questionBlobUrl ?? undefined}
-          type="application/pdf"
-          className="w-full h-full border rounded shadow"
-        >
-          <div className="text-center mt-4 text-gray-700">
-            Your browser does not support inline PDF viewing. Use the buttons above OR download the pdf.
-            <div className="flex flex-col">
-              <button
-                onClick={() => {
-                  if (questionBlobUrl) window.open(questionBlobUrl, "_blank");
-                }}
-                className="bg-[var(--blue-highlight)] text-white text-xl font-bold py-3 rounded-lg hover:opacity-80 transition"
-              >
-                📄 Open Question Paper in new tab
-              </button>
-
-              <button
-                onClick={() => {
-                  if (markSchemeBlobUrl) window.open(markSchemeBlobUrl, "_blank");
-                }}
-                className="bg-[var(--pink-highlight)] text-white text-xl font-bold py-3 rounded-lg hover:opacity-80 transition"
-              >
-                ✅ Open Mark Scheme in new tab
-              </button>
-            </div>
-          </div>
-        </object>
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-2">Here's some more papers for you</h2>
+          <ul className="space-y-2">
+            {morePapers.map((p, i) => (
+              <li key={i}>
+                <a href={p.url} className="text-blue-600 underline hover:text-blue-800">
+                  {p.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

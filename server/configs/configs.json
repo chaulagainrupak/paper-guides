@@ -383,8 +383,577 @@
       }
     ],
     "components": [
-      "11", "12", "13", "21", "22", "23", "31", "32", "33", 
-      "41", "42", "43", "51", "52", "53", "61", "62", "63"
+      "11",
+      "12",
+      "13",
+      "21",
+      "22",
+      "23",
+      "31",
+      "32",
+      "33",
+      "41",
+      "42",
+      "43",
+      "51",
+      "52",
+      "53",
+      "61",
+      "62",
+      "63"
+    ]
+  },
+
+  "NEB": {
+    "levels": ["10", "11", "12"],
+    "subjects": [
+      {
+        "name": "Compulsory Maths",
+        "topics": [
+          "Sets and Functions",
+          "Algebra and Matrices",
+          "Geometry and Coordinate Geometry",
+          "Trigonometry and Its Applications",
+          "Calculus (Differentiation & Integration)",
+          "Vectors and 3D Geometry",
+          "Statistics and Probability",
+          "Linear Programming",
+          "Sequences and Series",
+          "Complex Numbers",
+          "Indices and Logarithms",
+          "Permutation and Combination"
+        ]
+      },
+      {
+        "name": "Optional Maths",
+        "topics": [
+          "Advanced Statistics",
+          "Advanced Probability",
+          "Discrete Mathematics",
+          "Mathematical Reasoning",
+          "Graph Theory",
+          "Number Theory",
+          "Advanced Calculus",
+          "Mathematical Modelling",
+          "Numerical Methods",
+          "Boolean Algebra",
+          "Groups and Rings",
+          "Differential Equations"
+        ]
+      },
+      {
+        "name": "Physics",
+        "topics": [
+          "Mechanics and Properties of Matter",
+          "Heat and Thermodynamics",
+          "Wave Motion and Sound",
+          "Optics and Optical Instruments",
+          "Electricity and Magnetism",
+          "Modern Physics",
+          "Electronics",
+          "Nuclear Physics",
+          "Quantum Physics",
+          "Relativity",
+          "Solid State Physics",
+          "Astronomy and Cosmology"
+        ]
+      },
+      {
+        "name": "Chemistry",
+        "topics": [
+          "Atomic Structure and Chemical Bonding",
+          "States of Matter",
+          "Redox Reactions and Electrochemistry",
+          "Chemical Equilibrium",
+          "Chemical Kinetics",
+          "Periodic Table and Elements",
+          "Organic Chemistry and Functional Groups",
+          "Polymers and Biomolecules",
+          "Environmental Chemistry",
+          "Industrial Chemistry",
+          "Coordination Compounds",
+          "Surface Chemistry and Catalysis"
+        ]
+      },
+      {
+        "name": "Biology",
+        "topics": [
+          "Cell Biology and Biomolecules",
+          "Genetics and Evolution",
+          "Ecology and Environment",
+          "Human Anatomy and Physiology",
+          "Plant Anatomy and Physiology",
+          "Biodiversity and Conservation",
+          "Biotechnology and Its Applications",
+          "Microbiology",
+          "Developmental Biology",
+          "Applied Biology",
+          "Animal Behavior",
+          "Molecular Biology"
+        ]
+      },
+      {
+        "name": "English",
+        "topics": [
+          "Reading Comprehension",
+          "Writing Skills and Essays",
+          "Grammar and Usage",
+          "Literature and Poetry",
+          "Short Stories and Drama",
+          "Business Communication",
+          "Technical Writing",
+          "Speaking and Listening",
+          "Critical Analysis",
+          "Academic Writing",
+          "Creative Writing",
+          "Research Writing"
+        ]
+      },
+      {
+        "name": "Nepali",
+        "topics": [
+          "Vyakaran (Grammar)",
+          "Sahitya (Literature)",
+          "Kabita (Poetry)",
+          "Katha (Stories)",
+          "Upanyas (Novel)",
+          "Nibandha (Essays)",
+          "Nataka (Drama)",
+          "Rachana (Composition)",
+          "Byabaharik Lekhan (Practical Writing)",
+          "Bhasa Vigyan (Linguistics)",
+          "Lok Sahitya (Folk Literature)",
+          "Aalochana (Literary Criticism)"
+        ]
+      },
+      {
+        "name": "Computer",
+        "topics": [
+          "Programming Fundamentals",
+          "Object-Oriented Programming",
+          "Database Management Systems",
+          "Web Development",
+          "Data Structures and Algorithms",
+          "Computer Networks",
+          "Operating Systems",
+          "Software Engineering",
+          "Computer Architecture",
+          "Cyber Security",
+          "Mobile Application Development",
+          "Artificial Intelligence Basics"
+        ]
+      },
+      {
+        "name": "Accounts",
+        "topics": [
+          "Basic Accounting Concepts",
+          "Financial Accounting",
+          "Cost Accounting",
+          "Management Accounting",
+          "Company Accounts",
+          "Partnership Accounts",
+          "Taxation",
+          "Auditing",
+          "Financial Statement Analysis",
+          "Budgeting and Forecasting",
+          "Banking Transactions",
+          "Computerized Accounting"
+        ]
+      },
+      {
+        "name": "Economics",
+        "topics": [
+          "Basic Economic Concepts",
+          "Microeconomics",
+          "Macroeconomics",
+          "International Economics",
+          "Development Economics",
+          "Public Finance",
+          "Money and Banking",
+          "Statistical Methods",
+          "Nepalese Economy",
+          "Environmental Economics",
+          "Labor Economics",
+          "Agricultural Economics"
+        ]
+      }
+    ],
+    "components": [
+      "Province 1",
+      "Province 2",
+      "Bagmati Province",
+      "Gandaki Province",
+      "Lumbini Province",
+      "Karnali Province",
+      "Sudurpashchim Province"
+    ]
+  },
+  "IOE": {
+    "levels": ["default"],
+    "subjects": [
+      {
+        "name": "Computer Engineering",
+        "topics": [
+          "Programming: Python fundamentals (syntax, data types, control flow, OOP, standard library)",
+          "Programming: C++ fundamentals (syntax, memory management, OOP, STL)",
+          "Data Structures",
+          "Algorithms",
+          "Operating Systems",
+          "Computer Architecture",
+          "Digital Logic Design",
+          "Database Systems",
+          "Networks and Communication",
+          "Embedded Systems",
+          "Machine Learning Fundamentals"
+        ]
+      },
+      {
+        "name": "Civil Engineering",
+        "topics": [
+          "Engineering Mechanics",
+          "Strength of Materials",
+          "Structural Analysis",
+          "Concrete and Steel Design",
+          "Fluid Mechanics and Hydraulics",
+          "Geotechnical Engineering",
+          "Construction Materials and Management",
+          "Transportation Engineering",
+          "Surveying",
+          "Environmental Engineering"
+        ]
+      },
+      {
+        "name": "Electrical Engineering",
+        "topics": [
+          "Circuit Theory",
+          "Electromagnetics",
+          "Power Systems",
+          "Control Systems",
+          "Electrical Machines",
+          "Power Electronics",
+          "Signals and Systems",
+          "Instrumentation and Measurement",
+          "Renewable Energy Systems",
+          "Microcontrollers and Embedded Devices"
+        ]
+      },
+      {
+        "name": "Electronics & Communication Engineering",
+        "topics": [
+          "Analog and Digital Electronics",
+          "Communication Systems",
+          "VLSI Fundamentals",
+          "Signal Processing",
+          "Microwave Engineering",
+          "Antenna and Wave Propagation",
+          "Embedded Systems",
+          "Sensors and Transducers",
+          "Optical Communication",
+          "RF Systems"
+        ]
+      },
+      {
+        "name": "Mechanical Engineering",
+        "topics": [
+          "Thermodynamics",
+          "Fluid Mechanics",
+          "Mechanics of Materials",
+          "Machine Design",
+          "Manufacturing Processes",
+          "Heat Transfer",
+          "Dynamics and Vibrations",
+          "CAD/CAM",
+          "Automotive Engineering",
+          "Mechatronics"
+        ]
+      },
+      {
+        "name": "Architecture",
+        "topics": [
+          "Architectural Design",
+          "Building Materials and Construction",
+          "History of Architecture",
+          "Structural Principles for Architects",
+          "Environmental Design and Sustainability",
+          "Urban Design",
+          "Construction Technology",
+          "Building Services",
+          "Professional Practice",
+          "Computer-Aided Design (CAD)"
+        ]
+      },
+      {
+        "name": "Hydropower / Water Resources",
+        "topics": [
+          "Hydrology",
+          "Hydraulic Machines",
+          "Water Resource Management",
+          "Dam Engineering",
+          "Open Channel Flow",
+          "Turbomachinery",
+          "Hydropower Plant Design",
+          "Environmental Impact of Water Projects",
+          "Geotechnical Considerations",
+          "Instrumentation and Control"
+        ]
+      },
+      {
+        "name": "Information Technology",
+        "topics": [
+          "Programming Fundamentals",
+          "Python fundamentals (syntax, libraries, scripting)",
+          "Web and Mobile Development",
+          "Database Design",
+          "Cloud Computing Basics",
+          "Network Security",
+          "Human-Computer Interaction",
+          "Software Project Management",
+          "Data Analytics",
+          "DevOps Practices"
+        ]
+      },
+      {
+        "name": "Geomatics Engineering",
+        "topics": [
+          "Surveying Principles",
+          "Geodesy and Coordinate Systems",
+          "Remote Sensing Basics",
+          "GIS Fundamentals",
+          "Cartography",
+          "Spatial Data Analysis",
+          "Survey Instrumentation",
+          "Photogrammetry",
+          "LiDAR and Laser Scanning",
+          "Applications in Civil Projects"
+        ]
+      },
+      {
+        "name": "Chemical Engineering",
+        "topics": [
+          "Fluid Mechanics for Chemical Processes",
+          "Heat and Mass Transfer",
+          "Chemical Reaction Engineering",
+          "Process Control",
+          "Separation Processes",
+          "Thermodynamics",
+          "Process Design and Economics",
+          "Plant Safety and Hazard Analysis",
+          "Transport Phenomena",
+          "Environmental and Waste Treatment Processes"
+        ]
+      },
+      {
+        "name": "Environmental Engineering",
+        "topics": [
+          "Water and Wastewater Treatment",
+          "Solid Waste Management",
+          "Air Pollution and Control",
+          "Environmental Impact Assessment",
+          "Environmental Chemistry",
+          "Hydrology and Watershed Management",
+          "Sustainable Design Practices",
+          "Environmental Legislation and Policy",
+          "Remediation Techniques",
+          "Monitoring and Instrumentation"
+        ]
+      },
+      {
+        "name": "Industrial Engineering",
+        "topics": [
+          "Operations Research",
+          "Production and Operations Management",
+          "Quality Control and Six Sigma",
+          "Industrial Automation",
+          "Work Study and Ergonomics",
+          "Supply Chain Management",
+          "Facility Layout and Design",
+          "Project Management",
+          "Human Factors Engineering",
+          "Lean Manufacturing"
+        ]
+      },
+      {
+        "name": "Engineering Mathematics",
+        "topics": [
+          "Differential Equations",
+          "Linear Algebra",
+          "Differentiation",
+          "Integration",
+          "Transforms (Laplace, Fourier)",
+          "Numerical Methods",
+          "Probability and Statistics for Engineers",
+          "Vector Calculus",
+          "Complex Variables",
+          "Optimization Basics"
+        ]
+      }
+    ],
+    "components": ["default"]
+  },
+
+  "TU": {
+    "levels": ["default"],
+    "subjects": [
+      {
+        "name": "Computer Science (BSc / BSc CSIT)",
+        "topics": [
+          "Python fundamentals (syntax, data types, control flow, OOP, standard library)",
+          "C++ fundamentals (syntax, memory management, OOP, STL)",
+          "Data Structures",
+          "Algorithms",
+          "Database Systems",
+          "Operating Systems",
+          "Computer Networks",
+          "Software Engineering",
+          "Web Technologies",
+          "Data Mining and Analytics"
+        ]
+      },
+      {
+        "name": "Mathematics",
+        "topics": [
+          "Differentiation",
+          "Integration",
+          "Linear Algebra",
+          "Differential Equations",
+          "Real Analysis",
+          "Complex Analysis",
+          "Probability and Statistics",
+          "Numerical Methods",
+          "Abstract Algebra",
+          "Mathematical Modelling"
+        ]
+      },
+      {
+        "name": "Physics",
+        "topics": [
+          "Mechanics",
+          "Electromagnetism",
+          "Thermodynamics",
+          "Optics",
+          "Wave Phenomena",
+          "Quantum Mechanics Intro",
+          "Solid State Physics",
+          "Laboratory Methods",
+          "Statistical Mechanics",
+          "Modern Physics Topics"
+        ]
+      },
+      {
+        "name": "Chemistry",
+        "topics": [
+          "Physical Chemistry",
+          "Organic Chemistry",
+          "Inorganic Chemistry",
+          "Analytical Techniques",
+          "Chemical Thermodynamics",
+          "Reaction Mechanisms",
+          "Spectroscopy Basics",
+          "Environmental Chemistry",
+          "Polymer Chemistry",
+          "Laboratory Safety and Techniques"
+        ]
+      },
+      {
+        "name": "Biology / Microbiology",
+        "topics": [
+          "Cell Biology",
+          "Genetics and Evolution",
+          "Biochemistry",
+          "Microbiology Techniques",
+          "Plant and Animal Physiology",
+          "Ecology and Conservation",
+          "Molecular Biology",
+          "Immunology Basics",
+          "Biotechnology Applications",
+          "Research Methods"
+        ]
+      },
+      {
+        "name": "English",
+        "topics": [
+          "Reading Comprehension",
+          "Academic Writing",
+          "Grammar and Usage",
+          "Literary Studies",
+          "Communication Skills",
+          "Presentation Skills",
+          "Critical Thinking in Texts",
+          "Practical Language Use",
+          "Research Writing",
+          "Listening and Speaking"
+        ]
+      },
+      {
+        "name": "Nepali",
+        "topics": [
+          "Grammar and Composition",
+          "Nepali Literature",
+          "Poetry and Prose",
+          "Essay Writing",
+          "Drama and Critical Studies",
+          "Linguistics Basics",
+          "Folk Literature",
+          "Contemporary Nepali Writing",
+          "Language and Society",
+          "Translation Practice"
+        ]
+      },
+      {
+        "name": "Management (BBS / BBM)",
+        "topics": [
+          "Principles of Management",
+          "Accounting and Finance",
+          "Marketing",
+          "Organizational Behaviour",
+          "Business Law",
+          "Human Resource Management",
+          "Entrepreneurship",
+          "Business Communication",
+          "Financial Management",
+          "Strategic Management"
+        ]
+      },
+      {
+        "name": "Economics",
+        "topics": [
+          "Microeconomic Theory",
+          "Macroeconomic Theory",
+          "Public Finance",
+          "Development Economics",
+          "International Trade",
+          "Monetary Economics",
+          "Econometrics Basics",
+          "Nepalese Economy",
+          "Statistical Methods for Economics",
+          "Policy Analysis"
+        ]
+      },
+      {
+        "name": "Accountancy / Finance",
+        "topics": [
+          "Financial Accounting",
+          "Managerial Accounting",
+          "Auditing Principles",
+          "Taxation",
+          "Corporate Finance",
+          "Financial Statement Analysis",
+          "Cost Accounting",
+          "Accounting Information Systems",
+          "Budgeting and Forecasting",
+          "Business Ethics in Finance"
+        ]
+      }
+    ],
+    "components": [
+      "Semester 1",
+      "Semester 2",
+      "Semester 3",
+      "Semester 4",
+      "Semester 5",
+      "Semester 6",
+      "Semester 7",
+      "Semester 8"
     ]
   }
 }

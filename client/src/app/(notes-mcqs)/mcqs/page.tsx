@@ -1,22 +1,20 @@
-// "use client";
 import { Metadata } from "next";
 import QuestionGeneratorForm from "./QuestionGeneratorForm.jsx";
 
 export const metadata: Metadata = {
-  title: "Paper Guides | Question Generator ",
+  title: "Paper Guides | MCQs Generator ",
   description:
     "Free exam preparation resources, Notes, Past-Papers, Question Papers, Question Generator, MCQs practice and more.  Find past papers for O-Level, A-Levels, NEB / TU / IOE and more.",
   icons: "/images/logo.ico",
   openGraph: {
-    title: "Paper Guides | Question Generator",
-
+    title: "Paper Guides | MCQs Generator",
     description:
       "Free exam preparation resources, Notes, Past-Papers, Question Papers, Question Generator, MCQs practice and more. Find past papers for O-Level, A-Levels, NEB / TU / IOEand more.",
-    url: "https://paperguides.org/generator",
+    url: "https://paperguides.org/mcqs",
     siteName: "Paper Guides",
     images: [
       {
-        url: "/images/opg_question_generator.png",
+        url: "/images/opg_mcqs_generator.png",
         width: 1200,
         height: 720,
         alt: "Paper Guides Open Graph Image",
@@ -27,12 +25,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
+export default async function mcqsPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-6xl p-6">
-        <QuestionGeneratorForm />
-      </div>
+    <div >
+      <QuestionGeneratorForm />
     </div>
   );
 }

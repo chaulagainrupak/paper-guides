@@ -1,22 +1,15 @@
 import PaperViewerClient from "./PaperViewerClient";
 
-export async function generateMetadata({ params }) {
-  const { question } = params;
-  const decodedQuestion = decodeURIComponent(question);
-
-  const description = `
-    View and download the ${decodedQuestion} question paper along with its mark scheme.
-    Prepare for exams with our detailed past papers, answers, and helpful resources.
-    Access all your A Level, O Level, and other board-specific papers in one place.
-    Perfect for students and teachers looking for reliable study materials.
-  `.trim().replace(/\s+/g, ' ');
-
+export async function generateMetadata({
+  params
+}) {
+  const { question }  = await params;
   return {
-    description,
+    description: `Access ${decodeURIComponent(question)} past papers with mark schemes for A-Level exam prep. Download PDFs to study and boost your grades.`,
     icons: "/images/logo.ico",
     openGraph: {
-      description,
-      url: `https://paperguides.org/paper/${encodeURIComponent(decodedQuestion)}`,
+      description: `Access ${decodeURIComponent(question)} past papers with mark schemes for A-Level exam prep. Download PDFs to study and boost your grades.`,
+      url: `https://paperguides.org/pastpapers`,
       siteName: "Paper Guides",
       locale: "en_US",
       type: "website",
@@ -24,6 +17,9 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function PaperViewerPage({ params }) {
-  return <PaperViewerClient question={params.question} />;
+export default async function PaperViewerPage({
+  params,
+}) {
+  const {question} = await params; 
+  return <PaperViewerClient question={question} />;
 }

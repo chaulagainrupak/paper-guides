@@ -17,5 +17,5 @@ export default function LoginLink() {
 
   if (loggedIn === null) return null; 
 
-  return !loggedIn ? <Link href="/login">Login</Link> : <button onClick={logOut} className="text-left cursor-pointer">Log-Out</button>;
+  return !loggedIn ? <Link href="/login">Login</Link> : <Link href="#" onClick={() => {logOut; setLoggedIn(!loggedIn)}} className="cursor-pointer">Log-Out</Link>;
 }
