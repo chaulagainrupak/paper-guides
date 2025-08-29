@@ -699,7 +699,7 @@ async def getQuestionsForMcqs(request: Request):
                 detail="You need to have a valid account to generate questions",
             )
 
-        # checkRateLimit(username)
+        checkRateLimit(username)
 
         body = await request.json()
 
