@@ -1,5 +1,30 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Paper Guides",
+  description: "Free exam preparation resources, Notes, Past-Papers, Question",
+  icons: "/images/logo.ico",
+  openGraph: {
+    title: "Paper Guides",
+    description: "Free exam preparation resources for students and learners.",
+    url: "https://paperguides.org",
+    siteName: "Paper Guides",
+    images: [
+      {
+        url: "/images/opg_paper_guides.png",
+        width: 1200,
+        height: 720,
+        alt: "Paper Guides Open Graph Image",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+};
+
 
 export default function HomePage() {
   return (

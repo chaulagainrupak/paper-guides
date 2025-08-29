@@ -7,31 +7,6 @@ import SiteFooter from "./footer";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { isLoggedIn, logOut } from "./utils";
-
-export const metadata: Metadata = {
-  title: "Paper Guides | Past Papers ",
-  description:
-    "Free exam preparation resources, Notes, Past-Papers, Question Papers, Question Generator, MCQs practice and more.  Find past papers for O-Level, A-Levels, NEB / TU / IOE and more.",
-  icons: "/images/logo.ico",
-  openGraph: {
-    title: "Paper Guides | Past Papers",
-    description:
-      "Free exam preparation resources, Notes, Past-Papers, Question Papers, Question Generator, MCQs practice and more. Find past papers for O-Level, A-Levels, NEB / TU / IOEand more.",
-    url: "https://paperguides.org",
-    siteName: "Paper Guides",
-    images: [
-      {
-        url: "/images/opg_paper_guides.png",
-        width: 1200,
-        height: 720,
-        alt: "Paper Guides Open Graph Image",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-};
 
 
 export default function RootLayout({
