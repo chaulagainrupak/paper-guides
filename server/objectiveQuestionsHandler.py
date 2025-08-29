@@ -80,7 +80,7 @@ def generateMcqTest(
         params = []
 
         if subjects:
-            query += f" AND subject IN ({', '.join([f'\'{subject.lower()}\'' for subject in subjects])})"
+            query += f" AND subject IN ({', '.join(["'" + {subject.lower()} + "'" for subject in subjects])})"
         if board:
             query += " AND board = ?"
             params.append(board.lower())
