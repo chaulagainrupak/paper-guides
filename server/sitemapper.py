@@ -17,10 +17,11 @@ mainLinks = [
     ("/pastpapers", "weekly", 0.9),
     ("/notes", "weekly", 0.9),
     ("/generator", "weekly", 0.8),
+    ("/mcqs", "weekly", 0.8),
 ]
 
 footerLinks = [
-    ("/about", "yearly", 0.6),
+    ("/about", "monthly", 0.6),
 ]
 
 def createUrlNode(loc, lastmod=None, changefreq=None, priority=None):
