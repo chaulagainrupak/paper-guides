@@ -11,7 +11,7 @@ export function getSiteKey(): string {
 }
 // this is done so "legacy" code still functions; else the parameter is not required 
 export function getApiUrl(isLocal: boolean) {
-  return process.env.API_URL || "http://api.paperguides.org"; 
+  return process.env.API_URL || "https://api.paperguides.org"; 
 }
 
 
