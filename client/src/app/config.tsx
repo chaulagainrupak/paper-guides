@@ -7,11 +7,11 @@ export function isLocalhost(): boolean {
 }
 
 export function getSiteKey(): string {
-  return process.env.SITE_KEY || "1x00000000000000000000AA";
+  return process.env.SITE_KEY || "0x4AAAAAAA1LsUg4unsYRplP";
 }
 // this is done so "legacy" code still functions; else the parameter is not required 
 export function getApiUrl(isLocal: boolean) {
-  return process.env.API_URL || "http://localhost:8000"; 
+  return process.env.API_URL || "http://api.paperguides.org"; 
 }
 
 
