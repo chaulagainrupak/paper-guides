@@ -52,7 +52,7 @@ export default function PaperViewerClient({ questionName, questionPdf, markSchem
           </div>
         </div>
 
-        <div className="mt-8">
+        {/* <div className="mt-8">
           <h2 className="text-2xl font-bold mb-2">Here's some more papers for you</h2>
           <ul className="space-y-2">
             {morePapers.map((p, i) => (
@@ -63,7 +63,7 @@ export default function PaperViewerClient({ questionName, questionPdf, markSchem
               </li>
             ))}
           </ul>
-        </div>
+        </div> */}
       </div>
     </div>
   );
