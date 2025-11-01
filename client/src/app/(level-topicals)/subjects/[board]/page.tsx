@@ -1,32 +1,27 @@
 import { getApiUrl, isLocalhost } from "@/app/config";
-import SubjectsPage from "./boardsPage";
 import { Metadata } from "next";
+import Link from "next/link";
+import { BackButton } from "@/app/components/BackButton";
 
 interface PageProps {
   params: Promise<{ board: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
+
+interface Subject {
+  name: string;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const board = decodeURIComponent((await params).board);
   return {
-    title: `Available subjects for ${decodeURIComponent(
-      (await params).board
-    )} | Paper Guidess`,
-    description: `Explore the subjects available for ${decodeURIComponent(
-      (await params).board
-    )}. Find past papers, notes, and resources to help you prepare for your exams.`,
+    title: `Available subjects for ${board} | Paper Guides`,
+    description: `Explore the subjects available for ${board}. Find past papers, notes, and resources to help you prepare for your exams.`,
     icons: "/images/logo.ico",
     openGraph: {
-      title: `Available subjects for ${decodeURIComponent(
-        (await params).board
-      )} | Paper Guides`,
-      description: `Explore the subjects available for ${decodeURIComponent(
-        (await params).board
-      )}. Find past papers, notes, and resources to help you prepare for your exams.`,
-      url: `https://paperguides.org/subjects/${decodeURIComponent(
-        (await params).board
-      )}`,
+      title: `Available subjects for ${board} | Paper Guides`,
+      description: `Explore the subjects available for ${board}. Find past papers, notes, and resources to help you prepare for your exams.`,
+      url: `https://paperguides.org/subjects/${board}`,
       siteName: "Paper Guides",
       locale: "en_US",
       type: "website",
@@ -42,21 +37,42 @@ export async function generateMetadata({
   };
 }
 
-export default async function fetchSubjects({ params }: PageProps) {
-  const { board } = await params;
+export default async function Page({ params }: PageProps) {
+  const board = (await params).board;
 
   try {
-    const response = await fetch(
-      getApiUrl(isLocalhost()) + `/subjects/${board}`,
-      { cache: "default" }
-    );
-    const data = await response.json();
+    const response = await fetch(getApiUrl(isLocalhost()) + `/subjects/${board}`);
+    const subjects: Subject[] = await response.json();
 
-    const sortedSubjects = data.sort((a: any, b: any) =>
+    const sortedSubjects = subjects.sort((a, b) =>
       a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
     );
-    return <SubjectsPage board={decodeURI(board)} subjects={sortedSubjects} />;
-  } catch {
-    console.error("Something has happned on the server! DON'T PANIC!");
+
+    return (
+      <div>
+        <div className="flex justify-between align-center mb-6">
+          <h1 className="text-4xl font-semibold">
+            Available <span className="text-[var(--blue-highlight)]">Subjects</span> for: {board.replaceAll('%20', ' ')}
+          </h1>
+          <BackButton />
+        </div>
+
+        <div className="animate-fade-in space-y-6">
+          {sortedSubjects.map((subject) => (
+            <div key={subject.name} className="mb-4">
+              <Link
+                href={`/subjects/${board}/${subject.name}`}
+                className="border-1 border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
+              >
+                {subject.name}
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  } catch (err) {
+    console.error("Error fetching subjects:", err);
+    return <div>Error loading subjects</div>;
   }
 }
