@@ -62,7 +62,7 @@ def checkRateLimit(username: str):
     remaining = RATE_LIMIT_SECONDS - (currentTime - lastTime)
     raise HTTPException(
         status_code=429,
-        detail=f"Please try again after {round(remaining / 60, 2)} minutes."
+        detail=f"Please try again after {round(remaining / 60, 2)} minutes.",
     )
 
 
@@ -81,6 +81,27 @@ app.add_middleware(
 
 initializeDatabases()
 
+#  Database for the login
+conn = sqlite3.connect(DATABASE_PATH)
+cursor = conn.cursor()
+
+cursor.execute(
+    """
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        signup_time DATETIME,
+        full_name TEXT,
+        role TEXT
+    );
+"""
+)
+
+conn.commit()
+conn.close()
+
 
 # ---------- Utility Functions ----------
 def getDbConnection():
@@ -96,25 +117,33 @@ def createAccessToken(data: dict, expiresDelta: timedelta = None):
     return jwt.encode(toEncode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def verifyPassword(plainPassword, hashedPassword):
-    if isinstance(hashedPassword, bytes):
-        hashedPassword = hashedPassword.decode()
-
-    # detect our old password format and allow them to log in
-    if hashedPassword.startswith("pbkdf2:") or hashedPassword.startswith("scrypt:"):
-        try:
+def verifyPassword(plainPassword: str, hashedPassword: str) -> bool:
+    """
+    Verifies both old scrypt hashes and new bcrypt hashes.
+    """
+    try:
+        # Old scrypt format
+        if hashedPassword.startswith("scrypt"):
             return check_password_hash(hashedPassword, plainPassword)
-        except Exception:
-            return False
-    else:
-        try:
-            return bcrypt.checkpw(plainPassword.encode(), hashedPassword.encode())
-        except Exception:
-            return False
+
+        # New bcrypt format
+        if hashedPassword.startswith("$2a$") or hashedPassword.startswith("$2b$"):
+            return bcrypt.checkpw(
+                plainPassword.encode("utf-8"), hashedPassword.encode("utf-8")
+            )
+
+        # Unknown format
+        print("Unknown password hash format!")
+        return False
+    except Exception as e:
+        print("Password verification failed:", e)
+        return False
 
 
-def hashPassword(password):
-    return bcrypt.hashpw(password, bcrypt.gensalt())
+def hashPassword(password: str) -> str:
+
+    hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    return hashed
 
 
 @app.get("/")
@@ -329,6 +358,7 @@ async def signup(body: Request):
     except HTTPException:
         raise
     except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=500, detail=f"Internal server error! Don't Panic!"
         )
@@ -339,39 +369,45 @@ async def signup(body: Request):
 
 @app.post("/login")
 async def login(body: Request):
-    conn = getDbConnection()
-    cur = conn.cursor()
 
-    data = await body.json()
+    try:
+        conn = getDbConnection()
+        cur = conn.cursor()
 
-    username = data.get("username")
-    email = data.get("email")
-    password = data.get("password")
-    token = data.get("token")
+        data = await body.json()
 
-    # Verify Turnstile token
-    isValid = verifyTurnstileToken(token)
-    if not isValid:
-        raise HTTPException(
-            status_code=400,
-            detail="Turnstile Captcha verification failed, reload the page and try again!",
+        username = data.get("username")
+        email = data.get("email")
+        password = data.get("password")
+        token = data.get("token")
+
+        # print(username,email,password,token)
+        # Verify Turnstile token
+        isValid = verifyTurnstileToken(token)
+        if not isValid:
+            raise HTTPException(
+                status_code=400,
+                detail="Turnstile Captcha verification failed, reload the page and try again!",
+            )
+
+        cur.execute(
+            "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
+        )
+        user = cur.fetchone()
+        conn.close()
+
+        if not user or not verifyPassword(password, user["password"]):
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+
+        accessToken = createAccessToken(
+            data={"username": user["username"], "email": user["email"]},
+            expiresDelta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
         )
 
-    cur.execute(
-        "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
-    )
-    user = cur.fetchone()
-    conn.close()
-
-    if not user or not verifyPassword(password, user["password"]):
+        return {"accessToken": accessToken, "tokenType": "bearer"}
+    except Exception as e:
+        print(e)
         raise HTTPException(status_code=401, detail="Invalid username or password")
-
-    accessToken = createAccessToken(
-        data={"username": user["username"], "email": user["email"]},
-        expiresDelta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
-    )
-
-    return {"accessToken": accessToken, "tokenType": "bearer"}
 
 
 @app.post("/validateToken")
@@ -527,8 +563,6 @@ async def postNote(request: Request):
     except Exception as e:
         print(e)
         HTTPException(status_code=500, detail="internal server error")
-
-
 
 
 @app.post("/submit-mcqs-admin")
@@ -725,7 +759,7 @@ async def getQuestionsForMcqs(request: Request):
             )
         else:
             return result
-            
+
     except HTTPException:
         raise
     except Exception as e:
@@ -742,6 +776,7 @@ async def getQuestionsForMcqs(request: Request):
 #     except Exception as e:
 #         print(e)
 #         raise Response(content='error', status_code=500)
+
 
 @app.get("/sitemap.xml")
 async def sitemap():

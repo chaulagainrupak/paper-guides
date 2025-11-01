@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -15,7 +15,20 @@ export default function LoginLink() {
     checkLogin();
   }, []);
 
-  if (loggedIn === null) return null; 
+  if (loggedIn === null) return null;
 
-  return !loggedIn ? <Link href="/login">Login</Link> : <Link href="#" onClick={() => {logOut; setLoggedIn(!loggedIn)}} className="cursor-pointer">Log-Out</Link>;
+  return !loggedIn ? (
+    <Link href="/login">Login</Link>
+  ) : (
+    <Link
+      href="#"
+      onClick={() => {
+        logOut();
+        setLoggedIn(!loggedIn);
+      }}
+      className="cursor-pointer"
+    >
+      Log-Out
+    </Link>
+  );
 }

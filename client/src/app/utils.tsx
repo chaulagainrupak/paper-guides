@@ -1,4 +1,3 @@
-
 import { redirect } from "next/navigation";
 import { getApiUrl, isLocalhost } from "./config";
 
@@ -62,7 +61,6 @@ export async function getRole() {
 export function logOut() {
   localStorage.removeItem("authToken");
   alert("Logged Out");
-  redirect("/");
 }
 
 export function Loader() {
@@ -105,7 +103,6 @@ export function Loader() {
 }
 
 export function BackButton() {
-
   const handleClick = () => {
     history.back();
   };

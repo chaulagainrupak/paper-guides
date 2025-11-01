@@ -3,20 +3,18 @@
 import { useEffect, useState } from "react";
 import { isLocalhost, getSiteKey, darkModeOn, getApiUrl } from "../config";
 import { isLoggedIn } from "../utils";
+
 export default function LoginPage() {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
-
   const [turnstileSuccessToken, setTurnstileSuccessToken] = useState("");
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-
     const check = async () => {
       if (await isLoggedIn()) {
-        window.location.href ='/';
+        window.location.href = "/";
       }
     };
-
     check();
 
     const script = document.createElement("script");
@@ -41,6 +39,8 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     const form = e.currentTarget;
     const formData = new FormData(form);
     const data: Record<string, string> = {};
@@ -50,9 +50,7 @@ export default function LoginPage() {
 
     const res = await fetch(getApiUrl(isLocalhost()) + url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         username: data.username,
         email: data.email,
@@ -63,13 +61,15 @@ export default function LoginPage() {
 
     const result = await res.json();
 
+    setIsSubmitting(false);
+
     if (activeTab === "login" && res.status == 200) {
       localStorage.setItem("authToken", JSON.stringify(result));
-      alert('Logged In');
-      window.location.href = '/';
+      alert("Logged In");
+      window.location.href = "/";
     } else if (result.message) {
       alert(result.message);
-    }else if (result.detail){
+    } else if (result.detail) {
       alert(result.detail);
     }
   };
@@ -84,7 +84,6 @@ export default function LoginPage() {
             border: "1px solid var(--color-border)",
           }}
         >
-          {/* Tab Selection */}
           <div
             className="flex"
             style={{ borderBottom: "1px solid var(--color-border)" }}
@@ -127,7 +126,6 @@ export default function LoginPage() {
             className="p-6"
             style={{ backgroundColor: "var(--color-surface)" }}
           >
-            {/* Login Form */}
             <form
               onSubmit={handleSubmit}
               className={`space-y-4 ${activeTab !== "login" && "hidden"}`}
@@ -202,17 +200,18 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className="w-full py-3 px-4 font-medium rounded-lg transition-colors shadow-md hover:shadow-lg"
-                style={{
-                  backgroundColor: "var(--blue-highlight)",
-                  color: "var(--text-color)",
-                }}
+                disabled={isSubmitting}
+                className="text-white font-bold w-full py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ backgroundColor: "var(--blue-highlight)" }}
               >
-                Login
+                {isSubmitting ? (
+                  <div className="mx-auto h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  "Login"
+                )}
               </button>
             </form>
 
-            {/* Signup Form */}
             <form
               onSubmit={handleSubmit}
               className={`space-y-4 ${activeTab !== "signup" && "hidden"}`}
@@ -309,17 +308,18 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className="w-full py-3 px-4 font-medium rounded-lg transition-colors shadow-md hover:shadow-lg"
-                style={{
-                  backgroundColor: "var(--blue-highlight)",
-                  color: "var(--text-color)",
-                }}
+                disabled={isSubmitting}
+                className="text-white font-bold w-full py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ backgroundColor: "var(--blue-highlight)" }}
               >
-                Create Account
+                {isSubmitting ? (
+                  <div className="mx-auto h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  "Create Account"
+                )}
               </button>
             </form>
 
-            {/* Turnstile CAPTCHA */}
             <div className="my-6 flex justify-center">
               <div id="turnstile-container" />
             </div>
