@@ -142,7 +142,7 @@ def verifyPassword(plainPassword: str, hashedPassword: str) -> bool:
 
 def hashPassword(password: str) -> str:
 
-    hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    hashed = bcrypt.hashpw(password, bcrypt.gensalt())
     return hashed
 
 
@@ -330,7 +330,7 @@ async def signup(body: Request):
         email = data.get("email")
         password = data.get("password")
         token = data.get("token")
-
+        
         # Verify captcha
         if not verifyTurnstileToken(token):
             raise HTTPException(
