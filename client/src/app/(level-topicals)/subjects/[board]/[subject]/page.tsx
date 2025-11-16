@@ -2,6 +2,7 @@ import { getApiUrl, isLocalhost } from "@/app/config";
 // import SingleBoardLevel from "./subjectYears";
 import { Metadata } from "next";
 import { BackButton } from "@/app/components/BackButton";
+import Link from "next/link";
 // import { usePathname } from "next/navigation";
 
 interface PageProps {
@@ -76,13 +77,15 @@ async function SingleBoardLevel({
 
       <div className="animate-fade-in space-y-4">
         {years.map((year) => (
-          <a
+          <Link
             key={year}
             href={`/subjects/${params.board}/${params.subject}/${year}`}
             className="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-2xl transition-all duration-200"
+              prefetch = {true}
+          
           >
             {year}
-          </a>
+          </Link>
         ))}
       </div>
     </div>

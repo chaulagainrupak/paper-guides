@@ -90,7 +90,11 @@ export default async function getQuestionLinks({ params }: PageProps) {
 
     // return <QuestionLinks subject={subject} groupedPapers={grouped} {params} />;
 
-    return QuestionLinks({ subject, groupedPapers: grouped , pathParams: resolved });
+    return QuestionLinks({
+      subject,
+      groupedPapers: grouped,
+      pathParams: resolved,
+    });
   } catch (err) {
     console.error("Failed to fetch or group papers:", err);
   }
@@ -157,6 +161,7 @@ async function QuestionLinks({
                   key={`${session}-${code}-${index}`}
                 >
                   <Link
+                    prefetch={true}
                     href={`${pathname.replace(/\/$/, "")}/${encodeUrlSegment(
                       subject,
                       "Question Paper",
@@ -175,6 +180,7 @@ async function QuestionLinks({
                       : `Year: ${session} Question Paper`}
                   </Link>
                   <Link
+                    prefetch={true}
                     href={`${pathname.replace(/\/$/, "")}/${encodeUrlSegment(
                       subject,
                       "Mark Scheme",
