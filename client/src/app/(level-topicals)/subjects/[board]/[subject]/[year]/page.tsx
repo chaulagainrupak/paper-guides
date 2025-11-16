@@ -161,7 +161,6 @@ async function QuestionLinks({
                   key={`${session}-${code}-${index}`}
                 >
                   <Link
-                    prefetch={true}
                     href={`${pathname.replace(/\/$/, "")}/${encodeUrlSegment(
                       subject,
                       "Question Paper",
@@ -180,7 +179,6 @@ async function QuestionLinks({
                       : `Year: ${session} Question Paper`}
                   </Link>
                   <Link
-                    prefetch={true}
                     href={`${pathname.replace(/\/$/, "")}/${encodeUrlSegment(
                       subject,
                       "Mark Scheme",
