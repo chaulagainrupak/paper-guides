@@ -57,6 +57,7 @@ export default async function FetchPastPapers() {
                 <div className="level-section mb-4">
                   <Link
                     href={`/subjects/${encodeURIComponent("A levels")}`}
+                    prefetch={true}
                     className="border-1 border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
                   >
                     CAIE: A Levels

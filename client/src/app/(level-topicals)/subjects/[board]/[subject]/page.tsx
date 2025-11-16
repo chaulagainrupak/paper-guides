@@ -1,9 +1,11 @@
 import { getApiUrl, isLocalhost } from "@/app/config";
-import SingleBoardLevel from "./subjectYears";
+// import SingleBoardLevel from "./subjectYears";
 import { Metadata } from "next";
+import { BackButton } from "@/app/components/BackButton";
+// import { usePathname } from "next/navigation";
 
 interface PageProps {
-  params: Promise<{ subject: string }>;
+  params: Promise<{ board: string; subject: string }>;
 }
 
 export async function generateMetadata({
@@ -42,8 +44,47 @@ export default async function getYearData({ params }: PageProps) {
       cache: "default",
     });
     const result = await res.json();
-    return <SingleBoardLevel years={result[0]["years"]} />;
+
+    // Made this server side rendering
+    // return <SingleBoardLevel years={result[0]["years"]} />;
+    return SingleBoardLevel({
+      years: result[0].years,
+      params: await params,
+    });
   } catch (err) {
     console.error("Failed to fetch years:", err);
   }
+}
+
+async function SingleBoardLevel({
+  years,
+  params,
+}: {
+  years: number[];
+  params: { board: string; subject: string };
+}) {
+  // const pathname = usePathname();
+
+  return (
+    <div>
+      <div className="flex justify-between align-center mb-6">
+        <h1 className="text-4xl font-semibold">
+          Available <span className="text-[var(--blue-highlight)]">Years</span>
+        </h1>
+        <BackButton></BackButton>
+      </div>
+
+      <div className="animate-fade-in space-y-4">
+        {years.map((year) => (
+          <a
+            key={year}
+            href={`/subjects/${params.board}/${params.subject}/${year}`}
+            className="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-2xl transition-all duration-200"
+          >
+            {year}
+          </a>
+        ))}
+      </div>
+    </div>
+  );
 }

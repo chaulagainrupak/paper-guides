@@ -58,7 +58,11 @@ def checkRateLimit(username: str):
     if not lastTime or (currentTime - lastTime) >= RATE_LIMIT_SECONDS:
         lastGenTimes[username] = currentTime
         return
+    #  Just for development testing make sure to comment this line out 
 
+    # if  username == "RupakChaulagain":
+    #     return
+        
     remaining = RATE_LIMIT_SECONDS - (currentTime - lastTime)
     raise HTTPException(
         status_code=429,
@@ -666,7 +670,8 @@ async def getQuestions(request: Request):
                 detail="You need to have a valid account to generate questions",
             )
 
-        checkRateLimit(username)
+        if user[6] != "admin":
+            checkRateLimit(username)
 
         body = await request.json()
 
