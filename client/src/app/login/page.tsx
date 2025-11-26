@@ -60,18 +60,21 @@ export default function LoginPage() {
     });
 
     const result = await res.json();
-
     setIsSubmitting(false);
 
-    if (activeTab === "login" && res.status == 200) {
+    if (res.status === 200 && activeTab === "login") {
       localStorage.setItem("authToken", JSON.stringify(result));
       alert("Logged In");
       window.location.href = "/";
-    } else if (result.message) {
-      alert(result.message);
-    } else if (result.detail) {
-      alert(result.detail);
+      return;
     }
+
+    alert(result.message || result.detail || "Something went wrong");
+
+    const win = window as any;
+    if (win.turnstile) win.turnstile.reset("#turnstile-container");
+    setTurnstileSuccessToken("");
+    form.reset();
   };
 
   return (
