@@ -15,6 +15,7 @@ function toggleCheckbox(value, array, setArray) {
 }
 
 export default function QuestionGeneratorForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [generating, setGenerating] = useState(true);
   const [generatedResult, setGeneratedResult] = useState({});
 
@@ -96,6 +97,8 @@ export default function QuestionGeneratorForm() {
             onSubmit={async (e) => {
               e.preventDefault();
 
+              setIsSubmitting(true);
+
               const payload = {
                 board: selectedBoard,
                 subject: selectedSubject,
@@ -147,6 +150,7 @@ export default function QuestionGeneratorForm() {
                   const result = await res.json();
                   setGeneratedResult(result);
                   setGenerating(false);
+                  setIsSubmitting(false);
                 } else if (res.status === 429) {
                   const result = await res.json();
                   alert(
@@ -422,7 +426,14 @@ export default function QuestionGeneratorForm() {
                 type="submit"
                 className="mt-6 bg-[var(--blue-highlight)] text-3xl text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-500 transition hover:scale-105 cursor-pointer"
               >
-                🚀 Generate Questions
+                {isSubmitting ? (
+                  <div className="flex gap-2 justify-between items-center">
+                    <div className="mx-auto h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div>Generate Questions</div>
+                  </div>
+                ) : (
+                  <>Generate Questions</>
+                )}
               </button>
             </div>
           </form>
