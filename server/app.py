@@ -569,70 +569,70 @@ async def postNote(request: Request):
         HTTPException(status_code=500, detail="internal server error")
 
 
-@app.post("/submit-mcqs-admin")
-async def submitQuestionToDb(request: Request):
+# @app.post("/submit-mcqs-admin")
+# async def submitQuestionToDb(request: Request):
 
-    try:
-        conn = getDbConnection()
-        cur = conn.cursor()
+#     try:
+#         conn = getDbConnection()
+#         cur = conn.cursor()
 
-        authHeader = request.headers.get("authorization")
+#         authHeader = request.headers.get("authorization")
 
-        if not authHeader or not authHeader.startswith("Bearer "):
-            raise HTTPException(
-                status_code=401, detail="Missing or invalid Authorization header"
-            )
+#         if not authHeader or not authHeader.startswith("Bearer "):
+#             raise HTTPException(
+#                 status_code=401, detail="Missing or invalid Authorization header"
+#             )
 
-        token = authHeader.split(" ")[1]
+#         token = authHeader.split(" ")[1]
 
-        tokenData = jwt.decode(token, SECRET_KEY)
+#         tokenData = jwt.decode(token, SECRET_KEY)
 
-        username = tokenData["username"]
-        email = tokenData["email"]
-        exp = tokenData["exp"]
-        if exp < time.time():
-            return {"message": "token expired"}, 429
+#         username = tokenData["username"]
+#         email = tokenData["email"]
+#         exp = tokenData["exp"]
+#         if exp < time.time():
+#             return {"message": "token expired"}, 429
 
-        cur.execute(
-            "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
-        )
-        user = cur.fetchone()
-        conn.close()
+#         cur.execute(
+#             "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
+#         )
+#         user = cur.fetchone()
+#         conn.close()
 
-        if not user:
-            raise HTTPException(status_code=401, detail="Invalid username or password")
-        if user["role"].lower() != "admin":
-            raise HTTPException(status_code=401, detail="Unauthorized")
+#         if not user:
+#             raise HTTPException(status_code=401, detail="Invalid username or password")
+#         if user["role"].lower() != "admin":
+#             raise HTTPException(status_code=401, detail="Unauthorized")
 
-        form = await request.form()
+#         form = await request.form()
 
-        board = form.get("board")
-        subject = form.get("subject")
-        topic = form.get("topic")
-        component = form.get("component")
-        difficulty = form.get("difficulty")
-        level = form.get("level")
+#         board = form.get("board")
+#         subject = form.get("subject")
+#         topic = form.get("topic")
+#         component = form.get("component")
+#         difficulty = form.get("difficulty")
+#         level = form.get("level")
 
-        processedQuestion = await process_images(form.getlist("questionImages"))
-        processedSolution = await process_images(form.getlist("solutionImages"))
+#         processedQuestion = await process_images(form.getlist("questionImages"))
+#         processedSolution = await process_images(form.getlist("solutionImages"))
 
-        insertQuestion(
-            board,
-            subject,
-            topic,
-            difficulty,
-            level,
-            component,
-            processedQuestion,
-            processedSolution,
-            username,
-            ip=None,
-        )
-        return {"message": "got it"}, 200
+#         insertQuestion(
+#             board,
+#             subject,
+#             topic,
+#             difficulty,
+#             level,
+#             component,
+#             processedQuestion,
+#             processedSolution,
+#             username,
+#             ip=None,
+#         )
+#         return {"message": "got it"}, 200
 
-    except Exception as e:
-        print(e)
-        HTTPException(status_code=500, detail="internal server error")
+#     except Exception as e:
+#         print(e)
+#         HTTPException(status_code=500, detail="internal server error")
 
 
 @app.post("/question-gen")

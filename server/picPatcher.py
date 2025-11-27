@@ -43,6 +43,6 @@ async def process_images(imageFiles, padding=20):
         yOffset += img.height + padding
 
     outputBuffer = io.BytesIO()
-    finalImage.save(outputBuffer, format='PNG', optimize=True, compress_level=9)
+    finalImage.save(outputBuffer, format='WEBP', quality=40, method=6)
 
     return outputBuffer.getvalue()
