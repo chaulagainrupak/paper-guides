@@ -9,6 +9,11 @@ export default function LoginPage() {
   const [turnstileSuccessToken, setTurnstileSuccessToken] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [loginPasswordHidden, setLoginPasswordHidden] = useState(true);
+  const [signupPasswordHidden, setSignupPasswordHidden] = useState(true);
+  const [signupConfirmPasswordHidden, setSignupConfirmPasswordHidden] =
+    useState(true);
+
   useEffect(() => {
     const check = async () => {
       if (await isLoggedIn()) {
@@ -92,7 +97,7 @@ export default function LoginPage() {
             style={{ borderBottom: "1px solid var(--color-border)" }}
           >
             <button
-              className={`flex-1 py-4 font-medium transition-colors ${
+              className={`cursor-pointer flex-1 py-4 font-medium transition-colors ${
                 activeTab === "login"
                   ? "text-white"
                   : "text-[var(--color-text)]"
@@ -108,7 +113,7 @@ export default function LoginPage() {
               Login
             </button>
             <button
-              className={`flex-1 py-4 font-medium transition-colors ${
+              className={`cursor-pointer flex-1 py-4 font-medium transition-colors ${
                 activeTab === "signup"
                   ? "text-white"
                   : "text-[var(--color-text)]"
@@ -186,25 +191,33 @@ export default function LoginPage() {
                 >
                   Password
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  id="login-password"
-                  className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
-                  style={{
-                    backgroundColor: "var(--color-nav)",
-                    border: "1px solid var(--color-border)",
-                    color: "var(--color-text)",
-                  }}
-                  placeholder="••••••••"
-                  required
-                />
+                {/* //password */}
+                <div className="flex justify-between">
+                  <input
+                    type={loginPasswordHidden ? "password" : "text"}
+                    name="password"
+                    id="login-password"
+                    className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
+                    style={{
+                      backgroundColor: "var(--color-nav)",
+                      border: "1px solid var(--color-border)",
+                      color: "var(--color-text)",
+                    }}
+                    placeholder="••••••••"
+                    required
+                  />
+
+                  <TogglePasswordVisibility
+                    passwordVisibility={loginPasswordHidden}
+                    callbackFunc={setLoginPasswordHidden}
+                  />
+                </div>
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="text-white font-bold w-full py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="cursor-pointer text-white font-bold w-full py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ backgroundColor: "var(--blue-highlight)" }}
               >
                 {isSubmitting ? (
@@ -272,30 +285,30 @@ export default function LoginPage() {
                 >
                   Password
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  id="signup-password"
-                  className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
-                  style={{
-                    backgroundColor: "var(--color-nav)",
-                    border: "1px solid var(--color-border)",
-                    color: "var(--color-text)",
-                  }}
-                  placeholder="••••••••"
-                  required
-                />
+                <div className="flex justify-between items-center">
+                  <input
+                    type={signupPasswordHidden ? "password" : "text"}
+                    name="password"
+                    id="signup-password"
+                    className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
+                    style={{
+                      backgroundColor: "var(--color-nav)",
+                      border: "1px solid var(--color-border)",
+                      color: "var(--color-text)",
+                    }}
+                    placeholder="••••••••"
+                    required
+                  />
+
+                  <TogglePasswordVisibility
+                    passwordVisibility={signupPasswordHidden}
+                    callbackFunc={setSignupPasswordHidden}
+                  />
+                </div>
               </div>
-              <div>
-                <label
-                  htmlFor="confirm-password"
-                  className="block mb-2 text-sm font-medium"
-                  style={{ color: "var(--color-text)" }}
-                >
-                  Confirm Password
-                </label>
+              <div className="flex justify-between items-center">
                 <input
-                  type="password"
+                  type={signupConfirmPasswordHidden ? "password" : "text"}
                   name="confirm-password"
                   id="confirm-password"
                   className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
@@ -307,12 +320,17 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   required
                 />
+
+                <TogglePasswordVisibility
+                  passwordVisibility={signupConfirmPasswordHidden}
+                  callbackFunc={setSignupConfirmPasswordHidden}
+                />
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="text-white font-bold w-full py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="cursor-pointer text-white font-bold w-full py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ backgroundColor: "var(--blue-highlight)" }}
               >
                 {isSubmitting ? (
@@ -330,5 +348,25 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+type TogglePasswordProps = {
+  passwordVisibility: boolean;
+  callbackFunc: (value: boolean) => void;
+};
+
+function TogglePasswordVisibility({
+  passwordVisibility,
+  callbackFunc,
+}: TogglePasswordProps) {
+  return (
+    <button
+      type="button"
+      className="ml-2 cursor-pointer"
+      onClick={() => callbackFunc(!passwordVisibility)}
+    >
+      {passwordVisibility ? "🙈" : "👁️"}
+    </button>
   );
 }
