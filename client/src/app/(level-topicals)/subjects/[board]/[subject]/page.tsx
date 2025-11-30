@@ -47,7 +47,6 @@ export default async function getYearData({ params }: PageProps) {
     const result = await res.json();
 
     // Made this server side rendering
-    // return <SingleBoardLevel years={result[0]["years"]} />;
     return SingleBoardLevel({
       years: result[0].years,
       params: await params,
