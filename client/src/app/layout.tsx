@@ -5,6 +5,7 @@ import ThemeToggleButton from "./themeToggle";
 import LoginLink from "./loginLink";
 import SiteFooter from "./footer";
 import Script from "next/script";
+import PageLoader from "./components/PreLoader";
 
 
 export default function RootLayout({
@@ -85,6 +86,7 @@ export default function RootLayout({
         <ThemeToggleButton />
 
         <main className="flex-grow">
+          <PageLoader />
           {children}
         </main>
 
