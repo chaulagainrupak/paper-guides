@@ -26,6 +26,7 @@ import time
 
 from picPatcher import process_images
 from objectiveQuestionsHandler import generateMcqTest, insertMcqQuestion
+from updater import sendWebhook
 
 import os
 from dotenv import load_dotenv
@@ -58,11 +59,11 @@ def checkRateLimit(username: str):
     if not lastTime or (currentTime - lastTime) >= RATE_LIMIT_SECONDS:
         lastGenTimes[username] = currentTime
         return
-    #  Just for development testing make sure to comment this line out 
+    #  Just for development testing make sure to comment this line out
 
     # if  username == "RupakChaulagain":
     #     return
-        
+
     remaining = RATE_LIMIT_SECONDS - (currentTime - lastTime)
     raise HTTPException(
         status_code=429,
@@ -334,7 +335,7 @@ async def signup(body: Request):
         email = data.get("email")
         password = data.get("password")
         token = data.get("token")
-        
+
         # Verify captcha
         if not verifyTurnstileToken(token):
             raise HTTPException(
@@ -498,7 +499,7 @@ async def submitQuestionToDb(request: Request):
         processedQuestion = await process_images(form.getlist("questionImages"))
         processedSolution = await process_images(form.getlist("solutionImages"))
 
-        insertQuestion(
+        successfulInsert = insertQuestion(
             board,
             subject,
             topic,
@@ -510,6 +511,20 @@ async def submitQuestionToDb(request: Request):
             username,
             ip=None,
         )
+        if successfulInsert:
+            sendWebhook(
+                "question",
+                {
+                    "subject": subject,
+                    "topic": topic,
+                    "difficulty": difficulty,
+                    "board": board,
+                    "level": level,
+                    "component": component,
+                    "username": username,
+                },
+            )
+
         return {"message": "got it"}, 200
 
     except Exception as e:
