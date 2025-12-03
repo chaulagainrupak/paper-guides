@@ -15,6 +15,11 @@ export function getApiUrl(isLocal: boolean) {
   return process.env.NEXT_PUBLIC_API_URL || "https://api.paperguides.org";
 }
 
+export function getSiteUrl() {
+  return process.env.NEXT_PUBLIC_SITE_URL || "https://paperguides.org";
+}
+
+
 export function darkModeOn() {
   return localStorage.getItem("darkmode") === "active";
 }

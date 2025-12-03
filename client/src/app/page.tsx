@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getSiteUrl } from "./config";
 
 
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
     siteName: "Paper Guides",
     images: [
       {
-        url: "/images/opg_paper_guides.png",
+        url: `${getSiteUrl}/images/opg_paper_guides.png`,
         width: 1200,
         height: 720,
         alt: "Paper Guides Open Graph Image",

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import QuestionGeneratorForm from "./QuestionGeneratorForm.jsx";
+import { getSiteUrl } from "@/app/config.jsx";
 
 export const metadata: Metadata = {
   title: "Paper Guides | MCQs Generator ",
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
     siteName: "Paper Guides",
     images: [
       {
-        url: "/images/opg_mcqs_generator.png",
+        url: `${getSiteUrl}/images/opg_mcqs_generator.png`,
         width: 1200,
         height: 720,
         alt: "Paper Guides Open Graph Image",
