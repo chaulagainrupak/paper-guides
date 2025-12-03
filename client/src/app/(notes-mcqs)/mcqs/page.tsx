@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import QuestionGeneratorForm from "./QuestionGeneratorForm.jsx";
-import { getSiteUrl } from "@/app/config.jsx";
+import { getSiteUrl } from "@/app/config";
 
 export const metadata: Metadata = {
   title: "Paper Guides | MCQs Generator ",

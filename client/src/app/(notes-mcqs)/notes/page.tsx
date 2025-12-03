@@ -1,4 +1,4 @@
-import { getApiUrl, isLocalhost } from "@/app/config";
+import { getApiUrl, getSiteUrl, isLocalhost } from "@/app/config";
 import PastPapersPage from "./pastPaperPage";
 import { Metadata } from "next";
 
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
         images: [
       {
-        url: "/images/notes.png",
+        url: `${getSiteUrl}/images/notes.png`,
         width: 1200,
         height: 720,
         alt: "Paper Guides Open Graph Image",

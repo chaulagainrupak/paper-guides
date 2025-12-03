@@ -1,7 +1,7 @@
 // "use client";
 import { Metadata } from "next";
 import QuestionGeneratorForm from "./QuestionGeneratorForm.jsx";
-import { getSiteUrl } from "../config.jsx";
+import { getSiteUrl } from "../config";
 
 export const metadata: Metadata = {
   title: "Paper Guides | Question Generator ",
