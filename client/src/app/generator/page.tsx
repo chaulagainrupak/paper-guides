@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: "Paper Guides",
     images: [
       {
-        url: `${getSiteUrl}/images/opg_question_generator.png`,
+        url: `${getSiteUrl()}/images/opg_question_generator.png`,
         width: 1200,
         height: 720,
         alt: "Paper Guides Open Graph Image",

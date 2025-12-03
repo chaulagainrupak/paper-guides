@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
         images: [
       {
-        url: `${getSiteUrl}/images/notes.png`,
+        url: `${getSiteUrl()}/images/notes.png`,
         width: 1200,
         height: 720,
         alt: "Paper Guides Open Graph Image",
