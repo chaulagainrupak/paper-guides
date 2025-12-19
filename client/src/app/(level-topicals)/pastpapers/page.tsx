@@ -39,6 +39,11 @@ export default async function FetchPastPapers() {
 
     return (
       <div>
+
+        <head>
+          <meta name="robots" content="noindex, nofollow" />
+        </head>
+        
         <div className="flex justify-between align-center mb-6">
           <h1 className="text-4xl font-semibold">
             Available{" "}

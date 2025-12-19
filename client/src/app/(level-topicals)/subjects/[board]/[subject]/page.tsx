@@ -67,6 +67,10 @@ async function SingleBoardLevel({
 
   return (
     <div>
+      <head>
+        <meta name="robots" content="noindex, nofollow" />
+      </head>
+
       <div className="flex justify-between align-center mb-6">
         <h1 className="text-4xl font-semibold">
           Available <span className="text-[var(--blue-highlight)]">Years</span>
@@ -80,8 +84,7 @@ async function SingleBoardLevel({
             key={year}
             href={`/subjects/${params.board}/${params.subject}/${year}`}
             className="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-2xl transition-all duration-200"
-              prefetch = {true}
-          
+            prefetch={true}
           >
             {year}
           </Link>
