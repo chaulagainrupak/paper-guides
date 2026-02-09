@@ -403,7 +403,312 @@
       "63"
     ]
   },
-
+  "Kathmandu University": {
+    "levels": ["bachelors"],
+    "subjects": [
+      {
+        "name": "Math 101 - Calculus and Linear Algebra",
+        "topics": [
+          "Limits and continuity",
+          "Differentiation of single-variable functions",
+          "Integration techniques",
+          "Vector algebra",
+          "Matrices and determinants",
+          "Systems of linear equations"
+        ]
+      },
+      {
+        "name": "Math 102 - Differential Equations and Probability",
+        "topics": [
+          "First-order differential equations",
+          "Higher-order linear differential equations",
+          "Laplace transforms",
+          "Basic probability theory",
+          "Random variables and distributions"
+        ]
+      },
+      {
+        "name": "Math 201 - Numerical Methods",
+        "topics": [
+          "Root finding methods",
+          "Numerical integration",
+          "Interpolation and curve fitting",
+          "Numerical solution of differential equations",
+          "Error analysis"
+        ]
+      },
+      {
+        "name": "Statistics 101 - Probability and Statistics",
+        "topics": [
+          "Descriptive statistics",
+          "Probability distributions",
+          "Sampling techniques",
+          "Estimation theory",
+          "Hypothesis testing"
+        ]
+      },
+      {
+        "name": "Physics 101 - Engineering Mechanics",
+        "topics": [
+          "Kinematics",
+          "Newton’s laws",
+          "Work and energy",
+          "Momentum",
+          "Rotational dynamics"
+        ]
+      },
+      {
+        "name": "Physics 102 - Electricity and Magnetism",
+        "topics": [
+          "Electrostatics",
+          "Electric circuits",
+          "Magnetic fields",
+          "Electromagnetic induction",
+          "AC circuits"
+        ]
+      },
+      {
+        "name": "Electronics 101 - Basic Electrical Engineering",
+        "topics": [
+          "Circuit elements",
+          "Network theorems",
+          "AC and DC analysis",
+          "Semiconductor devices",
+          "Power fundamentals"
+        ]
+      },
+      {
+        "name": "Electronics 201 - Digital Logic Design",
+        "topics": [
+          "Number systems",
+          "Boolean algebra",
+          "Logic gates",
+          "Combinational circuits",
+          "Sequential circuits",
+          "Flip-flops and counters"
+        ]
+      },
+      {
+        "name": "Computer Science 101 - Programming Fundamentals",
+        "topics": [
+          "Algorithmic thinking",
+          "Variables and data types",
+          "Control flow",
+          "Functions and recursion",
+          "Introduction to object-oriented programming"
+        ]
+      },
+      {
+        "name": "Computer Science 102 - Object Oriented Programming",
+        "topics": [
+          "Classes and objects",
+          "Inheritance",
+          "Polymorphism",
+          "Encapsulation",
+          "Exception handling"
+        ]
+      },
+      {
+        "name": "Computer Science 201 - Data Structures",
+        "topics": [
+          "Arrays and linked lists",
+          "Stacks and queues",
+          "Trees",
+          "Graphs",
+          "Hashing",
+          "Sorting and searching"
+        ]
+      },
+      {
+        "name": "Computer Science 202 - Algorithms",
+        "topics": [
+          "Algorithm analysis",
+          "Divide and conquer",
+          "Greedy algorithms",
+          "Dynamic programming",
+          "Graph algorithms",
+          "NP-completeness"
+        ]
+      },
+      {
+        "name": "Computer Science 203 - Discrete Structures",
+        "topics": [
+          "Logic and proof techniques",
+          "Set theory",
+          "Relations and functions",
+          "Graph theory",
+          "Combinatorics"
+        ]
+      },
+      {
+        "name": "Computer Science 204 - Computer Organization and Architecture",
+        "topics": [
+          "CPU architecture",
+          "Instruction sets",
+          "Memory hierarchy",
+          "I/O systems",
+          "Pipelining"
+        ]
+      },
+      {
+        "name": "Computer Science 301 - Operating Systems",
+        "topics": [
+          "Process management",
+          "Threading and concurrency",
+          "CPU scheduling",
+          "Memory management",
+          "File systems",
+          "Deadlocks"
+        ]
+      },
+      {
+        "name": "Computer Science 302 - Database Systems",
+        "topics": [
+          "Relational model",
+          "ER modeling",
+          "SQL",
+          "Normalization",
+          "Transaction processing",
+          "Concurrency control"
+        ]
+      },
+      {
+        "name": "Computer Science 303 - Computer Networks",
+        "topics": [
+          "Network models",
+          "Data link layer",
+          "Network layer",
+          "Transport layer",
+          "Routing algorithms",
+          "Network security basics"
+        ]
+      },
+      {
+        "name": "Computer Science 304 - Software Engineering",
+        "topics": [
+          "Software development life cycle",
+          "Requirements analysis",
+          "Design methodologies",
+          "Testing strategies",
+          "Version control",
+          "Project management"
+        ]
+      },
+      {
+        "name": "Computer Science 305 - Theory of Computation",
+        "topics": [
+          "Finite automata",
+          "Regular languages",
+          "Context-free grammars",
+          "Pushdown automata",
+          "Turing machines",
+          "Decidability"
+        ]
+      },
+      {
+        "name": "Computer Science 306 - Compiler Design",
+        "topics": [
+          "Lexical analysis",
+          "Syntax analysis",
+          "Semantic analysis",
+          "Intermediate code generation",
+          "Code optimization",
+          "Runtime environments"
+        ]
+      },
+      {
+        "name": "Computer Science 401 - Artificial Intelligence",
+        "topics": [
+          "Problem solving agents",
+          "Search algorithms",
+          "Knowledge representation",
+          "Logic and inference",
+          "Introduction to machine learning"
+        ]
+      },
+      {
+        "name": "Computer Science 402 - Machine Learning",
+        "topics": [
+          "Supervised learning",
+          "Unsupervised learning",
+          "Regression and classification",
+          "Neural networks basics",
+          "Model evaluation"
+        ]
+      },
+      {
+        "name": "Computer Science 403 - Computer Graphics",
+        "topics": [
+          "Graphics pipeline",
+          "2D and 3D transformations",
+          "Clipping and projection",
+          "Rendering techniques",
+          "Basic animation"
+        ]
+      },
+      {
+        "name": "Computer Science 404 - Information Security",
+        "topics": [
+          "Cryptography basics",
+          "Authentication and authorization",
+          "Network security",
+          "Web security",
+          "Security protocols"
+        ]
+      },
+      {
+        "name": "Computer Engineering 301 - Microprocessors and Microcontrollers",
+        "topics": [
+          "Microprocessor architecture",
+          "Instruction set programming",
+          "Interfacing techniques",
+          "Timers and interrupts",
+          "Embedded system basics"
+        ]
+      },
+      {
+        "name": "Computer Engineering 302 - Embedded Systems",
+        "topics": [
+          "Embedded hardware design",
+          "Firmware development",
+          "Real-time constraints",
+          "Sensor interfacing",
+          "Embedded communication protocols"
+        ]
+      },
+      {
+        "name": "Computer Engineering 401 - VLSI and Digital System Design",
+        "topics": [
+          "CMOS logic",
+          "Combinational and sequential design",
+          "Timing analysis",
+          "ASIC and FPGA concepts",
+          "Hardware description languages"
+        ]
+      },
+      {
+        "name": "Project 401 - Final Year Project",
+        "topics": [
+          "Problem identification",
+          "System design",
+          "Implementation",
+          "Testing and validation",
+          "Technical documentation",
+          "Presentation and defense"
+        ]
+      }
+    ],
+    "components": [
+      "Semester 1",
+      "Semester 2",
+      "Semester 3",
+      "Semester 4",
+      "Semester 5",
+      "Semester 6",
+      "Semester 7",
+      "Semester 8"
+    ]
+  },
   "NEB": {
     "levels": ["10", "11", "12"],
     "subjects": [

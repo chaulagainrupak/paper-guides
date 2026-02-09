@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
-import { getApiUrl, isLocalhost } from "../config";
-import { logOut } from "../utils";
-import config from "./configs.json";
-import { noteRenderer } from "../noteRenderer";
+import { getApiUrl, isLocalhost } from "../../config";
+import { logOut } from "../../utils";
+import config from "../configs.json";
+import { noteRenderer } from "../../noteRenderer";
 
 export default function NoteSubmitter() {
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -147,7 +147,7 @@ const handleSubmit = async (event) => {
       return;
     }
 
-    const response = await fetch(`${getApiUrl(isLocalhost())}/postNote`, {
+    const response = await fetch(`${getApiUrl(isLocalhost())}/admin/postNote`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

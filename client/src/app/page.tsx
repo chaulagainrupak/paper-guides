@@ -3,7 +3,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getSiteUrl } from "./config";
 
-
 export const metadata: Metadata = {
   title: "Paper Guides",
   description: "Free exam preparation resources, Notes, Past-Papers, Question",
@@ -26,10 +25,9 @@ export const metadata: Metadata = {
   },
 };
 
-
 export default function HomePage() {
   return (
-    <section className="mt-[64] min-h-screen text-[var(--font-color)] flex flex-col items-center justify-center px-4">
+    <section className="mt-[64px] min-h-screen text-[var(--font-color)] flex flex-col items-center justify-center px-4">
       {/* Hero Section */}
       <div className="text-center max-w-4xl mb-16 text-shadow-lg">
         <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-4">
@@ -51,14 +49,14 @@ export default function HomePage() {
       {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-6xl">
         {/* Card 1 */}
-        <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
+        <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1 h-full">
           <Image
             loading="lazy"
             src="/images/compressed_past-papers.webp"
             alt="Past Papers"
             width={600}
             height={337}
-            className="w-full rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
+            className="w-full aspect-video rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
           />
           <h3 className="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
             Exam Success Starts Here
@@ -75,27 +73,29 @@ export default function HomePage() {
         </div>
 
         {/* Card 2 */}
-        <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
+        <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1 h-full">
           <Image
             loading="lazy"
             src="/images/compressed_question-generator.webp"
             alt="Question Generator"
             width={600}
             height={337}
-            className="w-full rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
+            className="w-full aspect-video rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
           />
+
           <h3 className="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
             Question Practice
           </h3>
           <p className="text-[var(--font-color)] mb-4">
             Generate custom practice questions tailored to your needs.
           </p>
-          <Link
+
+          {/* <Link
             href="/mcqs"
             className="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
           >
             Start Generating MCQs
-          </Link>
+          </Link> */}
           <Link
             href="/generator"
             className="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
@@ -105,14 +105,14 @@ export default function HomePage() {
         </div>
 
         {/* Card 4 */}
-        <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
+        <div className="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1 h-full">
           <Image
             loading="lazy"
             src="/images/compressed_notes.webp"
             alt="Notes"
             width={600}
             height={337}
-            className="w-full rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
+            className="w-full aspect-video rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
           />
           <h3 className="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
             Quality Notes

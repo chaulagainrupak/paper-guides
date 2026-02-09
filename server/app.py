@@ -16,7 +16,7 @@ from jose import jwt
 from datetime import datetime, timedelta
 import sqlite3
 import bcrypt
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from config import loadConfig
 from databaseHandler import *
@@ -26,26 +26,27 @@ import time
 
 from picPatcher import process_images
 from objectiveQuestionsHandler import generateMcqTest, insertMcqQuestion
-from updater import sendWebhook
+
+from adminUtils import adminRouter
 
 import os
 from dotenv import load_dotenv
 
 load_dotenv(".env")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Load configuration
 CONFIG_PATH = "./configs/configs.json"
 CONFIG = loadConfig("./configs/configs.json")
 SITEMAP_PATH = "./configs/sitemap.xml"
 # Constants
-SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 
 DATABASE_PATH = "instance/paper-guides.db"
 
 app = FastAPI()
-
+app.include_router(adminRouter, prefix='/admin')
 # rate limiting the generation of mcqs and papers
 
 lastGenTimes = {}
@@ -132,10 +133,10 @@ def verifyPassword(plainPassword: str, hashedPassword: str) -> bool:
             return check_password_hash(hashedPassword, plainPassword)
 
         # New bcrypt format
-        if hashedPassword.startswith("$2a$") or hashedPassword.startswith("$2b$"):
-            return bcrypt.checkpw(
-                plainPassword.encode("utf-8"), hashedPassword.encode("utf-8")
-            )
+        # if hashedPassword.startswith("$2a$") or hashedPassword.startswith("$2b$"):
+        #     return bcrypt.checkpw(
+        #         plainPassword.encode("utf-8"), hashedPassword.encode("utf-8")
+        #     )
 
         # Unknown format
         print("Unknown password hash format!")
@@ -147,7 +148,9 @@ def verifyPassword(plainPassword: str, hashedPassword: str) -> bool:
 
 def hashPassword(password: str) -> str:
 
-    hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+    # hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+
+    hashed = generate_password_hash(password)
     return hashed
 
 
@@ -450,138 +453,6 @@ async def validateToken(body: Request):
     except Exception as e:
         print(e)
         return {"message": "token verification failed"}, 429
-
-
-@app.post("/submitQuestion")
-async def submitQuestionToDb(request: Request):
-
-    try:
-        conn = getDbConnection()
-        cur = conn.cursor()
-
-        authHeader = request.headers.get("authorization")
-
-        if not authHeader or not authHeader.startswith("Bearer "):
-            raise HTTPException(
-                status_code=401, detail="Missing or invalid Authorization header"
-            )
-
-        token = authHeader.split(" ")[1]
-
-        tokenData = jwt.decode(token, SECRET_KEY)
-
-        username = tokenData["username"]
-        email = tokenData["email"]
-        exp = tokenData["exp"]
-        if exp < time.time():
-            return {"message": "token expired"}, 429
-
-        cur.execute(
-            "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
-        )
-        user = cur.fetchone()
-        conn.close()
-
-        if not user:
-            raise HTTPException(status_code=401, detail="Invalid username or password")
-        if user["role"].lower() != "admin":
-            raise HTTPException(status_code=401, detail="Unauthorized")
-
-        form = await request.form()
-
-        board = form.get("board")
-        subject = form.get("subject")
-        topic = form.get("topic")
-        component = form.get("component")
-        difficulty = form.get("difficulty")
-        level = form.get("level")
-
-        processedQuestion = await process_images(form.getlist("questionImages"))
-        processedSolution = await process_images(form.getlist("solutionImages"))
-
-        successfulInsert = insertQuestion(
-            board,
-            subject,
-            topic,
-            difficulty,
-            level,
-            component,
-            processedQuestion,
-            processedSolution,
-            username,
-            ip=None,
-        )
-        if successfulInsert:
-            sendWebhook(
-                "question",
-                {
-                    "subject": subject,
-                    "topic": topic,
-                    "difficulty": difficulty,
-                    "board": board,
-                    "level": level,
-                    "component": component,
-                    "username": username,
-                },
-            )
-
-        return {"message": "got it"}, 200
-
-    except Exception as e:
-        print(e)
-        HTTPException(status_code=500, detail="internal server error")
-
-
-@app.post("/postNote")
-async def postNote(request: Request):
-
-    try:
-        conn = getDbConnection()
-        cur = conn.cursor()
-
-        authHeader = request.headers.get("authorization")
-
-        if not authHeader or not authHeader.startswith("Bearer "):
-            raise HTTPException(
-                status_code=401, detail="Missing or invalid Authorization header"
-            )
-
-        token = authHeader.split(" ")[1]
-
-        tokenData = jwt.decode(token, SECRET_KEY)
-
-        username = tokenData["username"]
-        email = tokenData["email"]
-        exp = tokenData["exp"]
-        if exp < time.time():
-            return {"message": "token expired"}, 429
-
-        cur.execute(
-            "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
-        )
-        user = cur.fetchone()
-        conn.close()
-
-        if not user:
-            raise HTTPException(status_code=401, detail="Invalid username or password")
-        if user["role"].lower() != "admin":
-            raise HTTPException(status_code=401, detail="Unauthorized")
-
-        body = await request.json()
-        board = body.get("board")
-        level = body.get("level")
-        subject = body.get("subject")
-        topic = body.get("topic")
-        content = body.get("content").strip()
-
-        if len(content) < 1000:
-            raise HTTPException(status_code=401, detail="Not enough content!")
-
-        insertNote(board, level, subject, topic, content, username)
-
-    except Exception as e:
-        print(e)
-        HTTPException(status_code=500, detail="internal server error")
 
 
 # @app.post("/submit-mcqs-admin")

@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { getRole, Loader, logOut } from "../utils";
 import { redirect } from "next/navigation";
-import SubmitQuestion from "./submitFrom";
-import NoteSubmitter from "./noteSubmitter";
-import SubmitMCQsQuestion from "./subimitMCQs";
+import SubmitQuestion from "./adminComponents/submitQuestion";
+import NoteSubmitter from "./adminComponents/noteSubmitter";
+import SubmitMCQsQuestion from "./adminComponents/subimitMCQs";
+import SubmitPaper from "./adminComponents/submitPastPapers";
+import AllUnapproved from "./adminComponents/unapprovedDataList";
 
 
 export default function AdminPage() {
@@ -15,7 +17,7 @@ export default function AdminPage() {
 
     async function fetchRole() {
       const fetchedRole = await getRole();
-      if (fetchedRole !== "admin") {
+      if (!["admin", "moderator"].includes(fetchedRole)) {
         console.log(fetchedRole)
         logOut();
         redirect('/');
@@ -33,8 +35,9 @@ export default function AdminPage() {
 
   return (
     <div className="pt-[64px] flex-grow">
-        <div className="">
+        <div className="flex">
             <SubmitQuestion/>
+            <SubmitPaper/>
         </div>
 
 
@@ -45,6 +48,10 @@ export default function AdminPage() {
         <div className="flex flex-col justify-center">
           <h1 className="text-xl">Submit MCQs</h1>
           <SubmitMCQsQuestion/>
+        </div>
+
+        <div>
+          <AllUnapproved/>
         </div>
     </div>
   );

@@ -48,7 +48,7 @@ export default function RootLayout({
               <Link href="/pastpapers">Past Papers</Link>
               <Link href="/notes">Notes</Link>
               <Link href="/generator">Question Generator</Link>
-              <Link href="/mcqs">MCQs Generator</Link>
+              {/* <Link href="/mcqs">MCQs Generator</Link> */}
             </div>
 
             <div className="flex gap-4 hidden xl:flex">
@@ -72,7 +72,7 @@ export default function RootLayout({
                 <Link href="/pastpapers">Past Papers</Link>
                 <Link href="/notes">Notes</Link>
                 <Link href="/generator">Question Generator</Link>
-                <Link href="/mcqs">MCQs Generator</Link>
+                {/* <Link href="/mcqs">MCQs Generator</Link> */}
 
                 <LoginLink />
                 <Link href="/about" className="text-[var(--pink-highlight)]">

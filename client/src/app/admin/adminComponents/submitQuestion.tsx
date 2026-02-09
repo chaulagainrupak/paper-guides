@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
-import { getApiUrl, isLocalhost } from "../config";
-import { logOut } from "../utils";
+import { getApiUrl, isLocalhost } from "../../config";
+import { logOut } from "../../utils";
 
 interface Subject {
   name: string;
@@ -17,7 +17,7 @@ interface Config {
   };
 }
 
-export default function SubmitMCQsQuestion() {
+export default function SubmitQuestion() {
   const [config, setConfig] = useState<Config>({});
   const [boards, setBoards] = useState<string[]>([]);
 
@@ -25,11 +25,11 @@ export default function SubmitMCQsQuestion() {
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedTopic, setSelectedTopic] = useState<string>("");
   const [selectedComponent, setSelectedComponent] = useState<string>("");
-  // const [difficulty, setDifficulty] = useState<string>("");
-  // const [level, setLevel] = useState<string>("");
+  const [difficulty, setDifficulty] = useState<string>("");
+  const [level, setLevel] = useState<string>("");
 
-  // const [questionImages, setQuestionImages] = useState<FileList | null>(null);
-  // const [solutionImages, setSolutionImages] = useState<FileList | null>(null);
+  const [questionImages, setQuestionImages] = useState<FileList | null>(null);
+  const [solutionImages, setSolutionImages] = useState<FileList | null>(null);
 
   useEffect(() => {
     const getConfig = async () => {
@@ -71,24 +71,24 @@ export default function SubmitMCQsQuestion() {
     formData.append("subject", selectedSubject);
     formData.append("topic", selectedTopic);
     formData.append("component", selectedComponent);
-    // formData.append("level", level);
-    // formData.append("difficulty", difficulty);
+    formData.append("level", level);
+    formData.append("difficulty", difficulty);
 
-    // if (questionImages) {
-    //   Array.from(questionImages).forEach((file) =>
-    //     formData.append("questionImages", file)
-    //   );
-    // }
+    if (questionImages) {
+      Array.from(questionImages).forEach((file) =>
+        formData.append("questionImages", file)
+      );
+    }
 
-    // if (solutionImages) {
-    //   Array.from(solutionImages).forEach((file) =>
-    //     formData.append("solutionImages", file)
-    //   );
-    // }
+    if (solutionImages) {
+      Array.from(solutionImages).forEach((file) =>
+        formData.append("solutionImages", file)
+      );
+    }
 
     try {
       const response = await fetch(
-        getApiUrl(isLocalhost()) + "/submitQuestion",
+        getApiUrl(isLocalhost()) + "/admin/submitQuestion",
         {
           method: "POST",
           headers: {
@@ -137,8 +137,8 @@ export default function SubmitMCQsQuestion() {
             setSelectedSubject("");
             setSelectedTopic("");
             setSelectedComponent("");
-            // setLevel("");
-            // setDifficulty("");
+            setLevel("");
+            setDifficulty("");
           }}
           className="w-full p-2 border mb-4"
           required
@@ -217,7 +217,7 @@ export default function SubmitMCQsQuestion() {
         </select>
 
         {/* Level Dropdown */}
-        {/* <label className="block mb-2 font-semibold">Level:</label>
+        <label className="block mb-2 font-semibold">Level:</label>
         <select
           name="level"
           value={level}
@@ -232,10 +232,10 @@ export default function SubmitMCQsQuestion() {
               {lvl}
             </option>
           ))}
-        </select> */}
+        </select>
 
         {/* Difficulty Dropdown */}
-        {/* <label className="block mb-2 font-semibold">
+        <label className="block mb-2 font-semibold">
           Difficulty (1 = Easy, 5 = Hard):
         </label>
         <select
@@ -251,10 +251,10 @@ export default function SubmitMCQsQuestion() {
               {num}
             </option>
           ))}
-        </select> */}
+        </select>
 
         {/* Question Images Upload */}
-        {/* <label className="block mb-2 font-semibold">Question Images:</label>
+        <label className="block mb-2 font-semibold">Question Images:</label>
         <input
           type="file"
           name="questionImages"
@@ -265,10 +265,10 @@ export default function SubmitMCQsQuestion() {
           }
           className="w-full p-2 border mb-4"
           required
-        /> */}
+        />
 
         {/* Solution Images Upload */}
-        {/* <label className="block mb-2 font-semibold">Solution Images:</label>
+        <label className="block mb-2 font-semibold">Solution Images:</label>
         <input
           type="file"
           name="solutionImages"
@@ -279,7 +279,7 @@ export default function SubmitMCQsQuestion() {
           }
           className="w-full p-2 border mb-4"
           required
-        /> */}
+        />
 
         <button
           type="submit"

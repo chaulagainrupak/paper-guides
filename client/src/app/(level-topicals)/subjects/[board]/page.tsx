@@ -43,20 +43,16 @@ export default async function Page({ params }: PageProps) {
 
   try {
     const response = await fetch(
-      getApiUrl(isLocalhost()) + `/subjects/${board}`
+      getApiUrl(isLocalhost()) + `/subjects/${board}`,
     );
     const subjects: Subject[] = await response.json();
 
     const sortedSubjects = subjects.sort((a, b) =>
-      a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
     );
 
     return (
       <div>
-        <head>
-          <meta name="robots" content="noindex, nofollow" />
-        </head>
-
         <div className="flex justify-between align-center mb-6">
           <h1 className="text-4xl font-semibold">
             Available{" "}

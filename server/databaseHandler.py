@@ -150,7 +150,7 @@ def initializeDatabases():
             subject TEXT,
             topic TEXT,
             content TEXT,
-            approved BOOLEAN DEFAULT 1,
+            approved BOOLEAN DEFAULT 0,
             submittedBy TEXT,
             submitDate DATE,
             approvedBy TEXT,
@@ -184,7 +184,7 @@ def insertPaper(
     level: str,
     component: str,
     questionFile: bytes,
-    solutionFile: bytes,
+    solutionFile: bytes | None,
     user: str,
     ip: str,
 ) -> tuple[bool, str]:
@@ -196,9 +196,13 @@ def insertPaper(
 
         # Compress and encode files
         q_compressed = zlib.compress(questionFile, level=9)
-        s_compressed = zlib.compress(solutionFile, level=9)
         q_b64 = base64.b64encode(q_compressed).decode("utf-8")
-        s_b64 = base64.b64encode(s_compressed).decode("utf-8")
+
+        if solutionFile is not None:
+            s_compressed = zlib.compress(solutionFile, level=9)
+            s_b64 = base64.b64encode(s_compressed).decode("utf-8")
+        else:
+            s_b64 = None
 
         cursor.execute(
             """INSERT INTO papers
@@ -222,7 +226,7 @@ def insertPaper(
 
         conn.commit()
         logger.info(f"Paper inserted: {uuidStr}")
-        return True, uuidStr
+        return True
     except Exception as e:
         logger.error(f"Error inserting paper: {e}")
         return False, ""
@@ -295,6 +299,37 @@ def getPaper(level: str, subject: str, year: str, component: str) -> tuple:
             conn.close()
 
 
+def getPaperUuid(uuid: str) -> tuple:
+    """Get a specific paper's files"""
+    try:
+        conn = sqlite3.connect(DB_PAST_PAPER_PATH)
+        cursor = conn.cursor()
+
+        query = """SELECT * 
+                    FROM papers 
+                    WHERE uuid = ? """
+                    
+        cursor.execute(query, (uuid,))
+
+        result = cursor.fetchone()
+        
+        if not result:
+            return None, None
+
+        # Decompress files
+        q_b64, s_b64 = result[7], result[8]
+        question_data = zlib.decompress(base64.b64decode(q_b64))
+        solution_data = zlib.decompress(base64.b64decode(s_b64)) if result[8] != None else None 
+
+        return result
+    except Exception as e:
+        logger.error(f"Error getting paper: {e}")
+        return [None, None]
+    finally:
+        if conn:
+            conn.close()
+
+
 def getPaperComponents(year: str, subject: str, level: str) -> list:
     """Get available components for a specific paper"""
     try:
@@ -338,6 +373,7 @@ def insertQuestion(
     component: str,
     questionFile: bytes,
     solutionFile: bytes,
+    approved: bool,
     user: str,
     ip: str,
 ) -> bool:
@@ -371,7 +407,7 @@ def insertQuestion(
                 user,
                 ip,
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                True,
+                approved,
                 user,
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             ),
@@ -518,7 +554,13 @@ def getQuestionsForGen(board, subject, level, topics, components, difficulties):
 
 
 def insertNote(
-    board: str, level: str, subject: str, topic: str, content: str, user: str
+    board: str,
+    level: str,
+    subject: str,
+    topic: str,
+    content: str,
+    approved: bool,
+    user: str,
 ) -> bool:
     """Insert a new note into the database"""
     try:
@@ -543,8 +585,8 @@ def insertNote(
             cursor.execute(
                 """INSERT INTO notes
                 (uuid, board, level, subject, topic, content,
-                submittedBy, submitDate, approvedBy, approvedOn)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ? , ?, ?)""",
+                approved, submittedBy, submitDate, approvedBy, approvedOn)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? , ?, ?)""",
                 (
                     uuidStr,
                     board,
@@ -552,6 +594,7 @@ def insertNote(
                     subject,
                     topic,
                     content,
+                    approved,
                     user,
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     user,
@@ -695,6 +738,65 @@ def searchNotes(
     finally:
         if conn:
             conn.close()
+
+
+# Unapproved question functions
+
+
+def getUnapprovedPapers():
+    """Get all unapproved papers from the database"""
+    try:
+        connection = sqlite3.connect(DB_PAST_PAPER_PATH)
+        db = connection.cursor()
+
+        papers = db.execute(
+            """
+            SELECT uuid, subject, year, component, board, level
+            FROM papers
+            WHERE approved = False
+        """
+        ).fetchall()
+
+        # return list(papers[0])
+        return [
+            {
+                "id": item[0],
+                "subject": item[1],
+                "year": item[2],
+                "component": item[3],
+                "board": item[4],
+                "level": item[5]
+            }
+            for item in papers
+        ]
+
+    except sqlite3.Error as e:
+        return []
+    finally:
+        if connection:
+            connection.close()
+
+
+def getUnapprovedQuestions():
+    """Get all unapproved questions from the database"""
+    try:
+        connection = sqlite3.connect(DB_QUESTION_GENERATOR_PATH)
+        db = connection.cursor()
+
+        questions = db.execute(
+            """
+            SELECT uuid
+            FROM questions
+            WHERE approved = False
+        """
+        ).fetchall()
+
+        return [item[0] for item in questions]
+    except sqlite3.Error as e:
+        return []
+    finally:
+        if connection:
+            connection.close()
 
 
 # ======================

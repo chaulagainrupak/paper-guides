@@ -143,9 +143,7 @@ async function QuestionLinks({
 
   return (
     <div>
-      <head>
-        <meta name="robots" content="noindex, nofollow" />
-      </head>
+
       <div className="flex justify-between border-b-2 border-[var(--blue-highlight)]">
         <h1 className="text-4xl font-bold mb-6">
           Available <span className="text-[var(--blue-highlight)]">Papers</span>{" "}
