@@ -53,13 +53,17 @@ export default function ViewerClient({
                 onClick={() => {
                   const link = document.createElement("a");
                   link.href = currentUrl;
-                  link.download = showSolution ? "solution.pdf" : "question.pdf";
+                  link.download = showSolution
+                    ? "solution.pdf"
+                    : "question.pdf";
                   document.body.appendChild(link);
                   link.click();
                   document.body.removeChild(link);
                 }}
                 className={`${
-                  showSolution ? "bg-[var(--pink-highlight)]" : "bg-[var(--blue-highlight)]"
+                  showSolution
+                    ? "bg-[var(--pink-highlight)]"
+                    : "bg-[var(--blue-highlight)]"
                 } text-white text-lg font-bold px-4 py-2 rounded-lg shadow hover:opacity-80 transition`}
               >
                 ⬇️ Download PDF
@@ -69,7 +73,9 @@ export default function ViewerClient({
             <button
               onClick={() => setShowSolution(!showSolution)}
               className={`${
-                showSolution ? "bg-[var(--pink-highlight)]" : "bg-[var(--blue-highlight)]"
+                showSolution
+                  ? "bg-[var(--pink-highlight)]"
+                  : "bg-[var(--blue-highlight)]"
               } text-white text-lg font-bold px-4 py-2 rounded-lg shadow hover:opacity-80 transition`}
             >
               {showSolution ? "Show Question" : "Show Solution"}
@@ -104,12 +110,15 @@ export default function ViewerClient({
         )}
 
         <object
+          width="100%"
+          height="600px"
           data={currentUrl}
           type="application/pdf"
           className="w-full h-full border rounded shadow"
         >
           <div className="text-center mt-4 text-gray-700">
-            Your browser does not support inline PDF viewing. Use the buttons above to download.
+            Your browser does not support inline PDF viewing. Use the buttons
+            above to download.
           </div>
         </object>
 

@@ -278,19 +278,29 @@ def getPaper(level: str, subject: str, year: str, component: str) -> tuple:
             query = """SELECT questionFile, solutionFile 
                     FROM papers 
                     WHERE level = ? AND lower(subject) = ? 
-                    AND year = ? AND component = ? AND approved = 1"""
-            cursor.execute(query, (level, subject, year, component))
+                    AND substr(year, 1, 4)= ? AND lower(component) = ? AND approved = 1"""
+            cursor.execute(query, (level, subject.lower(), year, component.lower()))
 
         result = cursor.fetchone()
         if not result:
-            return None, None
+            print("here")
+            return [None, None]
 
         # Decompress files
         q_b64, s_b64 = result
-        question_data = zlib.decompress(base64.b64decode(q_b64))
-        solution_data = zlib.decompress(base64.b64decode(s_b64))
 
-        return [question_data, solution_data]
+        # decompress and re-encode
+        questionPdfBase64 = base64.b64encode(
+            zlib.decompress(base64.b64decode(q_b64))
+        ).decode("utf-8")
+
+        solutionPdfBase64 = None
+        if s_b64 is not None:
+            solutionPdfBase64 = base64.b64encode(
+                zlib.decompress(base64.b64decode(s_b64))
+            ).decode("utf-8")
+
+        return [questionPdfBase64, solutionPdfBase64]
     except Exception as e:
         logger.error(f"Error getting paper: {e}")
         return [None, None]
@@ -369,7 +379,7 @@ def getPaperComponents(year: str, subject: str, level: str) -> list:
             query = """SELECT year, component 
                     FROM papers 
                     WHERE level = ? AND subject = ? 
-                    AND year = ? AND approved = 1"""
+                    AND substr(year, 1, 4) = ? AND approved = 1"""
             cursor.execute(query, (level, subject, year))
 
         components = [row for row in cursor.fetchall()]

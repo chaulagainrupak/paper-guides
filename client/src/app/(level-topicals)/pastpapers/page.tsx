@@ -64,6 +64,19 @@ export default async function FetchPastPapers() {
                   </Link>
                 </div>
               )}
+
+              {/* Not the best way to do anything like this but one has to do what one has to do*/}
+              {boardName.toLowerCase() === "kathmandu university" && (
+                <div>
+                  <Link
+                    href={`/subjects/${encodeURIComponent("kathmandu university")}`}
+                    prefetch={true}
+                    className="border-1 border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
+                  >
+                    KU: Bachelors
+                  </Link>
+                </div>
+              )}
             </div>
           ))}
         </div>

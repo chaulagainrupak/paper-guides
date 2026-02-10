@@ -4,12 +4,21 @@ import ViewerClient from "./paperViewerClient";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ board: string; subject: string; year: string; question: string }>;
+  params: Promise<{
+    board: string;
+    subject: string;
+    year: string;
+    question: string;
+  }>;
 }) {
-  const res = await fetch(`${getApiUrl(isLocalhost())}/getData/${(await params).question}`, { cache: "default" });
+  const res = await fetch(
+    `${getApiUrl(isLocalhost())}/getData/${(await params).question}`,
+    { cache: "default" },
+  );
   const data = await res.json();
 
-  const title = (Array.isArray(data) && data[0]?.questionName) || "Untitled Question";
+  const title =
+    (Array.isArray(data) && data[0]?.questionName) || "Untitled Question";
 
   return {
     title: `Paper Guides | ${title}`,
@@ -24,10 +33,26 @@ export async function generateMetadata({
 export default async function PaperViewerPage({
   params,
 }: {
-  params: Promise<{ board: string; subject: string; year: string; question: string }>;
+  params: Promise<{
+    board: string;
+    subject: string;
+    year: string;
+    question: string;
+  }>;
 }) {
-  const { question } = await params;
-  const res = await fetch(`${getApiUrl(isLocalhost())}/getData/${question}`, { cache: "default" });
+  const { question, board, subject, year } = await params;
+
+  //  another beautiful half assed solution for a really simple solution
+  //  forgive me for the sins i've comiited, Terry
+  var urlEndpoint;
+  if (board.toLowerCase() == "kathmandu%20university") {
+    urlEndpoint = `/getData/${question}?board=ku&subject=${subject}&year=${year}`;
+  } else {
+    urlEndpoint = `/getData/${question}?board=a%20levels&subject=${subject}&year=${year}`;
+  }
+  const res = await fetch(getApiUrl(isLocalhost()) + urlEndpoint, {
+    cache: "default",
+  });
   const data = await res.json();
 
   if (!Array.isArray(data) || data.length === 0) {

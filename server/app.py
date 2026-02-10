@@ -32,6 +32,8 @@ from adminUtils import adminRouter
 import os
 from dotenv import load_dotenv
 
+import re
+
 load_dotenv(".env")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
@@ -46,7 +48,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 DATABASE_PATH = "instance/paper-guides.db"
 
 app = FastAPI()
-app.include_router(adminRouter, prefix='/admin')
+app.include_router(adminRouter, prefix="/admin")
 # rate limiting the generation of mcqs and papers
 
 lastGenTimes = {}
@@ -166,7 +168,10 @@ def config():
 
 @app.get("/pastpapers")
 def pastpapers():
-    data = {"A Levels": {"levels": ["As Level", "A Level"]}}
+    data = {
+        "A Levels": {"levels": ["As Level", "A Level"]},
+        "Kathmandu University": {"levels": ["bachelors"]},
+    }
     return data
 
 
@@ -183,11 +188,15 @@ async def getSubjects(board: str, optional_level=None):
 
 
 @app.get("/getYears/{subjectName}")
-async def geatYearsForSubject(subjectName: str):
+async def geatYearsForSubject(subjectName: str, board: str | None):
 
     try:
-        list = getYears("A Level", subjectName)
-        return {"years": list}, 200
+        # The function is to be updated to take in board too as this is a half assed soltion
+        if board != None and board.lower() == "ku":
+            yearList = getYears("bachelors", subjectName)
+        else:
+            yearList = getYears("A Level", subjectName)
+        return {"years": yearList}, 200
     except Exception as e:
         print(e)
         raise HTTPException(status_code=503, detail="No data found")
@@ -198,35 +207,59 @@ async def geatTopicsForSubject(subjectName: str):
 
     try:
         subjectName = subjectName.replace("%20", " ")
-        list = []
+        topicList = []
         for item in CONFIG["A Levels"]["subjects"]:
             if item["name"] == subjectName:
-                list.extend(item["topics"])
+                topicList.extend(item["topics"])
 
-        return {"topics": list}, 200
+        return {"topics": topicList}, 200
     except Exception as e:
         print(e)
         raise HTTPException(status_code=503, detail="No data found")
 
 
 @app.get("/getPapers/{subjectName}/{year}")
-async def getPapers(year: str, subjectName: str):
+async def getPapers(year: str, subjectName: str, board: str | None):
 
     try:
-        list = getPaperComponents(year, subjectName, "a level")
-        return {"components": list}, 200
+
+        # The function is to be updated to take in board too as this is a half assed soltion
+
+        if board.lower() == "ku":
+            papersList = getPaperComponents(year, subjectName, "bachelors")
+        else:
+            papersList = getPaperComponents(year, subjectName, "a level")
+        return {"components": papersList}, 200
     except Exception as e:
         print(e)
         raise HTTPException(status_code=503, detail="No data found")
 
 
 @app.get("/getData/{details}")
-async def getData(details: str):
+async def getData(
+    details: str, board: str | None, subject: str | None, year: str | None
+):
     try:
+        if board.lower() == "ku":
+            match = re.search(r"(semester\s+\d+)", details)
+
+            if match:
+                semester = match.group(0)
+            else:
+                raise ValueError("No correct value found")
+
+            data = getPaper("bachelors", subject, year, semester)
+
+            return {
+                "questionName": f"{subject.capitalize()}, {year}, {semester}",
+                "questionData": data[0],
+                "markSchemeData": data[1],
+            }, 200
+
         isInsert = False
 
         details.replace("%20", " ")
-        #    Because subjectSlug itself may contain "%20" but not a literal hyphen.
+        # Because subjectSlug itself may contain "%20" but not a literal hyphen.
         parts = details.split("-", 1)
         if len(parts) < 2:
             raise ValueError("Expected at least one '-' in details.")
@@ -280,11 +313,11 @@ async def getData(details: str):
                 "a level", subjectName, yearForGetPaper, componentForGetPaper
             )
 
-        qp = base64.b64encode(data[0])
+        qp = data[0]
         if isInsert:
-            ms = base64.b64encode(data[0])
+            ms = data[0]
         else:
-            ms = base64.b64encode(data[1])
+            ms = data[1]
         return {
             "questionName": f"{subjectName.capitalize()}, {yearForGetPaper}, {componentForGetPaper}",
             "questionData": qp,

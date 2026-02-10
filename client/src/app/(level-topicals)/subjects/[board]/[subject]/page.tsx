@@ -14,21 +14,21 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   return {
     title: `Available years for ${decodeURIComponent(
-      (await params).subject
+      (await params).subject,
     )} | Paper Guides`,
     description: `Explore the years available for ${decodeURIComponent(
-      (await params).subject
+      (await params).subject,
     )}. Find past papers, notes, and resources to help you prepare for your exams.`,
     icons: "/images/logo.ico",
     openGraph: {
       title: `Available years for ${decodeURIComponent(
-        (await params).subject
+        (await params).subject,
       )} | Paper Guides`,
       description: `Explore the years available for ${decodeURIComponent(
-        (await params).subject
+        (await params).subject,
       )}. Find past papers, notes, and resources to help you prepare for your exams.`,
       url: `https://paperguides.org/subjects/${decodeURIComponent(
-        (await params).subject
+        (await params).subject,
       )}`,
       siteName: "Paper Guides",
       locale: "en_US",
@@ -39,9 +39,17 @@ export async function generateMetadata({
 
 export default async function getYearData({ params }: PageProps) {
   try {
-    const { subject } = await params;
+    const { subject, board } = await params;
 
-    const res = await fetch(getApiUrl(isLocalhost()) + `/getYears/${subject}`, {
+    //  another beautiful half assed solution for a really simple solution 
+    //  forgive me for the sins i've comiited, Terry 
+    var urlEndpoint;
+    if (board.toLowerCase() == "kathmandu%20university") {
+      urlEndpoint = `/getYears/${subject}?board=ku`;
+    } else {
+      urlEndpoint = `/getYears/${subject}?board=a%20levels`;
+    }
+    const res = await fetch(getApiUrl(isLocalhost()) + urlEndpoint, {
       cache: "default",
     });
     const result = await res.json();
@@ -67,8 +75,6 @@ async function SingleBoardLevel({
 
   return (
     <div>
-
-
       <div className="flex justify-between align-center mb-6">
         <h1 className="text-4xl font-semibold">
           Available <span className="text-[var(--blue-highlight)]">Years</span>

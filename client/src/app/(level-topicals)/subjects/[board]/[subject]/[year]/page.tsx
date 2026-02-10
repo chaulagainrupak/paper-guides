@@ -57,10 +57,17 @@ export async function generateMetadata({
 export default async function getQuestionLinks({ params }: PageProps) {
   try {
     const resolved = await params;
-    const { subject, year } = await params;
+    const { subject, year, board } = await params;
 
-    const res = await fetch(
-      getApiUrl(isLocalhost()) + `/getPapers/${subject}/${year}`,
+        //  another beautiful half assed solution for a really simple solution 
+    //  forgive me for the sins i've comiited, Terry 
+    var urlEndpoint;
+    if (board.toLowerCase() == "kathmandu%20university") {
+      urlEndpoint = `/getPapers/${subject}/${year}?board=ku`;
+    } else {
+      urlEndpoint = `/getPapers/${subject}/${year}?board=a%20levels`;
+    }
+    const res = await fetch(getApiUrl(isLocalhost()) + urlEndpoint, 
       { cache: "default" }
     );
     const result = await res.json();
