@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react";
 import { getApiUrl, isLocalhost } from "@/app/config";
 import { Metadata } from "next";
+import { logOut } from "@/app/utils";
 
 interface PdfFile {
   questionFile: string | null;
@@ -31,7 +32,7 @@ interface PageProps {
 }
 
 export default function PaperPage({ params }: PageProps) {
-const {paperUuid: string }=  use(params);
+  const { paperUuid: string } = use(params);
 
   const [paper, setPaper] = useState<Paper | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,7 +54,7 @@ const {paperUuid: string }=  use(params);
       try {
         const res = await fetch(
           `${getApiUrl(isLocalhost())}/admin/getPaper/${(await params).paperUuid}`,
-          { headers: { Authorization: `Bearer ${accessToken}` } }
+          { headers: { Authorization: `Bearer ${accessToken}` } },
         );
         const data = await res.json();
 
@@ -92,7 +93,7 @@ const {paperUuid: string }=  use(params);
   if (!paper) return <div>Paper not found</div>;
 
   return (
-    <div>
+    <div className="mt-[64]">
       <h1>{paper.subject}</h1>
       <p>Year: {paper.year}</p>
       <p>Component: {paper.component}</p>
@@ -106,8 +107,9 @@ const {paperUuid: string }=  use(params);
       {paper.pdf.questionFile && (
         <div style={{ marginTop: "20px" }}>
           <h2>Question PDF</h2>
-          <iframe
-            src={`data:application/pdf;base64,${paper.pdf.questionFile}`}
+          <object
+            type="application/pdf"
+            data={`data:application/pdf;base64,${paper.pdf.questionFile}`}
             width="100%"
             height="600px"
           />
@@ -118,13 +120,49 @@ const {paperUuid: string }=  use(params);
       {paper.pdf.solutionFile && (
         <div style={{ marginTop: "20px" }}>
           <h2>Solution PDF</h2>
-          <iframe
-            src={`data:application/pdf;base64,${paper.pdf.solutionFile}`}
+          <object
+            type="application/pdf"
+            data={`data:application/pdf;base64,${paper.pdf.solutionFile}`}
             width="100%"
             height="600px"
           />
         </div>
       )}
+
+      <button
+        className="bg-green-800 px-3 py-1 rounded text-white"
+        onClick={async () => {
+          const tokenString = localStorage.getItem("authToken");
+          if (!tokenString) return logOut();
+
+          let accessToken: string;
+          try {
+            accessToken = JSON.parse(tokenString).accessToken;
+          } catch {
+            return logOut();
+          }
+
+          const res = await fetch(
+            `${getApiUrl(isLocalhost())}/admin/approve?questionType=paper&uuid=${paper.uuid}`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            },
+          );
+
+          if (!res.ok) {
+            console.error("Approve failed");
+            return;
+          }
+
+          console.log("Approved:", paper.uuid);
+          alert(`Approved ${paper.uuid}`);
+        }}
+      >
+        Approve Paper
+      </button>
     </div>
   );
 }

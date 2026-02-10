@@ -299,35 +299,58 @@ def getPaper(level: str, subject: str, year: str, component: str) -> tuple:
             conn.close()
 
 
-def getPaperUuid(uuid: str) -> tuple:
-    """Get a specific paper's files"""
+def getPaperUuid(uuid: str) -> tuple | None:
     try:
         conn = sqlite3.connect(DB_PAST_PAPER_PATH)
         cursor = conn.cursor()
 
-        query = """SELECT * 
-                    FROM papers 
-                    WHERE uuid = ? """
-                    
-        cursor.execute(query, (uuid,))
+        cursor.execute("SELECT * FROM papers WHERE uuid = ?", (uuid,))
 
         result = cursor.fetchone()
-        
         if not result:
-            return None, None
+            return None
 
-        # Decompress files
         q_b64, s_b64 = result[7], result[8]
-        question_data = zlib.decompress(base64.b64decode(q_b64))
-        solution_data = zlib.decompress(base64.b64decode(s_b64)) if result[8] != None else None 
 
-        return result
+        # decompress and re-encode
+        questionPdfBase64 = base64.b64encode(
+            zlib.decompress(base64.b64decode(q_b64))
+        ).decode("utf-8")
+
+        solutionPdfBase64 = None
+        if s_b64 is not None:
+            solutionPdfBase64 = base64.b64encode(
+                zlib.decompress(base64.b64decode(s_b64))
+            ).decode("utf-8")
+
+        # rebuild row
+        fixedResult = (*result[:7], questionPdfBase64, solutionPdfBase64, *result[9:])
+
+        return fixedResult
+
     except Exception as e:
-        logger.error(f"Error getting paper: {e}")
-        return [None, None]
+        raise e
+
+
+def approvePaper(uuid: str) -> bool:
+    try:
+        conn = sqlite3.connect(DB_PAST_PAPER_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute("UPDATE papers SET approved = 1 WHERE uuid = ?", (uuid,))
+
+        conn.commit()
+
+        if cursor.rowcount == 0:
+            return False
+
+        return True
+
+    except Exception:
+        return False
+
     finally:
-        if conn:
-            conn.close()
+        conn.close()
 
 
 def getPaperComponents(year: str, subject: str, level: str) -> list:
@@ -765,7 +788,7 @@ def getUnapprovedPapers():
                 "year": item[2],
                 "component": item[3],
                 "board": item[4],
-                "level": item[5]
+                "level": item[5],
             }
             for item in papers
         ]

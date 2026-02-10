@@ -252,10 +252,19 @@ async def getUnapproved(request: Request, q: str, count: int | None = 10):
         raise HTTPException(status_code=500, detail="internal server error")
 
 
-# @adminRouter.post("/approve")
-# async def approveQuestion(questionId: int, request: Request):
-#     user = getUserFromRequest(request)
-#     requireAdmin(user)
+@adminRouter.post("/approve")
+async def approveQuestionType(questionType: str | None, uuid: str, request: Request):
+    try:
 
-#     markQuestionAsApproved(questionId, approvedBy=user["username"])
-#     return {"message": "approved"}, 200
+        user = getUserFromRequest(request)
+        requireAdmin(user)
+        
+        # markQuestionAsApproved(uuid, approvedBy=user["username"])
+        
+        if questionType.lower() == 'paper':
+            approvePaper(uuid)
+
+        return {"message": "approved"}, 200
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail="internal server error")
