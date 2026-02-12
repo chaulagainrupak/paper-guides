@@ -194,7 +194,7 @@ async function QuestionLinks({
                       ? `Year: ${session}`
                       : `Year: ${session} Question Paper`}
                   </Link>
-                  <Link
+                  {/* <Link
                     href={`${pathname.replace(/\/$/, "")}/${encodeUrlSegment(
                       subject,
                       "Mark Scheme",
@@ -205,7 +205,7 @@ async function QuestionLinks({
                     style={{ flexShrink: 0 }}
                   >
                     Mark Scheme
-                  </Link>
+                  </Link> */}
                 </div>
               ))}
             </div>
