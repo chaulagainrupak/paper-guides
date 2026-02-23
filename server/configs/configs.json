@@ -478,17 +478,6 @@
         ]
       },
       {
-        "name": "Electronics 201 - Digital Logic Design",
-        "topics": [
-          "Number systems",
-          "Boolean algebra",
-          "Logic gates",
-          "Combinational circuits",
-          "Sequential circuits",
-          "Flip-flops and counters"
-        ]
-      },
-      {
         "name": "Computer Science 101 - Programming Fundamentals",
         "topics": [
           "Algorithmic thinking",
@@ -531,16 +520,6 @@
         ]
       },
       {
-        "name": "Computer Science 203 - Discrete Structures",
-        "topics": [
-          "Logic and proof techniques",
-          "Set theory",
-          "Relations and functions",
-          "Graph theory",
-          "Combinatorics"
-        ]
-      },
-      {
         "name": "Computer Science 204 - Computer Organization and Architecture",
         "topics": [
           "CPU architecture",
@@ -573,17 +552,6 @@
         ]
       },
       {
-        "name": "Computer Science 303 - Computer Networks",
-        "topics": [
-          "Network models",
-          "Data link layer",
-          "Network layer",
-          "Transport layer",
-          "Routing algorithms",
-          "Network security basics"
-        ]
-      },
-      {
         "name": "Computer Science 304 - Software Engineering",
         "topics": [
           "Software development life cycle",
@@ -592,17 +560,6 @@
           "Testing strategies",
           "Version control",
           "Project management"
-        ]
-      },
-      {
-        "name": "Computer Science 305 - Theory of Computation",
-        "topics": [
-          "Finite automata",
-          "Regular languages",
-          "Context-free grammars",
-          "Pushdown automata",
-          "Turing machines",
-          "Decidability"
         ]
       },
       {
@@ -624,77 +581,6 @@
           "Knowledge representation",
           "Logic and inference",
           "Introduction to machine learning"
-        ]
-      },
-      {
-        "name": "Computer Science 402 - Machine Learning",
-        "topics": [
-          "Supervised learning",
-          "Unsupervised learning",
-          "Regression and classification",
-          "Neural networks basics",
-          "Model evaluation"
-        ]
-      },
-      {
-        "name": "Computer Science 403 - Computer Graphics",
-        "topics": [
-          "Graphics pipeline",
-          "2D and 3D transformations",
-          "Clipping and projection",
-          "Rendering techniques",
-          "Basic animation"
-        ]
-      },
-      {
-        "name": "Computer Science 404 - Information Security",
-        "topics": [
-          "Cryptography basics",
-          "Authentication and authorization",
-          "Network security",
-          "Web security",
-          "Security protocols"
-        ]
-      },
-      {
-        "name": "Computer Engineering 301 - Microprocessors and Microcontrollers",
-        "topics": [
-          "Microprocessor architecture",
-          "Instruction set programming",
-          "Interfacing techniques",
-          "Timers and interrupts",
-          "Embedded system basics"
-        ]
-      },
-      {
-        "name": "Computer Engineering 302 - Embedded Systems",
-        "topics": [
-          "Embedded hardware design",
-          "Firmware development",
-          "Real-time constraints",
-          "Sensor interfacing",
-          "Embedded communication protocols"
-        ]
-      },
-      {
-        "name": "Computer Engineering 401 - VLSI and Digital System Design",
-        "topics": [
-          "CMOS logic",
-          "Combinational and sequential design",
-          "Timing analysis",
-          "ASIC and FPGA concepts",
-          "Hardware description languages"
-        ]
-      },
-      {
-        "name": "Project 401 - Final Year Project",
-        "topics": [
-          "Problem identification",
-          "System design",
-          "Implementation",
-          "Testing and validation",
-          "Technical documentation",
-          "Presentation and defense"
         ]
       }
     ],
