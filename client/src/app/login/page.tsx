@@ -51,17 +51,42 @@ export default function LoginPage() {
     const data: Record<string, string> = {};
     formData.forEach((value, key) => (data[key] = value.toString()));
 
+    // Validate username on signup: alphanumeric, underscores, hyphens only — no special characters
+    if (activeTab === "signup") {
+      const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+      if (!usernameRegex.test(data.username)) {
+        alert(
+          "Username can only contain letters, numbers, underscores (_), and hyphens (-)."
+        );
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     const url = activeTab === "login" ? "/login" : "/signup";
+
+    // For login, detect whether the identifier is an email or a username
+    const loginIdentifier = (data["login-identifier"] ?? "").trim();
+    const isEmail = loginIdentifier.includes("@");
 
     const res = await fetch(getApiUrl(isLocalhost()) + url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        token: turnstileSuccessToken,
-      }),
+      body: JSON.stringify(
+        activeTab === "login"
+          ? {
+              username: isEmail ? null : loginIdentifier,
+              email: isEmail ? loginIdentifier : null,
+              password: data.password,
+              token: turnstileSuccessToken,
+            }
+          : {
+              username: data.username,
+              email: data.email,
+              password: data.password,
+              token: turnstileSuccessToken,
+            }
+      ),
     });
 
     const result = await res.json();
@@ -134,6 +159,7 @@ export default function LoginPage() {
             className="p-6"
             style={{ backgroundColor: "var(--color-surface)" }}
           >
+            {/* LOGIN FORM */}
             <form
               onSubmit={handleSubmit}
               className={`space-y-4 ${activeTab !== "login" && "hidden"}`}
@@ -141,45 +167,23 @@ export default function LoginPage() {
             >
               <div>
                 <label
-                  htmlFor="login-username"
+                  htmlFor="login-identifier"
                   className="block mb-2 text-sm font-medium"
                   style={{ color: "var(--color-text)" }}
                 >
-                  Username
+                  Username or Email
                 </label>
                 <input
                   type="text"
-                  name="username"
-                  id="login-username"
+                  name="login-identifier"
+                  id="login-identifier"
                   className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
                   style={{
                     backgroundColor: "var(--color-nav)",
                     border: "1px solid var(--color-border)",
                     color: "var(--color-text)",
                   }}
-                  placeholder="eg: paperboy024"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="login-email"
-                  className="block mb-2 text-sm font-medium"
-                  style={{ color: "var(--color-text)" }}
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  id="login-email"
-                  className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
-                  style={{
-                    backgroundColor: "var(--color-nav)",
-                    border: "1px solid var(--color-border)",
-                    color: "var(--color-text)",
-                  }}
-                  placeholder="eg: bigman@paperguides.org"
+                  placeholder="eg: paperboy024 or bigman@paperguides.org"
                   required
                 />
               </div>
@@ -191,7 +195,6 @@ export default function LoginPage() {
                 >
                   Password
                 </label>
-                {/* //password */}
                 <div className="flex justify-between">
                   <input
                     type={loginPasswordHidden ? "password" : "text"}
@@ -206,7 +209,6 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     required
                   />
-
                   <TogglePasswordVisibility
                     passwordVisibility={loginPasswordHidden}
                     callbackFunc={setLoginPasswordHidden}
@@ -228,6 +230,7 @@ export default function LoginPage() {
               </button>
             </form>
 
+            {/* SIGNUP FORM */}
             <form
               onSubmit={handleSubmit}
               className={`space-y-4 ${activeTab !== "signup" && "hidden"}`}
@@ -252,6 +255,9 @@ export default function LoginPage() {
                     color: "var(--color-text)",
                   }}
                   placeholder="eg: paperboy024"
+                  // Pattern enforced client-side; also validated in handleSubmit
+                  pattern="^[a-zA-Z0-9_-]+$"
+                  title="Letters, numbers, underscores, and hyphens only"
                   required
                 />
               </div>
@@ -299,7 +305,6 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     required
                   />
-
                   <TogglePasswordVisibility
                     passwordVisibility={signupPasswordHidden}
                     callbackFunc={setSignupPasswordHidden}
@@ -320,7 +325,6 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   required
                 />
-
                 <TogglePasswordVisibility
                   passwordVisibility={signupConfirmPasswordHidden}
                   callbackFunc={setSignupConfirmPasswordHidden}

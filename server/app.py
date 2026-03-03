@@ -54,6 +54,8 @@ app.include_router(adminRouter, prefix="/admin")
 lastGenTimes = {}
 RATE_LIMIT_SECONDS = 300
 
+USERNAME_RE = re.compile(r'^[a-zA-Z0-9_-]+$')
+
 
 def checkRateLimit(username: str):
     currentTime = time.time()
@@ -354,18 +356,10 @@ def getAds():
 
 @app.post("/signup")
 async def signup(body: Request):
-
-    # closed signups , raise immediately
-    # raise HTTPException(
-    #     status_code=500,
-    #     detail="Sorry! New SignUps have been closed! For Now Check back later",
-    # )
-
     conn = None
     try:
         conn = getDbConnection()
         cur = conn.cursor()
-
         data = await body.json()
         username = data.get("username")
         email = data.get("email")
@@ -377,6 +371,13 @@ async def signup(body: Request):
             raise HTTPException(
                 status_code=400,
                 detail="Turnstile Captcha verification failed, reload and try again!",
+            )
+
+        # Validate username — no special characters
+        if not username or not USERNAME_RE.match(username):
+            raise HTTPException(
+                status_code=400,
+                detail="Username can only contain letters, numbers, underscores, and hyphens.",
             )
 
         # Check if user already exists
@@ -393,15 +394,13 @@ async def signup(body: Request):
             (username, email, hashedPw, datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
         )
         conn.commit()
-
         return {"message": "User created successfully"}
-
     except HTTPException:
         raise
     except Exception as e:
         print(e)
         raise HTTPException(
-            status_code=500, detail=f"Internal server error! Don't Panic!"
+            status_code=500, detail="Internal server error! Don't Panic!"
         )
     finally:
         if conn:
@@ -410,45 +409,49 @@ async def signup(body: Request):
 
 @app.post("/login")
 async def login(body: Request):
-
+    conn = None
     try:
         conn = getDbConnection()
         cur = conn.cursor()
-
         data = await body.json()
-
-        username = data.get("username")
-        email = data.get("email")
+        username = data.get("username")  # set when identifier is not an email
+        email = data.get("email")        # set when identifier looks like an email
         password = data.get("password")
         token = data.get("token")
 
-        # print(username,email,password,token)
         # Verify Turnstile token
-        isValid = verifyTurnstileToken(token)
-        if not isValid:
+        if not verifyTurnstileToken(token):
             raise HTTPException(
                 status_code=400,
                 detail="Turnstile Captcha verification failed, reload the page and try again!",
             )
 
-        cur.execute(
-            "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
-        )
+        # Allow login with either username OR email
+        if email:
+            cur.execute("SELECT * FROM users WHERE email = ?", (email,))
+        else:
+            cur.execute("SELECT * FROM users WHERE username = ?", (username,))
+
         user = cur.fetchone()
         conn.close()
+        conn = None
 
         if not user or not verifyPassword(password, user["password"]):
-            raise HTTPException(status_code=401, detail="Invalid username or password")
+            raise HTTPException(status_code=401, detail="Invalid credentials")
 
         accessToken = createAccessToken(
             data={"username": user["username"], "email": user["email"]},
             expiresDelta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
         )
-
         return {"accessToken": accessToken, "tokenType": "bearer"}
+    except HTTPException:
+        raise
     except Exception as e:
         print(e)
-        raise HTTPException(status_code=401, detail="Invalid username or password")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    finally:
+        if conn:
+            conn.close()
 
 
 @app.post("/validateToken")
