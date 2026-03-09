@@ -1,0 +1,10 @@
+User-agent: *
+Content-Signal: search=yes,ai-train=no
+Allow: /
+
+Disallow: /admin
+Disallow: /admin/
+Disallow: /login
+Disallow: /api/
+
+Sitemap: https://paperguides.org/sitemap.xml

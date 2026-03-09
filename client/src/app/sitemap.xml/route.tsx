@@ -5,7 +5,7 @@ export async function GET() {
   const apiSitemapUrl = `${getApiUrl(isLocalhost())}/sitemap.xml`;
 
   const res = await fetch(apiSitemapUrl, {
-    cache: 'no-store',
+    next: { revalidate: 3600 }
   });
 
   if (!res.ok) {
