@@ -1,54 +1,81 @@
 import sqlite3
-import urllib.parse
 import xml.etree.ElementTree as ET
 from datetime import datetime
 import re
+import json
+import os
 
-DB_PAPER = "./instance/paper-guides-papers.db"
-DB_NOTES = "./instance/paper-guides-notes.db"
+BASE_DIR = os.path.dirname(__file__)
+
+DB_PAPER = os.path.join(BASE_DIR, "instance", "paper-guides-papers.db")
 
 baseUrl = "https://paperguides.org"
 today = datetime.today().strftime("%Y-%m-%d")
 
-mainLinks = [
-    ("/", "weekly", 1.0),
-    ("/pastpapers", "weekly", 0.9),
-    ("/notes", "weekly", 0.9),
-    ("/generator", "weekly", 0.8),
-    ("/mcqs", "weekly", 0.8),
-]
+# ---------------- SLUGIFY ----------------
 
-footerLinks = [
-    ("/about", "monthly", 0.6),
-]
 
-def slugify(text):
+def slugify(text: str, board: str = "") -> str:
+
     text = text.lower()
-    text = re.sub(r"[^\w\s-]", "", text)
-    text = re.sub(r"\s+", "-", text)
-    return text.strip("-")
+
+    # remove brackets
+    text = re.sub(r"[()]", "", text)
+
+    # KU subjects contain " - "
+    if "kathmandu university" in board.lower():
+        text = text.replace(" - ", " ")
+
+    text = re.sub(r"[^a-z0-9]+", "-", text)
+
+    text = text.strip("-")
+
+    return text
+
+
+# ---------------- YEAR + SESSION PARSER ----------------
+
 
 def parse_year_session(year_field):
+
     year_match = re.search(r"\d{4}", year_field)
-    year = year_match.group(0) if year_match else year_field
+    if not year_match:
+        return None, None
+
+    year = year_match.group(0)
 
     session = ""
+
     session_match = re.search(r"\((.*?)\)", year_field)
     if session_match:
         session = session_match.group(1)
 
-    session = session.lower()
+    session = session.lower().strip()
+
+    # normalize Cambridge sessions
+    session = session.replace(" / ", "-")
     session = session.replace("/", "-")
-    session = session.replace(" ", "")
-    session = session.replace("--", "-")
+    session = session.replace(" ", "-")
+
+    # collapse multiple hyphens
+    session = re.sub(r"-+", "-", session)
+
+    # remove anything unsafe
+    session = re.sub(r"[^a-z0-9\-]", "", session)
 
     return year, session
 
+
+# ---------------- XML HELPER ----------------
+
+
 def createUrlNode(loc, lastmod=None, changefreq=None, priority=None):
+
     if not loc:
         return None
 
     url = ET.Element("url")
+
     ET.SubElement(url, "loc").text = loc
 
     if lastmod:
@@ -63,58 +90,75 @@ def createUrlNode(loc, lastmod=None, changefreq=None, priority=None):
     return url
 
 
-urlset = ET.Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
+# ---------------- ROOT XML ----------------
 
-for path, freq, pri in mainLinks + footerLinks:
-    fullUrl = f"{baseUrl}{path}"
-    node = createUrlNode(fullUrl, today, freq, pri)
-    if node:
-        urlset.append(node)
+urlset = ET.Element(
+    "urlset",
+    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9",
+)
+
+# ---------------- INDEX STRUCTURES ----------------
 
 subjectPages = set()
 yearPages = set()
 
-try:
+paperIndex = {}
 
-    conn = sqlite3.connect(DB_PAPER)
-    cur = conn.cursor()
+# ---------------- PAPERS ----------------
 
-    rows = cur.execute("""
-        SELECT board, subject, year, component
-        FROM papers
-        WHERE approved = 1
-    """)
+conn = sqlite3.connect(DB_PAPER)
+cur = conn.cursor()
 
-    for board, subject, year_field, component in rows:
+rows = cur.execute(
+    """
+SELECT board, subject, year, component
+FROM papers
+WHERE approved = 1
+"""
+)
 
-        if not board or not subject or not year_field:
-            continue
+for board, subject, year_field, component in rows:
 
-        boardSlug = slugify(board)
-        subjectSlug = slugify(subject)
+    if not board or not subject or not year_field:
+        continue
 
-        yearOnly, sessionSlug = parse_year_session(year_field)
+    boardSlug = slugify(board)
+    subjectSlug = slugify(subject, board)
 
-        subjectPages.add((boardSlug, subjectSlug))
-        yearPages.add((boardSlug, subjectSlug, yearOnly))
+    yearOnly, sessionSlug = parse_year_session(year_field)
 
-        questionSlug = f"{subjectSlug}-question-paper-{component}-{yearOnly}-{sessionSlug}"
-        markSlug = f"{subjectSlug}-mark-scheme-{component}-{yearOnly}-{sessionSlug}"
+    if not yearOnly:
+        continue
 
-        questionUrl = f"{baseUrl}/subjects/{boardSlug}/{subjectSlug}/{yearOnly}/{questionSlug}"
-        markUrl = f"{baseUrl}/subjects/{boardSlug}/{subjectSlug}/{yearOnly}/{markSlug}"
+    componentSlug = slugify(str(component))
 
-        node1 = createUrlNode(questionUrl, today, "monthly", 0.8)
-        node2 = createUrlNode(markUrl, today, "monthly", 0.8)
+    subjectPages.add((boardSlug, subjectSlug))
+    yearPages.add((boardSlug, subjectSlug, yearOnly))
 
-        if node1:
-            urlset.append(node1)
+    qpSlug = f"{subjectSlug}-question-paper-{componentSlug}-{yearOnly}-{sessionSlug}"
 
-        if node2:
-            urlset.append(node2)
+    qpUrl = f"{baseUrl}/subjects/{boardSlug}/{subjectSlug}/{yearOnly}/{qpSlug}"
 
-except Exception as e:
-    print("Paper DB Error:", e)
+    node = createUrlNode(qpUrl, today, "monthly", 0.8)
+
+    if node:
+        urlset.append(node)
+
+    # -------- BUILD INDEX FOR ASTRO --------
+
+    if boardSlug not in paperIndex:
+        paperIndex[boardSlug] = {}
+
+    if subjectSlug not in paperIndex[boardSlug]:
+        paperIndex[boardSlug][subjectSlug] = {"name": subject, "years": {}}
+
+    if yearOnly not in paperIndex[boardSlug][subjectSlug]["years"]:
+        paperIndex[boardSlug][subjectSlug]["years"][yearOnly] = []
+
+    paperIndex[boardSlug][subjectSlug]["years"][yearOnly].append(qpSlug)
+
+
+# ---------------- SUBJECT PAGES ----------------
 
 for boardSlug, subjectSlug in subjectPages:
 
@@ -125,6 +169,9 @@ for boardSlug, subjectSlug in subjectPages:
     if node:
         urlset.append(node)
 
+
+# ---------------- YEAR PAGES ----------------
+
 for boardSlug, subjectSlug, year in yearPages:
 
     url = f"{baseUrl}/subjects/{boardSlug}/{subjectSlug}/{year}"
@@ -134,36 +181,21 @@ for boardSlug, subjectSlug, year in yearPages:
     if node:
         urlset.append(node)
 
-try:
 
-    connNotes = sqlite3.connect(DB_NOTES)
-    cur = connNotes.cursor()
-
-    notes = cur.execute("""
-        SELECT level, subject, topic
-        FROM notes
-        WHERE approved = 1
-    """)
-
-    for level, subject, topic in notes:
-
-        if not (level and subject and topic):
-            continue
-
-        path = f"/notes/{urllib.parse.quote(level)}/{urllib.parse.quote(subject)}/{urllib.parse.quote(topic)}"
-
-        noteUrl = f"{baseUrl}{path}"
-
-        node = createUrlNode(noteUrl, today, "monthly", 0.75)
-
-        if node:
-            urlset.append(node)
-
-except Exception as e:
-    print("Notes DB Error:", e)
+# ---------------- WRITE SITEMAP ----------------
 
 tree = ET.ElementTree(urlset)
 
-tree.write("./configs/sitemap.xml", encoding="utf-8", xml_declaration=True)
+sitemap_path = os.path.join(BASE_DIR, "configs", "sitemap.xml")
 
-print("✅ sitemap.xml generated.")
+tree.write(sitemap_path, encoding="utf-8", xml_declaration=True)
+
+# ---------------- WRITE PAPER INDEX ----------------
+
+paper_index_path = os.path.join(BASE_DIR, "configs", "paperPaths.json")
+
+with open(paper_index_path, "w") as f:
+    json.dump(paperIndex, f, separators=(",", ":"))
+
+print("✅ sitemap.xml generated")
+print("✅ paperPaths.json generated")

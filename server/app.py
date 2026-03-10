@@ -24,6 +24,8 @@ from turnstileVerify import verifyTurnstileToken
 import base64
 import time
 
+import json
+
 from picPatcher import process_images
 from objectiveQuestionsHandler import generateMcqTest, insertMcqQuestion
 
@@ -39,6 +41,8 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Load configuration
 CONFIG_PATH = "./configs/configs.json"
+PAPER_PATHS_PATH = "./configs/paperPaths.json"
+
 CONFIG = loadConfig("./configs/configs.json")
 SITEMAP_PATH = "./configs/sitemap.xml"
 # Constants
@@ -285,7 +289,7 @@ async def getData(
                 f"{yearForGetPaper} Insert Paper",
                 component,
             )
-        if board == 'a-levels' or board.replace("%20", " ") == 'a levels':
+        if board == "a-levels" or board.replace("%20", " ") == "a levels":
             data = getPaper(
                 "a level",
                 subject.replace("%20", " "),
@@ -308,6 +312,7 @@ async def getData(
     except Exception as e:
         print("Error in getData:", e)
         raise HTTPException(status_code=503, detail="No data found")
+
 
 @app.get("/getNote/{subject}/{topic}")
 def getNoteForClient(subject, topic):
@@ -685,6 +690,17 @@ async def sitemap():
         return Response(content="Not Found", status_code=404)
 
     return FileResponse(SITEMAP_PATH, media_type="application/xml")
+
+
+@app.get("/paper-paths")
+async def paper_paths():
+    if not os.path.exists(PAPER_PATHS_PATH):
+        return JSONResponse({"error": "paper paths not generated"}, status_code=404)
+
+    with open(PAPER_PATHS_PATH, "r") as f:
+        data = json.load(f)
+
+    return data
 
 
 def getClientIp(request):

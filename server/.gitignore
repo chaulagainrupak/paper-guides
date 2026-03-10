@@ -196,3 +196,5 @@ cython_debug/
 
 instance
 configs/sitemap.xml
+
+configs/paperPaths.json
