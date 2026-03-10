@@ -442,7 +442,7 @@ async def validateToken(body: Request):
         data = await body.json()
 
         token = data["accessToken"]
-        tokenData = jwt.decode(token, SECRET_KEY)
+        tokenData = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
 
         username = tokenData["username"]
         email = tokenData["email"]
@@ -467,6 +467,7 @@ async def validateToken(body: Request):
             }, 200
     except Exception as e:
         print(e)
+
         return {"message": "token verification failed"}, 429
 
 
