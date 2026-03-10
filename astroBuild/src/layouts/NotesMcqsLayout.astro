@@ -1,5 +1,6 @@
 
 ---
+import { SITE_URL } from '../utils/config';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
 const { title, description } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description}, ogImage=`${SITE_URL ?? "https://paperguides.org"}/images/notes.png`>
   <!-- MathJax for notes rendering -->
   <script
     type="text/javascript"

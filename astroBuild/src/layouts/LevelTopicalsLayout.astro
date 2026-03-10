@@ -1,4 +1,5 @@
 ---
+import { SITE_URL } from '../utils/config';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
 const { title, description } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description}, ogImage=`${SITE_URL ?? "https://paperguides.org"}/images/past_papers.png`>
   <div class="mt-16 min-h-screen">
     <div class="flex xl:flex-row flex-col gap-6 h-auto px-6 py-6">
 
