@@ -2,42 +2,41 @@
 import LevelTopicalsLayout from "../../layouts/LevelTopicalsLayout.astro";
 import BackButton from "../../components/BackButton.astro";
 import SubjectSearch from "../../components/SubjectSearch";
-import { API_URL } from "../../utils/config";
+import { getPaperIndex } from "../../utils/paperIndex";
 
-type Subject = { name: string };
 type Params = { board: string };
 
 const { board } = Astro.params as Params;
 
-const boardNameMap: Record<string, string> = {
-  "a-levels": "A Levels",
-  "kathmandu-university": "kathmandu university",
-};
-
-const apiBoardName = boardNameMap[board] ?? board;
-
-let subjects: Subject[] = [];
+let subjects: { name: string }[] = [];
 
 try {
-  const res = await fetch(
-    `${API_URL}/subjects/${encodeURIComponent(apiBoardName)}`
-  );
-  const data: Subject[] = await res.json();
-  subjects = data.sort((a, b) =>
-    a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
-  );
+  const index = await getPaperIndex();
+
+  subjects = Object.keys(index?.[board] ?? {})
+    .map((s) => ({
+      name: s.replace(/-/g, " "),
+    }))
+    .sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+    );
 } catch (err) {
   console.error("Failed to fetch subjects:", err);
 }
 
 const boardDisplayName =
-  board === "a-levels" ? "A Levels" : board === "kathmandu-university" ? "Kathmandu University" : apiBoardName;
+  board === "a-levels"
+    ? "A Levels"
+    : board === "kathmandu-university"
+      ? "Kathmandu University"
+      : board;
 
-export const getStaticPaths= () => {
-  return [
-    { params: { board: "a-levels" } },
-    { params: { board: "kathmandu-university" } },
-  ];
+export const getStaticPaths = async () => {
+  const index = await getPaperIndex();
+
+  return Object.keys(index).map((board) => ({
+    params: { board },
+  }));
 };
 ---
 
@@ -47,15 +46,16 @@ export const getStaticPaths= () => {
 >
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-4xl font-semibold">
-      Available <span class="text-[var(--blue-highlight)]">Subjects</span> for:{" "}
-      {boardDisplayName}
+      Available <span class="text-[var(--blue-highlight)]">Subjects</span> for {
+        boardDisplayName
+      }
     </h1>
     <BackButton />
   </div>
 
   <!-- @ts-ignore -->
   <SubjectSearch
-  client:load
+    client:load
     subjects={subjects}
     boardSlug={board!}
     basePath={`/subjects/${board}`}

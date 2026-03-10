@@ -1,4 +1,3 @@
-
 ---
 import type { GetStaticPaths } from "astro";
 import NotesMcqsLayout from "../../../../layouts/NotesMcqsLayout.astro";
@@ -6,56 +5,53 @@ import BackButton from "../../../../components/BackButton.astro";
 import MarkdownRenderer from "../../../../components/MarkdownRenderer";
 import { API_URL } from "../../../../utils/config";
 import { slugify } from "../../../../utils/slugify";
+import { getPaperIndex } from "../../../../utils/paperIndex";
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const boards = [
-    { slug: "a-levels",             apiName: "A Levels" },
-    { slug: "kathmandu-university", apiName: "kathmandu university" },
-    { slug: "ioe",                  apiName: "IOE" },
-    { slug: "neb",                  apiName: "NEB" },
-    { slug: "tu",                   apiName: "TU" },
-  ];
+  const index = await getPaperIndex();
 
   const paths = [];
 
-  for (const { slug, apiName } of boards) {
-    try {
-      const res = await fetch(`${API_URL}/subjects/${encodeURIComponent(apiName)}`);
-      if (!res.ok) continue;
-      const subjects: { name: string; topics?: string[] }[] = await res.json();
+  const notes = index?.notes ?? {};
 
-      for (const s of subjects) {
-        for (const topic of s.topics ?? []) {
-          // Fetch the note at build time so it's baked in as static HTML
-          let noteContent = '';
-          let error = '';
-          try {
-            const noteRes = await fetch(
-              `${API_URL}/getNote/${encodeURIComponent(s.name)}/${encodeURIComponent(topic)}`
-            );
-            if (noteRes.ok) {
-              const data = await noteRes.json();
-              noteContent = data.content ?? data.html ?? data.note ?? '';
-            }
-          } catch {}
+  for (const board in notes) {
+    for (const subject in notes[board]) {
+      for (const topic of notes[board][subject]) {
+        const realSubjectName = subject.replace(/-/g, " ");
+        const realTopicName = topic.replace(/-/g, " ");
 
-          paths.push({
-            params: {
-              board: slug,
-              subject: slugify(s.name),
-              topic: slugify(topic),
-            },
-            props: {
-              realSubjectName: s.name,
-              realTopicName: topic,
-              noteContent,
-              error,
-            },
-          });
+        let noteContent = "";
+        let error = "";
+
+        try {
+          const res = await fetch(
+            `${API_URL}/getNote/${encodeURIComponent(realSubjectName)}/${encodeURIComponent(realTopicName)}`,
+          );
+
+          if (res.ok) {
+            const data = await res.json();
+            noteContent = data.content ?? data.html ?? data.note ?? "";
+          } else {
+            error = "Failed to load note.";
+          }
+        } catch {
+          error = "Failed to load note.";
         }
+
+        paths.push({
+          params: {
+            board,
+            subject,
+            topic,
+          },
+          props: {
+            realSubjectName,
+            realTopicName,
+            noteContent,
+            error,
+          },
+        });
       }
-    } catch (err) {
-      console.error(`Failed to build topic paths for ${apiName}:`, err);
     }
   }
 
@@ -63,6 +59,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const { board } = Astro.params;
+
 const { realSubjectName, realTopicName, noteContent, error } = Astro.props as {
   realSubjectName: string;
   realTopicName: string;
@@ -77,7 +74,9 @@ const { realSubjectName, realTopicName, noteContent, error } = Astro.props as {
 >
   <div class="flex justify-between items-center mb-6 printing-toolbar">
     <h1 class="text-3xl font-bold">
-      <span class="text-[var(--blue-highlight)]">{realSubjectName}</span>: {realTopicName}
+      <span class="text-[var(--blue-highlight)]">{realSubjectName}</span>: {
+        realTopicName
+      }
     </h1>
     <div class="flex gap-2">
       <button
@@ -90,46 +89,52 @@ const { realSubjectName, realTopicName, noteContent, error } = Astro.props as {
     </div>
   </div>
 
-  {error ? (
-    <div class="text-center mt-12">
-      <p class="text-xl text-[var(--pink-highlight)] font-bold">{error}</p>
-    </div>
-  ) : noteContent ? (
-    <div id="note-content" class="printable-area">
-      <MarkdownRenderer client:load content={noteContent} />
-    </div>
-  ) : (
-    <div class="text-center mt-12 opacity-60">
-      <p class="text-xl">No content available for this topic yet.</p>
-    </div>
-  )}
+  {
+    error ? (
+      <div class="text-center mt-12">
+        <p class="text-xl text-[var(--pink-highlight)] font-bold">{error}</p>
+      </div>
+    ) : noteContent ? (
+      <div id="note-content" class="printable-area">
+        <MarkdownRenderer client:load content={noteContent} />
+      </div>
+    ) : (
+      <div class="text-center mt-12 opacity-60">
+        <p class="text-xl">No content available for this topic yet.</p>
+      </div>
+    )
+  }
 </NotesMcqsLayout>
 
 <script is:inline>
   function buildToc() {
-    const content = document.getElementById('note-content');
-    const nav = document.getElementById('notes-navigation');
+    const content = document.getElementById("note-content");
+    const nav = document.getElementById("notes-navigation");
     if (!content || !nav) return;
 
-    const headings = content.querySelectorAll('h1, h2, h3');
+    const headings = content.querySelectorAll("h1, h2, h3");
     if (headings.length === 0) return;
 
-    nav.innerHTML = '<p class="font-bold mb-3 text-sm uppercase tracking-wide opacity-60">On this page</p>';
-    const ul = document.createElement('ul');
-    ul.className = 'space-y-1 text-sm';
+    nav.innerHTML =
+      '<p class="font-bold mb-3 text-sm uppercase tracking-wide opacity-60">On this page</p>';
+    const ul = document.createElement("ul");
+    ul.className = "space-y-1 text-sm";
 
     headings.forEach((heading, i) => {
-      const id = 'note-heading-' + i;
+      const id = "note-heading-" + i;
       heading.id = id;
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = '#' + id;
-      a.textContent = heading.textContent || '';
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = "#" + id;
+      a.textContent = heading.textContent || "";
       a.className = [
-        'block py-1 hover:text-[var(--blue-highlight)] transition-colors',
-        heading.tagName === 'H1' ? 'font-bold' :
-        heading.tagName === 'H2' ? 'pl-2 font-semibold' : 'pl-4 opacity-80',
-      ].join(' ');
+        "block py-1 hover:text-[var(--blue-highlight)] transition-colors",
+        heading.tagName === "H1"
+          ? "font-bold"
+          : heading.tagName === "H2"
+            ? "pl-2 font-semibold"
+            : "pl-4 opacity-80",
+      ].join(" ");
       li.appendChild(a);
       ul.appendChild(li);
     });
@@ -143,8 +148,8 @@ const { realSubjectName, realTopicName, noteContent, error } = Astro.props as {
 
   let attempts = 0;
   const interval = setInterval(() => {
-    const content = document.getElementById('note-content');
-    if (content && content.querySelectorAll('h1,h2,h3').length > 0) {
+    const content = document.getElementById("note-content");
+    if (content && content.querySelectorAll("h1,h2,h3").length > 0) {
       buildToc();
       clearInterval(interval);
     } else if (++attempts > 20) {
@@ -152,4 +157,3 @@ const { realSubjectName, realTopicName, noteContent, error } = Astro.props as {
     }
   }, 150);
 </script>
-

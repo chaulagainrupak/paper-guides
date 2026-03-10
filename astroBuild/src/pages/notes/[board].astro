@@ -1,10 +1,9 @@
-
 ---
 import type { GetStaticPaths } from 'astro';
 import LevelTopicalsLayout from '../../layouts/LevelTopicalsLayout.astro';
 import BackButton from '../../components/BackButton.astro';
 import SubjectSearch from '../../components/SubjectSearch';
-import { API_URL } from '../../utils/config';
+import { getPaperIndex } from '../../utils/paperIndex';
 
 const { board } = Astro.params;
 
@@ -19,15 +18,29 @@ const apiBoardName = boardNameMap[board!] ?? board!;
 let subjects: { name: string }[] = [];
 
 try {
-  const res = await fetch(`${API_URL}/subjects/${encodeURIComponent(apiBoardName)}`);
-  const data: { name: string }[] = await res.json();
-  subjects = data.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+  const index = await getPaperIndex();
+
+  const notes = index?.notes?.[board!] ?? {};
+
+  subjects = Object.keys(notes)
+    .map((s) => ({
+      name: s.replace(/-/g, ' '),
+    }))
+    .sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+    );
 } catch (err) {
-  console.error('Failed to fetch subjects:', err);
+  console.error('Failed to load notes subjects:', err);
 }
 
-export const getStaticPaths: GetStaticPaths = () => {
-  return ['a-levels', 'kathmandu-university', 'ioe'].map((board) => ({ params: { board } }));
+export const getStaticPaths: GetStaticPaths = async () => {
+  const index = await getPaperIndex();
+
+  const boards = Object.keys(index?.notes ?? {});
+
+  return boards.map((board) => ({
+    params: { board },
+  }));
 };
 ---
 
@@ -42,6 +55,7 @@ export const getStaticPaths: GetStaticPaths = () => {
     <BackButton />
   </div>
 
+  <!-- @ts-ignore -->
   <SubjectSearch
     client:load
     subjects={subjects}
@@ -49,4 +63,3 @@ export const getStaticPaths: GetStaticPaths = () => {
     basePath={`/notes/${board}`}
   />
 </LevelTopicalsLayout>
-

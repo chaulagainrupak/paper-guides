@@ -1,33 +1,26 @@
-
 ---
 import LevelTopicalsLayout from '../../../layouts/LevelTopicalsLayout.astro';
 import BackButton from '../../../components/BackButton.astro';
-import { API_URL } from '../../../utils/config';
+import { getPaperIndex } from '../../../utils/paperIndex';
 import { slugify, unslugify } from '../../../utils/slugify';
 
 export const prerender = false;
 
 const { board, subject } = Astro.params;
 
-const boardNameMap: Record<string, string> = {
-  'a-levels': 'A Levels',
-  'kathmandu-university': 'kathmandu university',
-};
-
-const apiBoardName = boardNameMap[board!] ?? board!;
 let realSubjectName = unslugify(subject!);
 let topics: string[] = [];
 
 try {
-  const subjectsRes = await fetch(`${API_URL}/subjects/${encodeURIComponent(apiBoardName)}`);
-  const subjectsList: { name: string; topics?: string[] }[] = await subjectsRes.json();
-  const matched = subjectsList.find((s) => slugify(s.name) === subject);
-  if (matched) {
-    realSubjectName = matched.name;
-    topics = matched.topics ?? [];
+  const index = await getPaperIndex();
+
+  const notes = index?.notes?.[board!]?.[subject!];
+
+  if (notes) {
+    topics = notes.map((t: string) => unslugify(t));
   }
 } catch (err) {
-  console.error('Failed to fetch topics:', err);
+  console.error('Failed to load topics:', err);
 }
 ---
 
@@ -57,4 +50,3 @@ try {
     ))}
   </div>
 </LevelTopicalsLayout>
-
