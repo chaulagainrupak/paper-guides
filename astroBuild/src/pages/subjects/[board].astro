@@ -53,7 +53,9 @@ export const getStaticPaths= () => {
     <BackButton />
   </div>
 
+  <!-- @ts-ignore -->
   <SubjectSearch
+  client:load
     subjects={subjects}
     boardSlug={board!}
     basePath={`/subjects/${board}`}
