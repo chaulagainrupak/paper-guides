@@ -2,22 +2,32 @@
 import { defineConfig } from 'astro/config';
 
 
+// @ts-ignore
 import react from "@astrojs/react";
+
 
 import tailwindcss from "@tailwindcss/vite";
 
+
+// @ts-ignore
 import node from "@astrojs/node";
+
+
+// import react from "@astrojs/react";
+
+// import tailwindcss from "@tailwindcss/vite";
+
 
 // https://astro.build/config
 export default defineConfig({
-  output: "server",
+  output: "static",
   integrations: [react()],
 
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
   },
 
-    adapter: node({
-    mode: "standalone"
-  })
-});
+  adapter: node({
+    mode: "standalone",
+  }),
+})
