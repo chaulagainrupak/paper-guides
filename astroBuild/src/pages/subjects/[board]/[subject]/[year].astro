@@ -5,12 +5,12 @@ import { getPaperIndex } from "../../../../utils/paperIndex";
 
 const { board, subject, year } = Astro.params;
 
+const index = await getPaperIndex();
+
 let slugs: string[] = [];
 
 try {
-  const index = await getPaperIndex();
-
-  slugs = index?.[board!]?.[subject!]?.[year!] ?? [];
+  slugs = index?.[board!]?.[subject!]?.years?.[year!] ?? [];
 } catch (err) {
   console.error("Failed to fetch papers:", err);
 }
@@ -22,7 +22,9 @@ export const getStaticPaths = async () => {
 
   for (const board in index) {
     for (const subject in index[board]) {
-      for (const year in index[board][subject]) {
+      const years = index[board][subject].years;
+
+      for (const year in years) {
         paths.push({
           params: { board, subject, year },
         });
@@ -33,7 +35,8 @@ export const getStaticPaths = async () => {
   return paths;
 };
 
-const realSubjectName = subject!.replace(/-/g, " ");
+const realSubjectName =
+  index?.[board!]?.[subject!]?.name ?? subject!.replace(/-/g, " ");
 
 const grouped: Record<string, string[]> = {};
 

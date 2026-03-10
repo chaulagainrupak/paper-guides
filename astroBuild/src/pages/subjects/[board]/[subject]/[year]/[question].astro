@@ -4,17 +4,19 @@ export const prerender = true;
 import LevelTopicalsLayout from "../../../../../layouts/LevelTopicalsLayout.astro";
 import PaperViewerClient from "../../../../../components/PaperViewerClient";
 import { getPaperIndex } from "../../../../../utils/paperIndex";
-import { slugify } from "../../../../../utils/slugify";
 
 export async function getStaticPaths() {
   const index = await getPaperIndex();
-
   const paths = [];
 
   for (const board in index) {
+    if (board === "notes") continue;
+
     for (const subject in index[board]) {
-      for (const year in index[board][subject]) {
-        for (const question of index[board][subject][year]) {
+      const years = index[board][subject].years;
+
+      for (const year in years) {
+        for (const question of years[year]) {
           paths.push({
             params: { board, subject, year, question },
           });
@@ -26,30 +28,30 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { board, subject, year, question } = Astro.params as {
-  board: string;
-  subject: string;
-  year: string;
-  question: string;
-};
+const { board, subject, year, question } = Astro.params;
 
-const boardNameMap: Record<string, string> = {
+const index = await getPaperIndex();
+
+const subjectData = index?.[board]?.[subject];
+
+const realSubjectName = subjectData?.name ?? subject.replace(/-/g, " ");
+
+const boardNameMap = {
   "a-levels": "A Levels",
   "kathmandu-university": "kathmandu university",
 };
 
-const boardParamMap: Record<string, string> = {
+const boardParamMap = {
   "a-levels": "a levels",
   "kathmandu-university": "ku",
 };
-
+// @ts-ignore
 const apiBoardName = boardNameMap[board] ?? board;
+//  @ts-ignore
 const boardParam = boardParamMap[board] ?? board;
 
-/* resolve real subject name */
-let realSubjectName = subject.replace(/-/g, " ");
-
 /* parse slug */
+
 let component = "";
 let session = "";
 let type = "";
@@ -58,6 +60,7 @@ let semester = "";
 
 if (boardParam === "ku") {
   const semesterMatch = question.match(/semester-\d+/i);
+
   semester = semesterMatch ? semesterMatch[0].replace("-", " ") : "";
 } else {
   insert = question.includes("insert-paper");
@@ -69,6 +72,7 @@ if (boardParam === "ku") {
   const parts = clean.split("-");
 
   component = parts[parts.length - 4];
+
   session = `${parts[parts.length - 2]}-${parts[parts.length - 1]}`;
 }
 
@@ -81,12 +85,15 @@ const paperName = question.replace(/-/g, " ");
 >
   <nav class="text-sm opacity-70 mb-4 flex flex-wrap gap-1">
     <a href="/" class="hover:underline">Paper-Guides</a> ›
+
     <a href="/past-papers" class="hover:underline">Past Papers</a> ›
+
     <a href={`/subjects/${board}`} class="hover:underline">{apiBoardName}</a> ›
-    <a href={`/subjects/${board}/${subject}`} class="hover:underline">
-      {realSubjectName}
-    </a>
-    ›
+
+    <a href={`/subjects/${board}/${subject}`} class="hover:underline"
+      >{realSubjectName}</a
+    > ›
+
     <span>{year}</span>
   </nav>
 
@@ -98,6 +105,7 @@ const paperName = question.replace(/-/g, " ");
     <button
       onclick="history.back()"
       class="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--blue-highlight)] text-white text-lg font-bold hover:opacity-80 transition flex-shrink-0"
+      aria-label="Go back"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -110,6 +118,7 @@ const paperName = question.replace(/-/g, " ");
           d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
           clip-rule="evenodd"></path>
       </svg>
+
       Back
     </button>
   </div>

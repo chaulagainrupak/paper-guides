@@ -10,7 +10,7 @@ let years: string[] = [];
 try {
   const index = await getPaperIndex();
 
-  years = Object.keys(index?.[board!]?.[subject!] ?? {});
+  years = Object.keys(index?.[board!]?.[subject!]?.years ?? {});
 } catch (err) {
   console.error("Failed to fetch years:", err);
 }
@@ -34,7 +34,9 @@ export const getStaticPaths = async () => {
   return paths;
 };
 
-const realSubjectName = subject!.replace(/-/g, " ");
+const realSubjectName =
+  (await getPaperIndex())?.[board!]?.[subject!]?.name ??
+  subject!.replace(/-/g, " ");
 ---
 
 <LevelTopicalsLayout
