@@ -1,0 +1,108 @@
+---
+import LevelTopicalsLayout from "../../../layouts/LevelTopicalsLayout.astro";
+import BackButton from "../../../components/BackButton.astro";
+import { API_URL } from "../../../utils/config";
+import { slugify, unslugify } from "../../../utils/slugify";
+
+const { board, subject } = Astro.params;
+
+const boardApiMap: Record<string, string> = {
+  "a-levels": "A Levels",
+  "kathmandu-university": "kathmandu university",
+};
+
+const apiBoardName = boardApiMap[board!] ?? board!;
+
+// Board param for getYears
+const boardYearsParamMap: Record<string, string> = {
+  "a-levels": "a levels",
+  "kathmandu-university": "ku",
+};
+const boardYearsParam = boardYearsParamMap[board!] ?? board!;
+
+let years: string[] = [];
+let realSubjectName = unslugify(subject!);
+
+try {
+  // Resolve real subject name
+  const subjectsRes = await fetch(
+    `${API_URL}/subjects/${encodeURIComponent(apiBoardName)}`
+  );
+  const subjectsList: { name: string }[] = await subjectsRes.json();
+  const matched = subjectsList.find((s) => slugify(s.name) === subject);
+  if (matched) realSubjectName = matched.name;
+
+  // Fetch years using the correct board param
+  const yearsRes = await fetch(
+    `${API_URL}/getYears/${encodeURIComponent(realSubjectName)}?board=${boardYearsParam}`
+  );
+  const result = await yearsRes.json();
+  // API returns [{years: [...]}] or just the array
+  years = Array.isArray(result) ? (result[0]?.years ?? result) : [];
+} catch (err) {
+  console.error("Failed to fetch years:", err);
+}
+
+type Subject = { name: string };
+type BoardConfig = { levels: string[]; subjects: Subject[]; components?: string[] };
+type Config = Record<string, BoardConfig>;
+
+export const getStaticPaths = async () => {
+  const res = await fetch(API_URL + "/config");
+  const config: Config = await res.json();
+
+  function slugify(str: string): string {
+    return str
+      .toLowerCase()
+      .replace(/\(|\)/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+
+  const supportedBoards: Record<string, string> = {
+    "A Levels": "a-levels",
+    "Kathmandu University": "kathmandu-university",
+  };
+
+  const paths = Object.entries(config)
+    .filter(([boardName]) => supportedBoards[boardName])
+    .flatMap(([boardName, boardData]) =>
+      boardData.subjects.map((subject) => ({
+        params: {
+          board: supportedBoards[boardName],
+          subject: slugify(subject.name),
+        },
+      }))
+    );
+
+  return paths;
+};
+---
+
+<LevelTopicalsLayout
+  title={`Available years for ${realSubjectName} | Paper Guides`}
+  description={`Explore the years available for ${realSubjectName}. Find past papers, notes, and resources to help you prepare for your exams.`}
+>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-4xl font-semibold">
+      Available <span class="text-[var(--blue-highlight)]">Years</span> for{" "}
+      {realSubjectName}
+    </h1>
+    <BackButton />
+  </div>
+
+  <div class="animate-fade-in space-y-4">
+    {years.length > 0 ? (
+      years.map((year) => (
+        <a
+          href={`/subjects/${board}/${subject}/${year}`}
+          class="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
+        >
+          {year}
+        </a>
+      ))
+    ) : (
+      <p class="opacity-60">No years found for this subject.</p>
+    )}
+  </div>
+</LevelTopicalsLayout>

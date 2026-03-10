@@ -1,0 +1,57 @@
+---
+import LevelTopicalsLayout from '../../layouts/LevelTopicalsLayout.astro';
+import BackButton from '../../components/BackButton.astro';
+import { API_URL } from '../../utils/config';
+
+let boardsData: Record<string, any> = {};
+
+try {
+  const res = await fetch(API_URL + '/pastpapers');
+  boardsData = await res.json();
+} catch (err) {
+  console.error('Failed to fetch pastpapers boards:', err);
+}
+---
+
+<LevelTopicalsLayout
+  title="Paper Guides | Past Papers"
+  description="Free exam preparation resources — Past Papers for A-Levels, Kathmandu University and more."
+>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-4xl font-semibold">
+      Available <span class="text-[var(--blue-highlight)]">Boards</span> and{' '}
+      <span class="text-[var(--blue-highlight)]">Levels</span>
+    </h1>
+    <BackButton />
+  </div>
+
+  <div class="animate-fade-in space-y-6">
+    {Object.entries(boardsData).map(([boardName, _boardData]) => (
+      <div class="board-section">
+        <h2 class="text-4xl font-bold mb-2">{boardName}</h2>
+
+        {boardName.toLowerCase() === 'a levels' && (
+          <div class="level-section mb-4">
+            <a
+              href="/subjects/a-levels"
+              class="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
+            >
+              CAIE: A Levels
+            </a>
+          </div>
+        )}
+
+        {boardName.toLowerCase() === 'kathmandu university' && (
+          <div>
+            <a
+              href="/subjects/kathmandu-university"
+              class="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
+            >
+              KU: Bachelors
+            </a>
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+</LevelTopicalsLayout>

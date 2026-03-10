@@ -1,0 +1,14 @@
+
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import PaperReview from '../../../../components/PaperReview';
+
+export const prerender = false;
+
+const { paperUuid } = Astro.params;
+---
+
+<BaseLayout title="Review Paper | Admin | Paper Guides" description="Admin paper review and approval.">
+  <PaperReview client:load paperUuid={paperUuid!} />
+</BaseLayout>
+

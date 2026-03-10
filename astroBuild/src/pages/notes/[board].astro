@@ -1,0 +1,52 @@
+
+---
+import type { GetStaticPaths } from 'astro';
+import LevelTopicalsLayout from '../../layouts/LevelTopicalsLayout.astro';
+import BackButton from '../../components/BackButton.astro';
+import SubjectSearch from '../../components/SubjectSearch';
+import { API_URL } from '../../utils/config';
+
+const { board } = Astro.params;
+
+const boardNameMap: Record<string, string> = {
+  'a-levels': 'A Levels',
+  'kathmandu-university': 'kathmandu university',
+  ioe: 'IOE',
+};
+
+const apiBoardName = boardNameMap[board!] ?? board!;
+
+let subjects: { name: string }[] = [];
+
+try {
+  const res = await fetch(`${API_URL}/subjects/${encodeURIComponent(apiBoardName)}`);
+  const data: { name: string }[] = await res.json();
+  subjects = data.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+} catch (err) {
+  console.error('Failed to fetch subjects:', err);
+}
+
+export const getStaticPaths: GetStaticPaths = () => {
+  return ['a-levels', 'kathmandu-university', 'ioe'].map((board) => ({ params: { board } }));
+};
+---
+
+<LevelTopicalsLayout
+  title={`Notes — ${apiBoardName} | Paper Guides`}
+  description={`Study notes for ${apiBoardName} subjects.`}
+>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-4xl font-semibold">
+      <span class="text-[var(--blue-highlight)]">Notes</span> for: {apiBoardName}
+    </h1>
+    <BackButton />
+  </div>
+
+  <SubjectSearch
+    client:load
+    subjects={subjects}
+    boardSlug={board!}
+    basePath={`/notes/${board}`}
+  />
+</LevelTopicalsLayout>
+

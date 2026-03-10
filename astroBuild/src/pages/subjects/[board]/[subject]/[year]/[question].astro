@@ -1,0 +1,112 @@
+---
+export const prerender = false;
+import LevelTopicalsLayout from "../../../../../layouts/LevelTopicalsLayout.astro";
+import PaperViewerClient from "../../../../../components/PaperViewerClient";
+import { API_URL } from "../../../../../utils/config";
+import { slugify } from "../../../../../utils/slugify";
+
+const { board, subject, year, question } = Astro.params as {
+  board: string;
+  subject: string;
+  year: string;
+  question: string;
+};
+
+const boardNameMap: Record<string, string> = {
+  "a-levels": "A Levels",
+  "kathmandu-university": "kathmandu university",
+};
+
+const boardParamMap: Record<string, string> = {
+  "a-levels": "a levels",
+  "kathmandu-university": "ku",
+};
+
+const apiBoardName = boardNameMap[board] ?? board;
+const boardParam = boardParamMap[board] ?? board;
+
+/* resolve real subject name */
+let realSubjectName = subject.replace(/-/g, " ");
+try {
+  const res = await fetch(
+    `${API_URL}/subjects/${encodeURIComponent(apiBoardName)}`
+  );
+  if (res.ok) {
+    const list: { name: string }[] = await res.json();
+    const match = list.find((s) => slugify(s.name) === subject);
+    if (match) realSubjectName = match.name;
+  }
+} catch (e) {
+  console.error("Subject lookup failed:", e);
+}
+
+/* parse slug */
+let component = "";
+let session = "";
+let type = "";
+let insert = false;
+let semester = "";
+
+if (boardParam === "ku") {
+  const semesterMatch = question.match(/semester-\d+/i);
+  semester = semesterMatch ? semesterMatch[0].replace("-", " ") : "";
+} else {
+  insert = question.includes("insert-paper");
+  const clean = question.replace("-insert-paper", "");
+  type = clean.includes("mark-scheme") ? "ms" : "qp";
+  const parts = clean.split("-");
+  component = parts[parts.length - 4];
+  const yearStr = parts[parts.length - 3];
+  session = `${parts[parts.length - 2]}-${parts[parts.length - 1]}`;
+}
+
+const paperName = question.replace(/-/g, " ");
+---
+
+<LevelTopicalsLayout
+  title={`${paperName} | Paper Guides`}
+  description={`Download ${paperName} past paper and mark scheme.`}
+>
+  <!-- Breadcrumbs -->
+  <nav class="text-sm opacity-70 mb-4 flex flex-wrap gap-1">
+    <a href="/" class="hover:underline">Paper-Guides</a> ›
+    <a href="/past-papers" class="hover:underline">Past Papers</a> ›
+    <a href={`/subjects/${board}`} class="hover:underline">{apiBoardName}</a> ›
+    <a href={`/subjects/${board}/${subject}`} class="hover:underline">{realSubjectName}</a> ›
+    <span>{year}</span>
+  </nav>
+
+  <!-- Heading + back button -->
+  <div class="flex justify-between border-b-2 border-[var(--blue-highlight)] mb-6 pb-4 items-start gap-4">
+    <h1 class="text-4xl font-bold capitalize">{paperName}</h1>
+    <button
+      onclick="history.back()"
+      class="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--blue-highlight)] text-white text-lg font-bold hover:opacity-80 transition flex-shrink-0"
+      aria-label="Go back"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+      </svg>
+      Back
+    </button>
+  </div>
+
+  <p class="opacity-70 max-w-3xl mb-6 text-sm">
+    Download the official <strong>{paperName}</strong> past paper and mark scheme to
+    practice real exam questions and improve exam preparation.
+  </p>
+
+  <!-- @ts-ignore -->
+  <PaperViewerClient
+    client:load
+    name={paperName}
+    board={boardParam}
+    subject={realSubjectName}
+    year={year}
+    component={component}
+    session={session}
+    type={type}
+    insert={insert}
+    semester={semester}
+  />
+</LevelTopicalsLayout>

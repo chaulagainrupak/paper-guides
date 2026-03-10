@@ -1,0 +1,155 @@
+
+---
+import type { GetStaticPaths } from "astro";
+import NotesMcqsLayout from "../../../../layouts/NotesMcqsLayout.astro";
+import BackButton from "../../../../components/BackButton.astro";
+import MarkdownRenderer from "../../../../components/MarkdownRenderer";
+import { API_URL } from "../../../../utils/config";
+import { slugify } from "../../../../utils/slugify";
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const boards = [
+    { slug: "a-levels",             apiName: "A Levels" },
+    { slug: "kathmandu-university", apiName: "kathmandu university" },
+    { slug: "ioe",                  apiName: "IOE" },
+    { slug: "neb",                  apiName: "NEB" },
+    { slug: "tu",                   apiName: "TU" },
+  ];
+
+  const paths = [];
+
+  for (const { slug, apiName } of boards) {
+    try {
+      const res = await fetch(`${API_URL}/subjects/${encodeURIComponent(apiName)}`);
+      if (!res.ok) continue;
+      const subjects: { name: string; topics?: string[] }[] = await res.json();
+
+      for (const s of subjects) {
+        for (const topic of s.topics ?? []) {
+          // Fetch the note at build time so it's baked in as static HTML
+          let noteContent = '';
+          let error = '';
+          try {
+            const noteRes = await fetch(
+              `${API_URL}/getNote/${encodeURIComponent(s.name)}/${encodeURIComponent(topic)}`
+            );
+            if (noteRes.ok) {
+              const data = await noteRes.json();
+              noteContent = data.content ?? data.html ?? data.note ?? '';
+            }
+          } catch {}
+
+          paths.push({
+            params: {
+              board: slug,
+              subject: slugify(s.name),
+              topic: slugify(topic),
+            },
+            props: {
+              realSubjectName: s.name,
+              realTopicName: topic,
+              noteContent,
+              error,
+            },
+          });
+        }
+      }
+    } catch (err) {
+      console.error(`Failed to build topic paths for ${apiName}:`, err);
+    }
+  }
+
+  return paths;
+};
+
+const { board } = Astro.params;
+const { realSubjectName, realTopicName, noteContent, error } = Astro.props as {
+  realSubjectName: string;
+  realTopicName: string;
+  noteContent: string;
+  error: string;
+};
+---
+
+<NotesMcqsLayout
+  title={`${realTopicName} — ${realSubjectName} | Paper Guides`}
+  description={`Study notes for ${realTopicName} in ${realSubjectName}.`}
+>
+  <div class="flex justify-between items-center mb-6 printing-toolbar">
+    <h1 class="text-3xl font-bold">
+      <span class="text-[var(--blue-highlight)]">{realSubjectName}</span>: {realTopicName}
+    </h1>
+    <div class="flex gap-2">
+      <button
+        onclick="window.print()"
+        class="cursor-pointer px-4 py-2 rounded-lg bg-[var(--green-highlight)] text-white font-bold hover:opacity-80 transition"
+      >
+        🖨️ Print
+      </button>
+      <BackButton />
+    </div>
+  </div>
+
+  {error ? (
+    <div class="text-center mt-12">
+      <p class="text-xl text-[var(--pink-highlight)] font-bold">{error}</p>
+    </div>
+  ) : noteContent ? (
+    <div id="note-content" class="printable-area">
+      <MarkdownRenderer client:load content={noteContent} />
+    </div>
+  ) : (
+    <div class="text-center mt-12 opacity-60">
+      <p class="text-xl">No content available for this topic yet.</p>
+    </div>
+  )}
+</NotesMcqsLayout>
+
+<script is:inline>
+  function buildToc() {
+    const content = document.getElementById('note-content');
+    const nav = document.getElementById('notes-navigation');
+    if (!content || !nav) return;
+
+    const headings = content.querySelectorAll('h1, h2, h3');
+    if (headings.length === 0) return;
+
+    nav.innerHTML = '<p class="font-bold mb-3 text-sm uppercase tracking-wide opacity-60">On this page</p>';
+    const ul = document.createElement('ul');
+    ul.className = 'space-y-1 text-sm';
+
+    headings.forEach((heading, i) => {
+      const id = 'note-heading-' + i;
+      heading.id = id;
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + id;
+      a.textContent = heading.textContent || '';
+      a.className = [
+        'block py-1 hover:text-[var(--blue-highlight)] transition-colors',
+        heading.tagName === 'H1' ? 'font-bold' :
+        heading.tagName === 'H2' ? 'pl-2 font-semibold' : 'pl-4 opacity-80',
+      ].join(' ');
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+
+    nav.appendChild(ul);
+
+    if (window.MathJax?.typesetPromise) {
+      window.MathJax.typesetPromise([content]).catch(console.error);
+    }
+  }
+
+  let attempts = 0;
+  const interval = setInterval(() => {
+    const content = document.getElementById('note-content');
+    if (content && content.querySelectorAll('h1,h2,h3').length > 0) {
+      buildToc();
+      clearInterval(interval);
+    } else if (++attempts > 20) {
+      clearInterval(interval);
+    }
+  }, 150);
+</script>
+

@@ -1,0 +1,35 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="mt-16 min-h-screen">
+    <div class="flex xl:flex-row flex-col gap-6 h-auto px-6 py-6">
+
+      <!-- Main content -->
+      <div class="bg-[var(--baby-powder)] xl:flex-1 shadow-xl rounded-xl p-6">
+        <main>
+          <slot />
+        </main>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="xl:w-64 xl:flex-shrink-0">
+        <div class="bg-[var(--baby-powder)] shadow-xl rounded-xl p-4 xl:sticky xl:top-20">
+          <p class="text-xs uppercase tracking-widest opacity-40 mb-3 px-1">Sponsored</p>
+          <div class="w-full min-h-48 rounded-lg bg-[var(--color-nav)] border border-[var(--color-border)] flex items-center justify-center opacity-50 text-sm">
+            <!-- ad -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</BaseLayout>

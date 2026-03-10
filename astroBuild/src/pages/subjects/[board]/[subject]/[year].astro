@@ -1,0 +1,220 @@
+---
+import LevelTopicalsLayout from "../../../../layouts/LevelTopicalsLayout.astro";
+import BackButton from "../../../../components/BackButton.astro";
+import { API_URL } from "../../../../utils/config";
+import { slugify } from "../../../../utils/slugify";
+
+type Params = {
+  board: string;
+  subject: string;
+  year: string;
+};
+
+type Subject = {
+  name: string;slugify
+};
+
+type BoardConfig = {
+  levels: string[];
+  subjects: Subject[];
+  components?: string[];
+};
+
+type Config = Record<string, BoardConfig>;
+
+type YearsResponse = {
+  years: string[];
+}[];
+
+type PapersResponse = {
+  components: [string, string][];
+}[];
+
+const { board, subject, year } = Astro.params as Params;
+
+const boardApiMap: Record<string, string> = {
+  "a-levels": "a levels",
+  "kathmandu-university": "ku",
+  ku: "ku",
+};
+
+const boardNameMap: Record<string, string> = {
+  "a-levels": "A Levels",
+  "kathmandu-university": "kathmandu university",
+};
+
+const boardParam = boardApiMap[board] ?? board;
+
+
+let realSubjectName = subject.replace(/-/g, " ");
+
+try {
+  const apiBoardName = boardNameMap[board] ?? board;
+  const subjectsRes = await fetch(
+    `${API_URL}/subjects/${encodeURIComponent(apiBoardName)}`
+  );
+  const subjectsList: Subject[] = await subjectsRes.json();
+  const matched = subjectsList.find((s) => slugify(s.name) === subject);
+  if (matched) realSubjectName = matched.name;
+} catch {}
+
+let components: [string, string][] = [];
+
+try {
+  const res = await fetch(
+    `${API_URL}/getPapers/${encodeURIComponent(realSubjectName)}/${encodeURIComponent(year)}?board=${boardParam}`
+  );
+  const result: PapersResponse = await res.json();
+  components = result[0]?.components ?? [];
+} catch (err) {
+  console.error("Failed to fetch components:", err);
+}
+
+function buildPaperSlug(
+  subjectSlug: string,
+  paperType: "question-paper" | "mark-scheme",
+  componentCode: string,
+  fullYearStr: string
+): string {
+  const match = fullYearStr.match(/\(([^)]+)\)$/);
+  const rawSession = match ? match[1] : fullYearStr;
+  const sessionSlug = rawSession
+    .toLowerCase()
+    .replace(/\s*\/\s*/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+  const yearOnly = fullYearStr.split(" ")[0];
+  const codeSlug = componentCode.toLowerCase().replace(/\s+/g, "-");
+  return `${subjectSlug}-${paperType}-${codeSlug}-${yearOnly}-${sessionSlug}`;
+}
+
+type PaperComponent = [string, string];
+
+const grouped: Record<string, PaperComponent[]> = {};
+
+for (const [fullYear, code] of components) {
+  const match = fullYear.match(/\(([^)]+)\)/);
+  const sessionName = match ? match[1] : fullYear;
+  if (!grouped[sessionName]) grouped[sessionName] = [];
+  grouped[sessionName].push([fullYear, code]);
+}
+
+const sessionOrder = ["Feb / Mar", "May / June", "Oct / Nov", "Specimen"];
+const sortedGroups = Object.entries(grouped).sort(([a], [b]) => {
+  const ai = sessionOrder.indexOf(a);
+  const bi = sessionOrder.indexOf(b);
+  if (ai === -1 && bi === -1) return a.localeCompare(b);
+  if (ai === -1) return 1;
+  if (bi === -1) return -1;
+  return ai - bi;
+});
+
+for (const [, papers] of sortedGroups) {
+  papers.sort((a, b) => (parseInt(a[1]) || 0) - (parseInt(b[1]) || 0));
+}
+
+export const getStaticPaths = async () => {
+  const res = await fetch(API_URL + "/config");
+  const config: Config = await res.json();
+
+  const paths: { params: Params }[] = [];
+
+  const supportedBoards: Record<string, string> = {
+    "A Levels": "a-levels",
+    "Kathmandu University": "kathmandu-university",
+  };
+
+  const apiBoardParamMap: Record<string, string> = {
+    "A Levels": "a levels",
+    "Kathmandu University": "ku",
+  };
+
+  for (const [boardName, boardData] of Object.entries(config)) {
+    const boardSlug = supportedBoards[boardName];
+    if (!boardSlug) continue;
+
+    const apiBoardParam = apiBoardParamMap[boardName] ?? "a levels";
+
+    for (const subject of boardData.subjects) {
+      const subjectSlug = slugify(subject.name);
+
+      try {
+        const yearsRes = await fetch(
+          `${API_URL}/getYears/${encodeURIComponent(subject.name)}?board=${apiBoardParam}`
+        );
+        const yearsData = await yearsRes.json();
+        const years: string[] = Array.isArray(yearsData)
+          ? (yearsData[0]?.years ?? yearsData)
+          : [];
+
+        for (const year of years) {
+          paths.push({
+            params: {
+              board: boardSlug,
+              subject: subjectSlug,
+              year: String(year),
+            },
+          });
+        }
+      } catch (err) {
+        console.error(`Failed to fetch years for ${subject.name}:`, err);
+      }
+    }
+  }
+
+  return paths;
+};
+---
+
+<LevelTopicalsLayout
+  title={`Available papers for ${realSubjectName} — ${year} | Paper Guides`}
+  description={`Explore the available papers for ${realSubjectName} at ${year}. Find past papers and resources to help you prepare for your exams.`}
+>
+  <div class="flex justify-between items-center border-b-2 border-[var(--blue-highlight)] pb-4 mb-4">
+    <h1 class="text-4xl font-bold">
+      Available <span class="text-[var(--blue-highlight)]">Papers</span> for{" "}
+      <span class="text-[var(--blue-highlight)]">{realSubjectName}</span>
+    </h1>
+    <BackButton />
+  </div>
+
+  {sortedGroups.map(([sessionName, papers]) =>
+    papers.length > 0 ? (
+      <div>
+        <h2 class="text-3xl font-bold mt-6 underline">• {sessionName}</h2>
+        <div class="animate-fade-in space-y-4 mt-2">
+          {papers.map(([fullYear, code], index) => (
+            <div class="flex w-full">
+              <a
+                href={`/subjects/${board}/${subject}/${year}/${buildPaperSlug(subject, "question-paper", code, fullYear)}`}
+                class={`border block p-4 rounded-xl flex-1 text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200 ${
+                  fullYear.includes("Insert Paper")
+                    ? "border-[var(--diff-three)]"
+                    : "border-[var(--blue-highlight)]"
+                }`}
+              >
+                {realSubjectName}, {code},{" "}
+                {fullYear.includes("Insert Paper")
+                  ? `Year: ${fullYear}`
+                  : `Year: ${fullYear} Question Paper`}
+              </a>
+
+              {!fullYear.includes("Insert Paper") && (
+                <a
+                  href={`/subjects/${board}/${subject}/${year}/${buildPaperSlug(subject, "mark-scheme", code, fullYear)}`}
+                  class="ml-4 block p-4 rounded-xl text-xl font-bold bg-[var(--red)] text-white shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200 flex-shrink-0"
+                >
+                  Mark Scheme
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null
+  )}
+
+  {components.length === 0 && (
+    <p class="opacity-60 mt-6">No papers found for this year.</p>
+  )}
+</LevelTopicalsLayout>

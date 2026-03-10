@@ -54,7 +54,7 @@ app.include_router(adminRouter, prefix="/admin")
 lastGenTimes = {}
 RATE_LIMIT_SECONDS = 300
 
-USERNAME_RE = re.compile(r'^[a-zA-Z0-9_-]+$')
+USERNAME_RE = re.compile(r"^[a-zA-Z0-9_-]+$")
 
 
 def checkRateLimit(username: str):
@@ -80,6 +80,7 @@ def checkRateLimit(username: str):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "http://localhost:4321",
         "http://localhost:3000",
         "https://paperguides.org",
         "https://beta.paperguides.org",
@@ -237,18 +238,21 @@ async def getPapers(year: str, subjectName: str, board: str | None):
         raise HTTPException(status_code=503, detail="No data found")
 
 
-@app.get("/getData/{details}")
+@app.get("/getData")
 async def getData(
-    details: str, board: str | None, subject: str | None, year: str | None
+    board: str,
+    subject: str,
+    year: str,
+    component: str | None = None,
+    session: str | None = None,
+    semester: str | None = None,
+    type: str | None = None,
+    insert: bool = False,
 ):
     try:
         if board.lower() == "ku":
-            match = re.search(r"(semester\s+\d+)", details)
-
-            if match:
-                semester = match.group(0)
-            else:
-                raise ValueError("No correct value found")
+            if not semester:
+                raise ValueError("Semester not provided")
 
             data = getPaper("bachelors", subject, year, semester)
 
@@ -256,84 +260,54 @@ async def getData(
                 "questionName": f"{subject.capitalize()}, {year}, {semester}",
                 "questionData": data[0],
                 "markSchemeData": data[1],
-            }, 200
-
-        isInsert = False
-
-        details.replace("%20", " ")
-        # Because subjectSlug itself may contain "%20" but not a literal hyphen.
-        parts = details.split("-", 1)
-        if len(parts) < 2:
-            raise ValueError("Expected at least one '-' in details.")
-        subjectSlug, remainder = parts[0], parts[1]
-
-        subjectName = subjectSlug
-
-        if "insert" in remainder:
-            isInsert = True
-            remainder = remainder.replace("-insert-paper", "")
-            print(remainder)
-
-        if remainder.startswith("question-paper-"):
-            paperTypeDisplay = "Question Paper"
-            remainder = remainder[len("question-paper-") :]
-        elif remainder.startswith("mark-scheme-"):
-            paperTypeDisplay = "Mark Scheme"
-            remainder = remainder[len("mark-scheme-") :]
-        else:
-            raise ValueError("Expected 'question-paper-' or 'mark-scheme-' prefix.")
-
-        rem_parts = remainder.split("-")
-        if len(rem_parts) != 4:
-            raise ValueError("Expected remainder in form 'XX-YYYY-sss-sss'.")
-        componentCode = rem_parts[0]
-        yearStr = rem_parts[1]
-        sessionSlug = rem_parts[2] + "-" + rem_parts[3]
+            }
 
         session_map = {
             "feb-mar": "Feb / Mar",
             "may-june": "May / June",
             "oct-nov": "Oct / Nov",
         }
-        sessionDisplay = session_map.get(sessionSlug.lower())
+
+        if not session:
+            raise ValueError("Session not provided")
+
+        sessionDisplay = session_map.get(session.lower())
+
         if not sessionDisplay:
-            raise ValueError(f"Unknown session slug '{sessionSlug}'.")
+            raise ValueError("Invalid session")
 
-        yearForGetPaper = f"{yearStr} ({sessionDisplay})"
-        componentForGetPaper = f"{componentCode}"
+        yearForGetPaper = f"{year} ({sessionDisplay})"
 
-        if isInsert:
-            print(f"{yearForGetPaper} Insert Paper")
+        if insert:
             data = getPaper(
                 "a level",
-                subjectName,
+                subject,
                 f"{yearForGetPaper} Insert Paper",
-                componentForGetPaper,
+                component,
             )
-        else:
+        if board == 'a-levels' or board.replace("%20", " ") == 'a levels':
             data = getPaper(
-                "a level", subjectName, yearForGetPaper, componentForGetPaper
+                "a level",
+                subject.replace("%20", " "),
+                yearForGetPaper,
+                component,
             )
 
         qp = data[0]
-        if isInsert:
-            ms = data[0]
-        else:
-            ms = data[1]
+        ms = data[0] if insert else data[1]
+
         return {
-            "questionName": f"{subjectName.capitalize()}, {yearForGetPaper}, {componentForGetPaper}",
+            "questionName": f"{subject.capitalize()}, {yearForGetPaper}, {component}",
             "questionData": qp,
             "markSchemeData": ms,
-        }, 200
+        }
 
     except ValueError as ve:
-        # Bad format in details
         raise HTTPException(status_code=400, detail=str(ve))
+
     except Exception as e:
-        # Any other failure
         print("Error in getData:", e)
         raise HTTPException(status_code=503, detail="No data found")
-
 
 @app.get("/getNote/{subject}/{topic}")
 def getNoteForClient(subject, topic):
@@ -415,7 +389,7 @@ async def login(body: Request):
         cur = conn.cursor()
         data = await body.json()
         username = data.get("username")  # set when identifier is not an email
-        email = data.get("email")        # set when identifier looks like an email
+        email = data.get("email")  # set when identifier looks like an email
         password = data.get("password")
         token = data.get("token")
 

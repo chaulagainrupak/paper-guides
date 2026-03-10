@@ -1,0 +1,60 @@
+
+---
+import LevelTopicalsLayout from '../../../layouts/LevelTopicalsLayout.astro';
+import BackButton from '../../../components/BackButton.astro';
+import { API_URL } from '../../../utils/config';
+import { slugify, unslugify } from '../../../utils/slugify';
+
+export const prerender = false;
+
+const { board, subject } = Astro.params;
+
+const boardNameMap: Record<string, string> = {
+  'a-levels': 'A Levels',
+  'kathmandu-university': 'kathmandu university',
+};
+
+const apiBoardName = boardNameMap[board!] ?? board!;
+let realSubjectName = unslugify(subject!);
+let topics: string[] = [];
+
+try {
+  const subjectsRes = await fetch(`${API_URL}/subjects/${encodeURIComponent(apiBoardName)}`);
+  const subjectsList: { name: string; topics?: string[] }[] = await subjectsRes.json();
+  const matched = subjectsList.find((s) => slugify(s.name) === subject);
+  if (matched) {
+    realSubjectName = matched.name;
+    topics = matched.topics ?? [];
+  }
+} catch (err) {
+  console.error('Failed to fetch topics:', err);
+}
+---
+
+<LevelTopicalsLayout
+  title={`${realSubjectName} Notes | Paper Guides`}
+  description={`Study notes topics for ${realSubjectName}.`}
+>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-4xl font-semibold">
+      Topics for <span class="text-[var(--blue-highlight)]">{realSubjectName}</span>
+    </h1>
+    <BackButton />
+  </div>
+
+  <div class="animate-fade-in space-y-4">
+    {topics.length === 0 && (
+      <p class="opacity-60">No topics found for this subject.</p>
+    )}
+
+    {topics.map((topic) => (
+      <a
+        href={`/notes/${board}/${subject}/${slugify(topic)}`}
+        class="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-2xl transition-all duration-200"
+      >
+        {topic}
+      </a>
+    ))}
+  </div>
+</LevelTopicalsLayout>
+

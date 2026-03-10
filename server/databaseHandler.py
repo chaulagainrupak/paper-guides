@@ -234,7 +234,6 @@ def insertPaper(
         if conn:
             conn.close()
 
-
 def getYears(level: str, subject: str) -> list:
     """Get available years for a subject and level"""
     try:
@@ -268,12 +267,12 @@ def getPaper(level: str, subject: str, year: str, component: str) -> tuple:
         conn = sqlite3.connect(DB_PAST_PAPER_PATH)
         cursor = conn.cursor()
 
-        if level.lower() in ["a level", "as level"]:
+        if level.lower() in ["a level", "as level", "a levels"]:
             query = """SELECT questionFile, solutionFile 
                     FROM papers 
                     WHERE board = ? AND lower(subject) = ? 
                     AND year = ? AND component = ? AND approved = 1"""
-            cursor.execute(query, ("A Levels", subject, year, component))
+            cursor.execute(query, ("A Levels", subject.lower(), year, component))
         else:
             query = """SELECT questionFile, solutionFile 
                     FROM papers 
@@ -283,7 +282,6 @@ def getPaper(level: str, subject: str, year: str, component: str) -> tuple:
 
         result = cursor.fetchone()
         if not result:
-            print("here")
             return [None, None]
 
         # Decompress files
@@ -570,7 +568,6 @@ def getQuestionsForGen(board, subject, level, topics, components, difficulties):
             ).decode("utf-8")
 
             finalRows.append(itemList)
-
         return finalRows if finalRows else []
 
     except Exception as e:

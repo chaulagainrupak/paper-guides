@@ -1,0 +1,286 @@
+
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { TURNSTILE_SITE_KEY, API_URL } from '../../utils/config';
+---
+
+<BaseLayout title="Login | Paper Guides" description="Login or sign up to Paper-Guides.">
+  <div class="flex justify-center items-center min-h-dvh p-4">
+    <div class="w-full max-w-md">
+      <div
+        class="rounded-2xl shadow-xl overflow-hidden"
+        style="background-color: var(--color-nav); border: 1px solid var(--color-border);"
+      >
+        <div style="border-bottom: 1px solid var(--color-border);" class="flex">
+          <button
+            id="tab-login"
+            class="cursor-pointer flex-1 py-4 font-medium transition-colors text-white"
+            style="background-color: var(--blue-highlight);"
+          >
+            Login
+          </button>
+          <button
+            id="tab-signup"
+            class="cursor-pointer flex-1 py-4 font-medium transition-colors"
+            style="background-color: var(--color-surface); color: var(--color-text);"
+          >
+            Sign Up
+          </button>
+        </div>
+
+        <div class="p-6" style="background-color: var(--color-surface);">
+          <form id="login-form" class="space-y-4" action="#">
+            <div>
+              <label for="login-identifier" class="block mb-2 text-sm font-medium" style="color: var(--color-text);">
+                Username or Email
+              </label>
+              <input
+                type="text"
+                name="login-identifier"
+                id="login-identifier"
+                class="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
+                style="background-color: var(--color-nav); border: 1px solid var(--color-border); color: var(--color-text);"
+                placeholder="eg: paperboy024 or bigman@paperguides.org"
+                required
+              />
+            </div>
+            <div>
+              <label for="login-password" class="block mb-2 text-sm font-medium" style="color: var(--color-text);">
+                Password
+              </label>
+              <div class="flex justify-between items-center">
+                <input
+                  type="password"
+                  name="password"
+                  id="login-password"
+                  class="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
+                  style="background-color: var(--color-nav); border: 1px solid var(--color-border); color: var(--color-text);"
+                  placeholder="••••••••"
+                  required
+                />
+                <button type="button" class="ml-2 cursor-pointer" data-toggle-pw="login-password">🙈</button>
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="cursor-pointer text-white font-bold w-full py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg"
+              style="background-color: var(--blue-highlight);"
+            >
+              Login
+            </button>
+          </form>
+
+          <form id="signup-form" class="space-y-4 hidden" action="#">
+            <div>
+              <label for="signup-username" class="block mb-2 text-sm font-medium" style="color: var(--color-text);">
+                Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                id="signup-username"
+                class="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
+                style="background-color: var(--color-nav); border: 1px solid var(--color-border); color: var(--color-text);"
+                placeholder="eg: paperboy024"
+                pattern="^[a-zA-Z0-9_-]+$"
+                title="Letters, numbers, underscores, and hyphens only"
+                required
+              />
+            </div>
+            <div>
+              <label for="signup-email" class="block mb-2 text-sm font-medium" style="color: var(--color-text);">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                id="signup-email"
+                class="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
+                style="background-color: var(--color-nav); border: 1px solid var(--color-border); color: var(--color-text);"
+                placeholder="eg: bigman@paperguides.org"
+                required
+              />
+            </div>
+            <div>
+              <label for="signup-password" class="block mb-2 text-sm font-medium" style="color: var(--color-text);">
+                Password
+              </label>
+              <div class="flex justify-between items-center">
+                <input
+                  type="password"
+                  name="password"
+                  id="signup-password"
+                  class="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
+                  style="background-color: var(--color-nav); border: 1px solid var(--color-border); color: var(--color-text);"
+                  placeholder="••••••••"
+                  required
+                />
+                <button type="button" class="ml-2 cursor-pointer" data-toggle-pw="signup-password">🙈</button>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <input
+                type="password"
+                name="confirm-password"
+                id="confirm-password"
+                class="w-full px-4 py-3 rounded-lg focus:ring-2 focus:outline-none"
+                style="background-color: var(--color-nav); border: 1px solid var(--color-border); color: var(--color-text);"
+                placeholder="••••••••"
+                required
+              />
+              <button type="button" class="ml-2 cursor-pointer" data-toggle-pw="confirm-password">🙈</button>
+            </div>
+            <button
+              type="submit"
+              class="cursor-pointer text-white font-bold w-full py-3 px-4 rounded-lg transition-colors shadow-md hover:shadow-lg"
+              style="background-color: var(--blue-highlight);"
+            >
+              Create Account
+            </button>
+          </form>
+
+          <div class="my-6 flex justify-center">
+            <div id="turnstile-container"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline define:vars={{ TURNSTILE_SITE_KEY, API_URL }}>
+  let turnstileToken = '';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const tabLogin = document.getElementById('tab-login');
+    const tabSignup = document.getElementById('tab-signup');
+
+    function switchTab(tab) {
+      if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        tabLogin.style.backgroundColor = 'var(--blue-highlight)';
+        tabLogin.style.color = '#fff';
+        tabSignup.style.backgroundColor = 'var(--color-surface)';
+        tabSignup.style.color = 'var(--color-text)';
+      } else {
+        signupForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+        tabSignup.style.backgroundColor = 'var(--blue-highlight)';
+        tabSignup.style.color = '#fff';
+        tabLogin.style.backgroundColor = 'var(--color-surface)';
+        tabLogin.style.color = 'var(--color-text)';
+      }
+    }
+
+    tabLogin.addEventListener('click', () => switchTab('login'));
+    tabSignup.addEventListener('click', () => switchTab('signup'));
+
+    document.querySelectorAll('[data-toggle-pw]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-toggle-pw');
+        const input = document.getElementById(targetId);
+        if (!input) return;
+        input.type = input.type === 'password' ? 'text' : 'password';
+        btn.textContent = input.type === 'password' ? '🙈' : '👁️';
+      });
+    });
+
+    const tsScript = document.createElement('script');
+    tsScript.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    tsScript.async = true;
+    tsScript.defer = true;
+    tsScript.onload = () => {
+      if (window.turnstile && document.getElementById('turnstile-container')) {
+        window.turnstile.render('#turnstile-container', {
+          sitekey: TURNSTILE_SITE_KEY,
+          theme: localStorage.getItem('darkmode') === 'active' ? 'dark' : 'light',
+          callback: (token) => { turnstileToken = token; },
+        });
+      }
+    };
+    document.body.appendChild(tsScript);
+
+    (async () => {
+      const stored = localStorage.getItem('authToken');
+      if (!stored) return;
+      try {
+        const res = await fetch(API_URL + '/validateToken', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: stored,
+        });
+        if (res.status === 200) window.location.href = '/';
+      } catch {}
+    })();
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const loginIdentifier = document.getElementById('login-identifier').value.trim();
+      const password = document.getElementById('login-password').value;
+      const isEmail = loginIdentifier.includes('@');
+
+      try {
+        const res = await fetch(API_URL + '/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: isEmail ? null : loginIdentifier,
+            email: isEmail ? loginIdentifier : null,
+            password,
+            token: turnstileToken,
+          }),
+        });
+
+        const result = await res.json();
+        if (res.status === 200) {
+          localStorage.setItem('authToken', JSON.stringify(result));
+          alert('Logged In');
+          window.location.href = '/';
+        } else {
+          alert(result.message || result.detail || 'Something went wrong');
+          if (window.turnstile) window.turnstile.reset('#turnstile-container');
+          turnstileToken = '';
+        }
+      } catch {
+        alert('Network error, please try again.');
+      }
+    });
+
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('signup-username').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const confirm = document.getElementById('confirm-password').value;
+
+      const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+      if (!usernameRegex.test(username)) {
+        alert('Username can only contain letters, numbers, underscores (_), and hyphens (-).');
+        return;
+      }
+
+      if (password !== confirm) {
+        alert('Passwords do not match.');
+        return;
+      }
+
+      try {
+        const res = await fetch(API_URL + '/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password, token: turnstileToken }),
+        });
+
+        const result = await res.json();
+        alert(result.message || result.detail || 'Something went wrong');
+        if (window.turnstile) window.turnstile.reset('#turnstile-container');
+        turnstileToken = '';
+      } catch {
+        alert('Network error, please try again.');
+      }
+    });
+  });
+</script>

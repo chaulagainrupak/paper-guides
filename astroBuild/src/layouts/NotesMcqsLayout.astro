@@ -1,0 +1,45 @@
+
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <!-- MathJax for notes rendering -->
+  <script
+    type="text/javascript"
+    id="MathJax-script"
+    async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+  ></script>
+
+  <div class="mt-16 flex flex-col xl:flex-row gap-4 px-6 py-6 min-h-full">
+    <div class="bg-[var(--baby-powder)] xl:w-full shadow-xl rounded-md p-6 min-h-full">
+      <main>
+        <slot />
+      </main>
+    </div>
+
+    <aside class="xl:w-1/5 flex flex-col gap-4 sticky top-20">
+      <!-- Table of contents injected by page script -->
+      <div
+        class="p-6 bg-[var(--baby-powder)] rounded-md hidden max-xl:block xl:block max-xl:sticky max-xl:top-20"
+        id="notes-navigation"
+      ></div>
+
+      <!-- sponsored -->
+      <div class="promo p-6 bg-[var(--baby-powder)] rounded-md">
+        <div class="promo-unit min-h-48 rounded-lg bg-[var(--color-nav)] flex items-center justify-center opacity-60 text-sm">
+          <!-- ad -->
+        </div>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
+

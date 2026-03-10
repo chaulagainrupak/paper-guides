@@ -1,0 +1,61 @@
+---
+import LevelTopicalsLayout from "../../layouts/LevelTopicalsLayout.astro";
+import BackButton from "../../components/BackButton.astro";
+import SubjectSearch from "../../components/SubjectSearch";
+import { API_URL } from "../../utils/config";
+
+type Subject = { name: string };
+type Params = { board: string };
+
+const { board } = Astro.params as Params;
+
+const boardNameMap: Record<string, string> = {
+  "a-levels": "A Levels",
+  "kathmandu-university": "kathmandu university",
+};
+
+const apiBoardName = boardNameMap[board] ?? board;
+
+let subjects: Subject[] = [];
+
+try {
+  const res = await fetch(
+    `${API_URL}/subjects/${encodeURIComponent(apiBoardName)}`
+  );
+  const data: Subject[] = await res.json();
+  subjects = data.sort((a, b) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+  );
+} catch (err) {
+  console.error("Failed to fetch subjects:", err);
+}
+
+const boardDisplayName =
+  board === "a-levels" ? "A Levels" : board === "kathmandu-university" ? "Kathmandu University" : apiBoardName;
+
+export const getStaticPaths= () => {
+  return [
+    { params: { board: "a-levels" } },
+    { params: { board: "kathmandu-university" } },
+  ];
+};
+---
+
+<LevelTopicalsLayout
+  title={`Available subjects for ${boardDisplayName} | Paper Guides`}
+  description={`Explore the subjects available for ${boardDisplayName}. Find past papers, notes, and resources to help you prepare for your exams.`}
+>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-4xl font-semibold">
+      Available <span class="text-[var(--blue-highlight)]">Subjects</span> for:{" "}
+      {boardDisplayName}
+    </h1>
+    <BackButton />
+  </div>
+
+  <SubjectSearch
+    subjects={subjects}
+    boardSlug={board!}
+    basePath={`/subjects/${board}`}
+  />
+</LevelTopicalsLayout>

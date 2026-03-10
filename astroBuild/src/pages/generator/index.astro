@@ -1,0 +1,17 @@
+
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import QuestionGeneratorForm from '../../components/QuestionGeneratorForm';
+---
+<BaseLayout
+  title="Question Generator | Paper Guides"
+  description="Generate custom practice questions from past papers. Select board, subject, topics, and difficulty — questions shown as images with solutions."
+>
+  <div class="mt-16 min-h-screen flex items-center justify-center px-4 py-8">
+    <div class="w-full max-w-4xl">
+      <!-- @ts-ignore -->
+      <QuestionGeneratorForm client:load/>
+    </div>
+  </div>
+</BaseLayout>
+
