@@ -1,15 +1,15 @@
-
 ---
+export const prerender = false;
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AdminPanel from '../../components/AdminPanel';
 
-export const prerender = false;
 ---
 
 <BaseLayout
   title="Admin Panel | Paper Guides"
   description="Admin panel for managing Paper Guides content."
 >
-  <AdminPanel client:load />
+  <AdminPanel client:visible />
 </BaseLayout>
 
