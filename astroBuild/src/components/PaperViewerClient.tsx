@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { API_URL } from "../utils/config";
 
 interface Props {
@@ -30,6 +30,65 @@ export default function PaperViewerClient({
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
+  const scrollEvents = useRef({
+    25: false,
+    50: false,
+    75: false,
+    90: false,
+  });
+
+  function sendEvent(eventName: string) {
+    try {
+      //@ts-ignore
+      if (window.umami) {
+        //@ts-ignore
+        window.umami.track(eventName, {
+          paper: name,
+          subject: subject,
+          board: board,
+          year: year,
+          source: "paper viewer",
+        });
+      }
+    } catch {}
+  }
+
+  useEffect(() => {
+    function handleScroll() {
+      const scrollTop = window.scrollY;
+      const height =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight;
+
+      if (!height) return;
+
+      const percent = (scrollTop / height) * 100;
+
+      if (percent > 25 && !scrollEvents.current[25]) {
+        scrollEvents.current[25] = true;
+        sendEvent("Scrolled 25%");
+      }
+
+      if (percent > 50 && !scrollEvents.current[50]) {
+        scrollEvents.current[50] = true;
+        sendEvent("Scrolled 50%");
+      }
+
+      if (percent > 75 && !scrollEvents.current[75]) {
+        scrollEvents.current[75] = true;
+        sendEvent("Scrolled 75%");
+      }
+
+      if (percent > 90 && !scrollEvents.current[90]) {
+        scrollEvents.current[90] = true;
+        sendEvent("Scrolled 90%");
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   useEffect(() => {
     setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
 
@@ -59,6 +118,8 @@ export default function PaperViewerClient({
 
         setQuestionData(data.questionData ?? null);
         setMarkSchemeData(data.markSchemeData ?? null);
+
+        sendEvent("Viewed Paper");
       } catch (e) {
         console.error(e);
       }
@@ -87,23 +148,36 @@ export default function PaperViewerClient({
   }
 
   return (
-    <div className="h-screen px-4">
+    <div
+      className="h-screen px-4"
+      data-paper={name}
+      data-subject={subject}
+      data-board={board}
+      data-year={year}
+      data-source="paper viewer"
+    >
       <div className="flex flex-col h-full">
 
-        {/* Desktop buttons */}
         {!isMobile && (
           <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
+
             <div className="flex gap-2">
               {currentUrl && (
                 <>
                   <button
-                    onClick={() => window.open(currentUrl, "_blank")}
+                    onClick={() => {
+                      sendEvent("Opened Fullscreen");
+                      window.open(currentUrl, "_blank");
+                    }}
                     className="bg-[var(--green-highlight)] text-white text-lg font-bold px-4 py-2 rounded-lg shadow hover:opacity-80 transition"
                   >
                     ↗ Open Fullscreen
                   </button>
+
                   <button
                     onClick={() => {
+                      sendEvent("Downloaded Paper");
+
                       const link = document.createElement("a");
                       link.href = currentUrl;
                       link.download = `${name}.pdf`;
@@ -125,7 +199,10 @@ export default function PaperViewerClient({
 
             {hasQuestion && hasMarkScheme && (
               <button
-                onClick={() => setShowSolution(!showSolution)}
+                onClick={() => {
+                  sendEvent("Toggled Mark Scheme");
+                  setShowSolution(!showSolution);
+                }}
                 className={`${
                   showSolution
                     ? "bg-[var(--pink-highlight)]"
@@ -138,40 +215,6 @@ export default function PaperViewerClient({
           </div>
         )}
 
-        {/* Mobile buttons */}
-        {isMobile && (
-          <div className="flex flex-col gap-3 mb-4">
-            {currentUrl && (
-              <>
-                <a
-                  href={currentUrl}
-                  download={`${name}.pdf`}
-                  className="bg-[var(--blue-highlight)] text-white text-lg font-bold px-6 py-3 rounded-lg shadow text-center hover:opacity-90 transition"
-                >
-                  ⬇ Download {showSolution ? "Mark Scheme" : "Question"} PDF
-                </a>
-                <a
-                  href={currentUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-[var(--green-highlight)] text-white text-lg font-bold px-6 py-3 rounded-lg shadow text-center hover:opacity-90 transition"
-                >
-                  ↗ Open PDF in browser
-                </a>
-              </>
-            )}
-            {hasQuestion && hasMarkScheme && (
-              <button
-                onClick={() => setShowSolution(!showSolution)}
-                className="bg-[var(--pink-highlight)] text-white text-lg font-bold px-6 py-3 rounded-lg shadow hover:opacity-90 transition"
-              >
-                {showSolution ? "📄 Show Question" : "✅ Show Mark Scheme"}
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* PDF embed */}
         {currentUrl ? (
           <object
             key={currentUrl}
@@ -181,9 +224,11 @@ export default function PaperViewerClient({
           >
             <div className="text-center mt-8 opacity-60">
               <p className="mb-4">Your browser can't display PDFs inline.</p>
+
               <a
                 href={currentUrl}
                 download
+                onClick={() => sendEvent("Downloaded Paper")}
                 className="px-6 py-3 bg-[var(--blue-highlight)] text-white font-bold rounded-lg hover:opacity-80 transition"
               >
                 Download PDF

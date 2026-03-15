@@ -1,5 +1,4 @@
-
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 
 interface Subject {
   name: string;
@@ -8,11 +7,36 @@ interface Subject {
 interface SubjectSearchProps {
   subjects: Subject[];
   boardSlug: string;
-  basePath: string; // e.g. "/subjects/a-levels"
+  basePath: string;
+}
+
+declare global {
+  interface Window {
+    umami?: {
+      track: (eventName: string, data?: Record<string, string | number | boolean>) => void;
+    };
+  }
+}
+
+function trackEvent(eventName: string, data?: Record<string, string | number | boolean>) {
+  try {
+    window.umami?.track(eventName, data);
+  } catch (_) {}
+}
+
+function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/\(|\)/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 export default function SubjectSearch({ subjects, boardSlug, basePath }: SubjectSearchProps) {
   const [query, setQuery] = useState('');
+
+  const searchDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasTrackedSearch = useRef(false);
 
   const filtered = useMemo(() => {
     if (!query.trim()) return subjects;
@@ -20,17 +44,54 @@ export default function SubjectSearch({ subjects, boardSlug, basePath }: Subject
     return subjects.filter((s) => s.name.toLowerCase().includes(q));
   }, [query, subjects]);
 
-  function slugify(str: string): string {
-    return str
-      .toLowerCase()
-      .replace(/\(|\)/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-  }
+  useEffect(() => {
+    if (!query.trim()) {
+      hasTrackedSearch.current = false;
+      return;
+    }
+
+    if (searchDebounceTimer.current) clearTimeout(searchDebounceTimer.current);
+
+    searchDebounceTimer.current = setTimeout(() => {
+      trackEvent('Subject Searched', {
+        'Board': boardSlug,
+        'Search Query': query.trim(),
+        'Results Found': filtered.length,
+        'Total Subjects': subjects.length,
+        'No Results': filtered.length === 0,
+      });
+      hasTrackedSearch.current = true;
+    }, 600);
+
+    return () => {
+      if (searchDebounceTimer.current) clearTimeout(searchDebounceTimer.current);
+    };
+  }, [query, filtered.length]);
+
+  const handleClear = () => {
+    if (hasTrackedSearch.current) {
+      trackEvent('Subject Search Cleared', {
+        'Board': boardSlug,
+        'Query Was': query.trim(),
+        'Results Were': filtered.length,
+      });
+    }
+    setQuery('');
+  };
+
+  const handleSubjectClick = (subjectName: string) => {
+    trackEvent('Subject Selected', {
+      'Board': boardSlug,
+      'Subject': subjectName,
+      'Via Search': query.trim().length > 0,
+      'Search Query': query.trim() || 'None',
+      'Position In List': filtered.findIndex((s) => s.name === subjectName) + 1,
+      'Total Visible': filtered.length,
+    });
+  };
 
   return (
     <>
-      {/* Search bar */}
       <div className="relative mb-6">
         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
           <svg
@@ -53,7 +114,7 @@ export default function SubjectSearch({ subjects, boardSlug, basePath }: Subject
         />
         {query && (
           <button
-            onClick={() => setQuery('')}
+            onClick={handleClear}
             aria-label="Clear search"
             className="absolute inset-y-0 right-4 flex items-center opacity-50 hover:opacity-100 transition-opacity"
           >
@@ -77,6 +138,7 @@ export default function SubjectSearch({ subjects, boardSlug, basePath }: Subject
           <div key={subject.name} className="mb-4">
             <a
               href={`${basePath}/${slugify(subject.name)}`}
+              onClick={() => handleSubjectClick(subject.name)}
               className="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
             >
               {subject.name}
@@ -87,4 +149,3 @@ export default function SubjectSearch({ subjects, boardSlug, basePath }: Subject
     </>
   );
 }
-

@@ -1,4 +1,3 @@
-
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
@@ -7,132 +6,122 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   title="Paper-Guides | Past Papers, Notes & Question Generator"
   description="Free exam preparation resources — Past Papers, Notes, Question Generator for O-Level, A-Levels, NEB / TU / IOE and more."
 >
-    <section class="mt-[64px] min-h-screen text-[var(--font-color)] flex flex-col items-center justify-center px-4">
-      {/* Hero Section */}
-      <div class="text-center max-w-4xl mb-16 text-shadow-lg">
-        <h1 class="text-5xl md:text-7xl font-bold leading-tight mb-4">
-          Prepare <span class="text-[var(--blue-highlight)]">Faster</span>{" "}
-          Than Ever
-        </h1>
-        <p class="text-xl md:text-2xl mb-4 ">
-          Paper-<span class="text-[var(--blue-highlight)]">Guides</span>{" "}
-          gives you access to Past Papers, Notes, Topical Questions, and a
-          Question Generator to{" "}
-          <span class="text-[var(--pink-highlight)]">
-            prepare faster than ever
-          </span>
-          .
-        </p>
-        <p class="text-lg md:text-xl">By the students for the students.</p>
-      </div>
+<section class="mt-[64px] min-h-screen text-[var(--font-color)] flex flex-col items-center justify-center px-4">
 
-      {/* Cards Grid */}
-      <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-6xl">
-        {/* Card 1 */}
-        <div class="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1 h-full">
-          <img
-            loading="lazy"
-            src="/images/compressed_past-papers.webp"
-            alt="Past Papers"
-            width={600}
-            height={337}
-            class="w-full aspect-video rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
-          />
-          <h3 class="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
-            Exam Success Starts Here
-          </h3>
-          <p class="text-[var(--font-color)] mb-4">
-            Access past-papers to boost your exam preparation.
-          </p>
-          <a
-            href="/pastpapers"
-            class="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
-          >
-            Past Papers
-          </a>
-        </div>
+  {/* Hero Section */}
+  <div class="text-center max-w-4xl mb-16 text-shadow-lg">
+    <h1 class="text-5xl md:text-7xl font-bold leading-tight mb-4">
+      Prepare <span class="text-[var(--blue-highlight)]">Faster</span>{" "}
+      Than Ever
+    </h1>
 
-        {/* Card 2 */}
-        <div class="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1 h-full">
-          <img
-            loading="lazy"
-            src="/images/compressed_question-generator.webp"
-            alt="Question Generator"
-            width={600}
-            height={337}
-            class="w-full aspect-video rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
-          />
+    <p class="text-xl md:text-2xl mb-4 ">
+      Paper-<span class="text-[var(--blue-highlight)]">Guides</span>{" "}
+      gives you access to Past Papers, Notes, Topical Questions, and a
+      Question Generator to{" "}
+      <span class="text-[var(--pink-highlight)]">
+        prepare faster than ever
+      </span>.
+    </p>
 
-          <h3 class="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
-            Question Practice
-          </h3>
-          <p class="text-[var(--font-color)] mb-4">
-            Generate custom practice questions tailored to your needs.
-          </p>
+    <p class="text-lg md:text-xl">
+      By the students for the students.
+    </p>
+  </div>
 
-          {/* <a
-            href="/mcqs"
-            class="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
-          >
-            Start Generating MCQs
-          </a> */}
-          <a
-            href="/generator"
-            class="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
-          >
-            Start Generating Questions
-          </a>
-        </div>
+  {/* Cards Grid */}
+  <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-6xl">
 
-        {/* Card 4 */}
-        <div class="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1 h-full">
-          <img
-            loading="lazy"
-            src="/images/compressed_notes.webp"
-            alt="Notes"
-            width={600}
-            height={337}
-            class="w-full aspect-video rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
-          />
-          <h3 class="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
-            Quality Notes
-          </h3>
-          <p class="text-[var(--font-color)] mb-4">
-            Acess quality study notes well organized and easily accessible.
-          </p>
-          <a
-            href="/notes"
-            class="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
-          >
-            View Notes
-          </a>
-        </div>
+    {/* Card 1 */}
+    <div class="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1 h-full">
+      <img
+        loading="lazy"
+        src="/images/compressed_past-papers.webp"
+        alt="Past Papers"
+        width={600}
+        height={337}
+        class="w-full aspect-video rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
+      />
 
-        {/* Card 3 */}
-        {/* <div class="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1">
-          <img
-          loading="lazy"
-            src="/images/compressed_topicals.webp"
-            alt="Topical Papers"
-            width={600}
-            height={337}
-            class="w-full rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
-          />
-          <h3 class="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
-            Focused Topic Mastery
-          </h3>
-          <p class="text-[var(--font-color)] mb-4">
-            Dive deep with carefully curated topical practice papers.
-          </p>
-          <a
-            href="/topicals"
-            class="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
-          >
-            Discover Topicals
-          </a>
-        </div> */}
-      </div>
-    </section>
+      <h3 class="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
+        Exam Success Starts Here
+      </h3>
+
+      <p class="text-[var(--font-color)] mb-4">
+        Access past-papers to boost your exam preparation.
+      </p>
+
+      <a
+        href="/pastpapers"
+        data-umami-event="Homepage Card Click"
+        data-umami-event-feature="Past Papers"
+        class="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
+      >
+        Past Papers
+      </a>
+    </div>
+
+    {/* Card 2 */}
+    <div class="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1 h-full">
+
+      <img
+        loading="lazy"
+        src="/images/compressed_question-generator.webp"
+        alt="Question Generator"
+        width={600}
+        height={337}
+        class="w-full aspect-video rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
+      />
+
+      <h3 class="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
+        Question Practice
+      </h3>
+
+      <p class="text-[var(--font-color)] mb-4">
+        Generate custom practice questions tailored to your needs.
+      </p>
+
+      <a
+        href="/generator"
+        data-umami-event="Homepage Card Click"
+        data-umami-event-feature="Question Generator"
+        class="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
+      >
+        Start Generating Questions
+      </a>
+    </div>
+
+    {/* Card 3 */}
+    <div class="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1 h-full">
+
+      <img
+        loading="lazy"
+        src="/images/compressed_notes.webp"
+        alt="Notes"
+        width={600}
+        height={337}
+        class="w-full aspect-video rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
+      />
+
+      <h3 class="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
+        Quality Notes
+      </h3>
+
+      <p class="text-[var(--font-color)] mb-4">
+        Acess quality study notes well organized and easily accessible.
+      </p>
+
+      <a
+        href="/notes"
+        data-umami-event="Homepage Card Click"
+        data-umami-event-feature="Notes"
+        class="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
+      >
+        View Notes
+      </a>
+    </div>
+
+  </div>
+</section>
 
 </BaseLayout>
-

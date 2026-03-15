@@ -38,16 +38,17 @@ const realSubjectName = subjectData?.name ?? subject.replace(/-/g, " ");
 
 const boardNameMap = {
   "a-levels": "A Levels",
-  "kathmandu-university": "kathmandu university",
+  "kathmandu-university": "Kathmandu University",
 };
 
 const boardParamMap = {
   "a-levels": "a levels",
   "kathmandu-university": "ku",
 };
+
 // @ts-ignore
 const apiBoardName = boardNameMap[board] ?? board;
-//  @ts-ignore
+// @ts-ignore
 const boardParam = boardParamMap[board] ?? board;
 
 /* parse slug */
@@ -60,7 +61,6 @@ let semester = "";
 
 if (boardParam === "ku") {
   const semesterMatch = question.match(/semester-\d+/i);
-
   semester = semesterMatch ? semesterMatch[0].replace("-", " ") : "";
 } else {
   insert = question.includes("insert-paper");
@@ -72,7 +72,6 @@ if (boardParam === "ku") {
   const parts = clean.split("-");
 
   component = parts[parts.length - 4];
-
   session = `${parts[parts.length - 2]}-${parts[parts.length - 1]}`;
 }
 
@@ -81,25 +80,32 @@ const paperName = question.replace(/-/g, " ");
 
 <LevelTopicalsLayout
   title={`${paperName} | Paper Guides`}
-  description={`Download ${paperName} past paper and mark scheme.`}
+  description={`Download ${paperName} past paper and mark scheme for ${realSubjectName} (${apiBoardName}) ${year}. Practice real exam questions and improve exam preparation.`}
 >
+  <!-- Breadcrumb -->
   <nav class="text-sm opacity-70 mb-4 flex flex-wrap gap-1">
     <a href="/" class="hover:underline">Paper-Guides</a> ›
 
     <a href="/pastpapers" class="hover:underline">Past Papers</a> ›
 
-    <a href={`/subjects/${board}`} class="hover:underline">{apiBoardName}</a> ›
+    <a href={`/subjects/${board}`} class="hover:underline">
+      {apiBoardName}
+    </a> ›
 
-    <a href={`/subjects/${board}/${subject}`} class="hover:underline"
-      >{realSubjectName}</a
-    >
+    <a href={`/subjects/${board}/${subject}`} class="hover:underline">
+      {realSubjectName}
+    </a>
+
     <span>{year}</span>
   </nav>
 
+  <!-- Title -->
   <div
     class="flex justify-between border-b-2 border-[var(--blue-highlight)] mb-6 pb-4 items-start gap-4"
   >
-    <h1 class="text-4xl font-bold capitalize">{paperName}</h1>
+    <h1 class="text-4xl font-bold capitalize">
+      {paperName}
+    </h1>
 
     <button
       onclick="history.back()"
@@ -117,16 +123,18 @@ const paperName = question.replace(/-/g, " ");
           d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
           clip-rule="evenodd"></path>
       </svg>
-
       Back
     </button>
   </div>
 
-  <p class="opacity-70 max-w-3xl mb-6 text-sm">
-    Download the official <strong>{paperName}</strong> past paper and mark scheme
-    to practice real exam questions and improve exam preparation.
+  <!-- Intro -->
+  <p class="opacity-80 max-w-3xl mb-6 text-sm">
+    Download the official <strong>{paperName}</strong> past paper for
+    <strong>{realSubjectName}</strong> under the
+    <strong>{apiBoardName}</strong> examination board.
   </p>
 
+  <!-- Viewer -->
   <!-- @ts-ignore -->
   <PaperViewerClient
     client:load
@@ -140,4 +148,94 @@ const paperName = question.replace(/-/g, " ");
     insert={insert}
     semester={semester}
   />
+
+  <!-- Related papers -->
+  <section class="mt-12">
+    <h2 class="font-semibold text-[var(--blue-highlight)]">
+      Related {realSubjectName} Papers
+    </h2>
+
+    <p class="text-sm opacity-80">
+      Explore more past exam papers from the same subject and year to strengthen
+      your preparation and practice additional exam questions.
+    </p>
+
+    <ul class="list-disc pl-5 space-y-2 text-sm">
+      {
+        subjectData?.years?.[year]
+          ?.filter((q: any) => q !== question)
+          .slice(0, 10)
+          .map((q: string) => (
+            <li>
+              <a
+                href={`/subjects/${board}/${subject}/${year}/${q}`}
+                class="hover:underline"
+              >
+                {q.replace(/-/g, " ")}
+              </a>
+            </li>
+          ))
+      }
+    </ul>
+  </section>
+
+  <!-- Navigation links -->
+  <section class="text-sm mt-4">
+    <h2 class="font-semibold text-[var(--blue-highlight)]">
+      Browse More Past Papers
+    </h2>
+
+    <div class="flex flex-wrap gap-4">
+      <a href={`/subjects/${board}/${subject}`} class="hover:underline">
+        All {realSubjectName} Papers
+      </a>
+
+      <a href={`/subjects/${board}`} class="hover:underline">
+        All {apiBoardName} Subjects
+      </a>
+
+      <a href="/pastpapers" class="hover:underline"> Browse All Past Papers </a>
+    </div>
+  </section>
+
+  <!-- SEO content -->
+  <section class="mt-4 text-sm leading-relaxed space-y-4 opacity-80">
+    <h2 class="font-semibold text-[var(--blue-highlight)]">
+      {realSubjectName}
+      {year} Past Paper – {apiBoardName}
+    </h2>
+
+    <p>
+      This page provides the official <strong>{paperName}</strong> examination paper
+      for
+      <strong>{realSubjectName}</strong> under the <strong
+        >{apiBoardName}</strong
+      > examination board. Students can view and download the full exam paper directly
+      in the browser using the built-in paper viewer.
+    </p>
+
+    <p>
+      Past papers are one of the most effective study tools for exam
+      preparation. By practicing previous examination papers, students become
+      familiar with the exam structure, marking style, and question difficulty.
+      Regular practice also improves time management and exam confidence.
+    </p>
+
+    <p>
+      The <strong>{paperName}</strong> paper belongs to the <strong
+        >{year}</strong
+      >
+      examination series for <strong>{realSubjectName}</strong>. Students
+      preparing for exams often practice multiple years of past papers to
+      understand trends in questions and commonly tested topics.
+    </p>
+
+    <p>
+      You can explore more <strong>{realSubjectName} past papers</strong>,
+      different examination sessions, and other subjects from the
+      <strong>{apiBoardName}</strong> board using the navigation links above. Paper-Guides
+      hosts a large archive of past exam papers to help students revise effectively
+      and prepare for upcoming examinations.
+    </p>
+  </section>
 </LevelTopicalsLayout>

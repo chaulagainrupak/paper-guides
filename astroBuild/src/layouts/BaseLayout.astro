@@ -3,7 +3,6 @@ import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
-import { SITE_URL } from "../utils/config";
 
 interface Props {
   title?: string;
@@ -18,6 +17,8 @@ const {
   ogImage = `${SITE_URL ?? "https://paperguides.org"}/images/opg_paper_guides.png`,
   canonical = `${SITE_URL ?? "https://paperguides.org"}${Astro.url.pathname}`,
 } = Astro.props;
+
+import { SITE_URL, UMAMI_WEBSITE_ID, UMAMI_URL } from "../utils/config";
 ---
 
 <!doctype html>
@@ -46,9 +47,11 @@ const {
     <script
       defer
       is:inline
-      src="https://analytics.chaulagainrupak.com.np/script.js"
-      data-website-id="576bcb5b-cf9d-43c9-bdf4-ee8d71f1bf49"
-      data-auto-track="true"></script>
+      src={`${UMAMI_URL}/script.js`}
+      data-website-id={UMAMI_WEBSITE_ID}
+      data-auto-track="true"
+    ></script>
+    
   </head>
   <body class="flex flex-col min-h-screen">
     <Nav />
