@@ -1,4 +1,3 @@
-
 ---
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
@@ -17,7 +16,7 @@ const {
   title = "Paper-Guides",
   description = "Free exam preparation resources — Past Papers, Notes, Question Generator, and more.",
   ogImage = `${SITE_URL ?? "https://paperguides.org"}/images/opg_paper_guides.png`,
-  canonical = `${SITE_URL}${Astro.url.pathname}`
+  canonical = `${SITE_URL ?? "https://paperguides.org"}${Astro.url.pathname}`,
 } = Astro.props;
 ---
 
@@ -43,18 +42,12 @@ const {
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
       crossorigin="anonymous"></script>
 
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2B6JNCMRZ4"
-    ></script>
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-2B6JNCMRZ4");
-      gtag("config", "G-SZDFC8YDWK");
-    </script>
+    <!-- Umami Analytics -->
+    <script
+      defer
+      src="https://analytics.chaulagainrupak.com.np/script.js"
+      data-website-id="576bcb5b-cf9d-43c9-bdf4-ee8d71f1bf49"
+      data-auto-track="true"></script>
   </head>
   <body class="flex flex-col min-h-screen">
     <Nav />
@@ -65,4 +58,3 @@ const {
     <Footer />
   </body>
 </html>
-
