@@ -2,6 +2,7 @@ import sqlite3
 import json
 import os
 import re
+import requests
 from datetime import datetime
 
 BASE_DIR = os.path.dirname(__file__)
@@ -47,15 +48,19 @@ def parse_year_session(year_field):
 
 
 all_urls = []
+seen = set()
+
 subjectPages = set()
 yearPages = set()
+sessionPages = set()
 boards = set()
 paperIndex = {}
 
 
 def add(loc, freq=None, pr=None):
-    if not loc:
+    if not loc or loc in seen:
         return
+    seen.add(loc)
     all_urls.append({
         "loc": loc,
         "lastmod": TODAY,
@@ -102,6 +107,9 @@ for board, subject, year_field, component in rows:
     subjectPages.add((boardSlug, subjectSlug))
     yearPages.add((boardSlug, subjectSlug, yearOnly))
 
+    if sessionSlug:
+        sessionPages.add((boardSlug, subjectSlug, yearOnly, sessionSlug))
+
     qpSlug = f"{subjectSlug}-question-paper-{componentSlug}-{yearOnly}-{sessionSlug}"
     qpUrl = f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}/{yearOnly}/{qpSlug}"
 
@@ -122,10 +130,13 @@ for boardSlug in boards:
     add(f"{BASE_URL}/subjects/{boardSlug}", "weekly", 0.95)
 
 for boardSlug, subjectSlug in subjectPages:
-    add(f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}", "weekly", 0.9)
+    add(f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}", "daily", 0.95)
 
 for boardSlug, subjectSlug, year in yearPages:
-    add(f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}/{year}", "weekly", 0.85)
+    add(f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}/{year}", "daily", 0.9)
+
+for boardSlug, subjectSlug, year, session in sessionPages:
+    add(f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}/{year}/{session}", "weekly", 0.85)
 
 chunks = [
     all_urls[i:i + CHUNK_SIZE]
@@ -156,6 +167,21 @@ with open(os.path.join(OUTPUT_DIR, "manifest.json"), "w") as f:
 
 with open(os.path.join(BASE_DIR, "configs", "paperPaths.json"), "w") as f:
     json.dump(paperIndex, f, separators=(",", ":"))
+
+try:
+    sitemap_index = f"{BASE_URL}/sitemap.xml"
+    requests.get(f"https://www.google.com/ping?sitemap={sitemap_index}", timeout=5)
+    requests.get(f"https://www.bing.com/ping?sitemap={sitemap_index}", timeout=5)
+
+    for chunk in manifest["chunks"]:
+        chunk_url = f"{BASE_URL}/urls-{chunk['id']}.xml"
+        requests.get(f"https://www.google.com/ping?sitemap={chunk_url}", timeout=5)
+        requests.get(f"https://www.bing.com/ping?sitemap={chunk_url}", timeout=5)
+
+    print("pinged all sitemaps")
+
+except Exception as e:
+    print("ping failed:", e)
 
 print(f"total urls: {len(all_urls)}")
 print(f"chunks: {len(chunks)}")
