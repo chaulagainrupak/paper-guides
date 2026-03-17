@@ -198,3 +198,4 @@ instance
 configs/sitemap.xml
 
 configs/paperPaths.json
+configs/sitemaps/

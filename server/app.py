@@ -10,7 +10,7 @@ from fastapi import (
 )
 
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 
 from jose import jwt
 from datetime import datetime, timedelta
@@ -44,7 +44,7 @@ CONFIG_PATH = "./configs/configs.json"
 PAPER_PATHS_PATH = "./configs/paperPaths.json"
 
 CONFIG = loadConfig("./configs/configs.json")
-SITEMAP_PATH = "./configs/sitemap.xml"
+SITEMAP_DIR = "./configs/sitemaps/"
 # Constants
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
@@ -685,13 +685,21 @@ async def getQuestionsForMcqs(request: Request):
 #         raise Response(content='error', status_code=500)
 
 
-@app.get("/sitemap.xml")
-async def sitemap():
-    if not os.path.exists(SITEMAP_PATH):
-        return Response(content="Not Found", status_code=404)
+# @app.get("/sitemap.xml")
+# async def sitemap():
+#     if not os.path.exists(SITEMAP_PATH):
+#         return Response(content="Not Found", status_code=404)
 
-    return FileResponse(SITEMAP_PATH, media_type="application/xml")
+#     return FileResponse(SITEMAP_PATH, media_type="application/json")
 
+@app.get("/sitemaps/{file}")
+async def get_sitemap_chunk(file: str):
+    path = os.path.join(SITEMAP_DIR, file)
+
+    if not os.path.exists(path):
+        return JSONResponse({"error": "not found"}, status_code=404)
+
+    return FileResponse(path, media_type="application/json")
 
 @app.get("/paper-paths")
 async def paper_paths():

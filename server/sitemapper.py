@@ -1,43 +1,30 @@
 import sqlite3
-import xml.etree.ElementTree as ET
-from datetime import datetime
-import re
 import json
 import os
+import re
+from datetime import datetime
 
 BASE_DIR = os.path.dirname(__file__)
-
 DB_PAPER = os.path.join(BASE_DIR, "instance", "paper-guides-papers.db")
 
-baseUrl = "https://paperguides.org"
-today = datetime.today().strftime("%Y-%m-%d")
+OUTPUT_DIR = os.path.join(BASE_DIR, "configs", "sitemaps")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ---------------- SLUGIFY ----------------
+BASE_URL = "https://paperguides.org"
+TODAY = datetime.today().strftime("%Y-%m-%d")
+CHUNK_SIZE = 1000
 
 
 def slugify(text: str, board: str = "") -> str:
-
     text = text.lower()
-
-    # remove brackets
     text = re.sub(r"[()]", "", text)
-
-    # KU subjects contain " - "
     if "kathmandu university" in board.lower():
         text = text.replace(" - ", " ")
-
     text = re.sub(r"[^a-z0-9]+", "-", text)
-
-    text = text.strip("-")
-
-    return text
-
-
-# ---------------- YEAR + SESSION PARSER ----------------
+    return text.strip("-")
 
 
 def parse_year_session(year_field):
-
     year_match = re.search(r"\d{4}", year_field)
     if not year_match:
         return None, None
@@ -45,88 +32,68 @@ def parse_year_session(year_field):
     year = year_match.group(0)
 
     session = ""
-
     session_match = re.search(r"\((.*?)\)", year_field)
     if session_match:
         session = session_match.group(1)
 
     session = session.lower().strip()
-
-    # normalize Cambridge sessions
     session = session.replace(" / ", "-")
     session = session.replace("/", "-")
     session = session.replace(" ", "-")
-
-    # collapse multiple hyphens
     session = re.sub(r"-+", "-", session)
-
-    # remove anything unsafe
     session = re.sub(r"[^a-z0-9\-]", "", session)
 
     return year, session
 
 
-# ---------------- XML HELPER ----------------
-
-
-def createUrlNode(loc, lastmod=None, changefreq=None, priority=None):
-
-    if not loc:
-        return None
-
-    url = ET.Element("url")
-
-    ET.SubElement(url, "loc").text = loc
-
-    if lastmod:
-        ET.SubElement(url, "lastmod").text = lastmod
-
-    if changefreq:
-        ET.SubElement(url, "changefreq").text = changefreq
-
-    if priority:
-        ET.SubElement(url, "priority").text = str(priority)
-
-    return url
-
-
-# ---------------- ROOT XML ----------------
-
-urlset = ET.Element(
-    "urlset",
-    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9",
-)
-
-# ---------------- INDEX STRUCTURES ----------------
-
+all_urls = []
 subjectPages = set()
 yearPages = set()
-
+boards = set()
 paperIndex = {}
 
-# ---------------- PAPERS ----------------
+
+def add(loc, freq=None, pr=None):
+    if not loc:
+        return
+    all_urls.append({
+        "loc": loc,
+        "lastmod": TODAY,
+        "changefreq": freq,
+        "priority": pr
+    })
+
+
+DEFAULT_PAGES = [
+    ("/", "weekly", 1.0),
+    ("/about", "monthly", 0.7),
+    ("/login", "monthly", 0.6),
+    ("/pastpapers", "yearly", 0.3),
+]
+
+for path, freq, pr in DEFAULT_PAGES:
+    add(f"{BASE_URL}{path}", freq, pr)
+
+add(f"{BASE_URL}/subjects", "weekly", 1.0)
 
 conn = sqlite3.connect(DB_PAPER)
 cur = conn.cursor()
 
-rows = cur.execute(
-    """
+rows = cur.execute("""
 SELECT board, subject, year, component
 FROM papers
 WHERE approved = 1
-"""
-)
+""")
 
 for board, subject, year_field, component in rows:
-
     if not board or not subject or not year_field:
         continue
 
     boardSlug = slugify(board)
     subjectSlug = slugify(subject, board)
+    boards.add(boardSlug)
 
     yearOnly, sessionSlug = parse_year_session(year_field)
-
     if not yearOnly:
         continue
 
@@ -136,15 +103,9 @@ for board, subject, year_field, component in rows:
     yearPages.add((boardSlug, subjectSlug, yearOnly))
 
     qpSlug = f"{subjectSlug}-question-paper-{componentSlug}-{yearOnly}-{sessionSlug}"
+    qpUrl = f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}/{yearOnly}/{qpSlug}"
 
-    qpUrl = f"{baseUrl}/subjects/{boardSlug}/{subjectSlug}/{yearOnly}/{qpSlug}"
-
-    node = createUrlNode(qpUrl, today, "monthly", 0.8)
-
-    if node:
-        urlset.append(node)
-
-    # -------- BUILD INDEX FOR ASTRO --------
+    add(qpUrl, "monthly", 0.8)
 
     if boardSlug not in paperIndex:
         paperIndex[boardSlug] = {}
@@ -157,45 +118,45 @@ for board, subject, year_field, component in rows:
 
     paperIndex[boardSlug][subjectSlug]["years"][yearOnly].append(qpSlug)
 
-
-# ---------------- SUBJECT PAGES ----------------
+for boardSlug in boards:
+    add(f"{BASE_URL}/subjects/{boardSlug}", "weekly", 0.95)
 
 for boardSlug, subjectSlug in subjectPages:
-
-    url = f"{baseUrl}/subjects/{boardSlug}/{subjectSlug}"
-
-    node = createUrlNode(url, today, "weekly", 0.9)
-
-    if node:
-        urlset.append(node)
-
-
-# ---------------- YEAR PAGES ----------------
+    add(f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}", "weekly", 0.9)
 
 for boardSlug, subjectSlug, year in yearPages:
+    add(f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}/{year}", "weekly", 0.85)
 
-    url = f"{baseUrl}/subjects/{boardSlug}/{subjectSlug}/{year}"
+chunks = [
+    all_urls[i:i + CHUNK_SIZE]
+    for i in range(0, len(all_urls), CHUNK_SIZE)
+]
 
-    node = createUrlNode(url, today, "weekly", 0.85)
+manifest = {
+    "generatedAt": TODAY,
+    "count": len(all_urls),
+    "chunks": []
+}
 
-    if node:
-        urlset.append(node)
+for i, chunk in enumerate(chunks):
+    filename = f"urls-{i}.json"
+    path = os.path.join(OUTPUT_DIR, filename)
 
+    with open(path, "w") as f:
+        json.dump(chunk, f, separators=(",", ":"))
 
-# ---------------- WRITE SITEMAP ----------------
+    manifest["chunks"].append({
+        "id": i,
+        "file": filename,
+        "count": len(chunk)
+    })
 
-tree = ET.ElementTree(urlset)
+with open(os.path.join(OUTPUT_DIR, "manifest.json"), "w") as f:
+    json.dump(manifest, f, separators=(",", ":"))
 
-sitemap_path = os.path.join(BASE_DIR, "configs", "sitemap.xml")
-
-tree.write(sitemap_path, encoding="utf-8", xml_declaration=True)
-
-# ---------------- WRITE PAPER INDEX ----------------
-
-paper_index_path = os.path.join(BASE_DIR, "configs", "paperPaths.json")
-
-with open(paper_index_path, "w") as f:
+with open(os.path.join(BASE_DIR, "configs", "paperPaths.json"), "w") as f:
     json.dump(paperIndex, f, separators=(",", ":"))
 
-print("✅ sitemap.xml generated")
-print("✅ paperPaths.json generated")
+print(f"total urls: {len(all_urls)}")
+print(f"chunks: {len(chunks)}")
+print("done")
