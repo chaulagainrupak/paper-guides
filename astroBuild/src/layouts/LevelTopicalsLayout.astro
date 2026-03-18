@@ -1,6 +1,6 @@
 ---
-import { SITE_URL } from '../utils/config';
-import BaseLayout from './BaseLayout.astro';
+import { SITE_URL } from "../utils/config";
+import BaseLayout from "./BaseLayout.astro";
 
 interface Props {
   title?: string;
@@ -10,10 +10,14 @@ interface Props {
 const { title, description } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description}, ogImage=`${SITE_URL ?? "https://paperguides.org"}/images/past_papers.png`>
+<BaseLayout
+  title={title}
+  description={description}
+  ,
+  ogImage=`${SITE_URL ?? "https://paperguides.org"}/images/past_papers.png`
+>
   <div class="mt-16 min-h-screen">
     <div class="flex xl:flex-row flex-col gap-6 h-auto px-6 py-6">
-
       <!-- Main content -->
       <div class="bg-[var(--baby-powder)] xl:flex-1 shadow-xl rounded-xl p-6">
         <main>
@@ -23,14 +27,33 @@ const { title, description } = Astro.props;
 
       <!-- Sidebar -->
       <div class="xl:w-64 xl:flex-shrink-0">
-        <div class="bg-[var(--baby-powder)] shadow-xl rounded-xl p-4 xl:sticky xl:top-20">
-          <p class="text-xs uppercase tracking-widest opacity-40 mb-3 px-1">Sponsored</p>
-          <div class="w-full min-h-48 rounded-lg bg-[var(--color-nav)] border border-[var(--color-border)] flex items-center justify-center opacity-50 text-sm">
+        <div
+          class="bg-[var(--baby-powder)] shadow-xl rounded-xl p-4 xl:sticky xl:top-20"
+        >
+          <p class="text-xs uppercase tracking-widest opacity-40 mb-3 px-1">
+            Sponsored
+          </p>
+          <div
+            class="w-full min-h-48 rounded-lg bg-[var(--color-nav)] border border-[var(--color-border)] flex items-center justify-center opacity-50 text-sm"
+          >
             <!-- ad -->
+
+            <!-- Sponsered content -->
+            <ins
+              class="adsbygoogle"
+              style="display:block"
+              data-ad-client="ca-pub-8879795771404007"
+              data-ad-slot="1435727633"
+              data-ad-format="auto"
+              data-full-width-responsive="true"></ins>
+            <script>// @ts-ignore
+              (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+
+            
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </BaseLayout>
