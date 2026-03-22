@@ -15,25 +15,19 @@ const { title, description } = Astro.props;
   description={description}
   ogImage={`${SITE_URL ?? "https://paperguides.org"}/images/past_papers.png`}
 >
-  <div class="mt-16 h-[calc(100vh-4rem)] overflow-hidden">
-    <div class="flex xl:flex-row flex-col gap-6 h-full px-6 py-6">
-      <div
-        class="bg-[var(--baby-powder)] xl:flex-1 shadow-xl rounded-xl p-6 overflow-y-auto"
-      >
+  <div class="mt-16">
+    <div class="flex xl:flex-row flex-col gap-6 px-6 py-6">
+      <div class="bg-[var(--baby-powder)] xl:flex-1 shadow-xl rounded-xl p-6">
         <main>
           <slot />
         </main>
       </div>
 
-      <div class="xl:w-64 xl:flex-shrink-0 h-full">
-        <div
-          class="bg-[var(--baby-powder)] shadow-xl rounded-xl p-4 xl:sticky xl:top-20 h-full flex flex-col"
-        >
+      <div class="xl:w-64 xl:flex-shrink-0">
+        <div class="bg-[var(--baby-powder)] shadow-xl rounded-xl p-4 xl:sticky xl:top-20">
           <p class="text-xs uppercase tracking-widest opacity-40 mb-3 px-1">
             Sponsored
           </p>
-
-          <!-- <div class="w-full flex-1 rounded-lg bg-[var(--color-nav)] border border-[var(--color-border)] flex items-center justify-center text-sm"> -->
 
           <ins
             class="adsbygoogle"
@@ -43,12 +37,9 @@ const { title, description } = Astro.props;
             data-ad-format="auto"
             data-full-width-responsive="true"></ins>
 
-          <script>
-            // @ts-ignore
+          <script is:inline>
             (adsbygoogle = window.adsbygoogle || []).push({});
           </script>
-
-          <!-- </div> -->
         </div>
       </div>
     </div>
