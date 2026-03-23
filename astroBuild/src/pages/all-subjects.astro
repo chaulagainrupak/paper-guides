@@ -1,0 +1,95 @@
+---
+export const prerender = true;
+
+import { getPaperIndex } from "../utils/paperIndex";
+
+type Paper = {
+  name?: string;
+};
+
+type YearData = {
+  papers?: Record<string, Paper>;
+};
+
+type SubjectData = {
+  years?: Record<string, YearData>;
+};
+
+type IndexType = Record<string, Record<string, SubjectData>>;
+
+let index: IndexType = {};
+
+try {
+  index = await getPaperIndex();
+} catch (err) {
+  console.error("Failed to load index:", err);
+}
+
+export const getStaticPaths = async () => {
+  return [{ params: {} }];
+};
+
+const format = (str: string) => str.replace(/-/g, " ");
+---
+
+<div>
+  <h1>All Subjects, Years, and Past Papers</h1>
+
+  <p>
+    This page lists all available subjects, years, and past exam papers. You can
+    directly access question papers for different boards, subjects, and exam
+    sessions. Each subject includes multiple years and individual papers for
+    effective exam preparation.
+  </p>
+
+  {
+    Object.entries(index).map(([board, subjects]) => (
+      <div>
+        <h2>{format(board)}</h2>
+
+        {Object.entries(subjects).map(([subject, subjectData]) => {
+          const subjectName = format(subject);
+
+          return (
+            <div>
+              <h3>{subjectName}</h3>
+
+              <a href={`/subjects/${board}/${subject}`}>View {subjectName}</a>
+
+              <ul>
+                {Object.entries(subjectData.years ?? {}).map(
+                  ([year, yearData]) => (
+                    <li>
+                      <a href={`/subjects/${board}/${subject}/${year}`}>
+                        {subjectName} {year}
+                      </a>
+
+                      <ul>
+                        {Object.entries(yearData?.papers ?? {}).map(
+                          ([paperSlug, paperData]) => {
+                            const paperName =
+                              paperData?.name ?? format(paperSlug);
+
+                            return (
+                              <li>
+                                <a
+                                  href={`/subjects/${board}/${subject}/${year}/${paperSlug}`}
+                                >
+                                  {subjectName} {year} {paperName}
+                                </a>
+                              </li>
+                            );
+                          },
+                        )}
+                      </ul>
+                    </li>
+                  ),
+                )}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+    ))
+  }
+</div>

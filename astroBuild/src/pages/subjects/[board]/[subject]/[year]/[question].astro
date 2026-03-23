@@ -1,5 +1,4 @@
 ---
-export const prerender = true;
 
 import LevelTopicalsLayout from "../../../../../layouts/LevelTopicalsLayout.astro";
 import PaperViewerClient from "../../../../../components/PaperViewerClient";
@@ -137,7 +136,7 @@ const paperName = question.replace(/-/g, " ");
   <!-- Viewer -->
   <!-- @ts-ignore -->
   <PaperViewerClient
-    client:load
+    client:idle
     name={paperName}
     board={boardParam}
     subject={realSubjectName}
