@@ -7,6 +7,7 @@ import logging
 from datetime import datetime
 from dotenv import load_dotenv
 import random
+import json 
 
 load_dotenv(".env")
 
@@ -73,14 +74,10 @@ def initializeDatabases():
             board TEXT,
             level TEXT,
             component TEXT,
-            questionFile BLOB,
-            solutionFile BLOB,
+            question TEXT,
+            solution TEXT,
+            keywords TEXT,
             approved BOOLEAN DEFAULT 0,
-            one INTEGER DEFAULT 0,
-            two INTEGER DEFAULT 0,
-            three INTEGER DEFAULT 0,
-            four INTEGER DEFAULT 0,
-            five INTEGER DEFAULT 0,
             submittedBy TEXT,
             submittedFrom TEXT,
             submitDate DATE,
@@ -233,6 +230,7 @@ def insertPaper(
     finally:
         if conn:
             conn.close()
+
 
 def getYears(level: str, subject: str) -> list:
     """Get available years for a subject and level"""
@@ -402,8 +400,9 @@ def insertQuestion(
     difficulty: int,
     level: str,
     component: str,
-    questionFile: bytes,
-    solutionFile: bytes,
+    question: str,
+    solution: str,
+    keywords: [str],
     approved: bool,
     user: str,
     ip: str,
@@ -414,17 +413,11 @@ def insertQuestion(
         conn = sqlite3.connect(DB_QUESTION_GENERATOR_PATH)
         cursor = conn.cursor()
 
-        # Compress and encode files
-        q_compressed = zlib.compress(questionFile, level=9)
-        s_compressed = zlib.compress(solutionFile, level=9)
-        q_b64 = base64.b64encode(q_compressed).decode("utf-8")
-        s_b64 = base64.b64encode(s_compressed).decode("utf-8")
-
         cursor.execute(
             """INSERT INTO questions
-            (uuid, subject, topic, difficulty, board, level, component, 
-            questionFile, solutionFile, submittedBy, submittedFrom, submitDate, approved, approvedBy,approvedOn)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ?)""",
+    (uuid, subject, topic, difficulty, board, level, component, 
+    question, solution, keywords, submittedBy, submittedFrom, submitDate, approved, approvedBy, approvedOn)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 uuidStr,
                 subject,
@@ -433,8 +426,9 @@ def insertQuestion(
                 board,
                 level,
                 component,
-                q_b64,
-                s_b64,
+                question,
+                solution,
+                json.dumps(keywords),  # store as JSON string
                 user,
                 ip,
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -551,24 +545,12 @@ def getQuestionsForGen(board, subject, level, topics, components, difficulties):
         query += comp_cond
         params.extend(comp_params)
 
-        query += " ORDER BY RANDOM() LIMIT 30"
+        query += " ORDER BY RANDOM() LIMIT 60"
 
         cursor.execute(query, params)
         rows = cursor.fetchall()
 
-        finalRows = []
-
-        for item in rows:
-            itemList = list(item)
-            itemList[8] = base64.b64encode(
-                zlib.decompress(base64.b64decode(item[8]))
-            ).decode("utf-8")
-            itemList[9] = base64.b64encode(
-                zlib.decompress(base64.b64decode(item[9]))
-            ).decode("utf-8")
-
-            finalRows.append(itemList)
-        return finalRows if finalRows else []
+        return rows if rows else []
 
     except Exception as e:
         logger.error(f"Error getting questions for generator: {e}")

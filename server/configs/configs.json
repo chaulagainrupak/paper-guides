@@ -454,7 +454,9 @@
           "Newton's laws",
           "Work and energy",
           "Momentum",
-          "Rotational dynamics"
+          "Rotational dynamics",
+          "Elasticity",
+          "Dynamics of systems of particles"
         ]
       },
       {
@@ -484,7 +486,19 @@
           "Variables and data types",
           "Control flow",
           "Functions and recursion",
-          "Introduction to object-oriented programming"
+          "Introduction to object-oriented programming",
+          "Operating Systems",
+          "Number Systems",
+          "Computer Networks",
+          "Digital Logic",
+          "Computer Architecture",
+          "Programming",
+          "Cybersecurity",
+          "Cloud Computing",
+          "Green Computing",
+          "IoT",
+          "Algorithmic Thinking",
+          "Computer Applications"
         ]
       },
       {
@@ -2433,7 +2447,18 @@
       },
       {
         "name": "AIPC 101 - AI Programming Concepts",
-        "topics": ["AIPC 101 - AI Programming Concepts"]
+        "topics": [
+          "Type Conversion",
+          "Loop Control Structures",
+          "Functions and Recursion",
+          "Data Types",
+          "Storage Classes",
+          "Call by Value vs Reference",
+          "Arrays and Pointers",
+          "Arrays and Matrix Multiplication",
+          "Pointers and Dynamic Memory Allocation",
+          "Structures and Unions"
+        ]
       },
       {
         "name": "MCSC 201 - Discrete Mathematics",

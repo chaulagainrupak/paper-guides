@@ -622,7 +622,7 @@ export default function QuestionGeneratorForm() {
             options={availableTopics}
             selected={selectedTopics}
             setSelected={setSelectedTopics}
-            placeholder={selectedSubject ? "All topics (optional)" : "Select subject first"}
+            placeholder={selectedSubject ? "Select at least one topic" : "Select subject first"}
             searchable
           />
           <MultiSelectDropdown
@@ -654,7 +654,7 @@ export default function QuestionGeneratorForm() {
                 Generating Questions…
               </span>
             ) : (
-              "🚀 Generate Questions"
+              "Generate Questions"
             )}
           </button>
           {(!selectedBoard || !selectedSubject) && (
