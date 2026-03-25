@@ -10,7 +10,7 @@ from fastapi import (
 )
 
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response, PlainTextResponse
 
 from jose import jwt
 from datetime import datetime, timedelta
@@ -711,7 +711,11 @@ async def paper_paths():
 
     return data
 
-
+@app.get("/robots.txt", response_class=PlainTextResponse)
+async def return_robots():
+    return """User-agent: *
+Disallow: /
+"""
 def getClientIp(request):
     # Try to get the IP from the 'X-Forwarded-For' header (Cloudflare/proxy header)
     return request.headers.get("X-Forwarded-For", request.remote_addr)
