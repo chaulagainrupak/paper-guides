@@ -231,14 +231,14 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <!-- Gradient wash -->
       <div
         class="absolute inset-0 pointer-events-none z-0"
-        style="background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 6%, transparent), transparent 55%, color-mix(in srgb, var(--french-blue) 5%, transparent));"
+        style="background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%, color-mix(in srgb, var(--french-blue) 10%, transparent));"
       >
       </div>
 
       <!-- Grid texture -->
       <div
-        class="absolute inset-0 pointer-events-none opacity-35 z-0"
-        style="background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px); background-size: 28px 28px;"
+        class="absolute inset-0 pointer-events-none opacity-55 z-0"
+        style="background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px); background-size: 48px 48px;"
       >
       </div>
 
@@ -309,11 +309,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           class="group relative flex items-start gap-3 p-5 cursor-pointer border-b border-[var(--border-subtle)]
                  transition-all duration-200 hover:bg-[var(--sidebar-hover)]
                  before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5
-                 before:bg-yellow-600 before:opacity-0 before:transition-opacity before:duration-200
+                 before:bg-purple-600 before:opacity-0 before:transition-opacity before:duration-200
                  hover:before:opacity-100"
         >
           <div class="sidebar-icon-wrap sidebar-icon-yellow shrink-0 mt-0.5">
-            <i class="ph-fill ph-lightning text-yellow-600"></i>
+            <i class="ph-fill ph-lightning text-purple-600"></i>
           </div>
           <div class="flex-1 min-w-0">
             <h3 class="font-semibold text-sm text-[var(--color-text)]">
@@ -323,14 +323,14 @@ import BaseLayout from "../layouts/BaseLayout.astro";
               Custom practice sets by topic, difficulty, and component.
             </p>
             <div
-              class="inline-flex items-center gap-1 mt-1 text-[0.6rem] font-semibold uppercase tracking-[0.06em] px-2 py-0.5 rounded-full bg-yellow-500/10 text-yellow-700 dark:text-yellow-400"
+              class="inline-flex items-center gap-1 mt-1 text-[0.6rem] font-semibold uppercase tracking-[0.06em] px-2 py-0.5 rounded-full bg-purple-600/15 text-purple-900 dark:text-purple-400"
             >
               <i class="ph-fill ph-sliders text-[0.6rem]"></i>
               Topic wise
             </div>
           </div>
           <i
-            class="ph-fill ph-arrow-right text-[var(--muted)] text-sm shrink-0 mt-1 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-yellow-600"
+            class="ph-fill ph-arrow-right text-[var(--muted)] text-sm shrink-0 mt-1 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-purple-600"
           ></i>
         </a>
 
@@ -714,7 +714,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <a href="https://github.com/chaulagainrupak/paper-guides" target="_blank" rel="noopener noreferrer"
               class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans text-sm font-medium
                      shadow-md transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]
-                     bg-[var(--color-surface)] outline outline-1 outline-[var(--color-text)]">
+                     bg-[var(--color-surface)] outline outline-1 outline-[var(--border-subtle)]">
               <i class="ph-fill ph-github-logo text-[var(--pink-highlight)]"></i>
               GitHub
               <i class="ph-fill ph-arrow-square-out text-neutral-400 dark:text-neutral-500 text-xs"></i>
@@ -722,7 +722,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <a href="https://discord.gg/U9fAnCgcu3" target="_blank" rel="noopener noreferrer"
               class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans text-sm font-medium
                      shadow-md transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]
-                     bg-[var(--color-surface)] outline outline-1 outline-[var(--color-text)]">
+                     bg-[var(--color-surface)] outline outline-1 outline-[var(--border-subtle)]">
               <i class="ph-fill ph-discord-logo text-[var(--blue-highlight)]"></i>
               Discord
               <i class="ph-fill ph-arrow-square-out text-neutral-400 dark:text-neutral-500 text-xs"></i>
@@ -730,7 +730,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <a href="https://instagram.com/paperguides.official" target="_blank" rel="noopener noreferrer"
               class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans text-sm font-medium
                      shadow-md transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]
-                     bg-[var(--color-surface)] outline outline-1 outline-[var(--color-text)]">
+                     bg-[var(--color-surface)] outline outline-1 outline-[var(--border-subtle)]">
               <i class="ph-fill ph-instagram-logo text-[var(--accent)]"></i>
               Instagram
               <i class="ph-fill ph-arrow-square-out text-neutral-400 dark:text-neutral-500 text-xs"></i>
@@ -738,7 +738,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <a href="https://www.youtube.com/@Paper-Guides" target="_blank" rel="noopener noreferrer"
               class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans text-sm font-medium
                      shadow-md transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]
-                     bg-[var(--color-surface)] outline outline-1 outline-[var(--color-text)]">
+                     bg-[var(--color-surface)] outline outline-1 outline-[var(--border-subtle)]">
               <i class="ph-fill ph-youtube-logo text-[var(--pink-highlight)]"></i>
               YouTube
               <i class="ph-fill ph-arrow-square-out text-neutral-400 dark:text-neutral-500 text-xs"></i>

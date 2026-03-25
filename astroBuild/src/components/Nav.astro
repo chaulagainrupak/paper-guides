@@ -3,11 +3,14 @@ import logo from "../assets/images/logo.png";
 import { Image } from "astro:assets";
 ---
 
-<nav class="bg-[var(--wheat-darker)] fixed top-0 w-full z-50 shadow-sm h-16">
+<nav class="bg-[var(--sidebar-bg)] fixed top-0 w-full z-50 shadow-sm h-16">
   <div
     class="flex justify-between items-center px-6 py-4 text-2xl font-bold h-full"
   >
-    <a href="/" class="font-bold text-lg">
+    <a
+      href="/"
+      class="font-bold text-lg hover:text-[var(--muted)] transition-all duration-300 ease-out"
+    >
       <span class="flex items-center gap-2">
         <Image
           src={logo}
@@ -24,6 +27,7 @@ import { Image } from "astro:assets";
     <!-- Desktop links -->
     <div class="gap-4 hidden xl:flex">
       <a
+        class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
         href="/pastpapers"
         data-umami-event="Navigation Click"
         data-umami-event-destination="Past Papers"
@@ -32,6 +36,7 @@ import { Image } from "astro:assets";
       </a>
 
       <a
+        class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
         href="/notes"
         data-umami-event="Navigation Click"
         data-umami-event-destination="Notes"
@@ -40,11 +45,21 @@ import { Image } from "astro:assets";
       </a>
 
       <a
+        class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
         href="/generator"
         data-umami-event="Navigation Click"
         data-umami-event-destination="Question Generator"
       >
-        Question Generator
+        Generator
+      </a>
+
+      <a
+        class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
+        href="/questions"
+        data-umami-event="Navigation Click"
+        data-umami-event-destination="Questions Repository"
+      >
+        Questions
       </a>
     </div>
 
@@ -55,7 +70,7 @@ import { Image } from "astro:assets";
         href="/about"
         data-umami-event="Navigation Click"
         data-umami-event-destination="About"
-        class="text-[var(--pink-highlight)]"
+        class="text-[var(--pink-highlight)] hover:text-[var(--muted)] transition-all duration-300 ease-out"
       >
         About
       </a>
@@ -65,13 +80,17 @@ import { Image } from "astro:assets";
     <div class="xl:hidden relative">
       <input type="checkbox" id="hamburger" class="peer hidden" />
       <label for="hamburger" class="cursor-pointer text-3xl select-none"
-        >&#9776;</label
+        >
+      <i class="ph-fill ph-list"></i>
+        
+        </label
       >
 
       <div
-        class="bg-[var(--color-nav)] absolute right-0 top-16 w-52 shadow-lg border rounded-lg p-4 flex-col gap-3 hidden peer-checked:flex"
+        class="bg-[var(--sidebar-bg)] absolute right-0 top-16 w-52 shadow-lg border rounded-lg p-4 flex-col gap-3 hidden peer-checked:flex"
       >
         <a
+          class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
           href="/pastpapers"
           data-umami-event="Navigation Click"
           data-umami-event-destination="Past Papers"
@@ -80,6 +99,7 @@ import { Image } from "astro:assets";
         </a>
 
         <a
+          class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
           href="/notes"
           data-umami-event="Navigation Click"
           data-umami-event-destination="Notes"
@@ -88,20 +108,32 @@ import { Image } from "astro:assets";
         </a>
 
         <a
+          class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
           href="/generator"
           data-umami-event="Navigation Click"
           data-umami-event-destination="Question Generator"
         >
-          Question Generator
+          Generator
         </a>
 
-        <div id="nav-login-slot-mobile"></div>
+        <a
+          class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
+          href="/questions"
+          data-umami-event="Navigation Click"
+          data-umami-event-destination="Questions Repository"
+        >
+          Questions
+        </a>
+      </div>
+
+      <div class="gap-4 hidden xl:flex items-center">
+        <div id="nav-login-slot"></div>
 
         <a
           href="/about"
           data-umami-event="Navigation Click"
           data-umami-event-destination="About"
-          class="text-[var(--pink-highlight)]"
+          class="text-[var(--pink-highlight)] hover:text-[var(--muted)] transition-all duration-300 ease-out"
         >
           About
         </a>
@@ -121,7 +153,7 @@ import { Image } from "astro:assets";
 
     if (!loggedIn) {
       slot.innerHTML =
-        '<a href="/login" data-umami-event="Navigation Click" data-umami-event-destination="Login" class="font-bold">Login</a>';
+        '<a href="/login" data-umami-event="Navigation Click" data-umami-event-destination="Login" class="font-bold hover:text-[var(--muted)] transition-all duration-300 ease-out">Login</a>';
     } else {
       const btn = document.createElement("button");
       btn.textContent = "Log-Out";

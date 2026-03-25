@@ -4,7 +4,7 @@
 :root {
   --rich-black: #0d1b2a;
   --plum: #92498f;
-  --baby-powder: #fffffa;
+  --baby-powder: #f6f6f6;
   --picton-blue: #3eafe4;
   --pink-highlight: #f25c6a;
   --red: #dc3545;
@@ -67,49 +67,6 @@ body {
   background-image: var(--bg-pattern);
 }
 
-nav,
-header,
-.navbar {
-  background-color: var(--nav-bg) !important;
-  border-bottom: 1px solid var(--nav-border) !important;
-  color: var(--nav-text);
-}
-
-nav a,
-header a,
-.navbar a {
-  color: var(--nav-text-muted);
-  transition: color 0.15s ease;
-}
-nav a:hover,
-header a:hover,
-.navbar a:hover {
-  color: var(--nav-text);
-}
-.nav-logo,
-.navbar-brand {
-  color: var(--nav-text) !important;
-}
-
-
-.sidebar-card {
-  background-color: transparent;
-}
-
-.sidebar-icon-wrap {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  flex-shrink: 0;
-}
-.sidebar-icon-accent { background: rgba(201, 79, 30, 0.10); }
-.sidebar-icon-yellow { background: rgba(202, 138, 4,  0.10); }
-.sidebar-icon-green  { background: rgba(93, 162, 113, 0.12); }
-.sidebar-icon-blue   { background: rgba(28, 68, 142,  0.10); }
 
 .font-serif {
   font-family: "Playfair Display", "Crimson Pro", "Libre Baskerville", Georgia, serif;
@@ -123,7 +80,6 @@ header a:hover,
 .font-display {
   font-family: "Playfair Display", serif;
 }
-
 
 
 .blue-highlight  { color: var(--blue-highlight); }
