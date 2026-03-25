@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import LevelTopicalsLayout from "../../../../layouts/LevelTopicalsLayout.astro";
 import BackButton from "../../../../components/BackButton.astro";
 import { getPaperIndex } from "../../../../utils/paperIndex";
@@ -15,25 +17,25 @@ try {
   console.error("Failed to fetch papers:", err);
 }
 
-export const getStaticPaths = async () => {
-  const index = await getPaperIndex();
+// export const getStaticPaths = async () => {
+//   const index = await getPaperIndex();
 
-  const paths = [];
+//   const paths = [];
 
-  for (const board in index) {
-    for (const subject in index[board]) {
-      const years = index[board][subject].years;
+//   for (const board in index) {
+//     for (const subject in index[board]) {
+//       const years = index[board][subject].years;
 
-      for (const year in years) {
-        paths.push({
-          params: { board, subject, year },
-        });
-      }
-    }
-  }
+//       for (const year in years) {
+//         paths.push({
+//           params: { board, subject, year },
+//         });
+//       }
+//     }
+//   }
 
-  return paths;
-};
+//   return paths;
+// };
 
 const realSubjectName =
   index?.[board!]?.[subject!]?.name ?? subject!.replace(/-/g, " ");

@@ -1,17 +1,26 @@
 ---
+import logo from "../assets/images/logo.png";
+import { Image } from "astro:assets";
 ---
 
-<nav class="bg-[var(--color-nav)] fixed top-0 w-full z-50 shadow-sm h-16">
-  <div class="flex justify-between items-center px-6 py-4 text-2xl font-bold h-full">
-
-    <a
-      href="/"
-      data-umami-event="Logo Click"
-      class="text-xl sm:text-2xl"
-    >
-      Paper-<span class="text-[var(--blue-highlight)]">Guides</span>
+<nav class="bg-[var(--wheat-darker)] fixed top-0 w-full z-50 shadow-sm h-16">
+  <div
+    class="flex justify-between items-center px-6 py-4 text-2xl font-bold h-full"
+  >
+    <a href="/" class="font-bold text-lg">
+      <span class="flex items-center gap-2">
+        <Image
+          src={logo}
+          alt={"Image of Paper-Guides logo"}
+          width={25}
+          height={25}
+          class={"rounded-md"}
+        />
+        <span
+          >Paper-<span class="text-[var(--blue-highlight)]">Guides</span></span
+        >
+      </span>
     </a>
-
     <!-- Desktop links -->
     <div class="gap-4 hidden xl:flex">
       <a
@@ -55,12 +64,13 @@
     <!-- Mobile -->
     <div class="xl:hidden relative">
       <input type="checkbox" id="hamburger" class="peer hidden" />
-      <label for="hamburger" class="cursor-pointer text-3xl select-none">&#9776;</label>
+      <label for="hamburger" class="cursor-pointer text-3xl select-none"
+        >&#9776;</label
+      >
 
       <div
         class="bg-[var(--color-nav)] absolute right-0 top-16 w-52 shadow-lg border rounded-lg p-4 flex-col gap-3 hidden peer-checked:flex"
       >
-
         <a
           href="/pastpapers"
           data-umami-event="Navigation Click"
@@ -95,14 +105,13 @@
         >
           About
         </a>
-
       </div>
     </div>
   </div>
 </nav>
 
 <script>
-  import { isLoggedIn, logOut } from '../utils/auth';
+  import { isLoggedIn, logOut } from "../utils/auth";
 
   async function renderLoginLink(slotId: string) {
     const slot = document.getElementById(slotId);
@@ -114,11 +123,11 @@
       slot.innerHTML =
         '<a href="/login" data-umami-event="Navigation Click" data-umami-event-destination="Login" class="font-bold">Login</a>';
     } else {
-      const btn = document.createElement('button');
-      btn.textContent = 'Log-Out';
-      btn.className = 'cursor-pointer font-bold';
+      const btn = document.createElement("button");
+      btn.textContent = "Log-Out";
+      btn.className = "cursor-pointer font-bold";
 
-      btn.addEventListener('click', () => {
+      btn.addEventListener("click", () => {
         logOut();
         window.location.reload();
       });
@@ -127,6 +136,6 @@
     }
   }
 
-  renderLoginLink('nav-login-slot');
-  renderLoginLink('nav-login-slot-mobile');
+  renderLoginLink("nav-login-slot");
+  renderLoginLink("nav-login-slot-mobile");
 </script>

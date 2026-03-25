@@ -1,39 +1,69 @@
-
 ---
+import logo from "../assets/images/logo.png";
+import { Image } from "astro:assets";
 ---
 
-<footer class="bg-[var(--color-nav)] border-t border-[var(--color-border)] mt-auto py-6 px-6">
-  <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
-    <div class="font-bold text-lg">
-      Paper-<span class="text-[var(--blue-highlight)]">Guides</span>
-    </div>
+<footer class="border-t border-[var(--border-subtle)] mt-auto py-6 px-6 bg-[var(--sidebar-bg)] shadow-xl">
+  <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
 
-    <div class="flex gap-6">
-      <a href="/about" class="hover:text-[var(--blue-highlight)] transition-colors">About</a>
-      <a href="/pastpapers" class="hover:text-[var(--blue-highlight)] transition-colors">Past Papers</a>
-      <a href="/notes" class="hover:text-[var(--blue-highlight)] transition-colors">Notes</a>
-      <a href="/generator" class="hover:text-[var(--blue-highlight)] transition-colors">Generator</a>
+    <!-- Logo -->
+    <a href="/" class="font-bold text-lg">
+      <span class="flex items-center gap-2">
+        <Image
+          src={logo}
+          alt="Paper-Guides logo"
+          width={25}
+          height={25}
+          class="rounded-md"
+        />
+        <span>Paper-<span class="text-[var(--blue-highlight)]">Guides</span></span>
+      </span>
+    </a>
+
+    <!-- Nav links -->
+    <div class="flex gap-2 text-sm">
+      <a href="/about"        class="hover:text-[var(--blue-highlight)] transition-colors">About</a>
+      <a href="/pastpapers"   class="hover:text-[var(--blue-highlight)] transition-colors">Past Papers</a>
+      <a href="/notes"        class="hover:text-[var(--blue-highlight)] transition-colors">Notes</a>
+      <a href="/generator"    class="hover:text-[var(--blue-highlight)] transition-colors">Generator</a>
       <a href="/all-subjects" class="hover:text-[var(--blue-highlight)] transition-colors">All Links</a>
     </div>
 
+    <!-- Social buttons -->
     <div class="flex gap-4">
       <a
         href="https://discord.gg/U9fAnCgcu3"
         target="_blank"
         rel="noopener noreferrer"
-        class="text-[var(--blue-highlight)] hover:opacity-80 transition"
-      >Discord</a>
+        class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans text-sm font-medium
+               shadow-md transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]
+               bg-[var(--color-surface)] outline outline-1 outline-[var(--color-text)]
+               "
+      >
+        <i class="ph-fill ph-discord-logo text-[var(--blue-highlight)]"></i>
+        Discord
+        <i class="ph-fill ph-arrow-square-out text-neutral-400 dark:text-neutral-500 text-xs"></i>
+      </a>
+
       <a
         href="https://github.com/chaulagainrupak/paper-guides"
         target="_blank"
         rel="noopener noreferrer"
-        class="text-[var(--pink-highlight)] hover:opacity-80 transition"
-      >GitHub</a>
+        class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans text-sm font-medium
+               shadow-md transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]
+               bg-[var(--color-surface)] outline outline-1 outline-[var(--color-text)]
+               "
+      >
+        <i class="ph-fill ph-github-logo text-[var(--pink-highlight)]"></i>
+        GitHub
+        <i class="ph-fill ph-arrow-square-out text-neutral-400 dark:text-neutral-500 text-xs"></i>
+      </a>
     </div>
+
   </div>
 
-  <div class="text-center text-xs mt-4 opacity-50">
-    Curated with ❤️ from 🇳🇵 &mdash; Made by students, for students.
+  <!-- Bottom line -->
+  <div class="text-center text-sm mt-4 opacity-50">
+    Curated with <i class="ph-fill ph-heart" style="color: var(--pink-highlight)"></i> from 🇳🇵 &mdash; Made by students, for students.
   </div>
 </footer>
-

@@ -1,34 +1,40 @@
 ---
-export const prerender = true;
+export const prerender = false;
 
 import LevelTopicalsLayout from "../../../../../layouts/LevelTopicalsLayout.astro";
 import PaperViewerClient from "../../../../../components/PaperViewerClient";
 import { getPaperIndex } from "../../../../../utils/paperIndex";
 
-export async function getStaticPaths() {
-  const index = await getPaperIndex();
-  const paths = [];
+// export async function getStaticPaths() {
+//   const index = await getPaperIndex();
+//   const paths = [];
 
-  for (const board in index) {
-    if (board === "notes") continue;
+//   for (const board in index) {
+//     if (board === "notes") continue;
 
-    for (const subject in index[board]) {
-      const years = index[board][subject].years;
+//     for (const subject in index[board]) {
+//       const years = index[board][subject].years;
 
-      for (const year in years) {
-        for (const question of years[year]) {
-          paths.push({
-            params: { board, subject, year, question },
-          });
-        }
-      }
-    }
-  }
+//       for (const year in years) {
+//         for (const question of years[year]) {
+//           paths.push({
+//             params: { board, subject, year, question },
+//           });
+//         }
+//       }
+//     }
+//   }
 
-  return paths;
+//   return paths;
+// }
+
+interface Params {
+  board: string;
+  subject: string;
+  year: string;
+  question: string;
 }
-
-const { board, subject, year, question } = Astro.params;
+const { board, subject, year, question } = Astro.params as unknown as Params ;
 
 const index = await getPaperIndex();
 
