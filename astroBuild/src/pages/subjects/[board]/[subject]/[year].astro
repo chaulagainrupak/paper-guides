@@ -40,15 +40,82 @@ try {
 const realSubjectName =
   index?.[board!]?.[subject!]?.name ?? subject!.replace(/-/g, " ");
 
-const grouped: Record<string, string[]> = {};
+// Month mapping for session display
+const monthMap: Record<string, string> = {
+  "01": "January",
+  "02": "February",
+  "03": "March",
+  "04": "April",
+  "05": "May",
+  "06": "June",
+  "07": "July",
+  "08": "August",
+  "09": "September",
+  "10": "October",
+  "11": "November",
+  "12": "December",
+};
+
+const  getComponent = (slug:string, board: any) =>{
+  let component = "";
+let session = "";
+let type = "";
+let insert = false;
+let semester = "";
+if (board === "kathmandu-university") {
+  const semesterMatch = slug.match(/semester-\d+/i);
+  semester = semesterMatch ? semesterMatch[0].replace("-", " ") : "";
+} else {
+  insert = slug.includes("insert-paper");
+
+  const clean = slug.replace("-insert-paper", "");
+
+  type = clean.includes("mark-scheme") ? "ms" : "qp";
+
+  const parts = clean.split("-");
+
+  component = parts[parts.length - 4];
+  session = `${parts[parts.length - 2]}-${parts[parts.length - 1]}`;
+} 
+return component;
+}
+
+
+const getSessionDisplay = (slug: string): string => {
+  const parts = slug.split("-");
+  const lastPart = parts[parts.length - 1]; // year
+  const secondLast = parts[parts.length - 2]; // month/session info
+
+  // Convert month numbers to month names
+  let sessionName = secondLast;
+  if (monthMap[secondLast]) {
+    sessionName = monthMap[secondLast];
+  } else {
+    // Handle cases like "may-june" by capitalizing each word
+    sessionName = secondLast
+      .split("-")
+      .map((word) => monthMap[word] || word.charAt(0).toUpperCase() + word.slice(1))
+      .join("-");
+  }
+
+  return `${sessionName} ${lastPart}`;
+};
+
+const grouped: Record<string, { display: string; papers: string[] }> = {};
 
 for (const slug of slugs) {
-  const parts = slug.split("-");
-  const session = `${parts[parts.length - 2]}-${parts[parts.length - 1]}`;
+  const sessionDisplay = getSessionDisplay(slug);
 
-  if (!grouped[session]) grouped[session] = [];
-  grouped[session].push(slug);
+  if (!grouped[sessionDisplay]) grouped[sessionDisplay] = { display: sessionDisplay, papers: [] };
+  grouped[sessionDisplay].papers.push(slug);
 }
+
+
+const boardParamMap = {
+  "a-levels": "a levels",
+  "kathmandu-university": "ku",
+};
+
 ---
 
 <LevelTopicalsLayout
@@ -63,7 +130,7 @@ for (const slug of slugs) {
     <BackButton />
   </div>
 
-  {Object.entries(grouped).map(([session, papers]) => (
+  {Object.entries(grouped).map(([session, { papers }]) => (
     <div>
       <h2 class="text-3xl font-bold mt-6 underline">• {session}</h2>
 
@@ -73,7 +140,7 @@ for (const slug of slugs) {
             href={`/subjects/${board}/${subject}/${year}/${slug}`}
             class="border border-[var(--blue-highlight)] block p-4 rounded-xl text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] transition"
           >
-            {slug.replace(/-/g, " ")}
+            {year} {realSubjectName} Paper: {getComponent(slug, board)} {year} 
           </a>
         ))}
       </div>

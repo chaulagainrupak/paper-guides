@@ -8,7 +8,7 @@ import { API_URL } from "../../utils/config";
   description="Free exam preparation resources — Past Papers for A-Levels, Kathmandu University and more."
 >
   <div
-    class="mt-[64px] min-h-[calc(100vh-64px)] grid grid-cols-1 md:grid-cols-2 auto-rows-auto"
+    class="mt-[64px] min-h-[calc(100vh-64px)] grid grid-cols-1 md:grid-cols-[1fr_1fr] grid-rows-auto md:grid-rows-[1fr_1fr]"
   >
     <div
       class="md:px-30 px-5 flex flex-col justify-center col-span-1 md:col-span-2 bg-[#242424] text-[#f7f7f7] py-12 md:py-20"
@@ -28,66 +28,66 @@ import { API_URL } from "../../utils/config";
       </p>
     </div>
 
-    <a class="group board-card p-6 md:p-20 bg-gradient-to-br from-[#f7f7f7] to-[#efefef] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl border-r border-b border-slate-200/40 hover:border-slate-300 relative overflow-hidden" href="/subjects/a-levels">
+    <a class="group board-card p-6 md:p-20 bg-[var(--baby-powder)] transition-all duration-300 hover:translate-y-1 hover:shadow-xl md:border-r border-b border-t border-slate-200/60 hover:border-slate-300 relative overflow-hidden" href="/subjects/a-levels">
       <div class="transition-all duration-300 pointer-events-none"></div>
       <div
-        class="board-tag text-white text-xs px-3 py-1.5 bg-[var(--accent)] w-fit rounded-md font-semibold relative z-10"
+        class="board-tag text-[var(--accent)] text-xs px-2 py-1 bg-[var(--accent)]/30 w-fit rounded-full font-semibold relative z-10 "
       >
         CAIE
       </div>
-      <h2 class="board-h font-serif text-2xl md:text-4xl mt-6 mb-4 font-bold relative z-10" >A Levels</h2>
+      <h2 class="board-h font-serif text-2xl md:text-4xl mt-4 mb-4 font-bold relative z-10 " >A Levels</h2>
       <p class="board-p text-xs md:text-sm text-[var(--muted)] max-w-md relative z-10">
         Cambridge International AS &amp; A Level papers across 14 subjects, from
         recent sessions back to 2016.
       </p>
-      <div class="board-meta flex flex-col md:flex-row justify-between mt-8 gap-4 md:gap-0 md:text-center relative z-10">
+      <div class="board-meta flex flex-col md:flex-row justify-between mt-6 gap-4 md:gap-0 md:text-center relative z-10">
         <div class="flex flex-col md:flex-row gap-4 md:gap-0">
           <div class="md:px-4 md:border-r border-slate-300/50 md:pr-2">
-            <div class="font-serif text-xl md:text-2xl font-bold text-[var(--accent)]">14</div>
+            <div class="font-serif text-xl md:text-2xl font-bold ">14</div>
             <div class="text-xs text-[var(--muted)]">Subjects</div>
           </div>
           <div class="md:px-4 md:border-r border-slate-300/50 md:pr-2">
-            <div class="font-serif text-xl md:text-2xl font-bold text-[var(--accent)]">9+</div>
+            <div class="font-serif text-xl md:text-2xl font-bold ">9+</div>
             <div class="text-xs text-[var(--muted)]">Years covered</div>
           </div>
           <div class="md:px-4">
-            <div class="font-serif text-xl md:text-2xl font-bold text-[var(--accent)]">P1–P5</div>
+            <div class="font-serif text-xl md:text-2xl font-bold ">P1–P5</div>
             <div class="text-xs text-[var(--muted)]">Components</div>
           </div>
         </div>
 
         <i
-          class="ph-fill ph-arrow-right text-[var(--accent)] text-2xl md:text-4xl shrink-0 md:mt-1 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]"
+          class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-4xl shrink-0 md:mt-1 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[var(--accent)]"
         ></i>
       </div>
     </a>
 
-    <a class="group board-card p-6 md:p-20 bg-gradient-to-br from-[#f7f7f7] to-[#efefef] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl border-b border-slate-200/40 hover:border-slate-300 relative overflow-hidden" href="/subjects/kathmandu-university">
+    <a class="group board-card p-6 md:p-20 bg-[var(--baby-powder)] transition-all duration-300 hover:translate-y-1 hover:shadow-xl md:border-r border-b border-t border-slate-200/60 hover:border-slate-300 relative overflow-hidden " href="/subjects/kathmandu-university">
       <div class="transition-all duration-300 pointer-events-none"></div>
       <div
-        class="board-tag text-white text-xs px-3 py-1.5 bg-[#1a5c52] w-fit rounded-md font-semibold relative z-10"
+        class="board-tag text-[#1a5c52] text-xs px-2 py-1 bg-[#1a5c52]/30 w-fit rounded-full font-semibold relative z-10"
       >
         KU
       </div>
-      <h2 class="board-h font-serif text-2xl md:text-4xl mt-6 mb-4 font-bold relative z-10">KU Bachelors</h2>
+      <h2 class="board-h font-serif text-2xl md:text-4xl mt-4 mb-4 font-bold relative z-10 ">KU Bachelors</h2>
       <p class="board-p text-xs md:text-sm text-[var(--muted)] max-w-md relative z-10">
         Kathmandu University Bachelors past papers, organized by faculty and
         semester for easy access.
       </p>
-      <div class="board-meta flex flex-col md:flex-row justify-between mt-8 gap-4 md:gap-0 md:text-center relative z-10">
+      <div class="board-meta flex flex-col md:flex-row justify-between mt-6 gap-4 md:gap-0 md:text-center relative z-10">
         <div class="flex flex-col md:flex-row gap-4 md:gap-0">
           <div class="md:px-4 md:border-r border-slate-300/50 md:pr-2">
-            <div class="font-serif text-xl md:text-2xl font-bold text-[#1a5c52]">BIT</div>
+            <div class="font-serif text-xl md:text-2xl font-bold ">BIT</div>
             <div class="text-xs text-[var(--muted)]">&amp; More faculties</div>
           </div>
           <div class="md:px-4">
-            <div class="font-serif text-xl md:text-2xl font-bold text-[#1a5c52]">Sem 1–8</div>
+            <div class="font-serif text-xl md:text-2xl font-bold ">Sem 1–8</div>
             <div class="text-xs text-[var(--muted)]">All semesters</div>
           </div>
         </div>
 
         <i
-          class="ph-fill ph-arrow-right text-[#1a5c52] text-2xl md:text-4xl shrink-0 md:mt-1 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[#1a5c52]"
+          class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-4xl shrink-0 md:mt-1 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#1a5c52]"
         ></i>
       </div>
     </a>

@@ -2,7 +2,6 @@
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
-import ThemeToggle from "../components/ThemeToggle.astro";
 
 interface Props {
   title?: string;
@@ -81,7 +80,6 @@ import { SITE_URL, UMAMI_WEBSITE_ID, UMAMI_URL } from "../utils/config";
   </head>
   <body class="flex flex-col min-h-screen">
     <Nav />
-    <ThemeToggle />
     <main class="flex-grow">
       <slot />
     </main>

@@ -1,12 +1,12 @@
 ---
 import logo from "../assets/images/logo.png";
 import { Image } from "astro:assets";
+import ThemeToggle from "./ThemeToggle.astro";
 ---
 
-<nav class="bg-[var(--sidebar-bg)] fixed top-0 w-full z-50 shadow-sm h-16">
-  <div
-    class="flex justify-between items-center px-6 py-4 text-2xl font-bold h-full"
-  >
+<nav class="bg-[var(--sidebar-bg)] fixed top-0 w-full z-50 shadow-md h-16 px-6">
+  <div class="flex justify-between items-center px-8 py-4 h-full">
+    <!-- Logo -->
     <a
       href="/"
       class="font-bold text-lg hover:text-[var(--muted)] transition-all duration-300 ease-out"
@@ -19,105 +19,39 @@ import { Image } from "astro:assets";
           height={25}
           class={"rounded-md"}
         />
-        <span
-          >Paper-<span class="text-[var(--blue-highlight)]">Guides</span></span
-        >
+        <span>Paper-<span class="text-[var(--blue-highlight)]">Guides</span></span>
       </span>
     </a>
-    <!-- Desktop links -->
-    <div class="gap-4 hidden xl:flex">
-      <a
-        class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
-        href="/pastpapers"
-        data-umami-event="Navigation Click"
-        data-umami-event-destination="Past Papers"
-      >
-        Past Papers
-      </a>
 
-      <a
-        class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
-        href="/notes"
-        data-umami-event="Navigation Click"
-        data-umami-event-destination="Notes"
-      >
-        Notes
-      </a>
-
-      <a
-        class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
-        href="/generator"
-        data-umami-event="Navigation Click"
-        data-umami-event-destination="Question Generator"
-      >
-        Generator
-      </a>
-
-      <a
-        class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
-        href="/questions"
-        data-umami-event="Navigation Click"
-        data-umami-event-destination="Questions Repository"
-      >
-        Questions
-      </a>
-    </div>
-
-    <div class="gap-4 hidden xl:flex items-center">
-      <div id="nav-login-slot"></div>
-
-      <a
-        href="/about"
-        data-umami-event="Navigation Click"
-        data-umami-event-destination="About"
-        class="text-[var(--pink-highlight)] hover:text-[var(--muted)] transition-all duration-300 ease-out"
-      >
-        About
-      </a>
-    </div>
-
-    <!-- Mobile -->
-    <div class="xl:hidden relative">
-      <input type="checkbox" id="hamburger" class="peer hidden" />
-      <label for="hamburger" class="cursor-pointer text-3xl select-none"
-        >
-      <i class="ph-fill ph-list"></i>
-        
-        </label
-      >
-
-      <div
-        class="bg-[var(--sidebar-bg)] absolute right-0 top-16 w-52 shadow-lg border rounded-lg p-4 flex-col gap-3 hidden peer-checked:flex"
-      >
+    <!-- Desktop Navigation -->
+    <div class="hidden xl:flex items-center gap-8">
+      <div class="flex gap-6 ">
         <a
-          class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
+          class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
           href="/pastpapers"
           data-umami-event="Navigation Click"
           data-umami-event-destination="Past Papers"
         >
           Past Papers
         </a>
-
         <a
-          class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
+          class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
           href="/notes"
           data-umami-event="Navigation Click"
           data-umami-event-destination="Notes"
         >
           Notes
         </a>
-
         <a
-          class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
+          class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
           href="/generator"
           data-umami-event="Navigation Click"
           data-umami-event-destination="Question Generator"
         >
           Generator
         </a>
-
         <a
-          class="hover:text-[var(--muted)] transition-all duration-300 ease-out"
+          class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
           href="/questions"
           data-umami-event="Navigation Click"
           data-umami-event-destination="Questions Repository"
@@ -125,26 +59,130 @@ import { Image } from "astro:assets";
           Questions
         </a>
       </div>
+      <ThemeToggle/>
 
-      <div class="gap-4 hidden xl:flex items-center">
+      <div class="flex items-center gap-3 border-l border-[var(--muted)] pl-3">
         <div id="nav-login-slot"></div>
-
-        <a
-          href="/about"
-          data-umami-event="Navigation Click"
-          data-umami-event-destination="About"
-          class="text-[var(--pink-highlight)] hover:text-[var(--muted)] transition-all duration-300 ease-out"
-        >
-          About
-        </a>
       </div>
+    </div>
+
+    <!-- Mobile Controls -->
+    <div class="xl:hidden flex items-center gap-2">
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobile-menu-btn"
+        aria-label="Toggle menu"
+        class="text-xl hover:text-[var(--blue-highlight)] transition-colors duration-300 p-1 rounded-lg hover:bg-[var(--muted)]/10"
+      >
+        <i class="ph-fill ph-list"></i>
+      </button>
     </div>
   </div>
 </nav>
 
+<!-- Mobile Sidebar -->
+<div
+  id="mobile-sidebar"
+  class="fixed left-0 top-0 h-screen w-64 bg-[var(--sidebar-bg)] shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out z-40 overflow-y-auto"
+>
+  <!-- Close Button -->
+  <div class="flex justify-end p-2 border-b border-[var(--muted)]/20">
+    <button
+      id="sidebar-close-btn"
+      aria-label="Close menu"
+      class="text-xl hover:text-[var(--blue-highlight)] transition-colors duration-300 p-1 rounded-lg hover:bg-[var(--muted)]/10"
+    >
+      <i class="ph-fill ph-x"></i>
+    </button>
+  </div>
+
+  <!-- Mobile Navigation Items -->
+  <div class="flex flex-col gap-1 p-3">
+    <a
+      class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 text-[var(--blue-highlight)] transition-colors duration-300"
+      href="/pastpapers"
+      data-umami-event="Navigation Click"
+      data-umami-event-destination="Past Papers"
+    >
+      Past Papers
+    </a>
+    <a
+      class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 transition-colors duration-300"
+      href="/notes"
+      data-umami-event="Navigation Click"
+      data-umami-event-destination="Notes"
+    >
+      Notes
+    </a>
+    <a
+      class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 transition-colors duration-300"
+      href="/generator"
+      data-umami-event="Navigation Click"
+      data-umami-event-destination="Question Generator"
+    >
+      Generator
+    </a>
+    <a
+      class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 transition-colors duration-300"
+      href="/questions"
+      data-umami-event="Navigation Click"
+      data-umami-event-destination="Questions Repository"
+    >
+      Questions
+    </a>
+
+    <div class="border-t border-[var(--muted)]/20 my-2"></div>
+
+    <div id="nav-login-slot-mobile" class="px-3 py-2"></div>
+  </div>
+</div>
+
+<!-- Overlay for Mobile Menu -->
+<div
+  id="mobile-overlay"
+  class="fixed inset-0 bg-black/50 z-30 hidden"
+  data-visible="false"
+></div>
+
+
 <script>
   import { isLoggedIn, logOut } from "../utils/auth";
 
+  // Mobile Sidebar Management
+  const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+  const mobileSidebar = document.getElementById("mobile-sidebar");
+  const mobileOverlay = document.getElementById("mobile-overlay");
+  const sidebarCloseBtn = document.getElementById("sidebar-close-btn");
+
+  function closeSidebar() {
+    mobileSidebar?.classList.add("-translate-x-full");
+    mobileOverlay?.classList.add("hidden");
+  }
+
+  function openSidebar() {
+    mobileSidebar?.classList.remove("-translate-x-full");
+    mobileOverlay?.classList.remove("hidden");
+  }
+
+  mobileMenuBtn?.addEventListener("click", () => {
+    const isOpen = !mobileSidebar?.classList.contains("-translate-x-full");
+    if (isOpen) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  });
+
+  sidebarCloseBtn?.addEventListener("click", closeSidebar);
+  mobileOverlay?.addEventListener("click", closeSidebar);
+
+  // Close sidebar on nav item click
+  const navLinks = document.querySelectorAll("#mobile-sidebar a");
+  navLinks.forEach((link) => {
+    link.addEventListener("click", closeSidebar);
+  });
+
+  // Render Login Link
   async function renderLoginLink(slotId: string) {
     const slot = document.getElementById(slotId);
     if (!slot) return;
@@ -153,11 +191,12 @@ import { Image } from "astro:assets";
 
     if (!loggedIn) {
       slot.innerHTML =
-        '<a href="/login" data-umami-event="Navigation Click" data-umami-event-destination="Login" class="font-bold hover:text-[var(--muted)] transition-all duration-300 ease-out">Login</a>';
+        '<a href="/login" data-umami-event="Navigation Click" data-umami-event-destination="Login" class="text-base font-bold hover:text-[var(--blue-highlight)] transition-all duration-300 hover:scale-105 inline-block">Login</a>';
     } else {
       const btn = document.createElement("button");
       btn.textContent = "Log-Out";
-      btn.className = "cursor-pointer font-bold";
+      btn.className =
+        "text-base font-bold cursor-pointer hover:text-[var(--blue-highlight)] transition-all duration-300 hover:scale-105";
 
       btn.addEventListener("click", () => {
         logOut();

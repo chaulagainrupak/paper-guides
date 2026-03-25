@@ -12,7 +12,9 @@ let years: string[] = [];
 try {
   const index = await getPaperIndex();
 
-  years = Object.keys(index?.[board!]?.[subject!]?.years ?? {});
+  years = Object.keys(index?.[board!]?.[subject!]?.years ?? {}).sort(
+    (a, b) => Number(b) - Number(a)
+  );
 } catch (err) {
   console.error("Failed to fetch years:", err);
 }
@@ -59,7 +61,7 @@ const realSubjectName =
           href={`/subjects/${board}/${subject}/${year}`}
           class="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-xl transition-all duration-200"
         >
-          {year}
+          {realSubjectName} Past paper for year: {year}  
         </a>
       ))
     ) : (

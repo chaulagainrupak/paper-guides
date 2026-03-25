@@ -14,15 +14,19 @@ try {
   const index = await getPaperIndex();
 
   subjects = Object.keys(index?.[board] ?? {})
-    .map((s) => ({
-      name: s.replace(/-/g, " "),
-    }))
+    .map((s) => (
+      {
+      name: index[board][s]["name"],
+    }
+  ))
     .sort((a, b) =>
       a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
     );
 } catch (err) {
   console.error("Failed to fetch subjects:", err);
 }
+
+console.log(subjects);
 
 const boardDisplayName =
   board === "a-levels"
