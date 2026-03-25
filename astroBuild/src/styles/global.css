@@ -50,6 +50,7 @@
   --sidebar-bg: #242424;
   --sidebar-hover: #2f2f2f;
   --border-subtle: #3a3a3a;
+  --baby-powder: var(--border-subtle);
   --muted: #888480;
   --accent: #d96030;
   --cta-button: #e2e0dc;

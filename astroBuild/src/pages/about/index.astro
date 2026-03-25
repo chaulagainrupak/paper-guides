@@ -8,79 +8,173 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   description="Learn about the mission, community, and values behind Paper-Guides — a student-led open education project."
   canonical="https://paperguides.org/about"
 >
-  <div class="min-h-screen mt-16 px-4 sm:px-6 lg:px-12">
-    <div class="max-w-3xl mx-auto p-10 shadow-xl rounded-2xl bg-[var(--baby-powder)] text-center">
-      <h1 class="text-4xl font-bold mb-6">
-        Welcome to <span style="color: var(--blue-highlight);">Paper-Guides</span>!
+  <!-- Dark top bar section -->
+  <div class="mt-16 bg-[#242424] text-[#e2e0dc] py-16 px-5 md:px-30">
+    <div class="max-w-4xl mx-auto text-center">
+      <h1 class="text-5xl sm:text-6xl font-serif font-bold mb-6">
+        Welcome to <span style="color: var(--accent);">Paper-Guides</span>
       </h1>
-      <p class="mb-4 text-lg">
-        Paper-Guides is a community-driven initiative built by students, for students — with one mission:
-        <strong> make learning accessible and free</strong>. We're based in Nepal and strive to support
-        learners everywhere by providing curated study resources.
+      <p class="text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
+        Built by students, for students. Paper-Guides provides free exam preparation resources for CAIE A Levels, Kathmandu University, and beyond. We believe learning resources should never be gatekept or sold at inflated prices.
+        <strong>Genuine access. No paywalls.</strong> No commission-based pricing. Just knowledge shared freely.
       </p>
 
-      <p class="mb-4 text-lg">
-        We're completely <strong>open-source</strong> and transparent — anyone can contribute, improve, or
-        suggest. You'll find us on{' '}
-        <a
-          href="https://github.com/chaulagainrupak/paper-guides"
-          class="underline"
-          style="color: var(--pink-highlight);"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          GitHub
-        </a>{' '}
-        and active across social platforms too.
-      </p>
+      <!-- Social buttons -->
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="https://github.com/chaulagainrupak/paper-guides" target="_blank" rel="noopener noreferrer" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          <i class="ph-fill ph-github-logo"></i> GitHub
+        </a>
+        <a href="https://instagram.com/paperguides.official" target="_blank" rel="noopener noreferrer" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          <i class="ph-fill ph-instagram-logo"></i> Instagram
+        </a>
+        <a href="https://discord.gg/U9fAnCgcu3" target="_blank" rel="noopener noreferrer" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          <i class="ph-fill ph-discord-logo"></i> Discord
+        </a>
+        <a href="https://www.youtube.com/@Paper-Guides" target="_blank" rel="noopener noreferrer" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          <i class="ph-fill ph-youtube-logo"></i> YouTube
+        </a>
+      </div>
+    </div>
+  </div>
 
-      <div class="flex flex-wrap justify-center gap-6 mt-6 mb-10">
-        <a href="https://github.com/chaulagainrupak/paper-guides" target="_blank" rel="noopener noreferrer" class="underline" style="color: var(--pink-highlight);">GitHub Repository</a>
-        <a href="https://instagram.com/paperguides.official" target="_blank" rel="noopener noreferrer" class="underline" style="color: var(--pink-highlight);">Instagram</a>
-        <a href="https://discord.gg/U9fAnCgcu3" target="_blank" rel="noopener noreferrer" class="underline" style="color: var(--blue-highlight);">Join us on Discord</a>
-        <a href="https://www.youtube.com/@Paper-Guides" target="_blank" rel="noopener noreferrer" class="underline" style="color: var(--blue-highlight);">YouTube Channel</a>
+  <!-- Main content -->
+  <div class="px-0 py-0">
+    <div class="max-w-full">
+      <!-- Grid: 2 columns, no gaps, sharp edges, full width -->
+      <div class="grid grid-cols-1 md:grid-cols-2 auto-rows-auto">
+        
+        <!-- Our Mission -->
+        <div class="p-8 sm:p-12 shadow-lg bg-gradient-to-br from-[#f7f7f7] to-[#efefef] border-r border-b border-slate-200/40 relative overflow-hidden">
+          <div class="flex items-start gap-3 mb-4 relative z-10">
+            <i class="ph-fill ph-target text-[var(--accent)] text-2xl shrink-0"></i>
+            <h2 class="text-2xl font-serif font-bold">Our Mission</h2>
+          </div>
+          <p class="text-base leading-relaxed relative z-10">
+            We're committed to providing quality resources without paywalls. Every student deserves access to past papers, study notes, and practice materials regardless of their financial background. Our platform eliminates the barriers schools and publishers create with expensive question banks and referral commissions. Knowledge is a right, not a commodity.
+          </p>
+        </div>
+
+        <!-- 100% Open Source -->
+        <div class="p-8 sm:p-12 shadow-lg bg-gradient-to-br from-[#f7f7f7] to-[#efefef] border-b border-slate-200/40 relative overflow-hidden">
+          <div class="flex items-start gap-3 mb-4 relative z-10">
+            <i class="ph-fill ph-code-simple text-[var(--jungle-green)] text-2xl shrink-0"></i>
+            <h2 class="text-2xl font-serif font-bold">Open Source</h2>
+          </div>
+          <p class="text-base leading-relaxed relative z-10">
+            Our codebase is fully open source on GitHub. The platform itself is transparent and auditable. However, our resource library (past papers, notes, and study materials) is curated and freely available to browse and download through the platform. If you need specific resources not yet available, email us and we'll work on adding them. This approach lets us maintain quality while keeping everything accessible.
+          </p>
+        </div>
+
+        <!-- Community-Driven -->
+        <div class="p-8 sm:p-12 shadow-lg bg-gradient-to-br from-[#f7f7f7] to-[#efefef] border-r border-b border-slate-200/40 relative overflow-hidden">
+          <div class="flex items-start gap-3 mb-4 relative z-10">
+            <i class="ph-fill ph-users-three text-[var(--french-blue)] text-2xl shrink-0"></i>
+            <h2 class="text-2xl font-serif font-bold">Community</h2>
+          </div>
+          <p class="text-base leading-relaxed relative z-10">
+            Paper-Guides exists because students decided to help other students. No corporate interests, no institutional backing with strings attached. Just peers sharing notes, papers, and insights. Our community grows because people genuinely care about making education accessible. Join Discord to connect with contributors, ask questions, and be part of something that actually benefits learners.
+          </p>
+        </div>
+
+        <!-- How It Works -->
+        <div class="p-8 sm:p-12 shadow-lg bg-gradient-to-br from-[#f7f7f7] to-[#efefef] border-b border-slate-200/40 relative overflow-hidden">
+          <div class="flex items-start gap-3 mb-4 relative z-10">
+            <i class="ph-fill ph-lightbulb text-[var(--pink-highlight)] text-2xl shrink-0"></i>
+            <h2 class="text-2xl font-serif font-bold">Get Started</h2>
+          </div>
+          <p class="text-base leading-relaxed relative z-10">
+            Browse past papers organized by subject and year. Access study notes curated by students. Use our topic-wise question generator to create custom practice sets from specific chapters and topics. Search by subject code (like Physics 9702, Mathematics 9709, or Computer Science 9618 for A Levels) or by Kathmandu University programme. Everything is organized for maximum accessibility.
+          </p>
+        </div>
+
       </div>
 
-      <h2 class="text-2xl font-semibold mb-2">Our Mission</h2>
-      <p class="mb-4">
-        To empower students by giving them access to high-quality, organised academic content — without
-        charging a single rupee. We believe that shared knowledge fuels growth, and that learning should
-        never be locked behind a paywall.
-      </p>
+      <!-- Full width: Get Involved + Contact -->
+      <div class="grid grid-cols-1 md:grid-cols-2 auto-rows-auto">
+        
+        <!-- Get Involved -->
+        <div class="p-8 sm:p-12 shadow-lg bg-gradient-to-br from-[#f7f7f7] to-[#efefef] border-r border-slate-200/40 relative overflow-hidden">
+          <div class="flex items-start gap-3 mb-4 relative z-10">
+            <i class="ph-fill ph-handshake text-[var(--blue-highlight)] text-2xl shrink-0"></i>
+            <h2 class="text-2xl font-serif font-bold">Get Involved</h2>
+          </div>
+          <p class="text-base leading-relaxed mb-5 relative z-10">
+            You can make a real difference. Upload your study notes and exam papers to help other students. Suggest topics that need resources. Review and improve existing content. Write summaries or create new study guides. Every contribution gets you recognized in our community. Your work doesn't disappear into a corporate algorithm, it directly helps real students preparing for their exams.
+          </p>
+          <div class="flex flex-wrap gap-3 relative z-10">
+            <a href="https://github.com/chaulagainrupak/paper-guides" target="_blank" rel="noopener noreferrer" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[var(--accent)] text-white shadow font-sans text-sm font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              <i class="ph-fill ph-code"></i> View Code
+            </a>
+            <a href="https://discord.gg/U9fAnCgcu3" target="_blank" rel="noopener noreferrer" class="group rounded-full px-4 py-2 flex items-center gap-2 border-2 border-[var(--accent)] text-[var(--accent)] shadow font-sans text-sm font-medium transition-all duration-300 ease-out hover:bg-[var(--accent)]/10 hover:-translate-y-0.5 hover:scale-[1.03]">
+              <i class="ph-fill ph-discord-logo"></i> Discord
+            </a>
+          </div>
+        </div>
 
-      <h2 class="text-2xl font-semibold mb-2">Community-Driven</h2>
-      <p class="mb-4">
-        Paper-Guides is powered by students, volunteers, and curious minds who want to make education a bit
-        easier for everyone. Whether it's uploading notes or helping organise content, every bit of help
-        matters. Join our Discord to contribute or connect!
-      </p>
+        <!-- Contact -->
+        <div class="p-8 sm:p-12 shadow-lg bg-gradient-to-br from-[#f7f7f7] to-[#efefef] border-slate-200/40 relative overflow-hidden">
+          <div class="flex items-start gap-3 mb-4 relative z-10">
+            <i class="ph-fill ph-envelope text-[var(--green-highlight)] text-2xl shrink-0"></i>
+            <h2 class="text-2xl font-serif font-bold">Contact</h2>
+          </div>
+          <p class="text-base mb-4 relative z-10">Questions or feedback?</p>
+          <div class="flex flex-col gap-2 relative z-10">
+            <a href="mailto:contact@paperguides.org" class="text-base font-semibold text-[var(--accent)] hover:underline break-all">
+              contact@paperguides.org
+            </a>
+            <a href="mailto:paperguides.official@proton.me" class="text-base font-semibold text-[var(--accent)] hover:underline break-all">
+              paperguides.official@proton.me
+            </a>
+          </div>
+        </div>
 
-      <h2 class="text-2xl font-semibold mb-2">How It Works</h2>
-      <p class="mb-4">
-        Just head over to the homepage, select your class or subject, and start browsing. You can also
-        search topics directly. Everything is categorised for easier access and constantly updated with new
-        materials.
-      </p>
+      </div>
 
-      <h2 class="text-2xl font-semibold mb-2">Get Involved</h2>
-      <p class="mb-4">
-        Want to contribute? You can submit notes, suggest topics, review shared content, or simply share
-        Paper-Guides with your friends and school groups.
-      </p>
+      <div class="text-center py-6 px-8 border-t border-[var(--border-subtle)]">
+        <p class="text-sm opacity-75">Thank you for supporting accessible education 🙌</p>
+      </div>
 
-      <h2 class="text-2xl font-semibold mb-2">Contact Us</h2>
-      <p class="mb-2">
-        Email us at{' '}
-        <span style="color: var(--pink-highlight);">
-          <a href="mailto:contact@paperguides.org">contact@paperguides.org</a>
-        </span>{' '}
-        or{' '}
-        <span style="color: var(--blue-highlight);">
-          <a href="mailto:paperguides.official@proton.me">paperguides.official@proton.me</a>
-        </span>
-      </p>
+      <!-- Featured Content Section for SEO -->
+      <div class="px-8 sm:px-12 md:px-30 py-16 sr-only">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-3xl font-serif font-bold mb-8">What We Offer</h2>
+          
+          <div class="space-y-6 text-base leading-relaxed text-[var(--color-text)]">
+            <div>
+              <h3 class="text-xl font-serif font-bold mb-2">CAIE A Level Past Papers</h3>
+              <p>Access comprehensive past papers for Cambridge International Examinations A Levels. Our collection covers major subjects including Physics 9702, Mathematics 9709, Chemistry 9701, Biology 9700, Computer Science 9618, Economics 9708, Business 9609, English Literature 9695, History 9389, and Geography 9696. Papers are organized by subject code and examination year, making it easy to find the exact papers you need for revision.</p>
+            </div>
 
-      <p class="text-center mt-8 text-sm opacity-75">Thank you for supporting accessible education 🙌</p>
+            <div>
+              <h3 class="text-xl font-serif font-bold mb-2">Kathmandu University Resources</h3>
+              <p>Study materials for KU bachelor programs including BBA, BCA, BIM, BSc CSIT, BE Civil, BE Electrical, BE Computer, BE Electronics, BE Mechanical, BE Environmental Science, BSc Biotechnology, BSc Pharmacy and more. Papers are organized by faculty, programme, and semester for streamlined navigation and quick access to relevant materials.</p>
+            </div>
+
+            <div>
+              <h3 class="text-xl font-serif font-bold mb-2">Topic-Wise Question Generator</h3>
+              <p>Create custom practice papers focused on specific topics and chapters. Unlike generic AI generators, our topic-wise system lets you target exact study areas. Want to practice only genetic inheritance questions? Or focus on thermodynamics for A Level Physics? Our generator curates questions specifically from your selected topics, giving you targeted, efficient practice sessions.</p>
+            </div>
+
+            <div>
+              <h3 class="text-xl font-serif font-bold mb-2">Study Notes Repository</h3>
+              <p>Access detailed study notes compiled by experienced students. Notes cover concept explanations, worked examples, and exam tips. Every note is free, searchable, and organized by subject and topic. No paywalls. No premium tiers. All notes are openly shared so everyone benefits from the effort invested by contributors.</p>
+            </div>
+
+            <div>
+              <h3 class="text-xl font-serif font-bold mb-2">Why Paper-Guides is Different</h3>
+              <p>Many institutions and publishers charge hefty fees for question banks and past papers, often incorporating hidden commission structures that inflate prices. Paper-Guides operates on the principle that educational resources should be freely available. We don't profit from student desperation during exam season. We don't partner with schools for referral commissions. We're built entirely by students who understand the financial pressures of education and believe learning materials must be accessible to everyone, regardless of economic background.</p>
+            </div>
+
+            <div>
+              <h3 class="text-xl font-serif font-bold mb-2">Request Missing Resources</h3>
+              <p>Can't find past papers for a specific subject or programme? Email us at contact@paperguides.org and we'll prioritize adding them. Our community constantly works on expanding the collection, and user requests directly shape what gets added next. The more requests we get for a resource, the faster we work to include it.</p>
+            </div>
+              <p>By using Paper-Guides, you're supporting a model of education that prioritizes access over profit. When you contribute resources, you're directly helping hundreds of students prepare better for their exams. Our community proves that free, crowdsourced education can work at scale. Help us grow by sharing resources, inviting friends, and engaging with the community on Discord.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </BaseLayout>
