@@ -1,32 +1,29 @@
 ---
-import LevelTopicalsLayout from "../../layouts/LevelTopicalsLayout.astro";
-import BackButton from "../../components/BackButton.astro";
+export const prerender = false;
 import SubjectSearch from "../../components/SubjectSearch";
 import { getPaperIndex } from "../../utils/paperIndex";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 
 type Params = { board: string };
 
 const { board } = Astro.params as Params;
 
-let subjects: { name: string }[] = [];
-
+let subjects: { name: string; slug: string }[] = [];
+let globalIndex: any;
 try {
   const index = await getPaperIndex();
-
+  globalIndex = index;
   subjects = Object.keys(index?.[board] ?? {})
-    .map((s) => (
-      {
+    .map((s) => ({
+      slug: s,
       name: index[board][s]["name"],
-    }
-  ))
+    }))
     .sort((a, b) =>
       a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
     );
 } catch (err) {
   console.error("Failed to fetch subjects:", err);
 }
-
-console.log(subjects);
 
 const boardDisplayName =
   board === "a-levels"
@@ -35,16 +32,16 @@ const boardDisplayName =
       ? "Kathmandu University"
       : board;
 
-export const getStaticPaths = async () => {
-  const index = await getPaperIndex();
+// export const getStaticPaths = async () => {
+//   const index = await getPaperIndex();
 
-  return Object.keys(index).map((board) => ({
-    params: { board },
-  }));
-};
+//   return Object.keys(index).map((board) => ({
+//     params: { board },
+//   }));
+// };
 ---
 
-<LevelTopicalsLayout
+<!-- <LevelTopicalsLayout
   title={`Available subjects for ${boardDisplayName} | Paper Guides`}
   description={`Explore the subjects available for ${boardDisplayName}. Find past papers, notes, and resources to help you prepare for your exams.`}
 >
@@ -57,11 +54,163 @@ export const getStaticPaths = async () => {
     <BackButton />
   </div>
 
-  <!-- @ts-ignore -->
-  <SubjectSearch
+  <!-- @ts-ignore --><!-- <SubjectSearch
     client:load
     subjects={subjects}
     boardSlug={board!}
     basePath={`/subjects/${board}`}
   />
-</LevelTopicalsLayout>
+</LevelTopicalsLayout> -->
+<BaseLayout
+  title={`Available subjects for ${boardDisplayName} | Paper Guides`}
+  description="Free exam preparation resources — Past Papers for A-Levels, Kathmandu University and more."
+>
+  <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col">
+    <div
+      class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
+    >
+      <div class="flex flex-col justify-center">
+        <span class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1">
+          <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
+          <a href="/pastpapers"><i class="ph-fill ph-exam"></i> Past Papers</a> /
+          <a href={`/subjects/${board}`}
+            ><i class="ph-fill ph-book"></i> {boardDisplayName}</a
+          >
+        </span>
+        <h1 class="font-serif font-bold text-4xl md:text-6xl">
+          Subjects for, <br />
+          <span class="text-[var(--accent)] italic">{boardDisplayName}</span>
+        </h1>
+        <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
+          Available subjects for {boardDisplayName}, sorted alphabetically. <br
+          />
+          Click on a subject to explore past papers, notes, and resources. <br
+          />
+          Found {subjects.length} subjects.
+        </p>
+      </div>
+
+      <div class="flex flex-col justify-end h-full gap-3">
+        <span class="text-xs text-[var(--muted)] uppercase tracking-widest"
+          >Find a subject</span
+        >
+        <input
+          type="text"
+          id="subject-search"
+          placeholder="e.g. Mathematics..."
+          class="w-full bg-transparent border-b border-[var(--muted)] text-[#f7f7f7] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] py-2 text-lg transition-colors duration-200"
+        />
+      </div>
+    </div>
+
+    <!-- list + sidebar side by side -->
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
+      <!-- subject list -->
+
+      <div id="subject-list" class="bg-[var(--baby-powder)] flex flex-col">
+        <span
+          class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]"
+        >
+          Click on a subject to explore past papers for {boardDisplayName}.
+        </span>
+        {
+          subjects.map(({ name, slug }) => (
+            <a
+              data-name={name.toLowerCase()}
+              href={`/subjects/${board}/${slug}`}
+              class="group relative border-b border-[var(--border-subtle)] px-5 md:px-20 py-8 text-[var(--font-color)] transition-all duration-300 ease-out
+                     bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
+                     hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
+                     flex items-center justify-between"
+            >
+              <div class="flex gap-3">
+                <span class="font-bold text-xl  group-hover:text-[var(--accent)] transition-colors">
+                  {name}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-3 ml-4">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-xs px-2 py-1 bg-[var(--accent)]/20 text-[var(--accent)] rounded-full">
+                    {Object.keys(globalIndex[board][slug]["years"]).length}{" "}
+                    years
+                  </span>
+                  <span class="text-xs px-2 py-1 bg-[var(--blue-highlight)]/20 text-[var(--blue-highlight)] rounded-full">
+                    {
+                      // @ts-ignore
+                      Object.values(globalIndex[board][slug]["years"]).reduce((acc, arr) => acc + arr.length,
+                        0,
+                      )
+                    }{" "}
+                    papers
+                  </span>
+                </div>
+
+                <span class="text-xs font-semibold text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                  Explore
+                </span>
+                <i class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-3xl shrink-0 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]" />
+              </div>
+            </a>
+          ))
+        }
+        <div
+          id="no-results"
+          class="hidden flex-col items-center justify-center py-24 gap-4 text-[var(--muted)]"
+        >
+          <i
+            class="ph-fill ph-smiley-x-eyes text-6xl text-[var(--jungle-green)]"
+          ></i>
+          <p class="text-sm">No subjects match your search.</p>
+        </div>
+      </div>
+
+      <!-- ad sidebar: sticky on desktop -->
+      <aside
+        class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
+      >
+        <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+      </aside>
+    </div>
+  </div>
+
+  <!-- mobile ad strip -->
+  <div
+    class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center"
+  >
+    <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+  </div>
+
+  <script>
+    import { fuzzyFilter } from "../../utils/search";
+
+    const input = document.getElementById("subject-search") as HTMLInputElement;
+    const items = Array.from(
+      document.querySelectorAll("#subject-list a"),
+    ) as HTMLElement[];
+    const data = items.map((el) => ({ name: el.dataset.name ?? "" }));
+
+    input.addEventListener("input", () => {
+      const q = input.value.trim();
+
+      if (!q) {
+        items.forEach((el) => (el.style.display = ""));
+        return;
+      }
+
+      const results = fuzzyFilter(data, q);
+      const matchedNames = new Set(results.map((r) => r.name));
+
+      const list = document.getElementById("subject-list")!;
+      items.forEach((el) => {
+        const name = el.dataset.name ?? "";
+        if (matchedNames.has(name)) {
+          el.style.display = "";
+          list.appendChild(el);
+        } else {
+          el.style.display = "none";
+        }
+      });
+    });
+  </script>
+</BaseLayout>

@@ -1,9 +1,8 @@
 ---
 export const prerender = false;
 
-import LevelTopicalsLayout from "../../../../layouts/LevelTopicalsLayout.astro";
-import BackButton from "../../../../components/BackButton.astro";
 import { getPaperIndex } from "../../../../utils/paperIndex";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
 
 const { board, subject, year } = Astro.params;
 
@@ -17,28 +16,15 @@ try {
   console.error("Failed to fetch papers:", err);
 }
 
-// export const getStaticPaths = async () => {
-//   const index = await getPaperIndex();
-
-//   const paths = [];
-
-//   for (const board in index) {
-//     for (const subject in index[board]) {
-//       const years = index[board][subject].years;
-
-//       for (const year in years) {
-//         paths.push({
-//           params: { board, subject, year },
-//         });
-//       }
-//     }
-//   }
-
-//   return paths;
-// };
-
 const realSubjectName =
   index?.[board!]?.[subject!]?.name ?? subject!.replace(/-/g, " ");
+
+const boardDisplayName =
+  board === "a-levels"
+    ? "A Levels"
+    : board === "kathmandu-university"
+      ? "Kathmandu University"
+      : board;
 
 // Month mapping for session display
 const monthMap: Record<string, string> = {
@@ -55,31 +41,6 @@ const monthMap: Record<string, string> = {
   "11": "November",
   "12": "December",
 };
-
-const  getComponent = (slug:string, board: any) =>{
-  let component = "";
-let session = "";
-let type = "";
-let insert = false;
-let semester = "";
-if (board === "kathmandu-university") {
-  const semesterMatch = slug.match(/semester-\d+/i);
-  semester = semesterMatch ? semesterMatch[0].replace("-", " ") : "";
-} else {
-  insert = slug.includes("insert-paper");
-
-  const clean = slug.replace("-insert-paper", "");
-
-  type = clean.includes("mark-scheme") ? "ms" : "qp";
-
-  const parts = clean.split("-");
-
-  component = parts[parts.length - 4];
-  session = `${parts[parts.length - 2]}-${parts[parts.length - 1]}`;
-} 
-return component;
-}
-
 
 const getSessionDisplay = (slug: string): string => {
   const parts = slug.split("-");
@@ -101,53 +62,190 @@ const getSessionDisplay = (slug: string): string => {
   return `${sessionName} ${lastPart}`;
 };
 
-const grouped: Record<string, { display: string; papers: string[] }> = {};
-
-for (const slug of slugs) {
-  const sessionDisplay = getSessionDisplay(slug);
-
-  if (!grouped[sessionDisplay]) grouped[sessionDisplay] = { display: sessionDisplay, papers: [] };
-  grouped[sessionDisplay].papers.push(slug);
-}
-
-
-const boardParamMap = {
-  "a-levels": "a levels",
-  "kathmandu-university": "ku",
+const getPaperDisplay = (slug: string, board: string, realSubjectName: string, year: string): string => {
+  if (board === "kathmandu-university") {
+    const semesterMatch = slug.match(/semester-\d+/i);
+    const semester = semesterMatch ? semesterMatch[0].replace("-", " ").replace(/\b\w/g, l => l.toUpperCase()) : "";
+    return `${realSubjectName}, ${semester}, ${year}`;
+  } else {
+    const insert = slug.includes("insert-paper");
+    const clean = slug.replace("-insert-paper", "");
+    const type = clean.includes("mark-scheme") ? "MS" : "QP";
+    const parts = clean.split("-");
+    const component = parts[parts.length - 4];
+    return `${realSubjectName}, ${component} ${type}, ${year}`;
+  }
 };
 
+// Group slugs by session
+const sessions = new Map<string, string[]>();
+for (const slug of slugs) {
+  const session = getSessionDisplay(slug);
+  if (!sessions.has(session)) sessions.set(session, []);
+  sessions.get(session)!.push(slug);
+}
+
+// Sort sessions alphabetically (latest first if years are included)
+const sortedSessions = Array.from(sessions.entries()).sort(([a], [b]) => b.localeCompare(a));
 ---
 
-<LevelTopicalsLayout
+<BaseLayout
   title={`Available papers for ${realSubjectName} — ${year} | Paper Guides`}
-  description={`Explore the available papers for ${realSubjectName} in ${year}.`}
+  description={`Explore the available papers for ${realSubjectName} in ${year}. Find past papers and resources.`}
 >
-  <div class="flex justify-between items-center border-b-2 border-[var(--blue-highlight)] pb-4 mb-4">
-    <h1 class="text-4xl font-bold">
-      Available <span class="text-[var(--blue-highlight)]">Papers</span> for
-      <span class="text-[var(--blue-highlight)]"> {realSubjectName}</span>
-    </h1>
-    <BackButton />
-  </div>
-
-  {Object.entries(grouped).map(([session, { papers }]) => (
-    <div>
-      <h2 class="text-3xl font-bold mt-6 underline">• {session}</h2>
-
-      <div class="space-y-4 mt-2">
-        {papers.map((slug) => (
-          <a
-            href={`/subjects/${board}/${subject}/${year}/${slug}`}
-            class="border border-[var(--blue-highlight)] block p-4 rounded-xl text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] transition"
+  <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col">
+    <div
+      class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
+    >
+      <div class="flex flex-col justify-center">
+        <span class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1">
+          <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
+          <a href="/pastpapers"><i class="ph-fill ph-exam"></i> Past Papers</a> /
+          <a href={`/subjects/${board}`}
+            ><i class="ph-fill ph-book"></i> {boardDisplayName}</a
+          > /
+          <a href={`/subjects/${board}/${subject}`}
+            ><i class="ph-fill ph-books"></i> {realSubjectName}</a
+          > /
+          <a href={`/subjects/${board}/${subject}/${year}`}
+            ><i class="ph-fill ph-file"></i> {year}</a
           >
-            {year} {realSubjectName} Paper: {getComponent(slug, board)} {year} 
-          </a>
-        ))}
+        </span>
+        <h1 class="font-serif font-bold text-4xl md:text-6xl">
+          Papers for, <br />
+          <span class="text-[var(--accent)] italic">{realSubjectName} — {year}</span>
+        </h1>
+        <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
+          Available papers for {realSubjectName} in {year}, grouped by session. <br />
+          Click on a paper to view. <br />
+          Found {slugs.length} papers.
+        </p>
+      </div>
+
+      <div class="flex flex-col justify-end h-full gap-3">
+        <span class="text-xs text-[var(--muted)] uppercase tracking-widest"
+          >Find a paper</span
+        >
+        <input
+          type="text"
+          id="paper-search"
+          placeholder="e.g. Mathematics, 1 QP..."
+          class="w-full bg-transparent border-b border-[var(--muted)] text-[#f7f7f7] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] py-2 text-lg transition-colors duration-200"
+        />
       </div>
     </div>
-  ))}
 
-  {slugs.length === 0 && (
-    <p class="opacity-60 mt-6">No papers found for this year.</p>
-  )}
-</LevelTopicalsLayout>
+    <!-- list + sidebar side by side -->
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
+      <!-- paper list -->
+
+      <div id="paper-list" class="bg-[var(--baby-powder)] flex flex-col">
+        <span
+          class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]"
+        >
+          Click on a paper to view for {realSubjectName} in {year}.
+        </span>
+        <!-- Session filter links -->
+        <div class="bg-[var(--color-surface)] px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]">
+          <span class="text-sm text-[var(--muted)] uppercase tracking-widest mr-4">Sessions:</span>
+          {sortedSessions.map(([session]) => (
+            <a
+              href={`#${session.replace(/\s+/g, '-').toLowerCase()}`}
+              class="text-[var(--accent)] hover:underline ml-2 text-sm"
+            >
+              {session.split(' ')[0]} {/* Show abbreviated like JAN, MJ */}
+            </a>
+          ))}
+        </div>
+        {
+          sortedSessions.map(([session, sessionSlugs]) => (
+            <div id={session.replace(/\s+/g, '-').toLowerCase()}>
+              <h2 class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]">
+                {session}
+              </h2>
+              {sessionSlugs.sort((a, b) => a.localeCompare(b)).map((slug) => (
+                <a
+                  data-name={getPaperDisplay(slug, board!, realSubjectName, year!)}
+                  href={`/subjects/${board}/${subject}/${year}/${slug}`}
+                  class="group relative border-b border-[var(--border-subtle)] px-5 md:px-20 py-8 text-[var(--font-color)] transition-all duration-300 ease-out
+                         bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
+                         hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
+                         flex items-center justify-between"
+                >
+                  <div class="flex gap-3">
+                    <span class="font-bold text-xl group-hover:text-[var(--accent)] transition-colors">
+                      {getPaperDisplay(slug, board!, realSubjectName, year!)}
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-3 ml-4">
+                    <span class="text-xs font-semibold text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                      View
+                    </span>
+                    <i class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-3xl shrink-0 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]" />
+                  </div>
+                </a>
+              ))}
+            </div>
+          ))
+        }
+        <div
+          id="no-results"
+          class="hidden flex-col items-center justify-center py-24 gap-4 text-[var(--muted)]"
+        >
+          <i
+            class="ph-fill ph-smiley-x-eyes text-6xl text-[var(--jungle-green)]"
+          ></i>
+          <p class="text-sm">No papers match your search.</p>
+        </div>
+      </div>
+
+      <!-- ad sidebar: sticky on desktop -->
+      <aside
+        class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
+      >
+        <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+      </aside>
+    </div>
+  </div>
+
+  <!-- mobile ad strip -->
+  <div
+    class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center"
+  >
+    <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+  </div>
+
+  <script>
+    import { fuzzyFilter } from "../../../../utils/search";
+
+    const input = document.getElementById("paper-search") as HTMLInputElement;
+    const items = Array.from(
+      document.querySelectorAll("#paper-list a"),
+    ) as HTMLElement[];
+    const data = items.map((el) => ({ name: el.dataset.name ?? "" }));
+
+    input.addEventListener("input", () => {
+      const q = input.value.trim();
+
+      if (!q) {
+        items.forEach((el) => (el.style.display = ""));
+        return;
+      }
+
+      const results = fuzzyFilter(data, q);
+      const matchedNames = new Set(results.map((r) => r.name));
+
+      const list = document.getElementById("paper-list")!;
+      items.forEach((el) => {
+        const name = el.dataset.name ?? "";
+        if (matchedNames.has(name)) {
+          el.style.display = "";
+          list.appendChild(el);
+        } else {
+          el.style.display = "none";
+        }
+      });
+    });
+  </script>
+</BaseLayout>
