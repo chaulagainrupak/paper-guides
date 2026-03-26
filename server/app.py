@@ -314,6 +314,11 @@ async def getData(
         raise HTTPException(status_code=503, detail="No data found")
 
 
+@app.get("/getQuestion/{uuid}")
+def getQuestionForClient(uuid):
+    content = getQuestion(uuid)
+    return content
+
 @app.get("/getNote/{subject}/{topic}")
 def getNoteForClient(subject, topic):
 

@@ -811,6 +811,28 @@ def getUnapprovedQuestions():
             connection.close()
 
 
+def getQuestion(uuid):
+    "gets a question from uuid for /questions/page sends everything"
+
+    try:
+        connection = sqlite3.connect(DB_QUESTION_GENERATOR_PATH)
+        db= connection.cursor()
+
+        question = db.execute("""
+            SELECT * FROM questions WHERE uuid = ? AND approved = True
+        """, (uuid,)).fetchone()
+        
+        return question
+
+    except sqlite3.Error as e:
+        print(e)
+        return []
+    finally:
+        if connection:
+            connection.close()
+
+
+
 # ======================
 # UTILITY FUNCTIONS
 # ======================

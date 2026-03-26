@@ -1,0 +1,145 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import { getPaperIndex } from "../../../../utils/paperIndex";
+import { slugify } from "../../../../utils/slugify";
+
+const { board, subject, topic } = Astro.params;
+
+let questions: { slug: string; title: string }[] = [];
+let topicList: { name: string; slug: string; questions?: { slug: string; title: string }[] }[] = [];
+let realSubjectName: string;
+let realTopicName: string;
+
+try {
+  const index = await getPaperIndex();
+  topicList = index?.[board!]?.[subject!]?.["topics"] ?? [];
+  realSubjectName = index?.[board!]?.[subject!]?.name ?? subject!.replace(/-/g, " ");
+  const currentTopic = topicList.find((t) => t.slug === topic);
+  realTopicName = currentTopic?.name ?? topic!.replace(/-/g, " ");
+  questions = currentTopic?.questions ?? [];
+} catch (err) {
+  console.error("Failed to fetch data:", err);
+  realSubjectName = subject!.replace(/-/g, " ");
+  realTopicName = topic!.replace(/-/g, " ");
+}
+
+const boardDisplayName =
+  board === "a-levels"
+    ? "A Levels"
+    : board === "kathmandu-university"
+      ? "Kathmandu University"
+      : board;
+
+const TRUNCATE_LENGTH = 120;
+---
+
+<BaseLayout
+  title={`${realTopicName} — ${realSubjectName} Questions | Paper Guides`}
+  description={`Practice past-paper questions for ${realTopicName} in ${realSubjectName}.`}
+>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css"
+    crossorigin="anonymous"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"
+    crossorigin="anonymous"></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"
+    crossorigin="anonymous"></script>
+
+  <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col">
+    <div
+      class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
+    >
+      <div class="flex flex-col justify-center">
+        <span class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1 flex-wrap">
+          <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
+          <a href="/questions"><i class="ph-fill ph-question"></i> Questions</a> /
+          <a href={`/questions/${board}`}><i class="ph-fill ph-book"></i> {boardDisplayName}</a> /
+          <a href={`/questions/${board}/${subject}`}><i class="ph-fill ph-books"></i> {realSubjectName}</a> /
+          <span><i class="ph-fill ph-file-text"></i> {realTopicName}</span>
+        </span>
+        <h1 class="font-serif font-bold text-4xl md:text-6xl">
+          {realTopicName},<br />
+          <span class="text-[var(--accent)] italic">{realSubjectName}</span>
+        </h1>
+        <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
+          Past-paper practice questions for {realTopicName} in {realSubjectName}.<br />
+          Found {questions.length} question{questions.length !== 1 ? "s" : ""}.
+        </p>
+      </div>
+
+
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
+      <div id="question-list" class="bg-[var(--baby-powder)] flex flex-col">
+        <span
+          class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]"
+        >
+          Click on a question to view the full answer.
+        </span>
+
+        {
+          questions.length === 0 ? (
+            <div class="flex flex-col items-center justify-center py-24 gap-4 text-[var(--muted)]">
+              <i class="ph-fill ph-smiley-x-eyes text-6xl text-[var(--jungle-green)]" />
+              <p class="text-sm">No questions found for this topic yet.</p>
+            </div>
+          ) : (
+            questions.map((q, i) => {
+              const isTruncated = q.title.length > TRUNCATE_LENGTH;
+              const displayTitle = isTruncated
+                ? q.title.slice(0, TRUNCATE_LENGTH).trimEnd() + "…"
+                : q.title;
+
+              return (
+                <a
+                  href={`/questions/${board}/${subject}/${topic}/${q.slug}`}
+                  class="group relative border-b border-[var(--border-subtle)] px-5 md:px-20 py-8 text-[var(--font-color)] transition-all duration-300 ease-out
+                         bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
+                         hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
+                         flex items-start justify-between gap-4"
+                >
+                  <div class="flex gap-4 items-start">
+                    <span class="font-mono text-xs text-[var(--muted)] mt-1.5 shrink-0 w-6 text-right">
+                      {i + 1}.
+                    </span>
+                    <span class="font-medium text-base leading-relaxed group-hover:text-[var(--accent)] transition-colors">
+                      {displayTitle}
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-3 ml-4 shrink-0">
+                    <span class="text-xs font-semibold text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                      View
+                    </span>
+                    <i class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-3xl shrink-0 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]" />
+                  </div>
+                </a>
+              );
+            })
+          )
+        }
+      </div>
+
+      <aside
+        class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
+      >
+        <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+      </aside>
+    </div>
+  </div>
+
+  <div
+    class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center"
+  >
+    <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+  </div>
+</BaseLayout>
