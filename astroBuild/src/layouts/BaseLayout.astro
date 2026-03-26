@@ -2,22 +2,25 @@
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
+import { SITE_URL, UMAMI_WEBSITE_ID, UMAMI_URL } from "../utils/config";
 
 interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
   canonical?: string;
+  keywords?: string[];
+  noIndex?: boolean;
 }
 
 const {
-  title = "Paper-Guides",
+  title = "Paper Guides",
   description = "Free exam preparation resources — Past Papers, Notes, Question Generator, and more.",
   ogImage = `${SITE_URL ?? "https://paperguides.org"}/images/opg_paper_guides.png`,
   canonical = `${SITE_URL ?? "https://paperguides.org"}${Astro.url.pathname}`,
+  keywords = [],
+  noIndex = false,
 } = Astro.props;
-
-import { SITE_URL, UMAMI_WEBSITE_ID, UMAMI_URL } from "../utils/config";
 ---
 
 <!doctype html>
@@ -25,21 +28,44 @@ import { SITE_URL, UMAMI_WEBSITE_ID, UMAMI_URL } from "../utils/config";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Primary -->
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="author" content="Paper Guides" />
+    <meta name="robots" content={noIndex ? "noindex, nofollow" : "index, follow"} />
+    {keywords.length > 0 && (
+      <meta name="keywords" content={"Paper Guides, free past papers, study notes, A Levels, Kathmandu University, CAIE, Cambridge exams, exam preparation, revision resources, question bank, topic-wise questions, practice papers, free study materials, student resources, past paper solutions, A Level Physics, A Level Mathematics, A Level Chemistry, KU BBA, KU BCA, KU CSIT, KU Engineering, CAIE past papers," + keywords.join(", ")} />
+    )}
     {canonical && <link rel="canonical" href={canonical} />}
+
+    <!-- Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Paper Guides" />
     <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Favicon + theme -->
     <link rel="icon" href="/images/logo.ico" />
-    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#4ade80" />
+
+    <!-- Sitemap -->
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
 
     <!-- Google Ads -->
     <script
-      defer
       async
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
       crossorigin="anonymous"></script>
@@ -52,11 +78,33 @@ import { SITE_URL, UMAMI_WEBSITE_ID, UMAMI_URL } from "../utils/config";
       data-website-id={UMAMI_WEBSITE_ID}
       data-auto-track="true"></script>
 
+    <!-- Phosphor Icons -->
     <link
       rel="stylesheet"
       type="text/css"
       href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css"
     />
+
+    <!-- KaTeX -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css"
+      crossorigin="anonymous"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"
+      crossorigin="anonymous"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"
+      crossorigin="anonymous"></script>
+
+    <!-- marked (markdown parser) -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"
+      crossorigin="anonymous"></script>
   </head>
   <body class="flex flex-col min-h-screen">
     <Nav />

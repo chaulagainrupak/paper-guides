@@ -5,7 +5,6 @@ import { getPaperIndex } from "../../utils/paperIndex";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 type Params = { board: string };
-
 const { board } = Astro.params as Params;
 
 let subjects: { name: string; slug: string }[] = [];
@@ -33,40 +32,52 @@ const boardDisplayName =
     : board === "kathmandu-university"
       ? "Kathmandu University"
       : board;
+
+const pageTitle = `Subjects for ${boardDisplayName} | Paper Guides Questions`;
+const pageDescription = `Browse ${subjects.length} subjects for ${boardDisplayName}. Click a subject to explore practice questions organised by topic. Improve your exam prep today.`;
+const pageKeywords = ["past paper questions", "exam practice", boardDisplayName, "subjects", "topics", "Paper Guides"];
+const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.url.pathname}`;
 ---
 
 <BaseLayout
-  title={`Available subjects for ${boardDisplayName} | Paper Guides Questions`}
-  description={`Practice questions for ${boardDisplayName} subjects, organised by topic.`}
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  canonical={canonicalUrl}
 >
+  <script type="application/ld+json" is:inline>
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${Astro.site?.href ?? "https://paperguides.org"}/` },
+        { "@type": "ListItem", "position": 2, "name": "Questions", "item": `${Astro.site?.href ?? "https://paperguides.org"}/questions` },
+        { "@type": "ListItem", "position": 3, "name": boardDisplayName, "item": canonicalUrl }
+      ]
+    })}
+  </script>
+
   <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col">
-    <div
-      class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
-    >
+    <div class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
       <div class="flex flex-col justify-center">
-        <span class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1">
-          <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
-          <a href="/questions"><i class="ph-fill ph-question"></i> Questions</a> /
-          <a href={`/questions/${board}`}
-            ><i class="ph-fill ph-book"></i> {boardDisplayName}</a
-          >
-        </span>
+        <nav aria-label="Breadcrumb" class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1 flex-wrap">
+          <a href="/" class="hover:underline">Home</a> /
+          <a href="/questions" class="hover:underline">Questions</a> /
+          <span aria-current="page">{boardDisplayName}</span>
+        </nav>
+
         <h1 class="font-serif font-bold text-4xl md:text-6xl">
-          Subjects for, <br />
+          Subjects for <br />
           <span class="text-[var(--accent)] italic">{boardDisplayName}</span>
         </h1>
+
         <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
-          Available subjects for {boardDisplayName}, sorted alphabetically. <br
-          />
-          Click on a subject to explore practice questions by topic. <br />
-          Found {subjects.length} subjects.
+          Browse {subjects.length} subjects for {boardDisplayName}. Click a subject to explore practice questions organised by topic and improve your exam preparation.
         </p>
       </div>
 
       <div class="flex flex-col justify-end h-full gap-3">
-        <span class="text-xs text-[var(--muted)] uppercase tracking-widest"
-          >Find a subject</span
-        >
+        <label for="subject-search" class="text-xs text-[var(--muted)] uppercase tracking-widest">Find a subject</label>
         <input
           type="text"
           id="subject-search"
@@ -76,16 +87,18 @@ const boardDisplayName =
       </div>
     </div>
 
-    <!-- list + sidebar side by side -->
     <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
-      <!-- subject list -->
       <div id="subject-list" class="bg-[var(--baby-powder)] flex flex-col">
-        <span
-          class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]"
-        >
-          Click on a subject to explore questions for {boardDisplayName}.
-        </span>
-        {
+        <h2 class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]">
+          Click on a subject to explore questions for {boardDisplayName}
+        </h2>
+
+        {subjects.length === 0 ? (
+          <div class="flex flex-col items-center justify-center py-24 gap-4 text-[var(--muted)]">
+            <i class="ph-fill ph-smiley-x-eyes text-6xl text-[var(--jungle-green)]"></i>
+            <p class="text-sm">No subjects available yet.</p>
+          </div>
+        ) : (
           subjects.map(({ name, slug }) => (
             <a
               data-name={name.toLowerCase()}
@@ -94,20 +107,13 @@ const boardDisplayName =
                      bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
                      hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
                      flex items-center justify-between"
+              aria-label={`Explore practice questions for ${name}`}
             >
-              <div class="flex gap-3">
-                <span class="font-bold text-xl group-hover:text-[var(--accent)] transition-colors">
-                  {name}
-                </span>
-              </div>
-
+              <span class="font-bold text-xl group-hover:text-[var(--accent)] transition-colors">{name}</span>
               <div class="flex items-center gap-3 ml-4">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="text-xs px-2 py-1 bg-[var(--accent)]/20 text-[var(--accent)] rounded-full">
-                    {globalIndex[board]?.[slug]?.topics?.length ?? 0} Topics
-                  </span>
-                </div>
-
+                <span class="text-xs px-2 py-1 bg-[var(--accent)]/20 text-[var(--accent)] rounded-full">
+                  {globalIndex[board]?.[slug]?.topics?.length ?? 0} Topics
+                </span>
                 <span class="text-xs font-semibold text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                   Explore
                 </span>
@@ -115,31 +121,21 @@ const boardDisplayName =
               </div>
             </a>
           ))
-        }
-        <div
-          id="no-results"
-          class="hidden flex-col items-center justify-center py-24 gap-4 text-[var(--muted)]"
-        >
-          <i
-            class="ph-fill ph-smiley-x-eyes text-6xl text-[var(--jungle-green)]"
-          ></i>
+        )}
+
+        <div id="no-results" class="hidden flex-col items-center justify-center py-24 gap-4 text-[var(--muted)]">
+          <i class="ph-fill ph-smiley-x-eyes text-6xl text-[var(--jungle-green)]"></i>
           <p class="text-sm">No subjects match your search.</p>
         </div>
       </div>
 
-      <!-- ad sidebar -->
-      <aside
-        class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
-      >
+      <aside class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6">
         <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
       </aside>
     </div>
   </div>
 
-  <!-- mobile ad strip -->
-  <div
-    class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center"
-  >
+  <div class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center">
     <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
   </div>
 
@@ -147,13 +143,11 @@ const boardDisplayName =
     import { fuzzyFilter } from "../../utils/search";
 
     const input = document.getElementById("subject-search") as HTMLInputElement;
-    const items = Array.from(
-      document.querySelectorAll("#subject-list a"),
-    ) as HTMLElement[];
+    const items = Array.from(document.querySelectorAll("#subject-list a")) as HTMLElement[];
     const data = items.map((el) => ({ name: el.dataset.name ?? "" }));
 
     input.addEventListener("input", () => {
-      const q = input.value.trim();
+      const q = input.value.trim().toLowerCase();
 
       if (!q) {
         items.forEach((el) => (el.style.display = ""));
@@ -163,15 +157,9 @@ const boardDisplayName =
       const results = fuzzyFilter(data, q);
       const matchedNames = new Set(results.map((r) => r.name));
 
-      const list = document.getElementById("subject-list")!;
       items.forEach((el) => {
         const name = el.dataset.name ?? "";
-        if (matchedNames.has(name)) {
-          el.style.display = "";
-          list.appendChild(el);
-        } else {
-          el.style.display = "none";
-        }
+        el.style.display = matchedNames.has(name) ? "" : "none";
       });
     });
   </script>
