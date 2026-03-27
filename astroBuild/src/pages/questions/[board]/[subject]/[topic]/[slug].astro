@@ -1,0 +1,351 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import MarkdownRenderer from "../../../../../components/MarkdownRenderer";
+import { getPaperIndex } from "../../../../../utils/paperIndex";
+import { slugify } from "../../../../../utils/slugify";
+import { API_URL, SITE_URL } from "../../../../../utils/config";
+
+const { board, subject, topic, slug } = Astro.params;
+
+const index = await getPaperIndex();
+
+let realSubjectName: string =
+  index?.[board!]?.[subject!]?.name ?? subject!.replace(/-/g, " ");
+
+let topicList: {
+  name: string;
+  slug: string;
+  questions?: { slug: string; title: string }[];
+}[] = index?.[board!]?.[subject!]?.["topics"] ?? [];
+
+const currentTopic = topicList.find((t) => t.slug === topic);
+let realTopicName: string = currentTopic?.name ?? topic!.replace(/-/g, " ");
+let questions: { slug: string; title: string }[] =
+  currentTopic?.questions ?? [];
+
+const currentQuestion = questions.find((q) => q.slug === slug);
+let questionTitle: string = currentQuestion?.title ?? "";
+const currentIndex = questions.findIndex((q) => q.slug === slug);
+const prevQuestion = currentIndex > 0 ? questions[currentIndex - 1] : null;
+const nextQuestion =
+  currentIndex < questions.length - 1 ? questions[currentIndex + 1] : null;
+
+let error = "";
+let questionData: any;
+try {
+  const res = await fetch(
+    `${API_URL}/getQuestion/${encodeURIComponent(slug!)}`,
+  );
+  if (res.ok) {
+    questionData = await res.json();
+  } else {
+    error = "Failed to load question.";
+  }
+} catch {
+  error = "Failed to load question.";
+}
+
+
+const questionText: string = questionData?.[8] ?? "";
+const answerText: string = questionData?.[9] ?? "";
+const questionKeywords: string[] = JSON.parse(questionData?.[10] ?? "[]");
+
+const boardDisplayName =
+  board === "a-levels"
+    ? "A Levels"
+    : board === "kathmandu-university"
+      ? "Kathmandu University"
+      : board;
+---
+
+<BaseLayout
+  title={`${questionTitle.substring(0,60) || realTopicName + " Question"} — ${realSubjectName} | Paper Guides`}
+  description={`Practice question and model answer for ${realTopicName} in ${realSubjectName} (${boardDisplayName}). Improve your exam technique with past-paper questions.`}
+  canonical={`${SITE_URL ?? "https://paperguides.org"}/questions/${board}/${subject}/${topic}/${slug}`}
+  keywords={[realSubjectName, realTopicName, `${boardDisplayName}`, "past paper questions", "exam practice", "Paper Guides", ...questionKeywords]}
+>
+  <div
+    class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
+  >
+    <div class="flex flex-col justify-center">
+      <span
+        class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1 flex-wrap"
+      >
+        <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
+        <a href="/questions"><i class="ph-fill ph-question"></i> Questions</a> /
+        <a href={`/questions/${board}`}
+          ><i class="ph-fill ph-book"></i> {boardDisplayName}</a
+        > /
+        <a href={`/questions/${board}/${subject}`}
+          ><i class="ph-fill ph-books"></i> {realSubjectName}</a
+        > /
+        <a href={`/questions/${board}/${subject}/${topic}`}
+          ><i class="ph-fill ph-file-text"></i> {realTopicName}</a
+        > /
+        <span
+          ><i class="ph-fill ph-chat-centered-text"></i> Question {
+            currentIndex + 1
+          }</span
+        >
+      </span>
+      <h1 class="font-serif font-bold text-3xl md:text-5xl leading-snug">
+        {realSubjectName},<br />
+        <span class="text-[var(--accent)] italic text-2xl md:text-3xl"
+          >{realTopicName}</span
+        >
+      </h1>
+      <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
+        Question {currentIndex + 1} of {questions.length} in {realTopicName}.
+      </p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-[1fr_360px]">
+    <div class="bg-[var(--baby-powder)] px-5 md:px-25 py-6 shadow">
+
+      {error ? (
+        <div class="text-center mt-12">
+          <p class="text-xl text-[var(--pink-highlight)] font-bold">{error}</p>
+        </div>
+      ) : (
+        <div id="question-content" class="printable-area space-y-8">
+
+          <!-- Question -->
+          <div>
+            <p class="text-xs uppercase tracking-widest text-[var(--muted)] font-semibold mb-3">
+              Question
+            </p>
+            <div
+              class="math-content prose prose-sm max-w-none"
+              data-raw={questionText}
+            ></div>
+          </div>
+
+          <!-- Answer (collapsed by default, user reveals it) -->
+          <details class="border border-[var(--border-subtle)] rounded-xl overflow-hidden">
+            <summary 
+              data-umami-event="Reveal Answer"
+              data-umami-event-question={`${realSubjectName} - ${realTopicName} - ${questionTitle.substring(0, 60)}`}
+              class="cursor-pointer px-5 py-3 bg-[var(--color-surface)] text-xs uppercase tracking-widest font-semibold text-[var(--muted)] select-none hover:text-[var(--accent)] transition-colors">
+              <i class="ph-fill ph-eye mr-1"></i> Show Answer
+            </summary>
+            <div class="px-5 py-5 border-t border-[var(--border-subtle)]">
+              <p class="text-xs uppercase tracking-widest text-[var(--muted)] font-semibold mb-3">
+                Answer
+              </p>
+              <div
+                class="math-content prose prose-sm max-w-none"
+                data-raw={answerText}
+              ></div>
+            </div>
+          </details>
+
+        </div>
+      )}
+
+      <!-- Prev / Next navigation -->
+      <div
+        class="flex items-center justify-between mt-12 pt-6 border-t border-[var(--border-subtle)]"
+      >
+        {
+          prevQuestion ? (
+            <a
+            data-umami-event="Previous Question Click"
+              href={`/questions/${board}/${subject}/${topic}/${prevQuestion.slug}`}
+              class="flex items-center gap-2 text-sm text-[var(--font-color)] hover:text-[var(--accent)] transition-colors group"
+            >
+              <i class="ph-fill ph-arrow-left transition-transform group-hover:-translate-x-1" />
+              <span class="flex flex-col">
+                <span class="text-xs text-[var(--muted)]">Previous</span>
+                <span class="line-clamp-1 max-w-[200px]">
+                  {prevQuestion.title.length > 60
+                    ? prevQuestion.title.slice(0, 60).trimEnd() + "…"
+                    : prevQuestion.title}
+                </span>
+              </span>
+            </a>
+          ) : (
+            <div />
+          )
+        }
+
+        {
+          nextQuestion ? (
+            <a
+            data-umami-event="Next Question Click"
+              href={`/questions/${board}/${subject}/${topic}/${nextQuestion.slug}`}
+              class="flex items-center gap-2 text-sm text-[var(--font-color)] hover:text-[var(--accent)] transition-colors group text-right"
+            >
+              <span class="flex flex-col">
+                <span class="text-xs text-[var(--muted)]">Next</span>
+                <span class="line-clamp-1 max-w-[200px]">
+                  {nextQuestion.title.length > 60
+                    ? nextQuestion.title.slice(0, 60).trimEnd() + "…"
+                    : nextQuestion.title}
+                </span>
+              </span>
+              <i class="ph-fill ph-arrow-right transition-transform group-hover:translate-x-1" />
+            </a>
+          ) : (
+            <div />
+          )
+        }
+      </div>
+
+      <!-- SEO content -->
+      <section class="mt-8 text-sm leading-relaxed space-y-4 opacity-80">
+        <h2 class="font-semibold text-[var(--blue-highlight)]">
+          {realTopicName} — {boardDisplayName}
+        </h2>
+        <p>
+          Past-paper question and model answer for <strong
+            >{realTopicName}</strong
+          > in <strong>{realSubjectName}</strong>. Use these to practise and
+          improve your exam technique.
+        </p>
+
+          <p>
+    <i class="ph-fill ph-notebook mr-1"></i> Want notes for <strong>{realSubjectName}</strong>?
+    Concise, student-made revision notes to go alongside your practice. 
+    <a href={`/notes/${board}/${subject}`} class="text-[var(--accent)] hover:underline">Browse {realSubjectName} notes →</a>
+  </p>
+  <p>
+    <i class="ph-fill ph-question mr-1"></i> Want to practice more <strong>{realTopicName}</strong> questions?
+    Work through past papers questions at your own pace.
+    <a href={`/subjects/${board}/${subject}`} class="text-[var(--accent)] hover:underline">Browse {realSubjectName} questions →</a>
+  </p>
+
+      </section>
+
+    </div>
+
+    <!-- Sidebar -->
+    <aside
+      class="hidden md:flex flex-col gap-6 sticky top-[80px] self-start bg-[var(--sidebar-bg)] p-4"
+    >
+      <div
+        class="flex justify-between items-center border-b border-[var(--border-subtle)] pb-2"
+      >
+        <p class="font-bold text-lg uppercase tracking-wide opacity-60">
+          Questions
+        </p>
+        <button
+          onclick="window.print()"
+          data-umami-event="Print Question"
+          data-umami-event-question={`${realSubjectName} - ${realTopicName} - ${questionTitle.substring(0, 60)}`}
+          class="cursor-pointer px-4 py-2 rounded-xl bg-[var(--green-highlight)] text-white font-bold hover:opacity-80 transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] outline outline-1 outline-[var(--border-subtle)]"
+        >
+          <i class="ph-fill ph-printer"></i> Print
+        </button>
+      </div>
+
+      <div class="border-b border-[var(--border-subtle)] pb-2">
+        <ul class="space-y-1 text-sm">
+          {
+            questions.map((q, i) => (
+              <li>
+                <a
+                data-umami-event="Sidebar Question Click"
+                  href={`/questions/${board}/${subject}/${topic}/${q.slug}`}
+                  class={[
+                    "flex gap-2 items-start py-1 hover:text-[var(--accent)] transition-colors",
+                    q.slug === slug ? "text-[var(--accent)] font-semibold" : "",
+                  ].join(" ")}
+                >
+                  <span class="font-mono text-xs text-[var(--muted)] shrink-0 mt-0.5">
+                    {i + 1}.
+                  </span>
+                  <span class="line-clamp-2">
+                    {q.title.length > 80
+                      ? q.title.slice(0, 80).trimEnd() + "…"
+                      : q.title}
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="border-b border-[var(--border-subtle)] pb-2 mb-2">
+        <h3
+          class="font-semibold border-b border-[var(--border-subtle)] pb-2 mb-2"
+        >
+          Other Topics in <a href={`/questions/${board}/${subject}`}
+            >{realSubjectName}</a
+          >
+        </h3>
+        <ul class="space-y-1 text-sm">
+          {
+            topicList
+              .filter((t) => t.slug !== topic)
+              .slice(0, 10)
+              .map((t) => (
+                <li>
+                  <a
+                    href={`/questions/${board}/${subject}/${slugify(t.slug)}`}
+                    class="hover:underline"
+                  >
+                    {t.name}
+                  </a>
+                </li>
+              ))
+          }
+        </ul>
+      </div>
+
+      <div class="text-sm text-[var(--muted)] text-center">Sponsor Space</div>
+    </aside>
+  </div>
+
+  <!-- Mobile ad strip -->
+  <div
+    class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 text-center text-sm text-[var(--muted)]"
+  >
+    Sponsor Space
+  </div>
+
+  
+</BaseLayout>
+
+<!-- Math + Markdown rendering -->
+<script is:inline>
+  function renderMathContent() {
+    document.querySelectorAll(".math-content[data-raw]").forEach(function (el) {
+      var raw = el.getAttribute("data-raw") || "";
+      if (!raw.trim()) return;
+
+      // Step 1: render markdown
+      var html = window.marked ? window.marked.parse(raw) : raw;
+
+      // Step 2: inject into DOM
+      el.innerHTML = html;
+
+      // Step 3: render math — $$ block MUST come before $ inline
+      if (window.renderMathInElement) {
+        renderMathInElement(el, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false },
+            { left: "\\(", right: "\\)", display: false },
+            { left: "\\[", right: "\\]", display: true },
+          ],
+          throwOnError: false,
+        });
+      }
+    });
+  }
+
+  function waitAndRender() {
+    if (window.marked && window.renderMathInElement) {
+      renderMathContent();
+    } else {
+      setTimeout(waitAndRender, 80);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", waitAndRender);
+</script>
+

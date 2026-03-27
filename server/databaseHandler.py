@@ -638,8 +638,8 @@ def getNote(subject: str, topic: str) -> dict:
             (subject, topic),
         ).fetchone()
 
-        note = DBcontent[0]
-        if note:
+        if DBcontent[0]:
+            note = DBcontent[0]
             return note + "\n\n---"
 
         # Increment view count
@@ -648,7 +648,7 @@ def getNote(subject: str, topic: str) -> dict:
         #    WHERE uuid = ?''', (uuid,))
         # conn.commit()
 
-        return """# No Note Data found! Want to help curate notes for this topic? Join our discord server and submit your notes!"""
+        return f"""# No Note Data found for {subject}/{topic}! Want to help curate notes for this topic? Join our discord server and submit your notes!"""
 
     except Exception as e:
         logger.error(f"Error getting note: {e}")
@@ -809,6 +809,28 @@ def getUnapprovedQuestions():
     finally:
         if connection:
             connection.close()
+
+
+def getQuestion(uuid):
+    "gets a question from uuid for /questions/page sends everything"
+
+    try:
+        connection = sqlite3.connect(DB_QUESTION_GENERATOR_PATH)
+        db= connection.cursor()
+
+        question = db.execute("""
+            SELECT * FROM questions WHERE uuid = ? AND approved = True
+        """, (uuid,)).fetchone()
+        
+        return question
+
+    except sqlite3.Error as e:
+        print(e)
+        return []
+    finally:
+        if connection:
+            connection.close()
+
 
 
 # ======================

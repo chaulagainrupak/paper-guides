@@ -1,0 +1,170 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getPaperIndex } from "../../../utils/paperIndex";
+import { slugify } from "../../../utils/slugify";
+
+const { board, subject } = Astro.params;
+
+let topics: { name: string; slug: string }[] = [];
+let realSubjectName: string;
+
+try {
+  const index = await getPaperIndex();
+  topics = index?.[board!]?.[subject!]?.["topics"] ?? [];
+  topics = topics.sort((a: { name: string }, b: { name: string }) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+  );
+  realSubjectName =
+    index?.[board!]?.[subject!]?.name ?? subject!.replace(/-/g, " ");
+} catch (err) {
+  console.error("Failed to fetch data:", err);
+  realSubjectName = subject!.replace(/-/g, " ");
+}
+
+const boardDisplayName =
+  board === "a-levels"
+    ? "A Levels"
+    : board === "kathmandu-university"
+      ? "Kathmandu University"
+      : board;
+
+const pageTitle = `${realSubjectName} Topics | ${boardDisplayName} Questions | Paper Guides`;
+const pageDescription = `Browse ${topics.length} topics for ${realSubjectName} under ${boardDisplayName}. Click a topic to practise past-paper questions and improve exam prep.`;
+const pageKeywords = [
+  realSubjectName,
+  boardDisplayName,
+  "past paper questions",
+  "exam practice",
+  "topics",
+  "Paper Guides",
+];
+const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.url.pathname}`;
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords.filter((k): k is string => !!k)}
+  canonical={canonicalUrl}
+>
+  <script type="application/ld+json" is:inline>
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${Astro.site?.href ?? "https://paperguides.org"}/` },
+        { "@type": "ListItem", "position": 2, "name": "Questions", "item": `${Astro.site?.href ?? "https://paperguides.org"}/questions` },
+        { "@type": "ListItem", "position": 3, "name": boardDisplayName, "item": `${Astro.site?.href ?? "https://paperguides.org"}/questions/${board}` },
+        { "@type": "ListItem", "position": 4, "name": realSubjectName, "item": canonicalUrl }
+      ]
+    })}
+  </script>
+
+  <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col">
+    <div class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <div class="flex flex-col justify-center">
+        <nav aria-label="Breadcrumb" class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1 flex-wrap">
+          <a href="/" class="hover:underline">Home</a> /
+          <a href="/questions" class="hover:underline">Questions</a> /
+          <a href={`/questions/${board}`} class="hover:underline">{boardDisplayName}</a> /
+          <span aria-current="page">{realSubjectName}</span>
+        </nav>
+
+        <h1 class="font-serif font-bold text-4xl md:text-6xl">
+          {realSubjectName} Topics
+          <br />
+          <span class="text-[var(--accent)] italic">{boardDisplayName} Questions</span>
+        </h1>
+
+        <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
+          Browse {topics.length} topics for {realSubjectName} under {boardDisplayName}. Click a topic to practise past-paper questions and improve your exam prep.
+        </p>
+      </div>
+
+      <div class="flex flex-col justify-end h-full gap-3">
+        <label for="topic-search" class="text-xs text-[var(--muted)] uppercase tracking-widest">Find a topic</label>
+        <input
+          type="text"
+          id="topic-search"
+          placeholder="e.g. Differentiation..."
+          class="w-full bg-transparent border-b border-[var(--muted)] text-[#f7f7f7] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] py-2 text-lg transition-colors duration-200"
+        />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
+      <div id="topic-list" class="bg-[var(--baby-powder)] flex flex-col">
+        <h2 class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]">
+          Click on a topic to practise questions for {realSubjectName}
+        </h2>
+
+        {topics.length === 0 ? (
+          <div class="flex flex-col items-center justify-center py-24 gap-4 text-[var(--muted)]">
+            <i class="ph-fill ph-smiley-x-eyes text-6xl text-[var(--jungle-green)]"></i>
+            <p class="text-sm">No topics available yet.</p>
+          </div>
+        ) : (
+          topics.map((topic) => (
+            <a
+              data-name={topic.name.toLowerCase()}
+              href={`/questions/${board}/${subject}/${slugify(topic.slug)}`}
+              class="group relative border-b border-[var(--border-subtle)] px-5 md:px-20 py-8 text-[var(--font-color)] transition-all duration-300 ease-out
+                     bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
+                     hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
+                     flex items-center justify-between"
+              aria-label={`Practise questions for ${topic.name}`}
+            >
+              <span class="font-bold text-xl group-hover:text-[var(--accent)] transition-colors">{topic.name}</span>
+              <div class="flex items-center gap-3 ml-4">
+                <span class="text-xs font-semibold text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                  Practise
+                </span>
+                <i class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-3xl shrink-0 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]" />
+              </div>
+            </a>
+          ))
+        )}
+
+        <div id="no-results" class="hidden flex-col items-center justify-center py-24 gap-4 text-[var(--muted)]">
+          <i class="ph-fill ph-smiley-x-eyes text-6xl text-[var(--jungle-green)]"></i>
+          <p class="text-sm">No topics match your search.</p>
+        </div>
+      </div>
+
+      <aside class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6">
+        <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+      </aside>
+    </div>
+  </div>
+
+  <div class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center">
+    <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+  </div>
+
+  <script>
+    import { fuzzyFilter } from "../../../utils/search";
+
+    const input = document.getElementById("topic-search") as HTMLInputElement;
+    const items = Array.from(document.querySelectorAll("#topic-list a")) as HTMLElement[];
+    const data = items.map((el) => ({ name: el.dataset.name ?? "" }));
+
+    input.addEventListener("input", () => {
+      const q = input.value.trim().toLowerCase();
+
+      if (!q) {
+        items.forEach((el) => (el.style.display = ""));
+        return;
+      }
+
+      const results = fuzzyFilter(data, q);
+      const matchedNames = new Set(results.map((r) => r.name));
+
+      items.forEach((el) => {
+        const name = el.dataset.name ?? "";
+        el.style.display = matchedNames.has(name) ? "" : "none";
+      });
+    });
+  </script>
+</BaseLayout>

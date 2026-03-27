@@ -1,0 +1,120 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const pageTitle = "Practice Questions | Paper Guides";
+const pageDescription =
+  "Free topic-organised practice questions for A-Levels, Kathmandu University, and more. Past-paper questions by board, subject, and topic.";
+const pageKeywords = [
+  "past paper questions",
+  "exam practice",
+  "A Levels",
+  "Kathmandu University",
+  "topic-wise questions",
+  "CAIE",
+  "KU Bachelors",
+  "Mathematics",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "Economics",
+];
+const canonicalUrl = "https://paperguides.org/questions";
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={pageKeywords}
+  canonical={canonicalUrl}
+>
+  <div
+    class="mt-[64px] min-h-[calc(100vh-64px)] grid grid-cols-1 md:grid-cols-[1fr_1fr] grid-rows-auto md:grid-rows-[1fr_1fr]"
+  >
+    <!-- Hero / Intro Section -->
+    <div
+      class="md:px-30 px-5 flex flex-col justify-center col-span-1 md:col-span-2 bg-[#242424] text-[#f7f7f7] py-12 md:py-20"
+    >
+      <nav class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1" aria-label="Breadcrumb">
+        <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
+        <a href="/questions"><i class="ph-fill ph-question"></i> Questions</a>
+      </nav>
+
+      <h1 class="font-serif font-bold text-4xl md:text-6xl">
+        Practice<br />
+        <span class="text-[var(--accent)] italic">Questions</span>
+      </h1>
+
+      <p class="mt-4 text-xs md:text-sm text-[var(--muted)] max-w-md">
+        Paper Guides provides free, topic-organised practice questions for
+        students preparing for CAIE A Level examinations and Kathmandu
+        University Bachelors programmes. <br /> Questions are sourced from real past
+        papers and organised by board, subject, and topic.
+      </p>
+    </div>
+
+    <!-- Board Cards -->
+<section class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2">
+      <!-- A Levels / CAIE -->
+      <a
+        class="group board-card p-6 md:p-20 bg-[var(--baby-powder)] transition-all duration-300 hover:translate-y-1 hover:shadow-xl md:border-r border-b border-t border-slate-200/60 hover:border-slate-300 relative overflow-hidden"
+        href="/questions/a-levels"
+      >
+        <div
+          class="board-tag text-[var(--accent)] text-xs px-2 py-1 bg-[var(--accent)]/30 w-fit rounded-full font-semibold relative z-10"
+        >
+          CAIE
+        </div>
+        <h2
+          class="board-h font-serif text-2xl md:text-4xl mt-4 mb-4 font-bold relative z-10"
+        >
+          A Levels Practice Questions
+        </h2>
+        <p
+          class="board-p text-xs md:text-sm text-[var(--muted)] max-w-md relative z-10"
+        >
+          Cambridge International AS and A Level practice questions across
+          subjects including Mathematics, Physics, Chemistry, Biology, and
+          Economics. Each subject is broken down topic by topic.
+        </p>
+        <div
+          class="board-meta flex flex-col md:flex-row justify-end mt-6 gap-4 md:gap-0 md:text-center relative z-10"
+        >
+          <i
+            class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-4xl shrink-0 md:mt-1 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[var(--accent)]"
+          ></i>
+        </div>
+      </a>
+
+      <!-- Kathmandu University -->
+      <a
+        class="group board-card p-6 md:p-20 bg-[var(--baby-powder)] transition-all duration-300 hover:translate-y-1 hover:shadow-xl md:border-r border-b border-t border-slate-200/60 hover:border-slate-300 relative overflow-hidden"
+        href="/questions/kathmandu-university"
+      >
+        <div
+          class="board-tag text-[#1a5c52] text-xs px-2 py-1 bg-[#1a5c52]/30 w-fit rounded-full font-semibold relative z-10"
+        >
+          KU
+        </div>
+        <h2
+          class="board-h font-serif text-2xl md:text-4xl mt-4 mb-4 font-bold relative z-10"
+        >
+          KU Bachelors Practice Questions
+        </h2>
+        <p
+          class="board-p text-xs md:text-sm text-[var(--muted)] max-w-md relative z-10"
+        >
+          Kathmandu University Bachelors practice questions organised by
+          semester and topic. Content aligned with the current KU curriculum
+          covering core engineering subjects.
+        </p>
+        <div
+          class="board-meta flex flex-col md:flex-row justify-end mt-6 gap-4 md:gap-0 md:text-center relative z-10"
+        >
+          <i
+            class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-4xl shrink-0 md:mt-1 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#1a5c52]"
+          ></i>
+        </div>
+      </a>
+    </section>
+  </div>
+</BaseLayout>

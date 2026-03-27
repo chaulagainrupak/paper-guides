@@ -1,52 +1,151 @@
 ---
-import LevelTopicalsLayout from '../../../layouts/LevelTopicalsLayout.astro';
-import BackButton from '../../../components/BackButton.astro';
-import { getPaperIndex } from '../../../utils/paperIndex';
-import { slugify, unslugify } from '../../../utils/slugify';
+import { getPaperIndex } from "../../../utils/paperIndex";
+import { slugify } from "../../../utils/slugify";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
 
 export const prerender = false;
 
 const { board, subject } = Astro.params;
 
-let realSubjectName = unslugify(subject!);
-let topics: string[] = [];
+let topics: { name: string; slug: string }[] = [];
+let globalIndex: any;
+let realSubjectName: string;
 
 try {
   const index = await getPaperIndex();
-
-  const notes = index?.notes?.[board!]?.[subject!];
-
-  if (notes) {
-    topics = notes.map((t: string) => unslugify(t));
-  }
+  globalIndex = index;
+  topics = index?.[board!]?.[subject!]?.topics ?? [];
+  topics = topics.sort((a, b) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+  );
+  realSubjectName =
+    index?.[board!]?.[subject!]?.name ?? subject!.replace(/-/g, " ");
 } catch (err) {
-  console.error('Failed to load topics:', err);
+  console.error("Failed to fetch data:", err);
+  realSubjectName = subject!.replace(/-/g, " ");
 }
+
+const boardDisplayName =
+  board === "a-levels"
+    ? "A Levels"
+    : board === "kathmandu-university"
+    ? "Kathmandu University"
+    : board;
 ---
 
-<LevelTopicalsLayout
-  title={`${realSubjectName} Notes | Paper Guides`}
-  description={`Study notes topics for ${realSubjectName}.`}
+<BaseLayout
+  title={`Topics for ${realSubjectName} | Paper Guides`}
+  description={`Explore all available study topics for ${realSubjectName}. Access concise revision notes organised by topic.`}
 >
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-4xl font-semibold">
-      Topics for <span class="text-[var(--blue-highlight)]">{realSubjectName}</span>
-    </h1>
-    <BackButton />
+  <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col">
+    <!-- Hero Section -->
+    <div class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <div class="flex flex-col justify-center">
+        <span class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1">
+          <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
+          <a href="/notes"><i class="ph-fill ph-notebook"></i> Notes</a> /
+          <a href={`/notes/${board}`}><i class="ph-fill ph-book"></i> {boardDisplayName}</a> /
+          <a href={`/notes/${board}/${subject}`}><i class="ph-fill ph-books"></i> {realSubjectName}</a>
+        </span>
+        <h1 class="font-serif font-bold text-4xl md:text-6xl">
+          Topics for <br />
+          <span class="text-[var(--accent)] italic">{realSubjectName}</span>
+        </h1>
+        <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
+          Available topics for {realSubjectName}. <br />
+          Click on a topic to access the revision notes. <br />
+          Found {topics.length} topics.
+        </p>
+      </div>
+
+      <div class="flex flex-col justify-end h-full gap-3">
+        <span class="text-xs text-[var(--muted)] uppercase tracking-widest">Find a topic</span>
+        <input
+          type="text"
+          id="topic-search"
+          placeholder="Search topics..."
+          class="w-full bg-transparent border-b border-[var(--muted)] text-[#f7f7f7] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--accent)] py-2 text-lg transition-colors duration-200"
+        />
+      </div>
+    </div>
+
+    <!-- Topic list + sidebar -->
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
+      <div id="topic-list" class="bg-[var(--baby-powder)] flex flex-col">
+        <span class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]">
+          Click on a topic to access notes for {realSubjectName}.
+        </span>
+
+        {topics.map((topic) => (
+          <a
+            data-topic={topic.slug}
+            href={`/notes/${board}/${subject}/${slugify(topic.slug)}`}
+            class="group relative border-b border-[var(--border-subtle)] px-5 md:px-20 py-8 text-[var(--font-color)] transition-all duration-300 ease-out
+                   bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
+                   hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
+                   flex items-center justify-between"
+          >
+            <div class="flex gap-3">
+              <span class="font-bold text-xl group-hover:text-[var(--accent)] transition-colors">{topic.name}</span>
+            </div>
+
+            <div class="flex items-center gap-3 ml-4">
+              <span class="text-xs font-semibold text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                Explore
+              </span>
+              <i class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-3xl shrink-0 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]" />
+            </div>
+          </a>
+        ))}
+
+        <div id="no-results" class="hidden flex-col items-center justify-center py-24 gap-4 text-[var(--muted)]">
+          <i class="ph-fill ph-smiley-x-eyes text-6xl text-[var(--jungle-green)]"></i>
+          <p class="text-sm">No topics match your search.</p>
+        </div>
+      </div>
+
+      <!-- sticky ad sidebar -->
+      <aside class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6">
+        <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+      </aside>
+    </div>
   </div>
 
-  <div class="animate-fade-in space-y-4">
-    {topics.length === 0 && (
-      <p class="opacity-60">No topics found for this subject.</p>
-    )}
-
-    {topics.map((topic) => (
-      <a
-        href={`/notes/${board}/${subject}/${slugify(topic)}`}
-        class="border border-[var(--blue-highlight)] block p-4 rounded-xl w-full text-xl font-bold bg-[var(--color-nav)] text-[var(--font-color)] shadow-xl hover:scale-[1.01] hover:shadow-2xl transition-all duration-200"
-      >
-        {topic}
-      </a>
-    ))}
+  <!-- mobile ad strip -->
+  <div class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center">
+    <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
   </div>
-</LevelTopicalsLayout>
+
+  <script>
+    import { fuzzyFilter } from "../../../utils/search";
+
+    const input = document.getElementById("topic-search") as HTMLInputElement;
+    const items = Array.from(document.querySelectorAll("#topic-list a")) as HTMLElement[];
+    const data = items.map((el) => ({ topic: el.dataset.topic ?? "" }));
+
+    input.addEventListener("input", () => {
+      const q = input.value.trim().toLowerCase();
+
+      if (!q) {
+        items.forEach((el) => (el.style.display = ""));
+        return;
+      }
+
+      // @ts-ignore
+      const results = fuzzyFilter(data, q, "topic");
+      // @ts-ignore
+      const matchedTopics = new Set(results.map((r) => r.topic));
+
+      const list = document.getElementById("topic-list")!;
+      items.forEach((el) => {
+        const topic = el.dataset.topic ?? "";
+        if (matchedTopics.has(topic)) {
+          el.style.display = "";
+          list.appendChild(el);
+        } else {
+          el.style.display = "none";
+        }
+      });
+    });
+  </script>
+</BaseLayout>

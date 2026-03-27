@@ -148,98 +148,106 @@ export default function PaperViewerClient({
   }
 
   return (
-    <div
-      className="h-screen px-4"
-      data-paper={name}
-      data-subject={subject}
-      data-board={board}
-      data-year={year}
-      data-source="paper viewer"
-    >
-      <div className="flex flex-col h-full">
+    <div>
+      {!isMobile && (
+        <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
+          <div className="flex gap-2">
+            {currentUrl && (
+              <>
+                <button
+                  onClick={() => {
+                    sendEvent("Opened Fullscreen");
+                    window.open(currentUrl, "_blank");
+                  }}
+                  className="bg-[var(--green-highlight)] text-white text-lg font-bold px-4 py-2 rounded-lg shadow hover:opacity-80 transition flex items-center gap-2"
+                >
+                  <i className="ph ph-arrow-square-out"></i> Open Fullscreen
+                </button>
 
-        {!isMobile && (
-          <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
+                <button
+                  onClick={() => {
+                    sendEvent("Downloaded Paper");
 
-            <div className="flex gap-2">
-              {currentUrl && (
-                <>
-                  <button
-                    onClick={() => {
-                      sendEvent("Opened Fullscreen");
-                      window.open(currentUrl, "_blank");
-                    }}
-                    className="bg-[var(--green-highlight)] text-white text-lg font-bold px-4 py-2 rounded-lg shadow hover:opacity-80 transition"
-                  >
-                    ↗ Open Fullscreen
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      sendEvent("Downloaded Paper");
-
-                      const link = document.createElement("a");
-                      link.href = currentUrl;
-                      link.download = `${name}.pdf`;
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                    }}
-                    className={`${
-                      showSolution
-                        ? "bg-[var(--pink-highlight)]"
-                        : "bg-[var(--blue-highlight)]"
-                    } text-white text-lg font-bold px-4 py-2 rounded-lg shadow hover:opacity-80 transition`}
-                  >
-                    ⬇ Download PDF
-                  </button>
-                </>
-              )}
-            </div>
-
-            {hasQuestion && hasMarkScheme && (
-              <button
-                onClick={() => {
-                  sendEvent("Toggled Mark Scheme");
-                  setShowSolution(!showSolution);
-                }}
-                className={`${
-                  showSolution
-                    ? "bg-[var(--pink-highlight)]"
-                    : "bg-[var(--blue-highlight)]"
-                } text-white text-lg font-bold px-4 py-2 rounded-lg shadow hover:opacity-80 transition`}
-              >
-                {showSolution ? "📄 Show Question" : "✅ Show Mark Scheme"}
-              </button>
+                    const link = document.createElement("a");
+                    link.href = currentUrl;
+                    link.download = `${name}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                  className={`${
+                    showSolution
+                      ? "bg-[var(--pink-highlight)]"
+                      : "bg-[var(--blue-highlight)]"
+                  } text-white text-lg font-bold px-4 py-2 rounded-lg shadow hover:opacity-80 transition flex items-center gap-2`}
+                >
+                  <i className="ph ph-download"></i> Download PDF
+                </button>
+              </>
             )}
           </div>
-        )}
 
-        {currentUrl ? (
-          <object
-            key={currentUrl}
-            data={currentUrl}
-            type="application/pdf"
-            className="w-full flex-1 border rounded shadow min-h-0"
-          >
-            <div className="text-center mt-8 opacity-60">
-              <p className="mb-4">Your browser can't display PDFs inline.</p>
+          {hasQuestion && hasMarkScheme && (
+            <button
+              onClick={() => {
+                sendEvent("Toggled Mark Scheme");
+                setShowSolution(!showSolution);
+              }}
+              className={`${
+                showSolution
+                  ? "bg-[var(--pink-highlight)]"
+                  : "bg-[var(--blue-highlight)]"
+              } text-white text-lg font-bold px-4 py-2 rounded-lg shadow hover:opacity-80 transition flex items-center gap-2`}
+            >
+              {showSolution ? (
+                <>
+                  <i className="ph ph-file-text"></i> Show Question
+                </>
+              ) : (
+                <>
+                  <i className="ph ph-check-circle"></i> Show Mark Scheme
+                </>
+              )}
+            </button>
+          )}
+        </div>
+      )}
 
-              <a
-                href={currentUrl}
-                download
-                onClick={() => sendEvent("Downloaded Paper")}
-                className="px-6 py-3 bg-[var(--blue-highlight)] text-white font-bold rounded-lg hover:opacity-80 transition"
-              >
-                Download PDF
-              </a>
+      <div
+        className="h-screen px-4"
+        data-paper={name}
+        data-subject={subject}
+        data-board={board}
+        data-year={year}
+        data-source="paper viewer"
+      >
+        <div className="flex flex-col h-full">
+          {currentUrl ? (
+            <object
+              key={currentUrl}
+              data={currentUrl}
+              type="application/pdf"
+              className="w-full flex-1 border rounded shadow min-h-0"
+            >
+              <div className="text-center mt-8 opacity-60">
+                <p className="mb-4">Your browser can't display PDFs inline.</p>
+
+                <a
+                  href={currentUrl}
+                  download
+                  onClick={() => sendEvent("Downloaded Paper")}
+                  className="px-6 py-3 bg-[var(--blue-highlight)] text-white font-bold rounded-lg hover:opacity-80 transition"
+                >
+                  Download PDF
+                </a>
+              </div>
+            </object>
+          ) : (
+            <div className="flex-1 flex items-center justify-center opacity-50">
+              Paper not available
             </div>
-          </object>
-        ) : (
-          <div className="flex-1 flex items-center justify-center opacity-50">
-            Paper not available
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

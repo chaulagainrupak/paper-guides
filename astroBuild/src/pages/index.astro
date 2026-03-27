@@ -1,127 +1,1120 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout
   title="Paper-Guides | Past Papers, Notes & Question Generator"
   description="Free exam preparation resources — Past Papers, Notes, Question Generator for O-Level, A-Levels, NEB / TU / IOE and more."
 >
-<section class="mt-[64px] min-h-screen text-[var(--font-color)] flex flex-col items-center justify-center px-4">
+  <!-- JSON-LD structured data for Google rich results -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "PaperGuides",
+      "url": "https://paperguides.org",
+      "description": "Free past papers, study notes, and question generator for CAIE A Levels and Kathmandu University. Open-source, community-maintained, made in Nepal.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://paperguides.org/questions?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "PaperGuides",
+      "url": "https://paperguides.org",
+      "description": "Free exam preparation platform for A Level and university students in Nepal and globally.",
+      "foundingCountry": "NP",
+      "audience": {
+        "@type": "EducationalAudience",
+        "educationalRole": "student"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Study Resources",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Course",
+              "name": "CAIE A Level Past Papers",
+              "description": "Past papers for Physics 9702, Mathematics 9709, Chemistry 9701, Biology 9700, Computer Science 9618, Economics 9708 and more."
+            },
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Course",
+              "name": "Kathmandu University Past Papers",
+              "description": "Past papers for KU bachelors programmes including BBA, BCA, BIM, BE Computer, BE Civil, BE Electrical, BSc Biotechnology, BSc Pharmacy and more."
+            },
+            "price": "0",
+            "priceCurrency": "USD"
+          }
+        ]
+      }
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "CAIE A Level Subjects on PaperGuides",
+      "url": "https://paperguides.org/pastpapers",
+      "itemListElement": [
+        {"@type":"ListItem","position":1,"name":"Physics 9702","url":"https://paperguides.org/subjects/a-levels/physics-9702"},
+        {"@type":"ListItem","position":2,"name":"Mathematics 9709","url":"https://paperguides.org/subjects/a-levels/mathematics-9709"},
+        {"@type":"ListItem","position":3,"name":"Chemistry 9701","url":"https://paperguides.org/subjects/a-levels/chemistry-9701"},
+        {"@type":"ListItem","position":4,"name":"Biology 9700","url":"https://paperguides.org/subjects/a-levels/biology-9700"},
+        {"@type":"ListItem","position":5,"name":"Computer Science 9618","url":"https://paperguides.org/subjects/a-levels/computer-science-9608"},
+        {"@type":"ListItem","position":6,"name":"Economics 9708","url":"https://paperguides.org/subjects/a-levels/economics-9708"},
+        {"@type":"ListItem","position":7,"name":"Business 9609","url":"https://paperguides.org/subjects/a-levels/business-9609"},
+        {"@type":"ListItem","position":8,"name":"English Literature 9695","url":"https://paperguides.org/subjects/a-levels/english-literature-9695"},
+        {"@type":"ListItem","position":9,"name":"History 9389","url":"https://paperguides.org/subjects/a-levels/history-9389"},
+        {"@type":"ListItem","position":10,"name":"Geography 9696","url":"https://paperguides.org/subjects/a-levels/geography-9696"}
+      ]
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Kathmandu University Subjects on PaperGuides",
+      "url": "https://paperguides.org/subjects/kathmandu-university",
+      "itemListElement": [
+        {"@type":"ListItem","position":1,"name":"BCA — Computer Applications","url":"https://paperguides.org/subjects/kathmandu-university/comp-105-computer-applications"},
+        {"@type":"ListItem","position":2,"name":"Programming Concepts","url":"https://paperguides.org/subjects/kathmandu-university/comp-115-programming-concepts"},
+        {"@type":"ListItem","position":3,"name":"Database Management Systems","url":"https://paperguides.org/subjects/kathmandu-university/comp-232-database-management-systems"},
+        {"@type":"ListItem","position":4,"name":"Operating Systems","url":"https://paperguides.org/subjects/kathmandu-university/comp-307-operating-systems"},
+        {"@type":"ListItem","position":5,"name":"Algorithms and Complexity","url":"https://paperguides.org/subjects/kathmandu-university/comp-314-algorithms-and-complexity"},
+        {"@type":"ListItem","position":6,"name":"Artificial Intelligence","url":"https://paperguides.org/subjects/kathmandu-university/comp-472-artificial-intelligence"},
+        {"@type":"ListItem","position":7,"name":"Machine Learning","url":"https://paperguides.org/subjects/kathmandu-university/comp-473-machine-learning"},
+        {"@type":"ListItem","position":8,"name":"Calculus and Linear Algebra","url":"https://paperguides.org/subjects/kathmandu-university/math-101-calculus-and-linear-algebra"},
+        {"@type":"ListItem","position":9,"name":"Biotechnology","url":"https://paperguides.org/subjects/kathmandu-university/biot-101-introduction-to-biotechnology"},
+        {"@type":"ListItem","position":10,"name":"Pharmacy","url":"https://paperguides.org/subjects/kathmandu-university/phar-111-pharmaceutical-chemistry-i"},
+        {"@type":"ListItem","position":11,"name":"Thermodynamics","url":"https://paperguides.org/subjects/kathmandu-university/meeg-141-thermodynamics-i"},
+        {"@type":"ListItem","position":12,"name":"Control Systems","url":"https://paperguides.org/subjects/kathmandu-university/eeeg-331-control-systems"}
+      ]
+    }
+  </script>
 
-  {/* Hero Section */}
-  <div class="text-center max-w-4xl mb-16 text-shadow-lg">
-    <h1 class="text-5xl md:text-7xl font-bold leading-tight mb-4">
-      Prepare <span class="text-[var(--blue-highlight)]">Faster</span>{" "}
-      Than Ever
-    </h1>
+  <div
+    class="mt-[64px] min-h-[calc(100vh-64px)] grid grid-cols-1 md:grid-cols-[3fr_1fr] gap-0 relative overflow-hidden"
+  >
+    <!-- Scattered decorative icons -->
+    <i
+      class="ph-fill ph-books absolute pointer-events-none select-none text-[var(--muted)] opacity-[0.08] text-lg rotate-[-15deg]"
+      style="top:11%; left:3%;"></i>
+    <i
+      class="ph-fill ph-pencil-simple absolute pointer-events-none select-none text-[var(--muted)] opacity-[0.07] text-2xl rotate-[12deg]"
+      style="top:22%; left:88%;"></i>
+    <i
+      class="ph-fill ph-graduation-cap absolute pointer-events-none select-none text-[var(--muted)] opacity-[0.09] text-base rotate-[8deg]"
+      style="top:62%; left:5%;"></i>
+    <i
+      class="ph-fill ph-calculator absolute pointer-events-none select-none text-[var(--muted)] opacity-[0.07] text-xl rotate-[-22deg]"
+      style="top:78%; left:77%;"></i>
+    <i
+      class="ph-fill ph-flask absolute pointer-events-none select-none text-[var(--muted)] opacity-[0.06] text-sm rotate-[5deg]"
+      style="top:40%; left:52%;"></i>
+    <i
+      class="ph-fill ph-brain absolute pointer-events-none select-none text-[var(--muted)] opacity-[0.07] text-2xl rotate-[-8deg]"
+      style="top:88%; left:18%;"></i>
+    <i
+      class="ph-fill ph-clock absolute pointer-events-none select-none text-[var(--muted)] opacity-[0.06] text-base rotate-[18deg]"
+      style="top:14%; left:42%;"></i>
+    <i
+      class="ph-fill ph-chart-line absolute pointer-events-none select-none text-[var(--muted)] opacity-[0.06] text-lg rotate-[-5deg]"
+      style="top:55%; left:63%;"></i>
 
-    <p class="text-xl md:text-2xl mb-4 ">
-      Paper-<span class="text-[var(--blue-highlight)]">Guides</span>{" "}
-      gives you access to Past Papers, Notes, Topical Questions, and a
-      Question Generator to{" "}
-      <span class="text-[var(--pink-highlight)]">
-        prepare faster than ever
-      </span>.
-    </p>
+    <!-- HERO LEFT -->
+    <div
+      class="w-full flex flex-col justify-center gap-6 md:px-25 px-5 py-12 md:py-0"
+    >
+      <!-- Hero tag -->
+      <div
+        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--border-subtle)] bg-[var(--accent)]/10 text-[var(--muted)] text-[0.7rem] font-sans font-semibold uppercase tracking-widest w-fit"
+      >
+        <i class="ph-fill ph-dot-outline"></i>Free
+        <i class="ph-fill ph-dot-outline"></i>Open Source
+      </div>
 
-    <p class="text-lg md:text-xl">
-      By the students for the students.
-    </p>
+      <h1 class="font-serif text-[clamp(52px,6.5vw,90px)]/[0.92] font-bold">
+        Study <br />
+        <em class="text-[var(--accent)]">smarter,</em>
+        <br />
+        <em class="font-normal text-[var(--muted)]"> not harder. </em>
+      </h1>
+
+      <p
+        class="md:max-w-[50%] text-[var(--muted)] font-sans text-sm leading-relaxed"
+      >
+        Past papers, quality notes, per-topic question generator, Q&A repository
+        — all free, made by students who've been there.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+        <a
+          href="/pastpapers"
+          class="group w-full sm:w-auto rounded-full px-6 py-3 flex items-center justify-center gap-2
+                 bg-[var(--cta-button)] text-[var(--cta-text)] shadow-lg font-sans text-sm font-medium
+                 transition-all duration-300 ease-out hover:shadow-2xl hover:-translate-y-0.5 hover:scale-[1.02]"
+        >
+          Browse Past Papers
+          <i
+            class="ph-fill ph-arrow-right transition-transform duration-300 group-hover:translate-x-1"
+          ></i>
+        </a>
+        <a
+          href="/generator"
+          class="group w-full sm:w-auto rounded-full px-6 py-3 flex items-center justify-center
+                 border border-[var(--border-subtle)] text-[var(--color-text)] font-sans text-sm font-medium
+                 transition-all duration-300 ease-out shadow-sm
+                 hover:bg-[var(--muted)]/10 hover:-translate-y-0.5 hover:scale-[1.02]"
+        >
+          Try Generator
+        </a>
+      </div>
+
+      <!-- Stats -->
+      <div class="flex gap-6 mt-2 border-t border-[var(--border-subtle)] pt-5">
+        <a
+          href="/pastpapers"
+          class="border-r border-[var(--border-subtle)] pr-6 flex flex-col items-center text-center cursor-pointer group"
+        >
+          <div
+            class="font-serif-body text-3xl group-hover:text-[var(--accent)] transition-colors"
+          >
+            2
+          </div>
+          <div class="font-sans text-xs text-[var(--muted)] mt-0.5">
+            Boards Covered
+          </div>
+        </a>
+        <div
+          class="border-r border-[var(--border-subtle)] pr-6 flex flex-col items-center text-center"
+        >
+          <div class="font-serif-body text-3xl">~520+</div>
+          <div class="font-sans text-xs text-[var(--muted)] mt-0.5">
+            A Level & KU Subjects
+          </div>
+        </div>
+        <a
+          href="/about"
+          class="flex flex-col items-center text-center cursor-pointer group"
+        >
+          <div
+            class="font-serif-body text-3xl group-hover:text-[var(--accent)] transition-colors"
+          >
+            100%
+          </div>
+          <div class="font-sans text-xs text-[var(--muted)] mt-0.5">
+            Free, always
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div
+      class="relative overflow-hidden bg-[var(--sidebar-bg)] flex flex-col justify-center w-full h-full px-0 py-8 md:py-0 gap-0 md:border-l border-[var(--border-subtle)]"
+    >
+      <!-- Gradient wash -->
+      <div
+        class="absolute inset-0 pointer-events-none z-0"
+        style="background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%, color-mix(in srgb, var(--french-blue) 10%, transparent));"
+      >
+      </div>
+
+      <!-- Grid texture -->
+      <div
+        class="absolute inset-0 pointer-events-none opacity-55 z-0"
+        style="background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px); background-size: 48px 48px;"
+      >
+      </div>
+
+      <!-- Ghost deco icons -->
+      <i
+        class="ph-fill ph-exam absolute pointer-events-none select-none text-[var(--color-text)] opacity-[0.04] text-[6rem] rotate-[20deg] z-0"
+        style="bottom:12%; right:-8%;"></i>
+      <i
+        class="ph-fill ph-books absolute pointer-events-none select-none text-[var(--color-text)] opacity-[0.04] text-[4rem] rotate-[-15deg] z-0"
+        style="top:8%; left:-5%;"></i>
+      <i
+        class="ph-fill ph-star-four absolute pointer-events-none select-none text-[var(--color-text)] opacity-[0.05] text-[3rem] rotate-[8deg] z-0"
+        style="top:44%; right:5%;"></i>
+
+      <!-- Inner content -->
+      <div class="relative z-10 flex flex-col h-full justify-center">
+        <!-- Header -->
+        <div class="flex items-center gap-2 px-5 pt-5 pb-3">
+          <i
+            class="ph-fill ph-sparkle text-[var(--accent)] opacity-60 text-[0.75rem]"
+          ></i>
+          <h2
+            class="font-serif text-[0.7rem] font-bold tracking-[0.12em] uppercase text-[var(--muted)] m-0"
+          >
+            Start Here
+          </h2>
+          <div class="flex-1 h-px bg-[var(--border-subtle)]"></div>
+          <div
+            class="w-1.5 h-1.5 rounded-full bg-[var(--accent)] opacity-50 shrink-0"
+          >
+          </div>
+        </div>
+
+        <!-- Past Papers -->
+        <a
+          href="/pastpapers"
+          class="group relative flex items-start gap-3 p-5 cursor-pointer border-b border-[var(--border-subtle)]
+                 transition-all duration-200 hover:bg-[var(--sidebar-hover)]
+                 before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5
+                 before:bg-[var(--accent)] before:opacity-0 before:transition-opacity before:duration-200
+                 hover:before:opacity-100"
+        >
+          <div class="sidebar-icon-wrap sidebar-icon-accent shrink-0 mt-0.5">
+            <i class="ph-fill ph-exam text-[var(--accent)]"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="font-semibold text-sm text-[var(--color-text)]">
+              Past Papers
+            </h3>
+            <p class="text-xs text-[var(--muted)] mt-0.5 leading-relaxed">
+              CAIE A Levels and KU Bachelors, organized by subject and year.
+            </p>
+            <div
+              class="inline-flex items-center gap-1 mt-1 text-[0.6rem] font-semibold uppercase tracking-[0.06em] px-2 py-0.5 rounded-full bg-[var(--accent)]/10 text-[var(--accent)]"
+            >
+              <i class="ph-fill ph-file-text text-[0.6rem]"></i>
+              A Levels · KU
+            </div>
+          </div>
+          <i
+            class="ph-fill ph-arrow-right text-[var(--muted)] text-sm shrink-0 mt-1 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-[var(--accent)]"
+          ></i>
+        </a>
+
+        <!-- Question Generator -->
+        <a
+          href="/generator"
+          class="group relative flex items-start gap-3 p-5 cursor-pointer border-b border-[var(--border-subtle)]
+                 transition-all duration-200 hover:bg-[var(--sidebar-hover)]
+                 before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5
+                 before:bg-purple-600 before:opacity-0 before:transition-opacity before:duration-200
+                 hover:before:opacity-100"
+        >
+          <div class="sidebar-icon-wrap sidebar-icon-yellow shrink-0 mt-0.5">
+            <i class="ph-fill ph-lightning text-purple-600"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="font-semibold text-sm text-[var(--color-text)]">
+              Question Generator
+            </h3>
+            <p class="text-xs text-[var(--muted)] mt-0.5 leading-relaxed">
+              Custom practice sets by topic, difficulty, and component.
+            </p>
+            <div
+              class="inline-flex items-center gap-1 mt-1 text-[0.6rem] font-semibold uppercase tracking-[0.06em] px-2 py-0.5 rounded-full bg-purple-600/15 text-purple-900 dark:text-purple-400"
+            >
+              <i class="ph-fill ph-sliders text-[0.6rem]"></i>
+              Topic wise
+            </div>
+          </div>
+          <i
+            class="ph-fill ph-arrow-right text-[var(--muted)] text-sm shrink-0 mt-1 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-purple-600"
+          ></i>
+        </a>
+
+        <!-- Study Notes -->
+        <a
+          href="/notes"
+          class="group relative flex items-start gap-3 p-5 cursor-pointer border-b border-[var(--border-subtle)]
+                 transition-all duration-200 hover:bg-[var(--sidebar-hover)]
+                 before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5
+                 before:bg-[var(--jungle-green)] before:opacity-0 before:transition-opacity before:duration-200
+                 hover:before:opacity-100"
+        >
+          <div class="sidebar-icon-wrap sidebar-icon-green shrink-0 mt-0.5">
+            <i class="ph-fill ph-notebook text-[var(--jungle-green)]"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="font-semibold text-sm text-[var(--color-text)]">
+              Study Notes
+            </h3>
+            <p class="text-xs text-[var(--muted)] mt-0.5 leading-relaxed">
+              Curated notes by students who've sat the exams.
+            </p>
+            <div
+              class="inline-flex items-center gap-1 mt-1 text-[0.6rem] font-semibold uppercase tracking-[0.06em] px-2 py-0.5 rounded-full bg-[var(--jungle-green)]/10 text-[var(--jungle-green)]"
+            >
+              <i class="ph-fill ph-users text-[0.6rem]"></i>
+              Student Made
+            </div>
+          </div>
+          <i
+            class="ph-fill ph-arrow-right text-[var(--muted)] text-sm shrink-0 mt-1 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-[var(--jungle-green)]"
+          ></i>
+        </a>
+
+        <!-- Questions -->
+        <a
+          href="/questions"
+          class="group relative flex items-start gap-3 p-5 cursor-pointer border-b border-[var(--border-subtle)]
+                 transition-all duration-200 hover:bg-[var(--sidebar-hover)]
+                 before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5
+                 before:bg-[var(--french-blue)] before:opacity-0 before:transition-opacity before:duration-200
+                 hover:before:opacity-100"
+        >
+          <div class="sidebar-icon-wrap sidebar-icon-blue shrink-0 mt-0.5">
+            <i class="ph-fill ph-chat-circle-dots text-[var(--french-blue)]"
+            ></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h3 class="font-semibold text-sm text-[var(--color-text)]">
+              Questions
+            </h3>
+            <p class="text-xs text-[var(--muted)] mt-0.5 leading-relaxed">
+              Search curated questions across all subjects and topics.
+            </p>
+            <div
+              class="inline-flex items-center gap-1 mt-1 text-[0.6rem] font-semibold uppercase tracking-[0.06em] px-2 py-0.5 rounded-full bg-[var(--french-blue)]/10 text-[var(--french-blue)]"
+            >
+              <i class="ph-fill ph-magnifying-glass text-[0.6rem]"></i>
+              Searchable
+            </div>
+          </div>
+          <i
+            class="ph-fill ph-arrow-right text-[var(--muted)] text-sm shrink-0 mt-1 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-[var(--french-blue)]"
+          ></i>
+        </a>
+
+        <!-- Sidebar footer badge -->
+        <div
+          class="flex items-center gap-2 px-5 py-3.5 border-t border-[var(--border-subtle)]"
+        >
+          <i
+            class="ph-fill ph-shield-check text-[var(--accent)] opacity-70 text-xs"
+          ></i>
+          <span
+            class="text-[0.65rem] font-sans text-[var(--muted)] tracking-[0.04em]"
+            >Free forever</span
+          >
+          <div class="ml-auto flex gap-1 opacity-30">
+            <i class="ph-fill ph-star text-[0.6rem] text-[var(--accent)]"></i>
+            <i class="ph-fill ph-star text-[0.6rem] text-[var(--accent)]"></i>
+            <i class="ph-fill ph-star text-[0.6rem] text-[var(--accent)]"></i>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  {/* Cards Grid */}
-  <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-6xl">
+  <!-- SECOND SECTION -->
+  <div class="overflow-hidden">
+    <style>
+      .marquee-wrap {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+      }
+      .marquee-inner {
+        display: flex;
+        width: max-content;
+        animation: marquee 20s linear infinite;
+      }
+      @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+    </style>
 
-    {/* Card 1 */}
-    <div class="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1 h-full">
-      <img
-        loading="lazy"
-        src="/images/compressed_past-papers.webp"
-        alt="Past Papers"
-        width={600}
-        height={337}
-        class="w-full aspect-video rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
-      />
-
-      <h3 class="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
-        Exam Success Starts Here
-      </h3>
-
-      <p class="text-[var(--font-color)] mb-4">
-        Access past-papers to boost your exam preparation.
-      </p>
-
-      <a
-        href="/pastpapers"
-        data-umami-event="Homepage Card Click"
-        data-umami-event-feature="Past Papers"
-        class="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
-      >
-        Past Papers
-      </a>
+    <div class="marquee-wrap bg-[#242424]">
+      <div class="marquee-inner h-fit p-2 text-[#e2e0dc]">
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-flask"></i> Physics 9702</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-calculator"></i> Mathematics 9709</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-microscope"></i> Chemistry 9701</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-heart"></i> Biology 9700</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-code"></i> Computer Science 9618</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-chart-bar"></i> Economics 9708</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-graduation-cap"></i> BBA 101</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-books"></i> BCA 101</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-notebook"></i> BIM 101</span>
+        <!-- duplicate for seamless loop -->
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-flask"></i> Physics 9702</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-calculator"></i> Mathematics 9709</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-microscope"></i> Chemistry 9701</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-heart"></i> Biology 9700</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-code"></i> Computer Science 9618</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-chart-bar"></i> Economics 9708</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-graduation-cap"></i> BBA 101</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-books"></i> BCA 101</span>
+        <span class="marquee-item text-xl px-3 italic text-medium font-serif opacity-60"><i class="ph-fill ph-notebook"></i> BIM 101</span>
+      </div>
     </div>
 
-    {/* Card 2 */}
-    <div class="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1 h-full">
-
-      <img
-        loading="lazy"
-        src="/images/compressed_question-generator.webp"
-        alt="Question Generator"
-        width={600}
-        height={337}
-        class="w-full aspect-video rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
-      />
-
-      <h3 class="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
-        Question Practice
+    <!-- A LEVELS -->
+    <div class="bg-[#242424] text-[#e2e0dc] p-5 px-30 max-sm:px-5">
+      <span class="italic font-serif text-xs font-bold text-[var(--accent)] opacity-80">A Level &mdash; CAIE</span>
+      <h3 class="text-4xl sm:text-5xl font-serif font-bold mb-4">
+        Pick Your <span class="text-[var(--accent)] italic">Subject</span>
       </h3>
 
-      <p class="text-[var(--font-color)] mb-4">
-        Generate custom practice questions tailored to your needs.
-      </p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/subjects/a-levels/physics-9702" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          Physics <i class="ph-fill ph-atom transition-transform duration-300 group-hover:rotate-12"></i>
+        </a>
+        <a href="/subjects/a-levels/mathematics-9709" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          Mathematics <i class="ph-fill ph-calculator transition-transform duration-300 group-hover:rotate-12"></i>
+        </a>
+        <a href="/subjects/a-levels/chemistry-9701" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          Chemistry <i class="ph-fill ph-flask transition-transform duration-300 group-hover:rotate-12"></i>
+        </a>
+        <a href="/subjects/a-levels/biology-9700" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          Biology <i class="ph-fill ph-heartbeat transition-transform duration-300 group-hover:rotate-12"></i>
+        </a>
+        <a href="/subjects/a-levels/computer-science-9608" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          CS <i class="ph-fill ph-computer-tower transition-transform duration-300 group-hover:rotate-12"></i>
+        </a>
+        <a href="/subjects/a-levels/economics-9708" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          Economics <i class="ph-fill ph-chart-line transition-transform duration-300 group-hover:rotate-12"></i>
+        </a>
+        <a href="/subjects/a-levels/business-9609" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          Business <i class="ph-fill ph-briefcase transition-transform duration-300 group-hover:rotate-12"></i>
+        </a>
+        <a href="/subjects/a-levels/english-literature-9695" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          English Lit <i class="ph-fill ph-book transition-transform duration-300 group-hover:rotate-12"></i>
+        </a>
+        <a href="/subjects/a-levels/history-9389" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          History <i class="ph-fill ph-clock-counter-clockwise transition-transform duration-300 group-hover:rotate-12"></i>
+        </a>
+        <a href="/subjects/a-levels/geography-9696" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+          Geography <i class="ph-fill ph-globe-hemisphere-east transition-transform duration-300 group-hover:rotate-12"></i>
+        </a>
+      </div>
 
-      <a
-        href="/generator"
-        data-umami-event="Homepage Card Click"
-        data-umami-event-feature="Question Generator"
-        class="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
-      >
-        Start Generating Questions
-      </a>
+      <!-- SEO hidden index -->
+      <div class="sr-only" aria-hidden="true">
+        <p>PaperGuides provides free past papers, notes, and question generators for CAIE A Level subjects including Physics 9702, Mathematics 9709, Chemistry 9701, Biology 9700, Computer Science 9618, Economics 9708, Business 9609, English Literature 9695, History 9389, and Geography 9696. We also cover Kathmandu University (KU) past papers for BBA, BCA, BIM, BSc CSIT, BE Computer Engineering, BE Civil Engineering, BE Electrical Engineering, BE Electronics Engineering, BE Mechanical Engineering, BSc Environmental Science, BSc Biotechnology, BSc Pharmacy, and many more undergraduate programmes.</p>
+      </div>
+
+      <div class="mt-4">
+        <a href="/subjects/a-levels" class="inline-flex items-center gap-2 text-xs font-sans font-semibold text-[var(--accent)] hover:underline underline-offset-4 transition-colors">
+          View all A Level subjects
+          <i class="ph-fill ph-arrow-right text-[0.7rem]"></i>
+        </a>
+      </div>
     </div>
 
-    {/* Card 3 */}
-    <div class="bg-[var(--baby-powder)] rounded-2xl shadow-lg p-6 flex flex-col items-center text-center hover:shadow-xl transition-all hover:-translate-y-1 h-full">
-
-      <img
-        loading="lazy"
-        src="/images/compressed_notes.webp"
-        alt="Notes"
-        width={600}
-        height={337}
-        class="w-full aspect-video rounded-lg mb-4 border-2 border-[var(--blue-highlight)] object-cover"
-      />
-
-      <h3 class="text-xl font-semibold text-[var(--blue-highlight)] mb-2">
-        Quality Notes
+    <!-- KU SUBJECTS -->
+    <div class="bg-[#242424] text-[#e2e0dc] p-5 px-30 max-sm:px-5 border-t border-white/5">
+      <span class="italic font-serif text-xs font-bold text-[#7eb8a4] opacity-80">Kathmandu University &mdash; KU</span>
+      <h3 class="text-4xl sm:text-5xl font-serif font-bold mb-4">
+        KU <span class="text-[#7eb8a4] italic">Subjects</span>
       </h3>
 
-      <p class="text-[var(--font-color)] mb-4">
-        Acess quality study notes well organized and easily accessible.
-      </p>
+      <div class="flex flex-col gap-6">
 
-      <a
-        href="/notes"
-        data-umami-event="Homepage Card Click"
-        data-umami-event-feature="Notes"
-        class="inline-block py-3 text-white text-lg font-medium rounded-md bg-[var(--blue-highlight)] hover:bg-[var(--picton-blue)] transition-colors w-full mt-auto"
-      >
-        View Notes
-      </a>
+        <!-- Management -->
+        <div>
+          <div class="flex items-center gap-2 mb-2.5">
+            <i class="ph-fill ph-briefcase text-[#d4a853] text-sm opacity-70"></i>
+            <span class="font-sans text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[#d4a853] opacity-80">Management</span>
+            <div class="flex-1 h-px bg-white/5"></div>
+          </div>
+          <div class="flex flex-wrap gap-2.5">
+            <a href="/subjects/kathmandu-university/math-111-mathematics-for-management" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              BBA <i class="ph-fill ph-trend-up transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/comp-105-computer-applications" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              BCA <i class="ph-fill ph-desktop transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/comp-116-object-oriented-programming" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              BIM <i class="ph-fill ph-database transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/mgts-301-engineering-economics" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Engineering Economics <i class="ph-fill ph-chart-bar transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/mgts-302-project-management" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Project Management <i class="ph-fill ph-kanban transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Computer Science & IT -->
+        <div>
+          <div class="flex items-center gap-2 mb-2.5">
+            <i class="ph-fill ph-code text-[#7eb8a4] text-sm opacity-70"></i>
+            <span class="font-sans text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[#7eb8a4] opacity-80">Computer Science & IT</span>
+            <div class="flex-1 h-px bg-white/5"></div>
+          </div>
+          <div class="flex flex-wrap gap-2.5">
+            <a href="/subjects/kathmandu-university/comp-115-programming-concepts" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Programming Concepts <i class="ph-fill ph-terminal-window transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/comp-232-database-management-systems" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              DBMS <i class="ph-fill ph-database transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/comp-307-operating-systems" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Operating Systems <i class="ph-fill ph-cpu transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/comp-314-algorithms-and-complexity" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Algorithms <i class="ph-fill ph-graph transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/comp-472-artificial-intelligence" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Artificial Intelligence <i class="ph-fill ph-brain transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/comp-473-machine-learning" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Machine Learning <i class="ph-fill ph-robot transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/comp-482-cloud-computing" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Cloud Computing <i class="ph-fill ph-cloud transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/comp-484-network-security" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Network Security <i class="ph-fill ph-shield-check transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Engineering -->
+        <div>
+          <div class="flex items-center gap-2 mb-2.5">
+            <i class="ph-fill ph-gear-six text-[#c47b5a] text-sm opacity-70"></i>
+            <span class="font-sans text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[#c47b5a] opacity-80">Engineering</span>
+            <div class="flex-1 h-px bg-white/5"></div>
+          </div>
+          <div class="flex flex-wrap gap-2.5">
+            <a href="/subjects/kathmandu-university/meeg-141-thermodynamics-i" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Thermodynamics <i class="ph-fill ph-thermometer-hot transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/cieg-201-fluid-mechanics-i" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Fluid Mechanics <i class="ph-fill ph-waves transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/eeeg-331-control-systems" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Control Systems <i class="ph-fill ph-sliders-horizontal transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/eeeg-112-electrical-circuit-analysis" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Circuit Analysis <i class="ph-fill ph-lightning transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/cieg-206-structural-analysis-i" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Structural Analysis <i class="ph-fill ph-buildings transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/meeg-316-robotics" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Robotics <i class="ph-fill ph-robot transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/cieg-311-earthquake-engineering" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Earthquake Engineering <i class="ph-fill ph-waves transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/epeg-318-hydropower-engineering" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Hydropower Engineering <i class="ph-fill ph-drop transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Science & Life Sciences -->
+        <div>
+          <div class="flex items-center gap-2 mb-2.5">
+            <i class="ph-fill ph-flask text-[#8fa8d4] text-sm opacity-70"></i>
+            <span class="font-sans text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[#8fa8d4] opacity-80">Science & Life Sciences</span>
+            <div class="flex-1 h-px bg-white/5"></div>
+          </div>
+          <div class="flex flex-wrap gap-2.5">
+            <a href="/subjects/kathmandu-university/biot-101-introduction-to-biotechnology" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Biotechnology <i class="ph-fill ph-dna transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/phar-111-pharmaceutical-chemistry-i" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Pharmacy <i class="ph-fill ph-pill transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/enve-102-environmental-science" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Environmental Science <i class="ph-fill ph-leaf transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/biot-201-microbiology" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Microbiology <i class="ph-fill ph-microscope transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/biot-203-genetics" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Genetics <i class="ph-fill ph-dna transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/chem-101-general-chemistry" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              General Chemistry <i class="ph-fill ph-test-tube transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Mathematics & Foundation -->
+        <div>
+          <div class="flex items-center gap-2 mb-2.5">
+            <i class="ph-fill ph-math-operations text-[#b08de8] text-sm opacity-70"></i>
+            <span class="font-sans text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[#b08de8] opacity-80">Mathematics & Foundation</span>
+            <div class="flex-1 h-px bg-white/5"></div>
+          </div>
+          <div class="flex flex-wrap gap-2.5">
+            <a href="/subjects/kathmandu-university/math-101-calculus-and-linear-algebra" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Calculus & Linear Algebra <i class="ph-fill ph-calculator transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/math-102-differential-equations-and-probability" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Differential Equations <i class="ph-fill ph-wave-sine transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/math-201-numerical-methods" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Numerical Methods <i class="ph-fill ph-sigma transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/stat-201-applied-statistics" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Applied Statistics <i class="ph-fill ph-chart-bar transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+            <a href="/subjects/kathmandu-university/mcsc-201-discrete-mathematics" class="group rounded-full px-4 py-2 flex items-center gap-2 bg-[#f7f7f7] text-[#0d1b2a] shadow font-sans text-lg font-medium transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.03]">
+              Discrete Mathematics <i class="ph-fill ph-function transition-transform duration-300 group-hover:rotate-12"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mt-5">
+        <a href="/subjects/kathmandu-university" class="inline-flex items-center gap-2 text-xs font-sans font-semibold text-[#7eb8a4] hover:underline underline-offset-4 transition-colors">
+          <i class="ph-fill ph-books"></i>
+          Browse all KU subjects
+          <i class="ph-fill ph-arrow-right text-[0.7rem]"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- STUDY NOTES SECTION                                      -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="text-[var(--color-text)] border-t border-[var(--border-subtle)]">
+      <div class="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-0">
+
+        <!-- Left: Notes pitch -->
+        <div class="p-5 px-30 max-sm:px-5 py-16 flex flex-col justify-center gap-5">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--jungle-green)]/30 bg-[var(--jungle-green)]/10 text-[var(--jungle-green)] text-[0.7rem] font-sans font-semibold uppercase tracking-widest w-fit">
+            <i class="ph-fill ph-notebook text-[0.65rem]"></i> Study Notes
+          </div>
+          <h2 class="font-serif text-4xl sm:text-5xl font-bold leading-[1.05]">
+            Notes written<br />
+            <em class="text-[var(--jungle-green)]">by students,</em><br />
+            <em class="font-normal text-[var(--muted)]">for students.</em>
+          </h2>
+          <p class="font-sans text-[var(--muted)] text-sm leading-relaxed max-w-md">
+            Every note on PaperGuides has been written or vetted by someone who's actually sat the exam. No generic summaries, real concise breakdowns of what the syllabus actually tests.
+          </p>
+          <div class="flex flex-wrap gap-3 mt-1">
+            <a
+              href="/notes"
+              class="group w-fit rounded-full px-5 py-2.5 flex items-center gap-2
+                     bg-[var(--jungle-green)] text-white shadow-lg font-sans text-sm font-medium
+                     transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]"
+            >
+              Browse Notes
+              <i class="ph-fill ph-arrow-right transition-transform duration-300 group-hover:translate-x-1"></i>
+            </a>
+            <a
+              href="https://discord.gg/U9fAnCgcu3"
+              target="_blank"
+              class="group w-fit rounded-full px-5 py-2.5 flex items-center gap-2
+                     border border-[var(--border-subtle)] text-[var(--color-text)] font-sans text-sm font-medium
+                     transition-all duration-300 ease-out hover:bg-[var(--muted)]/10 hover:-translate-y-0.5"
+            >
+              <i class="ph-fill ph-pencil-simple"></i> Contribute
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Notes feature cards -->
+        <div class="relative overflow-hidden bg-[var(--sidebar-bg)] border-l border-[var(--border-subtle)] flex flex-col justify-center gap-0 py-0">
+
+          <!-- Subtle grid texture -->
+          <div
+            class="absolute inset-0 pointer-events-none opacity-40 z-0"
+            style="background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px); background-size: 32px 32px;"
+          ></div>
+          <div
+            class="absolute inset-0 pointer-events-none z-0"
+            style="background: linear-gradient(135deg, color-mix(in srgb, var(--jungle-green) 8%, transparent), transparent 60%);"
+          ></div>
+
+          <div class="relative z-10">
+            <!-- Feature row 1 -->
+            <div class="flex items-start gap-3 p-5 border-b border-[var(--border-subtle)]">
+              <div class="shrink-0 w-8 h-8 rounded-lg bg-[var(--jungle-green)]/15 flex items-center justify-center mt-0.5">
+                <i class="ph-fill ph-check-circle text-[var(--jungle-green)] text-sm"></i>
+              </div>
+              <div>
+                <h4 class="font-semibold text-sm text-[var(--color-text)]">Syllabus-mapped</h4>
+                <p class="text-xs text-[var(--muted)] mt-0.5 leading-relaxed">Every note is tagged to exact syllabus learning outcomes, so you know exactly what you're covering.</p>
+              </div>
+            </div>
+            <!-- Feature row 2 -->
+            <div class="flex items-start gap-3 p-5 border-b border-[var(--border-subtle)]">
+              <div class="shrink-0 w-8 h-8 rounded-lg bg-[var(--jungle-green)]/15 flex items-center justify-center mt-0.5">
+                <i class="ph-fill ph-users text-[var(--jungle-green)] text-sm"></i>
+              </div>
+              <div>
+                <h4 class="font-semibold text-sm text-[var(--color-text)]">Community-maintained</h4>
+                <p class="text-xs text-[var(--muted)] mt-0.5 leading-relaxed">Open contributions from students who've sat A Levels and KU exams. Peer-reviewed for accuracy.</p>
+              </div>
+            </div>
+            <!-- Feature row 3 -->
+            <div class="flex items-start gap-3 p-5 border-b border-[var(--border-subtle)]">
+              <div class="shrink-0 w-8 h-8 rounded-lg bg-[var(--jungle-green)]/15 flex items-center justify-center mt-0.5">
+                <i class="ph-fill ph-books text-[var(--jungle-green)] text-sm"></i>
+              </div>
+              <div>
+                <h4 class="font-semibold text-sm text-[var(--color-text)]">A Levels &amp; KU coverage</h4>
+                <p class="text-xs text-[var(--muted)] mt-0.5 leading-relaxed">Physics, Maths, Chemistry, Biology, CS, Economics — and growing KU notes across all faculties.</p>
+              </div>
+            </div>
+            <!-- Feature row 4 -->
+            <div class="flex items-start gap-3 p-5">
+              <div class="shrink-0 w-8 h-8 rounded-lg bg-[var(--jungle-green)]/15 flex items-center justify-center mt-0.5">
+                <i class="ph-fill ph-download-simple text-[var(--jungle-green)] text-sm"></i>
+              </div>
+              <div>
+                <h4 class="font-semibold text-sm text-[var(--color-text)]">Free to download</h4>
+                <p class="text-xs text-[var(--muted)] mt-0.5 leading-relaxed">PDF downloads, no account required. Print them, annotate them, share them — they're yours.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- QUESTION GENERATOR SECTION                               -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="bg-[#1a1a2e] text-[#e2e0dc] border-t border-white/5 relative overflow-hidden">
+
+      <!-- Decorative background elements -->
+      <div class="absolute inset-0 pointer-events-none z-0 opacity-20"
+        style="background-image: radial-gradient(circle at 20% 50%, #7c3aed 0%, transparent 50%), radial-gradient(circle at 80% 20%, #4f46e5 0%, transparent 40%);">
+      </div>
+      <div class="absolute inset-0 pointer-events-none opacity-[0.04] z-0"
+        style="background-image: linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 40px 40px;">
+      </div>
+      <i class="ph-fill ph-lightning absolute pointer-events-none select-none text-purple-500 opacity-[0.06] text-[10rem] rotate-[-20deg] z-0" style="bottom:-2rem; right:-1rem;"></i>
+      <i class="ph-fill ph-sliders absolute pointer-events-none select-none text-purple-300 opacity-[0.05] text-[6rem] rotate-[15deg] z-0" style="top:10%; left:60%;"></i>
+
+      <div class="relative z-10 grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-0">
+
+        <!-- Left: Generator UI mockup-ish -->
+        <div class="p-5 px-30 max-sm:px-5 py-16 border-r border-white/5">
+
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-purple-500/30 bg-purple-600/15 text-purple-400 text-[0.7rem] font-sans font-semibold uppercase tracking-widest mb-5 w-fit">
+            <i class="ph-fill ph-lightning text-[0.65rem]"></i> Question Generator
+          </div>
+          <h2 class="font-serif text-4xl sm:text-5xl font-bold leading-[1.05] mb-5">
+            Practice by <em class="text-purple-400">topic,</em><br />
+            <em class="font-normal text-[#a09fa0]">not by paper.</em>
+          </h2>
+
+          <!-- Mini UI demo card -->
+          <div class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 mb-5 max-w-sm">
+            <p class="text-[0.65rem] font-sans font-bold uppercase tracking-[0.1em] text-purple-400 mb-3">
+              <i class="ph-fill ph-sliders"></i> Configure your worksheet
+            </p>
+            <!-- Subject row -->
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[0.65rem] font-sans text-[#a09fa0] w-16 shrink-0">Subject</span>
+              <div class="flex gap-1.5 flex-wrap">
+                <span class="px-2 py-0.5 rounded-full bg-purple-600/30 border border-purple-500/40 text-purple-300 text-[0.6rem] font-semibold">Physics 9702</span>
+                <span class="px-2 py-0.5 rounded-full border border-white/10 text-[#a09fa0] text-[0.6rem]">Maths 9709</span>
+                <span class="px-2 py-0.5 rounded-full border border-white/10 text-[#a09fa0] text-[0.6rem]">Chem 9701</span>
+              </div>
+            </div>
+            <!-- Topic row -->
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[0.65rem] font-sans text-[#a09fa0] w-16 shrink-0">Topic</span>
+              <div class="flex gap-1.5 flex-wrap">
+                <span class="px-2 py-0.5 rounded-full bg-purple-600/30 border border-purple-500/40 text-purple-300 text-[0.6rem] font-semibold">Waves</span>
+                <span class="px-2 py-0.5 rounded-full border border-white/10 text-[#a09fa0] text-[0.6rem]">Mechanics</span>
+                <span class="px-2 py-0.5 rounded-full border border-white/10 text-[#a09fa0] text-[0.6rem]">Electricity</span>
+              </div>
+            </div>
+            <!-- Difficulty row -->
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-[0.65rem] font-sans text-[#a09fa0] w-16 shrink-0">Difficulty</span>
+              <div class="flex gap-1.5">
+                <span class="px-2 py-0.5 rounded-full border border-white/10 text-[#a09fa0] text-[0.6rem]">Easy</span>
+                <span class="px-2 py-0.5 rounded-full bg-purple-600/30 border border-purple-500/40 text-purple-300 text-[0.6rem] font-semibold">Medium</span>
+                <span class="px-2 py-0.5 rounded-full border border-white/10 text-[#a09fa0] text-[0.6rem]">Hard</span>
+              </div>
+            </div>
+            <div class="h-px bg-white/5 mb-3"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-[0.6rem] text-[#a09fa0] font-sans">12 questions · Mixed MCQ + structured</span>
+              <span class="px-3 py-1 rounded-full bg-purple-600 text-white text-[0.6rem] font-bold font-sans">Generate →</span>
+            </div>
+          </div>
+
+          <a
+            href="/generator"
+            class="group w-fit rounded-full px-5 py-2.5 flex items-center gap-2
+                   bg-purple-600 text-white shadow-lg font-sans text-sm font-medium
+                   transition-all duration-300 ease-out hover:shadow-xl hover:bg-purple-500 hover:-translate-y-0.5 hover:scale-[1.02]"
+          >
+            Try the Generator
+            <i class="ph-fill ph-arrow-right transition-transform duration-300 group-hover:translate-x-1"></i>
+          </a>
+        </div>
+
+        <!-- Right: Generator features -->
+        <div class="p-5 px-10 max-sm:px-5 py-16 flex flex-col justify-center gap-5">
+          <p class="font-sans text-[#a09fa0] text-sm leading-relaxed">
+            Stop wasting time flipping through full papers looking for questions on a specific topic. The generator lets you build a focused worksheet in seconds.
+          </p>
+
+          <div class="flex flex-col gap-3">
+            <div class="flex items-start gap-3 p-3.5 rounded-xl border border-white/8 bg-white/4">
+              <i class="ph-fill ph-target text-purple-400 text-base shrink-0 mt-0.5"></i>
+              <div>
+                <h4 class="font-semibold text-sm text-[#e2e0dc]">Topic-filtered questions</h4>
+                <p class="text-xs text-[#a09fa0] mt-0.5 leading-relaxed">Pick a topic — Waves, Organic Chemistry, Recursion, whatever — and get questions from only that area, pulled from real past papers.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 p-3.5 rounded-xl border border-white/8 bg-white/4">
+              <i class="ph-fill ph-funnel text-purple-400 text-base shrink-0 mt-0.5"></i>
+              <div>
+                <h4 class="font-semibold text-sm text-[#e2e0dc]">Filter by difficulty & component</h4>
+                <p class="text-xs text-[#a09fa0] mt-0.5 leading-relaxed">Choose Paper 1 MCQ, Paper 2 structured, or Paper 4 — and dial in difficulty so you're always working at the right level.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 p-3.5 rounded-xl border border-white/8 bg-white/4">
+              <i class="ph-fill ph-printer text-purple-400 text-base shrink-0 mt-0.5"></i>
+              <div>
+                <h4 class="font-semibold text-sm text-[#e2e0dc]">Print-ready worksheets</h4>
+                <p class="text-xs text-[#a09fa0] mt-0.5 leading-relaxed">Export as a clean PDF worksheet with mark scheme. Exactly like a real paper, built around what you actually need to practice.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- PER-TOPIC QUESTIONS SECTION                              -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="text-[var(--color-text)] border-t border-[var(--border-subtle)]">
+      <div class="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-0">
+
+        <!-- Left: Topic Q feature cards -->
+        <div class="relative overflow-hidden bg-[var(--sidebar-bg)] border-r border-[var(--border-subtle)] flex flex-col justify-center">
+
+          <div
+            class="absolute inset-0 pointer-events-none opacity-40 z-0"
+            style="background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px); background-size: 32px 32px;"
+          ></div>
+          <div
+            class="absolute inset-0 pointer-events-none z-0"
+            style="background: linear-gradient(135deg, color-mix(in srgb, var(--french-blue) 8%, transparent), transparent 60%);"
+          ></div>
+
+          <div class="relative z-10">
+            <!-- Section label -->
+            <div class="flex items-center gap-2 px-5 pt-5 pb-3 border-b border-[var(--border-subtle)]">
+              <i class="ph-fill ph-sparkle text-[var(--french-blue)] opacity-70 text-[0.75rem]"></i>
+              <span class="font-serif text-[0.7rem] font-bold tracking-[0.12em] uppercase text-[var(--muted)]">Per-Topic Q&A</span>
+              <div class="flex-1 h-px bg-[var(--border-subtle)]"></div>
+            </div>
+
+            <!-- Example topic rows — decorative, shows the product -->
+            <div class="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-[var(--border-subtle)] group hover:bg-[var(--sidebar-hover)] transition-colors cursor-default">
+              <div class="flex items-center gap-2.5">
+                <div class="w-6 h-6 rounded-md bg-[var(--french-blue)]/15 flex items-center justify-center shrink-0">
+                  <i class="ph-fill ph-waves text-[var(--french-blue)] text-xs"></i>
+                </div>
+                <span class="font-sans text-sm font-medium text-[var(--color-text)]">Waves &amp; Superposition</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-[0.6rem] font-sans font-bold px-2 py-0.5 rounded-full bg-[var(--french-blue)]/10 text-[var(--french-blue)]">43 Qs</span>
+                <i class="ph-fill ph-arrow-right text-[var(--muted)] text-xs"></i>
+              </div>
+            </div>
+            <div class="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-[var(--border-subtle)] group hover:bg-[var(--sidebar-hover)] transition-colors cursor-default">
+              <div class="flex items-center gap-2.5">
+                <div class="w-6 h-6 rounded-md bg-[var(--french-blue)]/15 flex items-center justify-center shrink-0">
+                  <i class="ph-fill ph-atom text-[var(--french-blue)] text-xs"></i>
+                </div>
+                <span class="font-sans text-sm font-medium text-[var(--color-text)]">Atomic Structure</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-[0.6rem] font-sans font-bold px-2 py-0.5 rounded-full bg-[var(--french-blue)]/10 text-[var(--french-blue)]">29 Qs</span>
+                <i class="ph-fill ph-arrow-right text-[var(--muted)] text-xs"></i>
+              </div>
+            </div>
+            <div class="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-[var(--border-subtle)] group hover:bg-[var(--sidebar-hover)] transition-colors cursor-default">
+              <div class="flex items-center gap-2.5">
+                <div class="w-6 h-6 rounded-md bg-[var(--french-blue)]/15 flex items-center justify-center shrink-0">
+                  <i class="ph-fill ph-lightning text-[var(--french-blue)] text-xs"></i>
+                </div>
+                <span class="font-sans text-sm font-medium text-[var(--color-text)]">Electricity &amp; Circuits</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-[0.6rem] font-sans font-bold px-2 py-0.5 rounded-full bg-[var(--french-blue)]/10 text-[var(--french-blue)]">61 Qs</span>
+                <i class="ph-fill ph-arrow-right text-[var(--muted)] text-xs"></i>
+              </div>
+            </div>
+            <div class="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-[var(--border-subtle)] group hover:bg-[var(--sidebar-hover)] transition-colors cursor-default">
+              <div class="flex items-center gap-2.5">
+                <div class="w-6 h-6 rounded-md bg-[var(--french-blue)]/15 flex items-center justify-center shrink-0">
+                  <i class="ph-fill ph-graph text-[var(--french-blue)] text-xs"></i>
+                </div>
+                <span class="font-sans text-sm font-medium text-[var(--color-text)]">Kinematics &amp; Dynamics</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-[0.6rem] font-sans font-bold px-2 py-0.5 rounded-full bg-[var(--french-blue)]/10 text-[var(--french-blue)]">55 Qs</span>
+                <i class="ph-fill ph-arrow-right text-[var(--muted)] text-xs"></i>
+              </div>
+            </div>
+            <div class="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-[var(--border-subtle)] group hover:bg-[var(--sidebar-hover)] transition-colors cursor-default">
+              <div class="flex items-center gap-2.5">
+                <div class="w-6 h-6 rounded-md bg-[var(--french-blue)]/15 flex items-center justify-center shrink-0">
+                  <i class="ph-fill ph-dna text-[var(--french-blue)] text-xs"></i>
+                </div>
+                <span class="font-sans text-sm font-medium text-[var(--color-text)]">Organic Chemistry</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-[0.6rem] font-sans font-bold px-2 py-0.5 rounded-full bg-[var(--french-blue)]/10 text-[var(--french-blue)]">38 Qs</span>
+                <i class="ph-fill ph-arrow-right text-[var(--muted)] text-xs"></i>
+              </div>
+            </div>
+
+            <!-- Footer hint -->
+            <div class="px-5 py-3 flex items-center gap-2">
+              <i class="ph-fill ph-dots-three text-[var(--muted)] opacity-50 text-sm"></i>
+              <span class="text-[0.6rem] font-sans text-[var(--muted)] opacity-60">Hundreds more topics across all subjects</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Per-topic pitch -->
+        <div class="p-5 px-10 max-sm:px-5 py-16 flex flex-col justify-center gap-5">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--french-blue)]/30 bg-[var(--french-blue)]/10 text-[var(--french-blue)] text-[0.7rem] font-sans font-semibold uppercase tracking-widest w-fit">
+            <i class="ph-fill ph-magnifying-glass text-[0.65rem]"></i> Per-Topic Questions
+          </div>
+          <h2 class="font-serif text-4xl sm:text-5xl font-bold leading-[1.05]">
+            Every question,<br />
+            <em class="text-[var(--french-blue)]">sorted by</em><br />
+            <em class="font-normal text-[var(--muted)]">what it tests.</em>
+          </h2>
+          <p class="font-sans text-[var(--muted)] text-sm leading-relaxed max-w-md">
+            The per-topic questions index collects every question from every past paper and organises it by topic. No more hunting. Pick a topic, see every question that's ever been asked on it, with mark schemes.
+          </p>
+
+          <div class="flex flex-col gap-2.5 mt-1">
+            <div class="flex items-center gap-2.5">
+              <i class="ph-fill ph-check-circle text-[var(--french-blue)] text-base shrink-0"></i>
+              <span class="font-sans text-sm text-[var(--color-text)]">All questions tagged to syllabus sections</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <i class="ph-fill ph-check-circle text-[var(--french-blue)] text-base shrink-0"></i>
+              <span class="font-sans text-sm text-[var(--color-text)]">Mark schemes included inline</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <i class="ph-fill ph-check-circle text-[var(--french-blue)] text-base shrink-0"></i>
+              <span class="font-sans text-sm text-[var(--color-text)]">Filter by year, difficulty, and paper type</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <i class="ph-fill ph-check-circle text-[var(--french-blue)] text-base shrink-0"></i>
+              <span class="font-sans text-sm text-[var(--color-text)]">Works for A Levels and KU subjects</span>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-3 mt-1">
+            <a
+              href="/questions"
+              class="group w-fit rounded-full px-5 py-2.5 flex items-center gap-2
+                     bg-[var(--french-blue)] text-white shadow-lg font-sans text-sm font-medium
+                     transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]"
+            >
+              Browse by Topic
+              <i class="ph-fill ph-arrow-right transition-transform duration-300 group-hover:translate-x-1"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- COMMUNITY / ABOUT -->
+    <div class="text-[var(--color-text)] border-t border-[var(--border-subtle)]">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
+
+        <!-- Left: Made in Nepal tagline -->
+        <div class="p-5 px-30 max-sm:px-5 py-30">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--border-subtle)] bg-[var(--accent)]/10 text-[var(--muted)] text-[0.7rem] font-sans font-semibold uppercase tracking-widest mb-5">
+            <span>🇳🇵</span> Made in Nepal, for students everywhere
+          </div>
+          <h2 class="font-serif text-4xl sm:text-5xl font-bold leading-[1.05]">
+            No paywalls.<br />
+            <em class="text-[var(--accent)]">Ever.</em>
+          </h2>
+        </div>
+
+        <!-- Right: description + links -->
+        <div class="flex flex-col gap-5 p-5 max-sm:px-5 py-30 bg-[var(--sidebar-bg)] border-l border-[var(--border-subtle)]">
+          <p class="font-sans text-[var(--muted)] leading-relaxed">
+            PaperGuides started as a community project to make high-quality A Level and university resources accessible to every student in Nepal and beyond. It's open-source, community-maintained, and always free.
+          </p>
+          <p class="font-sans text-[var(--muted)] opacity-60 text-sm leading-relaxed">
+            Whether you're sitting CAIE A Levels, studying at Kathmandu University, or just trying to get through an exam — we've got past papers, curated notes, and a question generator that works by topic. Built by students who've been there.
+          </p>
+
+          <!-- Footer-style social buttons -->
+          <div class="flex flex-wrap gap-2.5">
+            <a href="https://github.com/chaulagainrupak/paper-guides" target="_blank" rel="noopener noreferrer"
+              class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans text-sm font-medium
+                     shadow-md transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]
+                     bg-[var(--color-surface)] outline outline-1 outline-[var(--border-subtle)]">
+              <i class="ph-fill ph-github-logo text-[var(--pink-highlight)]"></i>
+              GitHub
+              <i class="ph-fill ph-arrow-square-out text-neutral-400 dark:text-neutral-500 text-xs"></i>
+            </a>
+            <a href="https://discord.gg/U9fAnCgcu3" target="_blank" rel="noopener noreferrer"
+              class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans text-sm font-medium
+                     shadow-md transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]
+                     bg-[var(--color-surface)] outline outline-1 outline-[var(--border-subtle)]">
+              <i class="ph-fill ph-discord-logo text-[var(--blue-highlight)]"></i>
+              Discord
+              <i class="ph-fill ph-arrow-square-out text-neutral-400 dark:text-neutral-500 text-xs"></i>
+            </a>
+            <a href="https://instagram.com/paperguides.official" target="_blank" rel="noopener noreferrer"
+              class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans text-sm font-medium
+                     shadow-md transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]
+                     bg-[var(--color-surface)] outline outline-1 outline-[var(--border-subtle)]">
+              <i class="ph-fill ph-instagram-logo text-[var(--accent)]"></i>
+              Instagram
+              <i class="ph-fill ph-arrow-square-out text-neutral-400 dark:text-neutral-500 text-xs"></i>
+            </a>
+            <a href="https://www.youtube.com/@Paper-Guides" target="_blank" rel="noopener noreferrer"
+              class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans text-sm font-medium
+                     shadow-md transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]
+                     bg-[var(--color-surface)] outline outline-1 outline-[var(--border-subtle)]">
+              <i class="ph-fill ph-youtube-logo text-[var(--pink-highlight)]"></i>
+              YouTube
+              <i class="ph-fill ph-arrow-square-out text-neutral-400 dark:text-neutral-500 text-xs"></i>
+            </a>
+          </div>
+
+          <div class="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)]">
+            <p class="text-[var(--muted)] opacity-50 font-sans text-xs leading-relaxed">
+              Free CAIE A Level past papers · KU past papers · Nepal exam resources · Open source education
+            </p>
+            <a href="/about" class="shrink-0 ml-4 inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-[var(--accent)] hover:underline underline-offset-4 transition-colors">
+              Read our story <i class="ph-fill ph-arrow-right text-[0.6rem]"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
     </div>
 
   </div>
-</section>
-
 </BaseLayout>

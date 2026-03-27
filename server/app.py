@@ -314,6 +314,11 @@ async def getData(
         raise HTTPException(status_code=503, detail="No data found")
 
 
+@app.get("/getQuestion/{uuid}")
+def getQuestionForClient(uuid):
+    content = getQuestion(uuid)
+    return content
+
 @app.get("/getNote/{subject}/{topic}")
 def getNoteForClient(subject, topic):
 
@@ -543,37 +548,38 @@ async def getQuestions(request: Request):
         conn = getDbConnection()
         cur = conn.cursor()
 
-        authHeader = request.headers.get("authorization")
+        #  Turned off auth checking 
+        # authHeader = request.headers.get("authorization")
 
-        if not authHeader or not authHeader.startswith("Bearer "):
-            raise HTTPException(
-                status_code=401, detail="Missing or invalid Authorization header"
-            )
+        # if not authHeader or not authHeader.startswith("Bearer "):
+        #     raise HTTPException(
+        #         status_code=401, detail="Missing or invalid Authorization header"
+        #     )
 
-        token = authHeader.split(" ")[1]
+        # token = authHeader.split(" ")[1]
 
-        tokenData = jwt.decode(token, SECRET_KEY)
+        # tokenData = jwt.decode(token, SECRET_KEY)
 
-        username = tokenData["username"]
-        email = tokenData["email"]
-        exp = tokenData["exp"]
-        if exp < time.time():
-            return {"message": "token expired"}, 429
+        # username = tokenData["username"]
+        # email = tokenData["email"]
+        # exp = tokenData["exp"]
+        # if exp < time.time():
+        #     return {"message": "token expired"}, 429
 
-        cur.execute(
-            "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
-        )
-        user = cur.fetchone()
-        conn.close()
+        # cur.execute(
+        #     "SELECT * FROM users WHERE username = ? AND email  = ? ", (username, email)
+        # )
+        # user = cur.fetchone()
+        # conn.close()
 
-        if not user:
-            raise HTTPException(
-                status_code=401,
-                detail="You need to have a valid account to generate questions",
-            )
+        # if not user:
+        #     raise HTTPException(
+        #         status_code=401,
+        #         detail="You need to have a valid account to generate questions",
+        #     )
 
-        if user[6] != "admin":
-            checkRateLimit(username)
+        # if user[6] != "admin":
+        #     checkRateLimit(username)
 
         body = await request.json()
 

@@ -11,8 +11,16 @@ type YearData = {
   papers?: Record<string, Paper>;
 };
 
+type TopicItem = {
+  name: string;
+  slug: string;
+  notes?: { name: string; slug: string }[];
+  questions?: { name: string; slug: string }[];
+};
+
 type SubjectData = {
   years?: Record<string, YearData>;
+  topics?: TopicItem[];
 };
 
 type IndexType = Record<string, Record<string, SubjectData>>;
@@ -33,13 +41,11 @@ const format = (str: string) => str.replace(/-/g, " ");
 ---
 
 <div>
-  <h1>All Subjects, Years, and Past Papers</h1>
+  <h1>All Subjects, Years, Papers, Notes & Questions</h1>
 
   <p>
-    This page lists all available subjects, years, and past exam papers. You can
-    directly access question papers for different boards, subjects, and exam
-    sessions. Each subject includes multiple years and individual papers for
-    effective exam preparation.
+    Browse all subjects, years, past papers, notes, and topic-based questions.
+    This page lists everything available for exam preparation across boards.
   </p>
 
   {
@@ -54,8 +60,11 @@ const format = (str: string) => str.replace(/-/g, " ");
             <div>
               <h3>{subjectName}</h3>
 
+              {/* Subject landing */}
               <a href={`/subjects/${board}/${subject}`}>View {subjectName}</a>
 
+              {/* ================= PAPERS ================= */}
+              <h4>Papers</h4>
               <ul>
                 {Object.entries(subjectData.years ?? {}).map(
                   ([year, yearData]) => (
@@ -86,6 +95,79 @@ const format = (str: string) => str.replace(/-/g, " ");
                   ),
                 )}
               </ul>
+
+              {/* ================= TOPICS / NOTES / QUESTIONS ================= */}
+              {(subjectData.topics ?? []).length > 0 && (
+                <div>
+                  <h4>Topics</h4>
+
+                  <ul>
+                    {(subjectData.topics ?? []).map((topic) => {
+                      const topicName = topic.name;
+                      const topicSlug = topic.slug;
+
+                      return (
+                        <li>
+                          {/* Topic landing (notes default) */}
+                          <a href={`/notes/${board}/${subject}/${topicSlug}`}>
+                            {topicName}
+                          </a>
+
+                          <ul>
+                            {/* Notes landing */}
+                            <li>
+                              <a
+                                href={`/notes/${board}/${subject}/${topicSlug}`}
+                              >
+                                Notes - {topicName}
+                              </a>
+                            </li>
+
+                            {/* Questions landing */}
+                            <li>
+                              <a
+                                href={`/questions/${board}/${subject}/${topicSlug}`}
+                              >
+                                Questions - {topicName}
+                              </a>
+                            </li>
+
+                            {/* Individual Notes */}
+                            {(topic.notes ?? []).map((note) => (
+                              <li>
+                                <a
+                                  href={`/notes/${board}/${subject}/${topicSlug}/${note.slug}`}
+                                >
+                                  {note.name}
+                                </a>
+                              </li>
+                            ))}
+
+                            {/* Individual Questions (final endpoints) */}
+                            {(topic.questions ?? []).map((q) => {
+                              // @ts-ignore
+                              const qSlug = q.slug || q.uuid; // fallback to uuid if slug missing
+                              const qName = q.name || qSlug;
+
+                              if (!qSlug) return null;
+
+                              return (
+                                <li>
+                                  <a
+                                    href={`/questions/${board}/${subject}/${topicSlug}/${qSlug}`}
+                                  >
+                                    {qName}
+                                  </a>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
             </div>
           );
         })}
