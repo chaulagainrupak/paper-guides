@@ -1,4 +1,3 @@
-
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import QuestionGeneratorForm from '../../components/QuestionGeneratorForm';
@@ -10,11 +9,8 @@ import { SITE_URL } from '../../utils/config';
   ogImage=`${SITE_URL ?? "https://paperguides.org"}/images/opg_question_generator.png`
 >
 
-  <div class="mt-16 min-h-screen flex items-center justify-center px-4 py-8">
-    <div class="w-full max-w-4xl">
-      <!-- @ts-ignore -->
-      <QuestionGeneratorForm client:load/>
-    </div>
+  <div class="mt-16">
+    <!-- @ts-ignore -->
+    <QuestionGeneratorForm client:load />
   </div>
 </BaseLayout>
-

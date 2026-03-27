@@ -190,10 +190,10 @@ const boardDisplayName =
 
           <p>
             This page provides the official <strong>{paperName}</strong> examination
-            paper for
-            <strong>{realSubjectName}</strong> under the <strong
+            paper for <strong>{realSubjectName}</strong> under the <strong
               >{apiBoardName}</strong
-            > examination board. Students can view and download the full exam paper
+            >
+            examination board. Students can view and download the full exam paper
             directly in the browser using the built-in paper viewer.
           </p>
 
@@ -220,6 +220,30 @@ const boardDisplayName =
             <strong>{apiBoardName}</strong> board using the navigation links above.
             Paper-Guides hosts a large archive of past exam papers to help students
             revise effectively and prepare for upcoming examinations.
+          </p>
+
+          <p>
+            <i class="ph-fill ph-question mr-1"></i> Want to practise <strong
+              >{realSubjectName}</strong
+            > questions by topic? Work through past-paper questions filtered by topic
+            at your own pace.
+            <a
+              href={`/questions/${board}/${subject}`}
+              class="text-[var(--accent)] hover:underline"
+              >Browse {realSubjectName} questions →</a
+            >
+          </p>
+
+          <p>
+            <i class="ph-fill ph-notebook mr-1"></i> Looking for <strong
+              >{realSubjectName}</strong
+            > revision notes? Concise, student-made notes to go alongside your past
+            paper practice.
+            <a
+              href={`/notes/${board}/${subject}`}
+              class="text-[var(--accent)] hover:underline"
+              >Browse {realSubjectName} notes →</a
+            >
           </p>
         </section>
       </div>

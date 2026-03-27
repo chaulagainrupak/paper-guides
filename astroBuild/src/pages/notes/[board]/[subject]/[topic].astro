@@ -19,7 +19,7 @@ let realSubjectName =
 // @ts-ignore
 let topicName = index?.[board]?.[subject]["topics"];
 // @ts-ignore
-let realTopicName = ( topicName.find((element) => element.slug === topic)?.name ?? topic.replace(/-/g, " "));
+let realTopicName = topicName.find((element) => element.slug === topic)?.name ?? topic.replace(/-/g, " ");
 
 let topicList: { name: string; slug: string }[] = [];
 let noteContent = "";
@@ -101,24 +101,44 @@ const boardDisplayName =
           </div>
         )
       }
-
       <!-- SEO content -->
-      <section class="mt-8 text-sm leading-relaxed space-y-4 opacity-80">
+      <section class="mt-8 text-sm leading-relaxed space-y-3 opacity-80">
         <h2 class="font-semibold text-[var(--blue-highlight)]">
           {realTopicName} Notes – {boardDisplayName}
         </h2>
         <p>
-          Comprehensive notes for <strong>{realTopicName}</strong> in <strong
+          Comprehensive revision notes for <strong>{realTopicName}</strong> in <strong
             >{realSubjectName}</strong
-          >. Improve understanding and exam preparation with structured study
-          material.
+          > ({boardDisplayName}). These student-made notes are structured to
+          help you build understanding topic by topic and walk into your exam
+          with confidence.
+        </p>
+        <p>
+          <i class="ph-fill ph-question mr-1"></i> Ready to test yourself on <strong
+            >{realTopicName}</strong
+          >? Work through past-paper questions for {realTopicName} at your own pace.
+          <a
+            href={`/questions/${board}/${subject}/${topic}`}
+            class="text-[var(--accent)] hover:underline"
+            >Practice {realTopicName} questions →</a
+          >
+        </p>
+        <p>
+          <i class="ph-fill ph-books mr-1"></i> Want to explore other topics in <strong
+            >{realSubjectName}</strong
+          >? Browse all questions across every topic for this subject.
+          <a
+            href={`/questions/${board}/${subject}`}
+            class="text-[var(--accent)] hover:underline"
+            >Browse all {realSubjectName} questions →</a
+          >
         </p>
       </section>
     </div>
 
     <!-- Sidebar -->
     <aside
-      class="hidden md:flex flex-col gap-6 sticky top-[80px] self-start bg-[var(--sidebar-bg)] p-4"
+      class="hidden md:flex flex-col gap-6 h-full  sticky top-[80px] self-start bg-[var(--sidebar-bg)] p-4"
     >
       <div
         class="flex justify-between items-center border-b border-[var(--border-subtle)] pb-2"

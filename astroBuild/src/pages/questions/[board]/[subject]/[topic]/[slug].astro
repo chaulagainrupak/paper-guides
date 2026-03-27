@@ -205,7 +205,20 @@ const boardDisplayName =
           > in <strong>{realSubjectName}</strong>. Use these to practise and
           improve your exam technique.
         </p>
+
+          <p>
+    <i class="ph-fill ph-notebook mr-1"></i> Want notes for <strong>{realSubjectName}</strong>?
+    Concise, student-made revision notes to go alongside your practice. 
+    <a href={`/notes/${board}/${subject}`} class="text-[var(--accent)] hover:underline">Browse {realSubjectName} notes →</a>
+  </p>
+  <p>
+    <i class="ph-fill ph-question mr-1"></i> Want to practice more <strong>{realTopicName}</strong> questions?
+    Work through past papers questions at your own pace.
+    <a href={`/subjects/${board}/${subject}`} class="text-[var(--accent)] hover:underline">Browse {realSubjectName} questions →</a>
+  </p>
+
       </section>
+
     </div>
 
     <!-- Sidebar -->

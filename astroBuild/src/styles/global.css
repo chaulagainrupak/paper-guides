@@ -68,6 +68,9 @@ body {
   background-image: var(--bg-pattern);
 }
 
+.bg-pattern{
+  background-image: var(--bg-pattern);
+}
 
 .font-serif {
   font-family: "Playfair Display", "Crimson Pro", "Libre Baskerville", Georgia, serif;
