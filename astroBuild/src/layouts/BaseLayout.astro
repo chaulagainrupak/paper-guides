@@ -95,12 +95,14 @@ const resolvedLastUpdated = lastUpdated ? new Date(lastUpdated) : new Date();
       crossorigin="anonymous"></script>
 
     <!-- Umami Analytics -->
-    <script
-      defer
-      is:inline
-      src={`${UMAMI_URL}/script.js`}
-      data-website-id={UMAMI_WEBSITE_ID}
-      data-auto-track="true"></script>
+    <script is:inline>
+      window.addEventListener("load", () => {
+        const s = document.createElement("script");
+        s.src = `${UMAMI_URL}/script.js`;
+        s.setAttribute("data-website-id", "${UMAMI_WEBSITE_ID}");
+        document.body.appendChild(s);
+      });
+    </script>
 
     <!-- Phosphor Icons -->
     <link
