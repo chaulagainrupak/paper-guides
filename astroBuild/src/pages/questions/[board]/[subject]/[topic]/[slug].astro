@@ -123,24 +123,18 @@ const boardDisplayName =
             ></div>
           </div>
 
-          <!-- Answer (collapsed by default, user reveals it) -->
-          <details class="border border-[var(--border-subtle)] rounded-xl overflow-hidden">
-            <summary 
-              data-umami-event="Reveal Answer"
-              data-umami-event-question={`${realSubjectName} - ${realTopicName} - ${questionTitle.substring(0, 60)}`}
-              class="cursor-pointer px-5 py-3 bg-[var(--color-surface)] text-xs uppercase tracking-widest font-semibold text-[var(--muted)] select-none hover:text-[var(--accent)] transition-colors">
-              <i class="ph-fill ph-eye mr-1"></i> Show Answer
-            </summary>
-            <div class="px-5 py-5 border-t border-[var(--border-subtle)]">
-              <p class="text-xs uppercase tracking-widest text-[var(--muted)] font-semibold mb-3">
-                Answer
-              </p>
-              <div
-                class="math-content prose prose-sm max-w-none"
-                data-raw={answerText}
-              ></div>
-            </div>
-          </details>
+          <div class="border border-[var(--border-subtle)] rounded-xl overflow-hidden">
+  <div class="px-5 py-3 bg-[var(--color-surface)] text-xs uppercase tracking-widest font-semibold text-[var(--muted)]">
+    <i class="ph-fill ph-eye mr-1"></i> Answer
+  </div>
+
+  <div class="px-5 py-5 border-t border-[var(--border-subtle)]">
+    <div
+      class="math-content prose prose-sm max-w-none"
+      data-raw={answerText}
+    ></div>
+  </div>
+</div>
 
         </div>
       )}
