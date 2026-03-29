@@ -1,5 +1,29 @@
 ---
-export const prerender = false;
+export async function getStaticPaths() {
+  const index = await getPaperIndex();
+  const paths: { params: { board: string; subject: string; topic: string; slug: string } }[] = [];
+
+  for (const board of Object.keys(index)) {
+    for (const subject of Object.keys(index[board])) {
+      const topicList = index[board][subject]["topics"] ?? [];
+      for (const topic of topicList) {
+        const questions = topic.questions ?? [];
+        for (const question of questions) {
+          paths.push({
+            params: {
+              board,
+              subject,
+              topic: topic.slug,
+              slug: question.slug,
+            },
+          });
+        }
+      }
+    }
+  }
+
+  return paths;
+}
 
 import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import MarkdownRenderer from "../../../../../components/MarkdownRenderer";
@@ -124,9 +148,9 @@ const boardDisplayName =
           </div>
 
           <div class="border border-[var(--border-subtle)] rounded-xl overflow-hidden">
-  <div class="px-5 py-3 bg-[var(--color-surface)] text-xs uppercase tracking-widest font-semibold text-[var(--muted)]">
-    <i class="ph-fill ph-eye mr-1"></i> Answer
-  </div>
+              <div class="px-5 py-3 bg-[var(--color-surface)] text-xs uppercase tracking-widest font-semibold text-[var(--muted)]">
+                Answer
+              </div>
 
   <div class="px-5 py-5 border-t border-[var(--border-subtle)]">
     <div
@@ -202,7 +226,7 @@ const boardDisplayName =
 
           <p>
     <i class="ph-fill ph-notebook mr-1"></i> Want notes for <strong>{realSubjectName}</strong>?
-    Concise, student-made revision notes to go alongside your practice. 
+    Concise, student-made revision notes to go alongside your practice.
     <a href={`/notes/${board}/${subject}`} class="text-[var(--accent)] hover:underline">Browse {realSubjectName} notes →</a>
   </p>
   <p>
@@ -301,7 +325,7 @@ const boardDisplayName =
     Sponsor Space
   </div>
 
-  
+
 </BaseLayout>
 
 <!-- Math + Markdown rendering -->
@@ -342,4 +366,3 @@ const boardDisplayName =
 
   document.addEventListener("DOMContentLoaded", waitAndRender);
 </script>
-

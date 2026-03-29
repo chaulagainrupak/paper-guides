@@ -1,6 +1,16 @@
 ---
-export const prerender = false;
+export async function getStaticPaths() {
+  const index = await getPaperIndex();
+  const paths: { params: { board: string } }[] = [];
 
+  for (const boardKey in index) {
+    paths.push({
+      params: { board: boardKey },
+    });
+  }
+
+  return paths;
+}
 import { getPaperIndex } from "../../utils/paperIndex";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 

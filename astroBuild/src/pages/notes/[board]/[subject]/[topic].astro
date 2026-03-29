@@ -1,6 +1,4 @@
 ---
-export const prerender = false;
-
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import BackButton from "../../../../components/BackButton.astro";
 import MarkdownRenderer from "../../../../components/MarkdownRenderer";
@@ -14,12 +12,14 @@ const index = await getPaperIndex();
 // @ts-ignore
 const notesIndex = index?.notes?.[board]?.[subject] ?? [];
 let realSubjectName =
-  // @ts-ignore
-  index?.[board]?.[subject].name ?? subject.replace(/-/g, " ");
+    // @ts-ignore
+    index?.[board]?.[subject].name ?? subject.replace(/-/g, " ");
 // @ts-ignore
 let topicName = index?.[board]?.[subject]["topics"];
 // @ts-ignore
-let realTopicName = topicName.find((element) => element.slug === topic)?.name ?? topic.replace(/-/g, " ");
+let realTopicName =
+    topicName.find((element) => element.slug === topic)?.name ??
+    topic.replace(/-/g, " ");
 
 let topicList: { name: string; slug: string }[] = [];
 let noteContent = "";
@@ -29,220 +29,259 @@ topicList = index?.[board!]?.[subject!]?.["topics"] ?? [];
 
 // fetch note content
 try {
-  const res = await fetch(
-    `${API_URL}/getNote/${encodeURIComponent(realSubjectName)}/${encodeURIComponent(realTopicName)}`,
-  );
-  if (res.ok) {
-    const data = await res.json();
-    noteContent = data.content ?? data.html ?? data.note ?? "";
-  } else {
-    error = "Failed to load note.";
-  }
+    const res = await fetch(
+        `${API_URL}/getNote/${encodeURIComponent(realSubjectName)}/${encodeURIComponent(realTopicName)}`,
+    );
+    if (res.ok) {
+        const data = await res.json();
+        noteContent = data.content ?? data.html ?? data.note ?? "";
+    } else {
+        error = "Failed to load note.";
+    }
 } catch {
-  error = "Failed to load note.";
+    error = "Failed to load note.";
 }
 
 const boardDisplayName =
-  board === "a-levels"
-    ? "A Levels"
-    : board === "kathmandu-university"
-      ? "Kathmandu University"
-      : board;
+    board === "a-levels"
+        ? "A Levels"
+        : board === "kathmandu-university"
+          ? "Kathmandu University"
+          : board;
+
+export async function getStaticPaths() {
+    const index = await getPaperIndex();
+
+    const paths: any[] = [];
+
+    for (const board in index) {
+        for (const subjectKey in index[board]) {
+            const subject = index[board][subjectKey];
+            const topics = subject.topics ?? [];
+
+            for (const topic of topics) {
+                paths.push({
+                    params: {
+                        board,
+                        subject: subjectKey,
+                        topic: topic.slug,
+                    },
+                    props: {
+                        noteContent: topic.notes?.[0] ?? "",
+                    },
+                });
+            }
+        }
+    }
+
+    return paths;
+}
 ---
 
 <BaseLayout
-  title={`${realTopicName} — ${realSubjectName} | Paper Guides`}
-  description={`Study notes for ${realTopicName} in ${realSubjectName}.`}
+    title={`${realTopicName} — ${realSubjectName} | Paper Guides`}
+    description={`Study notes for ${realTopicName} in ${realSubjectName}.`}
 >
-  <!-- Header / breadcrumbs -->
-  <div
-    class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
-  >
-    <div class="flex flex-col justify-center">
-      <span class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1">
-        <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
-        <a href="/notes"><i class="ph-fill ph-notebook"></i> Notes</a> /
-        <a href={`/notes/${board}`}
-          ><i class="ph-fill ph-book"></i> {boardDisplayName}</a
-        > /
-        <a href={`/notes/${board}/${subject}`}
-          ><i class="ph-fill ph-books"></i> {realSubjectName}</a
-        > /
-        <span><i class="ph-fill ph-file-text"></i> {realTopicName}</span>
-      </span>
-      <h1 class="font-serif font-bold text-4xl md:text-6xl">
-        {realTopicName}<br />
-        <span class="text-[var(--accent)] italic">{realSubjectName}</span>
-      </h1>
-      <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
-        Access study notes for {realTopicName} in {realSubjectName}.
-      </p>
-    </div>
-  </div>
-
-  <!-- Main content + sidebar -->
-  <div class="grid grid-cols-1 md:grid-cols-[1fr_360px]">
-    <!-- Note content -->
-    <div class="bg-[var(--baby-powder)] px-5 md:px-25 py-6 shadow">
-      {
-        error ? (
-          <div class="text-center mt-12">
-            <p class="text-xl text-[var(--pink-highlight)] font-bold">
-              {error}
-            </p>
-          </div>
-        ) : noteContent ? (
-          <div id="note-content" class="printable-area">
-            <MarkdownRenderer client:load content={noteContent} />
-          </div>
-        ) : (
-          <div class="text-center mt-12 opacity-60">
-            <p class="text-xl">No content available for this topic yet.</p>
-          </div>
-        )
-      }
-      <!-- SEO content -->
-      <section class="mt-8 text-sm leading-relaxed space-y-3 opacity-80">
-        <h2 class="font-semibold text-[var(--blue-highlight)]">
-          {realTopicName} Notes – {boardDisplayName}
-        </h2>
-        <p>
-          Comprehensive revision notes for <strong>{realTopicName}</strong> in <strong
-            >{realSubjectName}</strong
-          > ({boardDisplayName}). These student-made notes are structured to
-          help you build understanding topic by topic and walk into your exam
-          with confidence.
-        </p>
-        <p>
-          <i class="ph-fill ph-question mr-1"></i> Ready to test yourself on <strong
-            >{realTopicName}</strong
-          >? Work through past-paper questions for {realTopicName} at your own pace.
-          <a
-            href={`/questions/${board}/${subject}/${topic}`}
-            class="text-[var(--accent)] hover:underline"
-            >Practice {realTopicName} questions →</a
-          >
-        </p>
-        <p>
-          <i class="ph-fill ph-books mr-1"></i> Want to explore other topics in <strong
-            >{realSubjectName}</strong
-          >? Browse all questions across every topic for this subject.
-          <a
-            href={`/questions/${board}/${subject}`}
-            class="text-[var(--accent)] hover:underline"
-            >Browse all {realSubjectName} questions →</a
-          >
-        </p>
-      </section>
-    </div>
-
-    <!-- Sidebar -->
-    <aside
-      class="hidden md:flex flex-col gap-6 h-full  sticky top-[80px] self-start bg-[var(--sidebar-bg)] p-4"
+    <!-- Header / breadcrumbs -->
+    <div
+        class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
     >
-      <div
-        class="flex justify-between items-center border-b border-[var(--border-subtle)] pb-2"
-      >
-        <p class="font-bold text-lg uppercase tracking-wide opacity-60">
-          On this page
-        </p>
+        <div class="flex flex-col justify-center">
+            <span
+                class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1"
+            >
+                <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
+                <a href="/notes"><i class="ph-fill ph-notebook"></i> Notes</a> /
+                <a href={`/notes/${board}`}
+                    ><i class="ph-fill ph-book"></i> {boardDisplayName}</a
+                > /
+                <a href={`/notes/${board}/${subject}`}
+                    ><i class="ph-fill ph-books"></i> {realSubjectName}</a
+                > /
+                <span><i class="ph-fill ph-file-text"></i> {realTopicName}</span
+                >
+            </span>
+            <h1 class="font-serif font-bold text-4xl md:text-6xl">
+                {realTopicName}<br />
+                <span class="text-[var(--accent)] italic"
+                    >{realSubjectName}</span
+                >
+            </h1>
+            <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
+                Access study notes for {realTopicName} in {realSubjectName}.
+            </p>
+        </div>
+    </div>
 
-        <button
-          onclick="window.print()"
-          class="cursor-pointer px-4 py-2 rounded-xl bg-[var(--green-highlight)] text-white font-bold hover:opacity-80 transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]
+    <!-- Main content + sidebar -->
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_360px]">
+        <!-- Note content -->
+        <div class="bg-[var(--baby-powder)] px-5 md:px-25 py-6 shadow">
+            {
+                error ? (
+                    <div class="text-center mt-12">
+                        <p class="text-xl text-[var(--pink-highlight)] font-bold">
+                            {error}
+                        </p>
+                    </div>
+                ) : noteContent ? (
+                    <div id="note-content" class="printable-area">
+                        <MarkdownRenderer client:load content={noteContent} />
+                    </div>
+                ) : (
+                    <div class="text-center mt-12 opacity-60">
+                        <p class="text-xl">
+                            No content available for this topic yet.
+                        </p>
+                    </div>
+                )
+            }
+            <!-- SEO content -->
+            <section class="mt-8 text-sm leading-relaxed space-y-3 opacity-80">
+                <h2 class="font-semibold text-[var(--blue-highlight)]">
+                    {realTopicName} Notes – {boardDisplayName}
+                </h2>
+                <p>
+                    Comprehensive revision notes for <strong
+                        >{realTopicName}</strong
+                    > in <strong>{realSubjectName}</strong> ({
+                        boardDisplayName
+                    }). These student-made notes are structured to help you
+                    build understanding topic by topic and walk into your exam
+                    with confidence.
+                </p>
+                <p>
+                    <i class="ph-fill ph-question mr-1"></i> Ready to test yourself
+                    on <strong>{realTopicName}</strong>? Work through past-paper
+                    questions for {realTopicName} at your own pace.
+                    <a
+                        href={`/questions/${board}/${subject}/${topic}`}
+                        class="text-[var(--accent)] hover:underline"
+                        >Practice {realTopicName} questions →</a
+                    >
+                </p>
+                <p>
+                    <i class="ph-fill ph-books mr-1"></i> Want to explore other topics
+                    in <strong>{realSubjectName}</strong>? Browse all questions
+                    across every topic for this subject.
+                    <a
+                        href={`/questions/${board}/${subject}`}
+                        class="text-[var(--accent)] hover:underline"
+                        >Browse all {realSubjectName} questions →</a
+                    >
+                </p>
+            </section>
+        </div>
+
+        <!-- Sidebar -->
+        <aside
+            class="hidden md:flex flex-col gap-6 h-full sticky top-[80px] self-start bg-[var(--sidebar-bg)] p-4"
+        >
+            <div
+                class="flex justify-between items-center border-b border-[var(--border-subtle)] pb-2"
+            >
+                <p class="font-bold text-lg uppercase tracking-wide opacity-60">
+                    On this page
+                </p>
+
+                <button
+                    onclick="window.print()"
+                    class="cursor-pointer px-4 py-2 rounded-xl bg-[var(--green-highlight)] text-white font-bold hover:opacity-80 transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]
                bg-[var(--color-surface)] outline outline-1 outline-[var(--border-subtle)]"
-        >
-          <i class="ph-fill ph-printer"></i> Print
-        </button>
-      </div>
+                >
+                    <i class="ph-fill ph-printer"></i> Print
+                </button>
+            </div>
 
-      <div
-        id="notes-navigation"
-        class="border-b border-[var(--border-subtle)] pb-2"
-      >
-      </div>
+            <div
+                id="notes-navigation"
+                class="border-b border-[var(--border-subtle)] pb-2"
+            >
+            </div>
 
-      <div class="border-b border-[var(--border-subtle)] pb-2 mb-2">
-        <h3
-          class="font-semibold border-b border-[var(--border-subtle)] pb-2 mb-2"
-        >
-          Other Topics in <a href={`/notes/${board}/${subject}`}
-            >{realSubjectName}</a
-          >
-        </h3>
-        <ul class="space-y-1 text-sm">
-          {
-            topicList
-              .filter((t) => t.slug !== topic)
-              .slice(0, 10)
-              .map((t) => (
-                <li>
-                  <a
-                    href={`/notes/${board}/${subject}/${slugify(t.slug)}`}
-                    class="hover:underline"
-                  >
-                    {t.name}
-                  </a>
-                </li>
-              ))
-          }
-        </ul>
-      </div>
+            <div class="border-b border-[var(--border-subtle)] pb-2 mb-2">
+                <h3
+                    class="font-semibold border-b border-[var(--border-subtle)] pb-2 mb-2"
+                >
+                    Other Topics in <a href={`/notes/${board}/${subject}`}
+                        >{realSubjectName}</a
+                    >
+                </h3>
+                <ul class="space-y-1 text-sm">
+                    {
+                        topicList
+                            .filter((t) => t.slug !== topic)
+                            .slice(0, 10)
+                            .map((t) => (
+                                <li>
+                                    <a
+                                        href={`/notes/${board}/${subject}/${slugify(t.slug)}`}
+                                        class="hover:underline"
+                                    >
+                                        {t.name}
+                                    </a>
+                                </li>
+                            ))
+                    }
+                </ul>
+            </div>
 
-      <div class="text-sm text-[var(--muted)] text-center">Sponsor Space</div>
-    </aside>
-  </div>
+            <div class="text-sm text-[var(--muted)] text-center">
+                Sponsor Space
+            </div>
+        </aside>
+    </div>
 
-  <!-- Mobile ad strip -->
-  <div
-    class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 text-center text-sm text-[var(--muted)]"
-  >
-    Sponsor Space
-  </div>
+    <!-- Mobile ad strip -->
+    <div
+        class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 text-center text-sm text-[var(--muted)]"
+    >
+        Sponsor Space
+    </div>
 
-  <!-- TOC script -->
-  <script is:inline>
-    function buildToc() {
-      const content = document.getElementById("note-content");
-      const nav = document.getElementById("notes-navigation");
-      if (!content || !nav) return;
-      const headings = content.querySelectorAll("h1,h2,h3");
-      if (!headings.length) return;
+    <!-- TOC script -->
+    <script is:inline>
+        function buildToc() {
+            const content = document.getElementById("note-content");
+            const nav = document.getElementById("notes-navigation");
+            if (!content || !nav) return;
+            const headings = content.querySelectorAll("h1,h2,h3");
+            if (!headings.length) return;
 
-      const ul = document.createElement("ul");
-      ul.className = "space-y-1 text-sm";
+            const ul = document.createElement("ul");
+            ul.className = "space-y-1 text-sm";
 
-      headings.forEach((heading, i) => {
-        const id = "note-heading-" + i;
-        heading.id = id;
-        const li = document.createElement("li");
-        const a = document.createElement("a");
-        a.href = "#" + id;
-        a.textContent = heading.textContent || "";
-        a.className = [
-          "block py-1 hover:text-[var(--blue-highlight)] transition-colors",
-          heading.tagName === "H1"
-            ? "font-bold"
-            : heading.tagName === "H2"
-              ? "pl-2 font-semibold"
-              : "pl-4 opacity-80",
-        ].join(" ");
-        li.appendChild(a);
-        ul.appendChild(li);
-      });
+            headings.forEach((heading, i) => {
+                const id = "note-heading-" + i;
+                heading.id = id;
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.href = "#" + id;
+                a.textContent = heading.textContent || "";
+                a.className = [
+                    "block py-1 hover:text-[var(--blue-highlight)] transition-colors",
+                    heading.tagName === "H1"
+                        ? "font-bold"
+                        : heading.tagName === "H2"
+                          ? "pl-2 font-semibold"
+                          : "pl-4 opacity-80",
+                ].join(" ");
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
 
-      nav.appendChild(ul);
-      if (window.MathJax?.typesetPromise)
-        window.MathJax.typesetPromise([content]).catch(console.error);
-    }
+            nav.appendChild(ul);
+            if (window.MathJax?.typesetPromise)
+                window.MathJax.typesetPromise([content]).catch(console.error);
+        }
 
-    let attempts = 0;
-    const interval = setInterval(() => {
-      const content = document.getElementById("note-content");
-      if (content && content.querySelectorAll("h1,h2,h3").length) {
-        buildToc();
-        clearInterval(interval);
-      } else if (++attempts > 20) clearInterval(interval);
-    }, 150);
-  </script>
+        let attempts = 0;
+        const interval = setInterval(() => {
+            const content = document.getElementById("note-content");
+            if (content && content.querySelectorAll("h1,h2,h3").length) {
+                buildToc();
+                clearInterval(interval);
+            } else if (++attempts > 20) clearInterval(interval);
+        }, 150);
+    </script>
 </BaseLayout>
