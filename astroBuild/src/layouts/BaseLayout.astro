@@ -8,7 +8,6 @@ interface Props {
     title?: string;
     description?: string;
     ogImage?: string;
-    canonical?: string;
     keywords?: string[];
     noIndex?: boolean;
     lastUpdated?: string | Date;
@@ -19,11 +18,12 @@ const cleanPath =
         ? Astro.url.pathname.slice(0, -1)
         : Astro.url.pathname;
 
+const canonical = `${SITE_URL ?? "https://paperguides.org"}${cleanPath}`;
+
 const {
     title = "Paper Guides",
     description = "Free exam preparation resources — Past Papers, Notes, Question Generator, and more.",
     ogImage = `${SITE_URL ?? "https://paperguides.org"}/images/opg_paper_guides.png`,
-    canonical = `${SITE_URL ?? "https://paperguides.org"}${cleanPath}`,
     keywords = [],
     noIndex = false,
     lastUpdated,
@@ -56,7 +56,8 @@ const resolvedLastUpdated = lastUpdated ? new Date(lastUpdated) : new Date();
                 />
             )
         }
-        {canonical && <link rel="canonical" href={canonical} />}
+        <link rel="canonical" href={canonical} />
+
         <meta
             name="last-modified"
             content={resolvedLastUpdated.toISOString()}
@@ -70,9 +71,6 @@ const resolvedLastUpdated = lastUpdated ? new Date(lastUpdated) : new Date();
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:image" content={ogImage} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:type" content="image/png" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Paper Guides" />
         <meta property="og:url" content={canonical} />
@@ -101,7 +99,9 @@ const resolvedLastUpdated = lastUpdated ? new Date(lastUpdated) : new Date();
             data-auto-track="true"></script>
     </head>
     <body class="flex flex-col min-h-screen">
-        <script>
+        <!-- We're making peanuts with this while making the site slower :( maybe once we have a large audience we can use this -->
+
+        <!-- <script>
             window.addEventListener("load", () => {
                 const s = document.createElement("script");
                 s.src =
@@ -110,7 +110,8 @@ const resolvedLastUpdated = lastUpdated ? new Date(lastUpdated) : new Date();
                 s.crossOrigin = "anonymous";
                 document.body.appendChild(s);
             });
-        </script>
+        </script> -->
+
         <Nav />
         <main class="flex-grow">
             <slot />

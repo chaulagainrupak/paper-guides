@@ -48,13 +48,46 @@ const difficultyLabels: Record<number, string> = {
   5: "Very Hard",
 };
 
-
 function getField(item: any, arrayIdx: number, ...keys: string[]): any {
   if (Array.isArray(item)) return item[arrayIdx];
   for (const k of keys) {
     if (item[k] !== undefined) return item[k];
   }
   return undefined;
+}
+
+function renderInlineMathInNode(node: Node) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    const text = node.textContent ?? "";
+    if (!text.includes("$")) return;
+    const parts = text.split(/(\$[^\n$]+?\$)/g);
+    if (parts.length <= 1) return;
+    const frag = document.createDocumentFragment();
+    for (const part of parts) {
+      if (part.startsWith("$") && part.endsWith("$") && part.length > 2) {
+        const raw = part.slice(1, -1);
+        const span = document.createElement("span");
+        span.className = "math-inline";
+        span.style.display = "inline";
+        span.style.whiteSpace = "nowrap";
+        try {
+          // @ts-ignore
+          katex.render(raw, span, { displayMode: false, throwOnError: false });
+        } catch {
+          span.textContent = part;
+        }
+        frag.appendChild(span);
+      } else {
+        frag.appendChild(document.createTextNode(part));
+      }
+    }
+    node.parentNode?.replaceChild(frag, node);
+  } else if (node.nodeType === Node.ELEMENT_NODE) {
+    const children = Array.from(node.childNodes);
+    for (const child of children) {
+      renderInlineMathInNode(child);
+    }
+  }
 }
 
 const RichContent = ({ content }: { content?: string }) => {
@@ -66,8 +99,7 @@ const RichContent = ({ content }: { content?: string }) => {
     const container = ref.current;
     container.innerHTML = "";
 
-    const parts = content.split(/((?:\$\$[\s\S]*?\$\$|\$[^\n$]*?\$))/g);
-
+    const parts = content.split(/((?:\$\$[\s\S]*?\$\$))/g);
     const fragment = document.createDocumentFragment();
 
     for (const part of parts) {
@@ -75,20 +107,15 @@ const RichContent = ({ content }: { content?: string }) => {
 
       const isBlockMath =
         part.startsWith("$$") && part.endsWith("$$") && part.length > 4;
-      const isInlineMath =
-        !isBlockMath &&
-        part.startsWith("$") &&
-        part.endsWith("$") &&
-        part.length > 2;
 
-      if (isBlockMath || isInlineMath) {
-        const raw = isBlockMath ? part.slice(2, -2) : part.slice(1, -1);
-        const mathNode = document.createElement(isBlockMath ? "div" : "span");
-        mathNode.className = isBlockMath ? "math-block" : "math-inline";
+      if (isBlockMath) {
+        const raw = part.slice(2, -2);
+        const mathNode = document.createElement("div");
+        mathNode.className = "math-block";
         try {
           // @ts-ignore
           katex.render(raw, mathNode, {
-            displayMode: isBlockMath,
+            displayMode: true,
             throwOnError: false,
           });
         } catch {
@@ -104,6 +131,7 @@ const RichContent = ({ content }: { content?: string }) => {
         } catch {
           mdDiv.innerHTML = part.replace(/\n/g, "<br/>");
         }
+        renderInlineMathInNode(mdDiv);
         fragment.appendChild(mdDiv);
       }
     }
@@ -256,6 +284,14 @@ export default function GeneratedPage({ data, onBack }: Props) {
 
   return (
     <>
+      <style>{`
+        @media (min-width: 1024px) {
+          .sidebar-inner {
+            height: calc(100vh - 4rem) !important;
+          }
+        }
+      `}</style>
+
       <div
         className="flex flex-col lg:flex-row"
         style={{
@@ -263,7 +299,6 @@ export default function GeneratedPage({ data, onBack }: Props) {
           backgroundColor: "var(--wheat)",
         }}
       >
-        {/* Sidebar - Sharp subject list style */}
         <aside
           className="w-full lg:w-80 xl:w-96 flex-shrink-0 border-b lg:border-b-0 lg:border-r"
           style={{
@@ -272,13 +307,11 @@ export default function GeneratedPage({ data, onBack }: Props) {
           }}
         >
           <div
-            className="sticky top-16 flex flex-col"
-            style={{
-              height: "calc(100vh - 4rem)",
-            }}
+            className="sidebar-inner sticky top-16 flex flex-col"
+            style={{ height: "50dvh" }}
           >
             <div
-              className="p-5 flex flex-col gap-6 border-b"
+              className="p-5 flex flex-col gap-6 border-b flex-shrink-0"
               style={{ borderColor: "var(--border-subtle)" }}
             >
               <div
@@ -339,10 +372,10 @@ export default function GeneratedPage({ data, onBack }: Props) {
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
                       className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all duration-150
-  disabled:opacity-40 disabled:cursor-not-allowed
-  active:scale-95 active:translate-y-[1px]
-  hover:scale-[1.03] hover:-translate-y-[1px]
-  relative overflow-hidden"
+                        disabled:opacity-40 disabled:cursor-not-allowed
+                        active:scale-95 active:translate-y-[1px]
+                        hover:scale-[1.03] hover:-translate-y-[1px]
+                        relative overflow-hidden"
                       style={{
                         backgroundColor:
                           currentPage === 1 ? "transparent" : "var(--accent)",
@@ -356,7 +389,6 @@ export default function GeneratedPage({ data, onBack }: Props) {
                       }}
                     >
                       <span className="relative z-10">
-                        {" "}
                         <i className="ph-fill ph-arrow-left"></i> Prev
                       </span>
                       <span className="absolute inset-0 opacity-0 hover:opacity-10 transition bg-white"></span>
@@ -366,10 +398,10 @@ export default function GeneratedPage({ data, onBack }: Props) {
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
                       className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all duration-150
-  disabled:opacity-40 disabled:cursor-not-allowed
-  active:scale-95 active:translate-y-[1px]
-  hover:scale-[1.03] hover:-translate-y-[1px]
-  relative overflow-hidden"
+                        disabled:opacity-40 disabled:cursor-not-allowed
+                        active:scale-95 active:translate-y-[1px]
+                        hover:scale-[1.03] hover:-translate-y-[1px]
+                        relative overflow-hidden"
                       style={{
                         backgroundColor:
                           currentPage === totalPages
@@ -387,8 +419,7 @@ export default function GeneratedPage({ data, onBack }: Props) {
                       }}
                     >
                       <span className="relative z-10">
-                        {" "}
-                        Next<i className="ph-fill ph-arrow-right"></i>{" "}
+                        Next <i className="ph-fill ph-arrow-right"></i>
                       </span>
                       <span className="absolute inset-0 opacity-0 hover:opacity-10 transition bg-white"></span>
                     </button>
@@ -397,7 +428,7 @@ export default function GeneratedPage({ data, onBack }: Props) {
               )}
             </div>
 
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto min-h-0">
               {paginationData.map((item, index) => {
                 const globalIndex = (currentPage - 1) * itemsPerPage + index;
                 const itemTopic = getField(item, 3, "topic") ?? "Question";
@@ -413,7 +444,7 @@ export default function GeneratedPage({ data, onBack }: Props) {
                       navigateToQuestion(globalIndex, "Sidebar Click")
                     }
                     className="group border-b border-[var(--border-subtle)] px-5 py-4 flex items-center gap-3 cursor-pointer transition-all duration-200
-      hover:bg-[var(--baby-powder)] hover:translate-x-[2px] "
+                      hover:bg-[var(--baby-powder)] hover:translate-x-[2px]"
                     style={{
                       backgroundColor: isActive
                         ? "color-mix(in srgb, var(--accent) 10%, transparent)"
@@ -434,7 +465,7 @@ export default function GeneratedPage({ data, onBack }: Props) {
 
                     <div className="flex-1 min-w-0">
                       <div
-                        className={`truncate leading-tight text-lg font-bold`}
+                        className="truncate leading-tight text-lg font-bold"
                         style={{
                           color: isActive
                             ? "var(--accent)"
@@ -445,16 +476,14 @@ export default function GeneratedPage({ data, onBack }: Props) {
                       </div>
 
                       {itemComp && (
-                        <div
-                          className="text-[var(--blue-highlight)] font-bold text-[0.7rem] opacity-60 truncate mt-0.5"
-                        >
+                        <div className="text-[var(--blue-highlight)] font-bold text-[0.7rem] opacity-60 truncate mt-0.5">
                           {itemComp}
                         </div>
                       )}
                     </div>
 
                     <div
-                      className="font-serif text-md px-2 py-1 rounded-md font-bold"
+                      className="font-serif text-md px-2 py-1 rounded-md font-bold flex-shrink-0"
                       style={{
                         backgroundColor: diffColor,
                         color: "var(--ghost-white)",
@@ -469,115 +498,109 @@ export default function GeneratedPage({ data, onBack }: Props) {
           </div>
         </aside>
 
-        {/* Main Content Area */}
-        <main className="flex-1 flex flex-col">
-<div className="flex flex-col" style={{ minHeight: "calc(100vh - 4rem)" }}>
-      {/* TOP HEADER */}
-      <div className="bg-[var(--sidebar-bg)] p-6 border-b border-[var(--border-subtle)] flex justify-between items-center flex-wrap gap-6">
-        <div className="flex flex-wrap items-center gap-6">
-
-          {/* TOPIC */}
-          <div>
-            <div className="text-xs uppercase opacity-60">Topic</div>
-            <div className="font-bold text-lg">{topic}</div>
-          </div>
-
-          {/* DIFFICULTY */}
-          <div>
-            <div className="text-xs uppercase opacity-60">Difficulty</div>
-            <div
-              className="font-bold"
-              style={{ color: difficultyToColorMap[difficulty] }}
-            >
-              {difficultyLabels[difficulty]}
-            </div>
-          </div>
-
-          {/* COMPONENT */}
-          {component !== "N/A" && (
-            <div>
-              <div className="text-xs uppercase opacity-60">Component</div>
-              <div className="font-bold">{component}</div>
-            </div>
-          )}
-        </div>
-
-        {/* PREV / NEXT */}
-        <div className="flex gap-3">
-          <button
-            onClick={() =>
-              navigateToQuestion(currentQuestion - 1, "Prev Button")
-            }
-            disabled={currentQuestion === 0}
-            className="bg-[var(--accent)] disabled:opacity-40 text-[var(--ghost-white)] py-3 px-4 rounded-xl text-md font-bold ransition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] outline outline-[var(--border-subtle)] active:scale-95 active:translate-y-[1px]"
+        <main className="flex-1 flex flex-col min-h-0">
+          <div
+            className="flex flex-col"
+            style={{ height: "calc(100vh - 4rem)" }}
           >
-            <i className="ph-fill ph-arrow-left"></i> Previous Question
-          </button>
+            <div className="bg-[var(--sidebar-bg)] p-6 border-b border-[var(--border-subtle)] flex justify-between items-center flex-wrap gap-6 flex-shrink-0">
+              <div className="flex flex-wrap items-center gap-6">
+                <div>
+                  <div className="text-xs uppercase opacity-60">Topic</div>
+                  <div className="font-bold text-lg">{topic}</div>
+                </div>
 
-          <button
-            onClick={() =>
-              navigateToQuestion(currentQuestion + 1, "Next Button")
-            }
-            disabled={currentQuestion === data.length - 1}
-            className="bg-[var(--accent)] disabled:opacity-40 text-[var(--ghost-white)] py-3 px-4 rounded-xl text-md font-bold ransition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] outline outline-[var(--border-subtle)] active:scale-95 active:translate-y-[1px]"
-          >
-            Next Question<i className="ph-fill ph-arrow-right"></i>
-          </button>
-        </div>
-      </div>
+                <div>
+                  <div className="text-xs uppercase opacity-60">Difficulty</div>
+                  <div
+                    className="font-bold"
+                    style={{ color: difficultyToColorMap[difficulty] }}
+                  >
+                    {difficultyLabels[difficulty]}
+                  </div>
+                </div>
 
-      {/* CONTENT */}
-      <div className="flex-1 p-8 bg-[var(--sidebar-bg)]">
-        {!showSolution ? (
-          <div>
-            {/* HEADER ROW */}
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold flex items-center gap-3">
-                <i className="ph-fill ph-question text-[var(--accent)]" />
-                Question
-              </h3>
+                {component !== "N/A" && (
+                  <div>
+                    <div className="text-xs uppercase opacity-60">
+                      Component
+                    </div>
+                    <div className="font-bold">{component}</div>
+                  </div>
+                )}
+              </div>
 
-              {/* TOGGLE HERE */}
-              <button
-                onClick={toggleSolution}
-                className="px-5 py-2 rounded-lg font-bold ransition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] outline outline-[var(--border-subtle)] active:scale-95 active:translate-y-[1px]"
-                style={{
-                  backgroundColor: "var(--accent)",
-                  color: "white",
-                }}
-              >
-                <i className="ph-fill ph-eye"></i> Show Solution
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={() =>
+                    navigateToQuestion(currentQuestion - 1, "Prev Button")
+                  }
+                  disabled={currentQuestion === 0}
+                  className="bg-[var(--accent)] disabled:opacity-40 text-[var(--ghost-white)] py-3 px-4 rounded-xl text-md font-bold transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] outline outline-[var(--border-subtle)] active:scale-95 active:translate-y-[1px]"
+                >
+                  <i className="ph-fill ph-arrow-left"></i> Previous Question
+                </button>
+
+                <button
+                  onClick={() =>
+                    navigateToQuestion(currentQuestion + 1, "Next Button")
+                  }
+                  disabled={currentQuestion === data.length - 1}
+                  className="bg-[var(--accent)] disabled:opacity-40 text-[var(--ghost-white)] py-3 px-4 rounded-xl text-md font-bold transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] outline outline-[var(--border-subtle)] active:scale-95 active:translate-y-[1px]"
+                >
+                  Next Question <i className="ph-fill ph-arrow-right"></i>
+                </button>
+              </div>
             </div>
 
-            <RichContent content={questionContent} />
-          </div>
-        ) : (
-          <div>
-            {/* HEADER ROW */}
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold flex items-center gap-3">
-                <i className="ph-fill ph-lightbulb text-[var(--pink-highlight)]" />
-                Solution
-              </h3>
+            <div className="flex-1 p-8 bg-[var(--sidebar-bg)] overflow-y-auto min-h-0">
+              {!showSolution ? (
+                <div>
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-2xl font-bold flex items-center gap-3">
+                      <i className="ph-fill ph-question text-[var(--accent)]" />
+                      Question
+                    </h3>
 
-              <button
-                onClick={toggleSolution}
-                className="px-5 py-2 rounded-lg font-bold ransition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] outline outline-[var(--border-subtle)] active:scale-95 active:translate-y-[1px]"
-                style={{
-                  backgroundColor: "var(--pink-highlight)",
-                  color: "white",
-                }}
-              >
-                <i className="ph-fill ph-eye-slash"></i> Hide Solution
-              </button>
+                    <button
+                      onClick={toggleSolution}
+                      className="px-5 py-2 rounded-lg font-bold transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] outline outline-[var(--border-subtle)] active:scale-95 active:translate-y-[1px]"
+                      style={{
+                        backgroundColor: "var(--accent)",
+                        color: "white",
+                      }}
+                    >
+                      <i className="ph-fill ph-eye"></i> Show Solution
+                    </button>
+                  </div>
+
+                  <RichContent content={questionContent} />
+                </div>
+              ) : (
+                <div>
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-2xl font-bold flex items-center gap-3">
+                      <i className="ph-fill ph-lightbulb text-[var(--pink-highlight)]" />
+                      Solution
+                    </h3>
+
+                    <button
+                      onClick={toggleSolution}
+                      className="px-5 py-2 rounded-lg font-bold transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] outline outline-[var(--border-subtle)] active:scale-95 active:translate-y-[1px]"
+                      style={{
+                        backgroundColor: "var(--pink-highlight)",
+                        color: "white",
+                      }}
+                    >
+                      <i className="ph-fill ph-eye-slash"></i> Hide Solution
+                    </button>
+                  </div>
+
+                  <RichContent content={solutionContent} />
+                </div>
+              )}
             </div>
-
-            <RichContent content={solutionContent} />
           </div>
-        )}
-      </div>
-    </div>
         </main>
       </div>
     </>

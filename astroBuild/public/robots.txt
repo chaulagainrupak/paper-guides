@@ -5,7 +5,6 @@ Disallow: /admin
 Disallow: /admin/
 Disallow: /login
 Disallow: /api/
-Disallow: /_astro/
 
 User-agent: Amazonbot
 Disallow: /

@@ -825,6 +825,34 @@
         "topics": ["CHEM 215 - Chemistry XV"]
       },
       {
+        "name": "COMP 117 - Computer Applications",
+        "topics": [
+          "Python Introduction",
+          "Built-in Functions",
+          "Data Structures - Sets",
+          "Math Module and Syntax",
+          "Control Flow - Conditionals",
+          "Loops and Iteration",
+          "Python Introduction",
+          "File Handling",
+          "Functions",
+          "Built-in Functions",
+          "Operators",
+          "Data Structures - Sets",
+          "Libraries",
+          "Control Flow - Loops",
+          "Data Structures - Tuples",
+          "Strings",
+          "Comments",
+          "Math Module",
+          "Data Structures - Lists",
+          "Boolean Logic",
+          "Conditionals",
+          "Loops",
+          "Loops and Logic"
+        ]
+      },
+      {
         "name": "COMP 103 - Introduction to Computing",
         "topics": ["COMP 103 - Introduction to Computing"]
       },
@@ -840,10 +868,7 @@
         "name": "COMP 116 - Object-Oriented Programming",
         "topics": ["COMP 116 - Object-Oriented Programming"]
       },
-      {
-        "name": "COMP 117 - Programming in C++",
-        "topics": ["COMP 117 - Programming in C++"]
-      },
+
       {
         "name": "COMP 204 - Communication and Networking",
         "topics": ["COMP 204 - Communication and Networking"]

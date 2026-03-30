@@ -4,23 +4,23 @@ export const prerender = true;
 import { getPaperIndex } from "../utils/paperIndex";
 
 type Paper = {
-  name?: string;
+    name?: string;
 };
 
 type YearData = {
-  papers?: Record<string, Paper>;
+    papers?: Record<string, Paper>;
 };
 
 type TopicItem = {
-  name: string;
-  slug: string;
-  notes?: { name: string; slug: string }[];
-  questions?: { name: string; slug: string }[];
+    name: string;
+    slug: string;
+    notes?: { name: string; slug: string }[];
+    questions?: { name: string; slug: string }[];
 };
 
 type SubjectData = {
-  years?: Record<string, YearData>;
-  topics?: TopicItem[];
+    years?: Record<string, YearData>;
+    topics?: TopicItem[];
 };
 
 type IndexType = Record<string, Record<string, SubjectData>>;
@@ -28,150 +28,224 @@ type IndexType = Record<string, Record<string, SubjectData>>;
 let index: IndexType = {};
 
 try {
-  index = await getPaperIndex();
+    index = await getPaperIndex();
 } catch (err) {
-  console.error("Failed to load index:", err);
+    console.error("Failed to load index:", err);
 }
 
 export const getStaticPaths = async () => {
-  return [{ params: {} }];
+    return [{ params: {} }];
 };
 
 const format = (str: string) => str.replace(/-/g, " ");
+
+const pageTitle = "All Past Papers, Notes & Questions | Exam Preparation";
+const pageDescription =
+    "Browse every past paper, topic note, and practice question available across all boards and subjects. Free exam preparation resources.";
+const canonicalUrl = "https://yoursite.com/sitemap";
 ---
 
-<div>
-  <h1>All Subjects, Years, Papers, Notes & Questions</h1>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <p>
-    Browse all subjects, years, past papers, notes, and topic-based questions.
-    This page lists everything available for exam preparation across boards.
-  </p>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <link rel="canonical" href={canonicalUrl} />
 
-  {
-    Object.entries(index).map(([board, subjects]) => (
-      <div>
-        <h2>{format(board)}</h2>
+        <meta name="robots" content="index, follow" />
 
-        {Object.entries(subjects).map(([subject, subjectData]) => {
-          const subjectName = format(subject);
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="website" />
 
-          return (
-            <div>
-              <h3>{subjectName}</h3>
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+    </head>
 
-              {/* Subject landing */}
-              <a href={`/subjects/${board}/${subject}`}>View {subjectName}</a>
+    <div>
+        <h1>All Subjects, Years, Papers, Notes & Questions</h1>
 
-              {/* ================= PAPERS ================= */}
-              <h4>Papers</h4>
-              <ul>
-                {Object.entries(subjectData.years ?? {}).map(
-                  ([year, yearData]) => (
-                    <li>
-                      <a href={`/subjects/${board}/${subject}/${year}`}>
-                        {subjectName} {year}
-                      </a>
+        <p>
+            Browse all subjects, years, past papers, notes, and topic-based
+            questions. This page lists everything available for exam preparation
+            across boards.
+        </p>
 
-                      <ul>
-                        {Object.entries(yearData?.papers ?? {}).map(
-                          ([paperSlug, paperData]) => {
-                            const paperName =
-                              paperData?.name ?? format(paperSlug);
-
-                            return (
-                              <li>
-                                <a
-                                  href={`/subjects/${board}/${subject}/${year}/${paperSlug}`}
-                                >
-                                  {subjectName} {year} {paperName}
-                                </a>
-                              </li>
-                            );
-                          },
-                        )}
-                      </ul>
-                    </li>
-                  ),
-                )}
-              </ul>
-
-              {/* ================= TOPICS / NOTES / QUESTIONS ================= */}
-              {(subjectData.topics ?? []).length > 0 && (
+        {
+            Object.entries(index).map(([board, subjects]) => (
                 <div>
-                  <h4>Topics</h4>
+                    <h2>{format(board)}</h2>
 
-                  <ul>
-                    {(subjectData.topics ?? []).map((topic) => {
-                      const topicName = topic.name;
-                      const topicSlug = topic.slug;
+                    {Object.entries(subjects).map(([subject, subjectData]) => {
+                        const subjectName = format(subject);
 
-                      return (
-                        <li>
-                          {/* Topic landing (notes default) */}
-                          <a href={`/notes/${board}/${subject}/${topicSlug}`}>
-                            {topicName}
-                          </a>
+                        return (
+                            <div>
+                                <h3>{subjectName}</h3>
 
-                          <ul>
-                            {/* Notes landing */}
-                            <li>
-                              <a
-                                href={`/notes/${board}/${subject}/${topicSlug}`}
-                              >
-                                Notes - {topicName}
-                              </a>
-                            </li>
-
-                            {/* Questions landing */}
-                            <li>
-                              <a
-                                href={`/questions/${board}/${subject}/${topicSlug}`}
-                              >
-                                Questions - {topicName}
-                              </a>
-                            </li>
-
-                            {/* Individual Notes */}
-                            {(topic.notes ?? []).map((note) => (
-                              <li>
-                                <a
-                                  href={`/notes/${board}/${subject}/${topicSlug}/${note.slug}`}
-                                >
-                                  {note.name}
+                                {/* Subject landing */}
+                                <a href={`/subjects/${board}/${subject}`}>
+                                    View {subjectName}
                                 </a>
-                              </li>
-                            ))}
 
-                            {/* Individual Questions (final endpoints) */}
-                            {(topic.questions ?? []).map((q) => {
-                              // @ts-ignore
-                              const qSlug = q.slug || q.uuid; // fallback to uuid if slug missing
-                              const qName = q.name || qSlug;
+                                {/* ================= PAPERS ================= */}
+                                <h4>Papers</h4>
+                                <ul>
+                                    {Object.entries(
+                                        subjectData.years ?? {},
+                                    ).map(([year, yearData]) => (
+                                        <li>
+                                            <a
+                                                href={`/subjects/${board}/${subject}/${year}`}
+                                            >
+                                                {subjectName} {year}
+                                            </a>
 
-                              if (!qSlug) return null;
+                                            <ul>
+                                                {Object.entries(
+                                                    yearData?.papers ?? {},
+                                                ).map(
+                                                    ([
+                                                        paperSlug,
+                                                        paperData,
+                                                    ]) => {
+                                                        const paperName =
+                                                            paperData?.name ??
+                                                            format(paperSlug);
 
-                              return (
-                                <li>
-                                  <a
-                                    href={`/questions/${board}/${subject}/${topicSlug}/${qSlug}`}
-                                  >
-                                    {qName}
-                                  </a>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        </li>
-                      );
+                                                        return (
+                                                            <li>
+                                                                <a
+                                                                    href={`/subjects/${board}/${subject}/${year}/${paperSlug}`}
+                                                                >
+                                                                    {
+                                                                        subjectName
+                                                                    }{" "}
+                                                                    {year}{" "}
+                                                                    {paperName}
+                                                                </a>
+                                                            </li>
+                                                        );
+                                                    },
+                                                )}
+                                            </ul>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {/* ================= TOPICS / NOTES / QUESTIONS ================= */}
+                                {(subjectData.topics ?? []).length > 0 && (
+                                    <div>
+                                        <h4>Topics</h4>
+
+                                        <ul>
+                                            {(subjectData.topics ?? []).map(
+                                                (topic) => {
+                                                    const topicName =
+                                                        topic.name;
+                                                    const topicSlug =
+                                                        topic.slug;
+
+                                                    return (
+                                                        <li>
+                                                            {/* Topic landing (notes default) */}
+                                                            <a
+                                                                href={`/notes/${board}/${subject}/${topicSlug}`}
+                                                            >
+                                                                {topicName}
+                                                            </a>
+
+                                                            <ul>
+                                                                {/* Notes landing */}
+                                                                <li>
+                                                                    <a
+                                                                        href={`/notes/${board}/${subject}/${topicSlug}`}
+                                                                    >
+                                                                        Notes -{" "}
+                                                                        {
+                                                                            topicName
+                                                                        }
+                                                                    </a>
+                                                                </li>
+
+                                                                {/* Questions landing */}
+                                                                <li>
+                                                                    <a
+                                                                        href={`/questions/${board}/${subject}/${topicSlug}`}
+                                                                    >
+                                                                        Questions
+                                                                        -{" "}
+                                                                        {
+                                                                            topicName
+                                                                        }
+                                                                    </a>
+                                                                </li>
+
+                                                                {/* Individual Notes */}
+                                                                {(
+                                                                    topic.notes ??
+                                                                    []
+                                                                ).map(
+                                                                    (note) => (
+                                                                        <li>
+                                                                            <a
+                                                                                href={`/notes/${board}/${subject}/${topicSlug}/${note.slug}`}
+                                                                            >
+                                                                                {
+                                                                                    note.name
+                                                                                }
+                                                                            </a>
+                                                                        </li>
+                                                                    ),
+                                                                )}
+
+                                                                {/* Individual Questions (final endpoints) */}
+                                                                {(
+                                                                    topic.questions ??
+                                                                    []
+                                                                ).map((q) => {
+                                                                    // @ts-ignore
+                                                                    const qSlug =
+                                                                        q.slug ||
+                                                                        q.uuid; // fallback to uuid if slug missing
+                                                                    const qName =
+                                                                        q.name ||
+                                                                        qSlug;
+
+                                                                    if (!qSlug)
+                                                                        return null;
+
+                                                                    return (
+                                                                        <li>
+                                                                            <a
+                                                                                href={`/questions/${board}/${subject}/${topicSlug}/${qSlug}`}
+                                                                            >
+                                                                                {
+                                                                                    qName
+                                                                                }
+                                                                            </a>
+                                                                        </li>
+                                                                    );
+                                                                })}
+                                                            </ul>
+                                                        </li>
+                                                    );
+                                                },
+                                            )}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        );
                     })}
-                  </ul>
                 </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    ))
-  }
-</div>
+            ))
+        }
+    </div>
+
+
+</html>
