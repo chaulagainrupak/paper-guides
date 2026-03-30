@@ -30,20 +30,20 @@ const boardDisplayName =
           ? "Kathmandu University"
           : board;
 
-export async function getStaticPaths() {
-    const index = await getPaperIndex();
+// export async function getStaticPaths() {
+//     const index = await getPaperIndex();
 
-    const paths: { params: { board: string; subject: string } }[] = [];
+//     const paths: { params: { board: string; subject: string } }[] = [];
 
-    for (const board of Object.keys(index)) {
-        const subjects = index[board];
-        for (const subject of Object.keys(subjects)) {
-            paths.push({ params: { board, subject } });
-        }
-    }
+//     for (const board of Object.keys(index)) {
+//         const subjects = index[board];
+//         for (const subject of Object.keys(subjects)) {
+//             paths.push({ params: { board, subject } });
+//         }
+//     }
 
-    return paths;
-}
+//     return paths;
+// }
 ---
 
 <BaseLayout

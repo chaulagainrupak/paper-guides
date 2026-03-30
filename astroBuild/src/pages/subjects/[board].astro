@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getPaperIndex } from "../../utils/paperIndex";
 
@@ -30,18 +32,18 @@ const boardDisplayName =
           ? "Kathmandu University"
           : board;
 
-export async function getStaticPaths() {
-    const index = await getPaperIndex();
+// export async function getStaticPaths() {
+//     const index = await getPaperIndex();
 
-    const paths: { params: { board: string } }[] = [];
+//     const paths: { params: { board: string } }[] = [];
 
-    // Loop through all boards
-    for (const board of Object.keys(index)) {
-        paths.push({ params: { board } });
-    }
+//     // Loop through all boards
+//     for (const board of Object.keys(index)) {
+//         paths.push({ params: { board } });
+//     }
 
-    return paths;
-}
+//     return paths;
+// }
 ---
 
 <BaseLayout

@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import PaperViewerClient from "../../../../../components/PaperViewerClient";
 import { getPaperIndex } from "../../../../../utils/paperIndex";
@@ -13,34 +15,34 @@ const { board, subject, year, question } = Astro.params as unknown as Params;
 
 const index = await getPaperIndex();
 
-export async function getStaticPaths() {
-    const index = await getPaperIndex();
+// export async function getStaticPaths() {
+//     const index = await getPaperIndex();
 
-    const paths: {
-        params: {
-            board: string;
-            subject: string;
-            year: string;
-            question: string;
-        };
-    }[] = [];
+//     const paths: {
+//         params: {
+//             board: string;
+//             subject: string;
+//             year: string;
+//             question: string;
+//         };
+//     }[] = [];
 
-    for (const board of Object.keys(index)) {
-        const subjects = index[board];
-        for (const subject of Object.keys(subjects)) {
-            const subjectData = subjects[subject];
-            const years = subjectData.years ?? {};
-            for (const year of Object.keys(years)) {
-                const questions = years[year];
-                for (const question of questions) {
-                    paths.push({ params: { board, subject, year, question } });
-                }
-            }
-        }
-    }
+//     for (const board of Object.keys(index)) {
+//         const subjects = index[board];
+//         for (const subject of Object.keys(subjects)) {
+//             const subjectData = subjects[subject];
+//             const years = subjectData.years ?? {};
+//             for (const year of Object.keys(years)) {
+//                 const questions = years[year];
+//                 for (const question of questions) {
+//                     paths.push({ params: { board, subject, year, question } });
+//                 }
+//             }
+//         }
+//     }
 
-    return paths;
-}
+//     return paths;
+// }
 const subjectData = index?.[board]?.[subject];
 
 const realSubjectName = subjectData?.name ?? subject.replace(/-/g, " ");

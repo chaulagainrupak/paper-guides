@@ -38,7 +38,6 @@ const resolvedLastUpdated = lastUpdated ? new Date(lastUpdated) : new Date();
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <!-- Primary -->
         <title>{title}</title>
         <meta name="description" content={description} />
         <meta name="author" content="Paper Guides" />
@@ -51,7 +50,7 @@ const resolvedLastUpdated = lastUpdated ? new Date(lastUpdated) : new Date();
                 <meta
                     name="keywords"
                     content={
-                        "Paper Guides, free past papers, study notes, A Levels, Kathmandu University, CAIE, Cambridge exams, exam preparation, revision resources, question bank, topic-wise questions, practice papers, free study materials, student resources, past paper solutions, A Level Physics, A Level Mathematics, A Level Chemistry, KU BBA, KU BCA, KU CSIT, KU Engineering, CAIE past papers," +
+                        "Paper Guides, free past papers, study notes," +
                         keywords.join(", ")
                     }
                 />
@@ -66,6 +65,7 @@ const resolvedLastUpdated = lastUpdated ? new Date(lastUpdated) : new Date();
             http-equiv="last-modified"
             content={resolvedLastUpdated.toUTCString()}
         />
+
         <!-- Open Graph -->
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -84,18 +84,13 @@ const resolvedLastUpdated = lastUpdated ? new Date(lastUpdated) : new Date();
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={ogImage} />
 
-        <!-- Favicon + theme -->
         <link rel="icon" href="/images/logo.ico" />
         <meta name="theme-color" content="#4ade80" />
-
-        <!-- Sitemap -->
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
-        <!-- Google Ads -->
-        <script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007"
-            crossorigin="anonymous"></script>
+        <script defer src="/scripts/katex.min.js"></script>
+        <script defer src="/scripts/auto-render.min.js"></script>
+        <script defer src="/scripts/marked.min.js"></script>
 
         <!-- Umami Analytics -->
         <script
@@ -104,36 +99,18 @@ const resolvedLastUpdated = lastUpdated ? new Date(lastUpdated) : new Date();
             src={`${UMAMI_URL}/script.js`}
             data-website-id={UMAMI_WEBSITE_ID}
             data-auto-track="true"></script>
-
-        <!-- Phosphor Icons -->
-        <link
-            rel="stylesheet"
-            type="text/css"
-            href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css"
-        />
-
-        <!-- KaTeX -->
-        <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css"
-            crossorigin="anonymous"
-        />
-        <script
-            defer
-            src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"
-            crossorigin="anonymous"></script>
-        <script
-            defer
-            src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"
-            crossorigin="anonymous"></script>
-
-        <!-- marked (markdown parser) -->
-        <script
-            defer
-            src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"
-            crossorigin="anonymous"></script>
     </head>
     <body class="flex flex-col min-h-screen">
+        <script>
+            window.addEventListener("load", () => {
+                const s = document.createElement("script");
+                s.src =
+                    "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8879795771404007";
+                s.async = true;
+                s.crossOrigin = "anonymous";
+                document.body.appendChild(s);
+            });
+        </script>
         <Nav />
         <main class="flex-grow">
             <slot />

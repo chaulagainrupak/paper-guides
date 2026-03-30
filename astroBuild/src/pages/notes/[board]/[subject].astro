@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import { getPaperIndex } from "../../../utils/paperIndex";
 import { slugify } from "../../../utils/slugify";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
@@ -30,29 +32,29 @@ const boardDisplayName =
           ? "Kathmandu University"
           : board;
 
-export async function getStaticPaths() {
-    const index = await getPaperIndex();
-    const paths: any[] = [];
+// export async function getStaticPaths() {
+//     const index = await getPaperIndex();
+//     const paths: any[] = [];
 
-    for (const board in index) {
-        for (const subjectKey in index[board]) {
-            paths.push({
-                params: {
-                    board,
-                    subject: subjectKey,
-                },
-                props: {
-                    topics: index[board][subjectKey].topics ?? [],
-                    realSubjectName:
-                        index[board][subjectKey].name ??
-                        subjectKey.replace(/-/g, " "),
-                },
-            });
-        }
-    }
+//     for (const board in index) {
+//         for (const subjectKey in index[board]) {
+//             paths.push({
+//                 params: {
+//                     board,
+//                     subject: subjectKey,
+//                 },
+//                 props: {
+//                     topics: index[board][subjectKey].topics ?? [],
+//                     realSubjectName:
+//                         index[board][subjectKey].name ??
+//                         subjectKey.replace(/-/g, " "),
+//                 },
+//             });
+//         }
+//     }
 
-    return paths;
-}
+//     return paths;
+// }
 ---
 
 <BaseLayout

@@ -1,26 +1,29 @@
 ---
-export async function getStaticPaths() {
-  const index = await getPaperIndex();
-  const paths: { params: { board: string; subject: string; topic: string } }[] = [];
+export const prerender = false;
 
-  for (const boardKey in index) {
-    for (const subjectKey in index[boardKey]) {
-      const subjectData = index[boardKey][subjectKey];
-      const topics = subjectData.topics ?? [];
-      for (const topic of topics) {
-        paths.push({
-          params: {
-            board: boardKey,
-            subject: subjectKey,
-            topic: topic.slug,
-          },
-        });
-      }
-    }
-  }
 
-  return paths;
-}
+// export async function getStaticPaths() {
+//   const index = await getPaperIndex();
+//   const paths: { params: { board: string; subject: string; topic: string } }[] = [];
+
+//   for (const boardKey in index) {
+//     for (const subjectKey in index[boardKey]) {
+//       const subjectData = index[boardKey][subjectKey];
+//       const topics = subjectData.topics ?? [];
+//       for (const topic of topics) {
+//         paths.push({
+//           params: {
+//             board: boardKey,
+//             subject: subjectKey,
+//             topic: topic.slug,
+//           },
+//         });
+//       }
+//     }
+//   }
+
+//   return paths;
+// }
 
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getPaperIndex } from "../../../../utils/paperIndex";

@@ -1,29 +1,33 @@
 ---
-export async function getStaticPaths() {
-  const index = await getPaperIndex();
-  const paths: { params: { board: string; subject: string; topic: string; slug: string } }[] = [];
 
-  for (const board of Object.keys(index)) {
-    for (const subject of Object.keys(index[board])) {
-      const topicList = index[board][subject]["topics"] ?? [];
-      for (const topic of topicList) {
-        const questions = topic.questions ?? [];
-        for (const question of questions) {
-          paths.push({
-            params: {
-              board,
-              subject,
-              topic: topic.slug,
-              slug: question.slug,
-            },
-          });
-        }
-      }
-    }
-  }
+export const prerender = false;
 
-  return paths;
-}
+
+// export async function getStaticPaths() {
+//   const index = await getPaperIndex();
+//   const paths: { params: { board: string; subject: string; topic: string; slug: string } }[] = [];
+
+//   for (const board of Object.keys(index)) {
+//     for (const subject of Object.keys(index[board])) {
+//       const topicList = index[board][subject]["topics"] ?? [];
+//       for (const topic of topicList) {
+//         const questions = topic.questions ?? [];
+//         for (const question of questions) {
+//           paths.push({
+//             params: {
+//               board,
+//               subject,
+//               topic: topic.slug,
+//               slug: question.slug,
+//             },
+//           });
+//         }
+//       }
+//     }
+//   }
+
+//   return paths;
+// }
 
 import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import MarkdownRenderer from "../../../../../components/MarkdownRenderer";

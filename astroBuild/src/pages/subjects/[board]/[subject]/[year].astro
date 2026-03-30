@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import { getPaperIndex } from "../../../../utils/paperIndex";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 
@@ -101,26 +103,26 @@ const sortedSessions = Array.from(sessions.entries()).sort(([a], [b]) =>
     b.localeCompare(a),
 );
 
-export async function getStaticPaths() {
-    const index = await getPaperIndex();
+// export async function getStaticPaths() {
+//     const index = await getPaperIndex();
 
-    const paths: {
-        params: { board: string; subject: string; year: string };
-    }[] = [];
+//     const paths: {
+//         params: { board: string; subject: string; year: string };
+//     }[] = [];
 
-    for (const board of Object.keys(index)) {
-        const subjects = index[board];
-        for (const subject of Object.keys(subjects)) {
-            const subjectData = subjects[subject];
-            const years = subjectData.years ?? {};
-            for (const year of Object.keys(years)) {
-                paths.push({ params: { board, subject, year } });
-            }
-        }
-    }
+//     for (const board of Object.keys(index)) {
+//         const subjects = index[board];
+//         for (const subject of Object.keys(subjects)) {
+//             const subjectData = subjects[subject];
+//             const years = subjectData.years ?? {};
+//             for (const year of Object.keys(years)) {
+//                 paths.push({ params: { board, subject, year } });
+//             }
+//         }
+//     }
 
-    return paths;
-}
+//     return paths;
+// }
 ---
 
 <BaseLayout

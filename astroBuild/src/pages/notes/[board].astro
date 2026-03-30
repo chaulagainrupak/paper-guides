@@ -1,5 +1,6 @@
 ---
-import type { GetStaticPaths } from "astro";
+export const prerender = false;
+
 import LevelTopicalsLayout from "../../layouts/LevelTopicalsLayout.astro";
 import BackButton from "../../components/BackButton.astro";
 import SubjectSearch from "../../components/SubjectSearch";
@@ -52,27 +53,27 @@ const apiBoardName = boardNameMap[board!] ?? board!;
 //   }));
 // };
 
-export async function getStaticPaths() {
-    const index = await getPaperIndex();
-    const boards = Object.keys(index ?? {});
+// export async function getStaticPaths() {
+//     const index = await getPaperIndex();
+//     const boards = Object.keys(index ?? {});
 
-    return boards.map((board) => ({
-        params: { board },
-        props: {
-            subjects: Object.keys(index[board] ?? {})
-                .map((s) => ({
-                    slug: s,
-                    name: index[board][s].name,
-                    topicsCount: index[board][s].topics?.length ?? 0,
-                }))
-                .sort((a, b) =>
-                    a.name.localeCompare(b.name, undefined, {
-                        sensitivity: "base",
-                    }),
-                ),
-        },
-    }));
-}
+//     return boards.map((board) => ({
+//         params: { board },
+//         props: {
+//             subjects: Object.keys(index[board] ?? {})
+//                 .map((s) => ({
+//                     slug: s,
+//                     name: index[board][s].name,
+//                     topicsCount: index[board][s].topics?.length ?? 0,
+//                 }))
+//                 .sort((a, b) =>
+//                     a.name.localeCompare(b.name, undefined, {
+//                         sensitivity: "base",
+//                     }),
+//                 ),
+//         },
+//     }));
+// }
 ---
 
 <!-- <LevelTopicalsLayout
