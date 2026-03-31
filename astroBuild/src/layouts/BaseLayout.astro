@@ -30,6 +30,13 @@ const {
 } = Astro.props;
 
 const resolvedLastUpdated = lastUpdated ? new Date(lastUpdated) : new Date();
+
+const path = Astro.url.pathname;
+
+if (path.includes("%") || path.length > 500) {
+    Astro.response.status = 410;
+    Astro.response.statusText = "Removed";
+}
 ---
 
 <!doctype html>
