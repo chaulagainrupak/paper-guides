@@ -29,14 +29,7 @@ const {
     lastUpdated,
 } = Astro.props;
 
-const resolvedLastUpdated = lastUpdated ? new Date(lastUpdated) : new Date();
-
-const path = Astro.url.pathname;
-
-if (path.includes("%") || path.length > 500) {
-    Astro.response.status = 410;
-    Astro.response.statusText = "Removed";
-}
+const resolvedLastUpdated = lastUpdated;
 ---
 
 <!doctype html>
@@ -64,15 +57,6 @@ if (path.includes("%") || path.length > 500) {
             )
         }
         <link rel="canonical" href={canonical} />
-
-        <meta
-            name="last-modified"
-            content={resolvedLastUpdated.toISOString()}
-        />
-        <meta
-            http-equiv="last-modified"
-            content={resolvedLastUpdated.toUTCString()}
-        />
 
         <!-- Open Graph -->
         <meta property="og:title" content={title} />
