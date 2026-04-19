@@ -1,6 +1,9 @@
 {
   "A Levels": {
-    "levels": ["AS level", "A level"],
+    "levels": [
+      "AS level",
+      "A level"
+    ],
     "subjects": [
       {
         "name": "English General Paper (8021)",
@@ -404,7 +407,9 @@
     ]
   },
   "Kathmandu University": {
-    "levels": ["bachelors"],
+    "levels": [
+      "bachelors"
+    ],
     "subjects": [
       {
         "name": "Math 101 - Calculus and Linear Algebra",
@@ -414,7 +419,12 @@
           "Integration techniques",
           "Vector algebra",
           "Matrices and determinants",
-          "Systems of linear equations"
+          "Systems of linear equations",
+          "Eigenvalues and eigenvectors",
+          "Numerical Methods",
+          "Linear transformations and matrices",
+          "Statistics and Probability",
+          "Probability"
         ]
       },
       {
@@ -444,7 +454,8 @@
           "Probability distributions",
           "Sampling techniques",
           "Estimation theory",
-          "Hypothesis testing"
+          "Hypothesis testing",
+          "Probability"
         ]
       },
       {
@@ -456,7 +467,9 @@
           "Momentum",
           "Rotational dynamics",
           "Elasticity",
-          "Dynamics of systems of particles"
+          "Dynamics of systems of particles",
+          "Conservative forces",
+          "Thermodynamics"
         ]
       },
       {
@@ -487,17 +500,24 @@
           "Control flow",
           "Functions and recursion",
           "Introduction to object-oriented programming",
-          "Operating Systems",
-          "Number Systems",
-          "Computer Networks",
-          "Digital Logic",
-          "Computer Architecture",
-          "Programming",
-          "Cybersecurity",
-          "Cloud Computing",
-          "Green Computing",
-          "IoT",
-          "Computer Applications"
+          "Object-Oriented Programming",
+          "Cloud computing and big data",
+          "Introduction to Programming",
+          "Arrays and strings",
+          "Operators",
+          "Introduction to Computer Systems",
+          "Functions and Recursion",
+          "Data representation",
+          "Variables and Data Types",
+          "C++ Basics",
+          "Introduction to C Programming",
+          "Input/Output and library functions",
+          "Introduction to Programming and Python Basics",
+          "Python Basics",
+          "Functions",
+          "Control Flow",
+          "Introduction to programming",
+          "Strings and library functions"
         ]
       },
       {
@@ -598,1876 +618,2961 @@
       },
       {
         "name": "MATH 103 - Mathematics III",
-        "topics": ["MATH 103 - Mathematics III"]
+        "topics": [
+          "MATH 103 - Mathematics III"
+        ]
       },
       {
         "name": "MATH 104 - Advanced Calculus",
-        "topics": ["MATH 104 - Advanced Calculus"]
+        "topics": [
+          "MATH 104 - Advanced Calculus"
+        ]
       },
       {
         "name": "MATH 105 - Mathematics V",
-        "topics": ["MATH 105 - Mathematics V"]
+        "topics": [
+          "MATH 105 - Mathematics V"
+        ]
       },
       {
         "name": "MATH 106 - Mathematics VI",
-        "topics": ["MATH 106 - Mathematics VI"]
+        "topics": [
+          "MATH 106 - Mathematics VI"
+        ]
       },
       {
         "name": "MATH 111 - Mathematics for Management",
-        "topics": ["MATH 111 - Mathematics for Management"]
+        "topics": [
+          "MATH 111 - Mathematics for Management"
+        ]
       },
       {
         "name": "MATH 117 - Mathematics for Life Sciences",
-        "topics": ["MATH 117 - Mathematics for Life Sciences"]
+        "topics": [
+          "MATH 117 - Mathematics for Life Sciences"
+        ]
       },
       {
         "name": "MATH 204 - Mathematics IV",
-        "topics": ["MATH 204 - Mathematics IV"]
+        "topics": [
+          "MATH 204 - Mathematics IV"
+        ]
       },
       {
         "name": "MATH 205 - Mathematics V",
-        "topics": ["MATH 205 - Mathematics V"]
+        "topics": [
+          "MATH 205 - Mathematics V"
+        ]
       },
       {
         "name": "MATH 206 - Mathematics VI",
-        "topics": ["MATH 206 - Mathematics VI"]
+        "topics": [
+          "MATH 206 - Mathematics VI"
+        ]
       },
       {
         "name": "MATH 207 - Differential Equations and Complex Variables",
-        "topics": ["MATH 207 - Differential Equations and Complex Variables"]
+        "topics": [
+          "MATH 207 - Differential Equations and Complex Variables"
+        ]
       },
       {
         "name": "MATH 208 - Statistics and Probability",
-        "topics": ["MATH 208 - Statistics and Probability"]
+        "topics": [
+          "MATH 208 - Statistics and Probability"
+        ]
       },
       {
         "name": "MATH 211 - Mathematics XI",
-        "topics": ["MATH 211 - Mathematics XI"]
+        "topics": [
+          "MATH 211 - Mathematics XI"
+        ]
       },
       {
         "name": "MATH 213 - Mathematics XIII",
-        "topics": ["MATH 213 - Mathematics XIII"]
+        "topics": [
+          "MATH 213 - Mathematics XIII"
+        ]
       },
       {
         "name": "MATH 217 - Mathematics XVII",
-        "topics": ["MATH 217 - Mathematics XVII"]
+        "topics": [
+          "MATH 217 - Mathematics XVII"
+        ]
       },
       {
         "name": "MATH 301 - Mathematics I (Year 3)",
-        "topics": ["MATH 301 - Mathematics I (Year 3)"]
+        "topics": [
+          "MATH 301 - Mathematics I (Year 3)"
+        ]
       },
       {
         "name": "MATH 302 - Mathematics II (Year 3)",
-        "topics": ["MATH 302 - Mathematics II (Year 3)"]
+        "topics": [
+          "MATH 302 - Mathematics II (Year 3)"
+        ]
       },
       {
         "name": "MATH 303 - Mathematics III (Year 3)",
-        "topics": ["MATH 303 - Mathematics III (Year 3)"]
+        "topics": [
+          "MATH 303 - Mathematics III (Year 3)"
+        ]
       },
       {
         "name": "MATH 304 - Mathematics IV (Year 3)",
-        "topics": ["MATH 304 - Mathematics IV (Year 3)"]
+        "topics": [
+          "MATH 304 - Mathematics IV (Year 3)"
+        ]
       },
       {
         "name": "MATH 321 - Advanced Mathematics I",
-        "topics": ["MATH 321 - Advanced Mathematics I"]
+        "topics": [
+          "MATH 321 - Advanced Mathematics I"
+        ]
       },
       {
         "name": "MATH 322 - Advanced Mathematics II",
-        "topics": ["MATH 322 - Advanced Mathematics II"]
+        "topics": [
+          "MATH 322 - Advanced Mathematics II"
+        ]
       },
       {
         "name": "MATH 325 - Advanced Mathematics V",
-        "topics": ["MATH 325 - Advanced Mathematics V"]
+        "topics": [
+          "MATH 325 - Advanced Mathematics V"
+        ]
       },
       {
         "name": "MATH 326 - Advanced Mathematics VI",
-        "topics": ["MATH 326 - Advanced Mathematics VI"]
+        "topics": [
+          "MATH 326 - Advanced Mathematics VI"
+        ]
       },
       {
         "name": "MATH 327 - Advanced Mathematics VII",
-        "topics": ["MATH 327 - Advanced Mathematics VII"]
+        "topics": [
+          "MATH 327 - Advanced Mathematics VII"
+        ]
       },
       {
         "name": "MATH 403 - Advanced Mathematics (Year 4)",
-        "topics": ["MATH 403 - Advanced Mathematics (Year 4)"]
+        "topics": [
+          "MATH 403 - Advanced Mathematics (Year 4)"
+        ]
       },
       {
         "name": "PHYS 104 - Physics IV",
-        "topics": ["PHYS 104 - Physics IV"]
+        "topics": [
+          "PHYS 104 - Physics IV"
+        ]
       },
       {
         "name": "PHYS 105 - Physics V",
-        "topics": ["PHYS 105 - Physics V"]
+        "topics": [
+          "PHYS 105 - Physics V"
+        ]
       },
       {
         "name": "PHYS 113 - Physics for Life Sciences",
-        "topics": ["PHYS 113 - Physics for Life Sciences"]
+        "topics": [
+          "PHYS 113 - Physics for Life Sciences"
+        ]
       },
       {
         "name": "PHYS 203 - Physics III (Year 2)",
-        "topics": ["PHYS 203 - Physics III (Year 2)"]
+        "topics": [
+          "PHYS 203 - Physics III (Year 2)"
+        ]
       },
       {
         "name": "PHYS 206 - Applied Physics",
-        "topics": ["PHYS 206 - Applied Physics"]
+        "topics": [
+          "PHYS 206 - Applied Physics"
+        ]
       },
       {
         "name": "PHYS 207 - Physics VII",
-        "topics": ["PHYS 207 - Physics VII"]
+        "topics": [
+          "PHYS 207 - Physics VII"
+        ]
       },
       {
         "name": "PHYS 211 - Physics XI",
-        "topics": ["PHYS 211 - Physics XI"]
+        "topics": [
+          "PHYS 211 - Physics XI"
+        ]
       },
       {
         "name": "PHYS 212 - Physics XII",
-        "topics": ["PHYS 212 - Physics XII"]
+        "topics": [
+          "PHYS 212 - Physics XII"
+        ]
       },
       {
         "name": "PHYS 213 - Physics XIII",
-        "topics": ["PHYS 213 - Physics XIII"]
+        "topics": [
+          "PHYS 213 - Physics XIII"
+        ]
       },
       {
         "name": "PHYS 301 - Physics I (Year 3)",
-        "topics": ["PHYS 301 - Physics I (Year 3)"]
+        "topics": [
+          "PHYS 301 - Physics I (Year 3)"
+        ]
       },
       {
         "name": "PHYS 302 - Physics II (Year 3)",
-        "topics": ["PHYS 302 - Physics II (Year 3)"]
+        "topics": [
+          "PHYS 302 - Physics II (Year 3)"
+        ]
       },
       {
         "name": "PHYS 303 - Physics III (Year 3)",
-        "topics": ["PHYS 303 - Physics III (Year 3)"]
+        "topics": [
+          "PHYS 303 - Physics III (Year 3)"
+        ]
       },
       {
         "name": "PHYS 311 - Physics XI (Year 3)",
-        "topics": ["PHYS 311 - Physics XI (Year 3)"]
+        "topics": [
+          "PHYS 311 - Physics XI (Year 3)"
+        ]
       },
       {
         "name": "PHYS 312 - Physics XII (Year 3)",
-        "topics": ["PHYS 312 - Physics XII (Year 3)"]
+        "topics": [
+          "PHYS 312 - Physics XII (Year 3)"
+        ]
       },
       {
         "name": "PHYS 313 - Physics XIII (Year 3)",
-        "topics": ["PHYS 313 - Physics XIII (Year 3)"]
+        "topics": [
+          "PHYS 313 - Physics XIII (Year 3)"
+        ]
       },
       {
         "name": "PHYS 314 - Physics XIV (Year 3/4)",
-        "topics": ["PHYS 314 - Physics XIV (Year 3/4)"]
+        "topics": [
+          "PHYS 314 - Physics XIV (Year 3/4)"
+        ]
       },
       {
         "name": "PHYS 401 - Physics I (Year 4)",
-        "topics": ["PHYS 401 - Physics I (Year 4)"]
+        "topics": [
+          "PHYS 401 - Physics I (Year 4)"
+        ]
       },
       {
         "name": "PHYS 402 - Physics II (Year 4)",
-        "topics": ["PHYS 402 - Physics II (Year 4)"]
+        "topics": [
+          "PHYS 402 - Physics II (Year 4)"
+        ]
       },
       {
         "name": "PHYS 403 - Physics III (Year 4)",
-        "topics": ["PHYS 403 - Physics III (Year 4)"]
+        "topics": [
+          "PHYS 403 - Physics III (Year 4)"
+        ]
       },
       {
         "name": "PHYS 404 - Physics IV (Year 4)",
-        "topics": ["PHYS 404 - Physics IV (Year 4)"]
+        "topics": [
+          "PHYS 404 - Physics IV (Year 4)"
+        ]
       },
       {
         "name": "PHYS 405 - Physics V (Year 4)",
-        "topics": ["PHYS 405 - Physics V (Year 4)"]
+        "topics": [
+          "PHYS 405 - Physics V (Year 4)"
+        ]
       },
       {
         "name": "PHYS 412 - Applied Physics XII",
-        "topics": ["PHYS 412 - Applied Physics XII"]
+        "topics": [
+          "PHYS 412 - Applied Physics XII"
+        ]
       },
       {
         "name": "PHYS 421 - Applied Physics XXI",
-        "topics": ["PHYS 421 - Applied Physics XXI"]
+        "topics": [
+          "PHYS 421 - Applied Physics XXI"
+        ]
       },
       {
         "name": "PHYS 431 - Advanced Physics",
-        "topics": ["PHYS 431 - Advanced Physics"]
+        "topics": [
+          "PHYS 431 - Advanced Physics"
+        ]
       },
       {
         "name": "CHEM 101 - General Chemistry",
-        "topics": ["CHEM 101 - General Chemistry"]
+        "topics": [
+          "CHEM 101 - General Chemistry",
+          "Electrochemistry",
+          "Thermochemistry",
+          "Organic Chemistry",
+          "Chemical Equilibrium",
+          "Kinetics",
+          "Acid-Base Chemistry",
+          "Thermodynamics",
+          "General Chemistry",
+          "Colligative Properties",
+          "Reaction Mechanisms",
+          "Coordination Chemistry",
+          "Acids and Bases",
+          "Solutions",
+          "Solubility Product Constant",
+          "Equilibrium Constants",
+          "Reaction Mechanisms and Kinetics",
+          "Chain Reactions",
+          "Equilibrium",
+          "Chemical Kinetics",
+          "Redox Reactions"
+        ]
       },
       {
         "name": "CHEM 102 - Chemistry II",
-        "topics": ["CHEM 102 - Chemistry II"]
+        "topics": [
+          "CHEM 102 - Chemistry II"
+        ]
       },
       {
         "name": "CHEM 103 - Chemistry III",
-        "topics": ["CHEM 103 - Chemistry III"]
+        "topics": [
+          "CHEM 103 - Chemistry III"
+        ]
       },
       {
         "name": "CHEM 104 - Chemistry IV",
-        "topics": ["CHEM 104 - Chemistry IV"]
+        "topics": [
+          "CHEM 104 - Chemistry IV"
+        ]
       },
       {
         "name": "CHEM 201 - Organic Chemistry I",
-        "topics": ["CHEM 201 - Organic Chemistry I"]
+        "topics": [
+          "CHEM 201 - Organic Chemistry I"
+        ]
       },
       {
         "name": "CHEM 203 - Physical Chemistry",
-        "topics": ["CHEM 203 - Physical Chemistry"]
+        "topics": [
+          "CHEM 203 - Physical Chemistry"
+        ]
       },
       {
         "name": "CHEM 207 - Analytical Chemistry",
-        "topics": ["CHEM 207 - Analytical Chemistry"]
+        "topics": [
+          "CHEM 207 - Analytical Chemistry"
+        ]
       },
       {
         "name": "CHEM 212 - Chemistry XII",
-        "topics": ["CHEM 212 - Chemistry XII"]
+        "topics": [
+          "CHEM 212 - Chemistry XII"
+        ]
       },
       {
         "name": "CHEM 215 - Chemistry XV",
-        "topics": ["CHEM 215 - Chemistry XV"]
-      },
-      {
-        "name": "COMP 117 - Computer Applications",
         "topics": [
-          "Python Introduction",
-          "Built-in Functions",
-          "Data Structures - Sets",
-          "Math Module and Syntax",
-          "Control Flow - Conditionals",
-          "Loops and Iteration",
-          "Python Introduction",
-          "File Handling",
-          "Functions",
-          "Built-in Functions",
-          "Operators",
-          "Data Structures - Sets",
-          "Libraries",
-          "Control Flow - Loops",
-          "Data Structures - Tuples",
-          "Strings",
-          "Comments",
-          "Math Module",
-          "Data Structures - Lists",
-          "Boolean Logic",
-          "Conditionals",
-          "Loops",
-          "Loops and Logic"
+          "CHEM 215 - Chemistry XV"
         ]
       },
       {
         "name": "COMP 103 - Introduction to Computing",
-        "topics": ["COMP 103 - Introduction to Computing"]
+        "topics": [
+          "COMP 103 - Introduction to Computing"
+        ]
       },
       {
         "name": "COMP 105 - Computer Applications",
-        "topics": ["COMP 105 - Computer Applications"]
+        "topics": [
+          "COMP 105 - Computer Applications"
+        ]
       },
       {
         "name": "COMP 115 - Programming Concepts",
-        "topics": ["COMP 115 - Programming Concepts"]
+        "topics": [
+          "COMP 115 - Programming Concepts"
+        ]
       },
       {
         "name": "COMP 116 - Object-Oriented Programming",
-        "topics": ["COMP 116 - Object-Oriented Programming"]
+        "topics": [
+          "COMP 116 - Object-Oriented Programming"
+        ]
       },
-
+      {
+        "name": "COMP 117 - Programming in C++",
+        "topics": [
+          "COMP 117 - Programming in C++"
+        ]
+      },
       {
         "name": "COMP 204 - Communication and Networking",
-        "topics": ["COMP 204 - Communication and Networking"]
+        "topics": [
+          "COMP 204 - Communication and Networking"
+        ]
       },
       {
         "name": "COMP 231 - Microprocessor and Assembly Language",
-        "topics": ["COMP 231 - Microprocessor and Assembly Language"]
+        "topics": [
+          "COMP 231 - Microprocessor and Assembly Language"
+        ]
       },
       {
         "name": "COMP 232 - Database Management Systems",
-        "topics": ["COMP 232 - Database Management Systems"]
+        "topics": [
+          "COMP 232 - Database Management Systems"
+        ]
       },
       {
         "name": "COMP 307 - Operating Systems",
-        "topics": ["COMP 307 - Operating Systems"]
+        "topics": [
+          "COMP 307 - Operating Systems"
+        ]
       },
       {
         "name": "COMP 314 - Algorithms and Complexity",
-        "topics": ["COMP 314 - Algorithms and Complexity"]
+        "topics": [
+          "COMP 314 - Algorithms and Complexity"
+        ]
       },
       {
         "name": "COMP 315 - Computer Architecture and Organization",
-        "topics": ["COMP 315 - Computer Architecture and Organization"]
+        "topics": [
+          "COMP 315 - Computer Architecture and Organization"
+        ]
       },
       {
         "name": "COMP 316 - Theory of Computation",
-        "topics": ["COMP 316 - Theory of Computation"]
+        "topics": [
+          "COMP 316 - Theory of Computation"
+        ]
       },
       {
         "name": "COMP 317 - Computational Operations Research",
-        "topics": ["COMP 317 - Computational Operations Research"]
+        "topics": [
+          "COMP 317 - Computational Operations Research"
+        ]
       },
       {
         "name": "COMP 323 - Graph Theory",
-        "topics": ["COMP 323 - Graph Theory"]
+        "topics": [
+          "COMP 323 - Graph Theory"
+        ]
       },
       {
         "name": "COMP 341 - Human Computer Interaction",
-        "topics": ["COMP 341 - Human Computer Interaction"]
+        "topics": [
+          "COMP 341 - Human Computer Interaction"
+        ]
       },
       {
         "name": "COMP 342 - Computer Graphics",
-        "topics": ["COMP 342 - Computer Graphics"]
+        "topics": [
+          "COMP 342 - Computer Graphics"
+        ]
       },
       {
         "name": "COMP 343 - Information System Ethics",
-        "topics": ["COMP 343 - Information System Ethics"]
+        "topics": [
+          "COMP 343 - Information System Ethics"
+        ]
       },
       {
         "name": "COMP 402 - Computer Project/Thesis",
-        "topics": ["COMP 402 - Computer Project/Thesis"]
+        "topics": [
+          "COMP 402 - Computer Project/Thesis"
+        ]
       },
       {
         "name": "COMP 407 - Digital Signal Processing",
-        "topics": ["COMP 407 - Digital Signal Processing"]
+        "topics": [
+          "COMP 407 - Digital Signal Processing"
+        ]
       },
       {
         "name": "COMP 408 - Internship",
-        "topics": ["COMP 408 - Internship"]
+        "topics": [
+          "COMP 408 - Internship"
+        ]
       },
       {
         "name": "COMP 409 - Compiler Design",
-        "topics": ["COMP 409 - Compiler Design"]
+        "topics": [
+          "COMP 409 - Compiler Design"
+        ]
       },
       {
         "name": "COMP 421 - Computer Vision",
-        "topics": ["COMP 421 - Computer Vision"]
+        "topics": [
+          "COMP 421 - Computer Vision"
+        ]
       },
       {
         "name": "COMP 472 - Artificial Intelligence",
-        "topics": ["COMP 472 - Artificial Intelligence"]
+        "topics": [
+          "COMP 472 - Artificial Intelligence"
+        ]
       },
       {
         "name": "COMP 473 - Machine Learning",
-        "topics": ["COMP 473 - Machine Learning"]
+        "topics": [
+          "COMP 473 - Machine Learning"
+        ]
       },
       {
         "name": "COMP 478 - Natural Language Processing",
-        "topics": ["COMP 478 - Natural Language Processing"]
+        "topics": [
+          "COMP 478 - Natural Language Processing"
+        ]
       },
       {
         "name": "COMP 479 - Deep Learning",
-        "topics": ["COMP 479 - Deep Learning"]
+        "topics": [
+          "COMP 479 - Deep Learning"
+        ]
       },
       {
         "name": "COMP 482 - Cloud Computing",
-        "topics": ["COMP 482 - Cloud Computing"]
+        "topics": [
+          "COMP 482 - Cloud Computing"
+        ]
       },
       {
         "name": "COMP 484 - Network Security",
-        "topics": ["COMP 484 - Network Security"]
+        "topics": [
+          "COMP 484 - Network Security"
+        ]
       },
       {
         "name": "COMP 486 - Software Dependability",
-        "topics": ["COMP 486 - Software Dependability"]
+        "topics": [
+          "COMP 486 - Software Dependability"
+        ]
       },
       {
         "name": "COMP 488 - Advanced Topics in Computer Science",
-        "topics": ["COMP 488 - Advanced Topics in Computer Science"]
+        "topics": [
+          "COMP 488 - Advanced Topics in Computer Science"
+        ]
       },
       {
         "name": "EEEG 102 - Electrical Engineering II",
-        "topics": ["EEEG 102 - Electrical Engineering II"]
+        "topics": [
+          "EEEG 102 - Electrical Engineering II",
+          "Electromagnetic Waves in Free Space",
+          "Transmission Lines and Waveguides",
+          "Transmission Line Matching",
+          "Seawater Propagation",
+          "Uniform Plane Waves",
+          "Electromagnetic Waves in Conductors",
+          "Transmission Lines",
+          "Waveguides and Transmission Lines",
+          "Reflection Coefficient",
+          "Electromagnetic Field Exposure and Safety"
+        ]
       },
       {
         "name": "EEEG 103 - Electrical Engineering III",
-        "topics": ["EEEG 103 - Electrical Engineering III"]
+        "topics": [
+          "EEEG 103 - Electrical Engineering III"
+        ]
       },
       {
         "name": "EEEG 112 - Electrical Circuit Analysis",
-        "topics": ["EEEG 112 - Electrical Circuit Analysis"]
+        "topics": [
+          "EEEG 112 - Electrical Circuit Analysis"
+        ]
       },
       {
         "name": "EEEG 202 - Digital Logic",
-        "topics": ["EEEG 202 - Digital Logic"]
+        "topics": [
+          "EEEG 202 - Digital Logic"
+        ]
       },
       {
         "name": "EEEG 204 - Electromagnetic Theory",
-        "topics": ["EEEG 204 - Electromagnetic Theory"]
+        "topics": [
+          "EEEG 204 - Electromagnetic Theory"
+        ]
       },
       {
         "name": "EEEG 207 - Electronic Devices",
-        "topics": ["EEEG 207 - Electronic Devices"]
+        "topics": [
+          "EEEG 207 - Electronic Devices"
+        ]
       },
       {
         "name": "EEEG 211 - Electronics Engineering I",
-        "topics": ["EEEG 211 - Electronics Engineering I"]
+        "topics": [
+          "EEEG 211 - Electronics Engineering I"
+        ]
       },
       {
         "name": "EEEG 213 - Electronics Engineering III",
-        "topics": ["EEEG 213 - Electronics Engineering III"]
+        "topics": [
+          "EEEG 213 - Electronics Engineering III"
+        ]
       },
       {
         "name": "EEEG 214 - Electronics Engineering IV",
-        "topics": ["EEEG 214 - Electronics Engineering IV"]
+        "topics": [
+          "EEEG 214 - Electronics Engineering IV"
+        ]
       },
       {
         "name": "EEEG 215 - Electronics Engineering V",
-        "topics": ["EEEG 215 - Electronics Engineering V"]
+        "topics": [
+          "EEEG 215 - Electronics Engineering V"
+        ]
       },
       {
         "name": "EEEG 221 - Power Systems",
-        "topics": ["EEEG 221 - Power Systems"]
+        "topics": [
+          "EEEG 221 - Power Systems"
+        ]
       },
       {
         "name": "EEEG 309 - Electrical Engineering IX (Year 3)",
-        "topics": ["EEEG 309 - Electrical Engineering IX (Year 3)"]
+        "topics": [
+          "EEEG 309 - Electrical Engineering IX (Year 3)"
+        ]
       },
       {
         "name": "EEEG 313 - Electronics Engineering XIII",
-        "topics": ["EEEG 313 - Electronics Engineering XIII"]
+        "topics": [
+          "EEEG 313 - Electronics Engineering XIII"
+        ]
       },
       {
         "name": "EEEG 314 - Electronics Engineering XIV",
-        "topics": ["EEEG 314 - Electronics Engineering XIV"]
+        "topics": [
+          "EEEG 314 - Electronics Engineering XIV"
+        ]
       },
       {
         "name": "EEEG 320 - Power Electronics",
-        "topics": ["EEEG 320 - Power Electronics"]
+        "topics": [
+          "EEEG 320 - Power Electronics"
+        ]
       },
       {
         "name": "EEEG 331 - Control Systems",
-        "topics": ["EEEG 331 - Control Systems"]
+        "topics": [
+          "EEEG 331 - Control Systems"
+        ]
       },
       {
         "name": "EEEC 101 - Basic Electrical Engineering",
-        "topics": ["EEEC 101 - Basic Electrical Engineering"]
+        "topics": [
+          "EEEC 101 - Basic Electrical Engineering"
+        ]
       },
       {
         "name": "EEEC 314 - Electronics Engineering XIV",
-        "topics": ["EEEC 314 - Electronics Engineering XIV"]
+        "topics": [
+          "EEEC 314 - Electronics Engineering XIV"
+        ]
       },
       {
         "name": "CIEG 101 - Engineering Mechanics I",
-        "topics": ["CIEG 101 - Engineering Mechanics I"]
+        "topics": [
+          "CIEG 101 - Engineering Mechanics I"
+        ]
       },
       {
         "name": "CIEG 102 - Engineering Mechanics II",
-        "topics": ["CIEG 102 - Engineering Mechanics II"]
+        "topics": [
+          "CIEG 102 - Engineering Mechanics II"
+        ]
       },
       {
         "name": "CIEG 201 - Fluid Mechanics I",
-        "topics": ["CIEG 201 - Fluid Mechanics I"]
+        "topics": [
+          "CIEG 201 - Fluid Mechanics I"
+        ]
       },
       {
         "name": "CIEG 202 - Fluid Mechanics II",
-        "topics": ["CIEG 202 - Fluid Mechanics II"]
+        "topics": [
+          "CIEG 202 - Fluid Mechanics II"
+        ]
       },
       {
         "name": "CIEG 203 - Surveying I",
-        "topics": ["CIEG 203 - Surveying I"]
+        "topics": [
+          "CIEG 203 - Surveying I"
+        ]
       },
       {
         "name": "CIEG 204 - Surveying II",
-        "topics": ["CIEG 204 - Surveying II"]
+        "topics": [
+          "CIEG 204 - Surveying II"
+        ]
       },
       {
         "name": "CIEG 206 - Structural Analysis I",
-        "topics": ["CIEG 206 - Structural Analysis I"]
+        "topics": [
+          "CIEG 206 - Structural Analysis I"
+        ]
       },
       {
         "name": "CIEG 207 - Structural Analysis II",
-        "topics": ["CIEG 207 - Structural Analysis II"]
+        "topics": [
+          "CIEG 207 - Structural Analysis II"
+        ]
       },
       {
         "name": "CIEG 208 - Geotechnical Engineering I",
-        "topics": ["CIEG 208 - Geotechnical Engineering I"]
+        "topics": [
+          "CIEG 208 - Geotechnical Engineering I"
+        ]
       },
       {
         "name": "CIEG 209 - Geotechnical Engineering II",
-        "topics": ["CIEG 209 - Geotechnical Engineering II"]
+        "topics": [
+          "CIEG 209 - Geotechnical Engineering II"
+        ]
       },
       {
         "name": "CIEG 231 - Transportation Engineering I",
-        "topics": ["CIEG 231 - Transportation Engineering I"]
+        "topics": [
+          "CIEG 231 - Transportation Engineering I"
+        ]
       },
       {
         "name": "CIEG 232 - Transportation Engineering II",
-        "topics": ["CIEG 232 - Transportation Engineering II"]
+        "topics": [
+          "CIEG 232 - Transportation Engineering II"
+        ]
       },
       {
         "name": "CIEG 241 - Water Resources Engineering I",
-        "topics": ["CIEG 241 - Water Resources Engineering I"]
+        "topics": [
+          "CIEG 241 - Water Resources Engineering I"
+        ]
       },
       {
         "name": "CIEG 242 - Water Resources Engineering II",
-        "topics": ["CIEG 242 - Water Resources Engineering II"]
+        "topics": [
+          "CIEG 242 - Water Resources Engineering II"
+        ]
       },
       {
         "name": "CIEG 301 - Structural Design I",
-        "topics": ["CIEG 301 - Structural Design I"]
+        "topics": [
+          "CIEG 301 - Structural Design I"
+        ]
       },
       {
         "name": "CIEG 302 - Structural Design II",
-        "topics": ["CIEG 302 - Structural Design II"]
+        "topics": [
+          "CIEG 302 - Structural Design II"
+        ]
       },
       {
         "name": "CIEG 303 - Construction Management",
-        "topics": ["CIEG 303 - Construction Management"]
+        "topics": [
+          "CIEG 303 - Construction Management"
+        ]
       },
       {
         "name": "CIEG 304 - Highway Engineering",
-        "topics": ["CIEG 304 - Highway Engineering"]
+        "topics": [
+          "CIEG 304 - Highway Engineering"
+        ]
       },
       {
         "name": "CIEG 305 - Foundation Engineering",
-        "topics": ["CIEG 305 - Foundation Engineering"]
+        "topics": [
+          "CIEG 305 - Foundation Engineering"
+        ]
       },
       {
         "name": "CIEG 306 - Environmental Engineering",
-        "topics": ["CIEG 306 - Environmental Engineering"]
+        "topics": [
+          "CIEG 306 - Environmental Engineering"
+        ]
       },
       {
         "name": "CIEG 308 - Irrigation Engineering",
-        "topics": ["CIEG 308 - Irrigation Engineering"]
+        "topics": [
+          "CIEG 308 - Irrigation Engineering"
+        ]
       },
       {
         "name": "CIEG 309 - Hydropower Engineering",
-        "topics": ["CIEG 309 - Hydropower Engineering"]
+        "topics": [
+          "CIEG 309 - Hydropower Engineering"
+        ]
       },
       {
         "name": "CIEG 310 - Bridge Engineering",
-        "topics": ["CIEG 310 - Bridge Engineering"]
+        "topics": [
+          "CIEG 310 - Bridge Engineering"
+        ]
       },
       {
         "name": "CIEG 311 - Earthquake Engineering",
-        "topics": ["CIEG 311 - Earthquake Engineering"]
+        "topics": [
+          "CIEG 311 - Earthquake Engineering"
+        ]
       },
       {
         "name": "CIEG 312 - Tunnel Engineering",
-        "topics": ["CIEG 312 - Tunnel Engineering"]
+        "topics": [
+          "CIEG 312 - Tunnel Engineering"
+        ]
       },
       {
         "name": "CIEG 313 - Concrete Technology",
-        "topics": ["CIEG 313 - Concrete Technology"]
+        "topics": [
+          "CIEG 313 - Concrete Technology"
+        ]
       },
       {
         "name": "CIEG 314 - Steel Structures",
-        "topics": ["CIEG 314 - Steel Structures"]
+        "topics": [
+          "CIEG 314 - Steel Structures"
+        ]
       },
       {
         "name": "CIEG 318 - Remote Sensing and GIS",
-        "topics": ["CIEG 318 - Remote Sensing and GIS"]
+        "topics": [
+          "CIEG 318 - Remote Sensing and GIS"
+        ]
       },
       {
         "name": "CIEG 331 - Advanced Transportation",
-        "topics": ["CIEG 331 - Advanced Transportation"]
+        "topics": [
+          "CIEG 331 - Advanced Transportation"
+        ]
       },
       {
         "name": "CIEG 332 - Advanced Geotechnics",
-        "topics": ["CIEG 332 - Advanced Geotechnics"]
+        "topics": [
+          "CIEG 332 - Advanced Geotechnics"
+        ]
       },
       {
         "name": "CIEG 341 - Water Supply Engineering",
-        "topics": ["CIEG 341 - Water Supply Engineering"]
+        "topics": [
+          "CIEG 341 - Water Supply Engineering"
+        ]
       },
       {
         "name": "CIEG 342 - Sanitary Engineering",
-        "topics": ["CIEG 342 - Sanitary Engineering"]
+        "topics": [
+          "CIEG 342 - Sanitary Engineering"
+        ]
       },
       {
         "name": "CIEG 401 - Advanced Structural Engineering",
-        "topics": ["CIEG 401 - Advanced Structural Engineering"]
+        "topics": [
+          "CIEG 401 - Advanced Structural Engineering"
+        ]
       },
       {
         "name": "CIEG 402 - Project Planning and Management",
-        "topics": ["CIEG 402 - Project Planning and Management"]
+        "topics": [
+          "CIEG 402 - Project Planning and Management"
+        ]
       },
       {
         "name": "CIEG 403 - Advanced Foundation Engineering",
-        "topics": ["CIEG 403 - Advanced Foundation Engineering"]
+        "topics": [
+          "CIEG 403 - Advanced Foundation Engineering"
+        ]
       },
       {
         "name": "CIEG 404 - Advanced Water Resources",
-        "topics": ["CIEG 404 - Advanced Water Resources"]
+        "topics": [
+          "CIEG 404 - Advanced Water Resources"
+        ]
       },
       {
         "name": "CIEG 405 - Advanced Highway Engineering",
-        "topics": ["CIEG 405 - Advanced Highway Engineering"]
+        "topics": [
+          "CIEG 405 - Advanced Highway Engineering"
+        ]
       },
       {
         "name": "CIEG 406 - Advanced Environmental Engineering",
-        "topics": ["CIEG 406 - Advanced Environmental Engineering"]
+        "topics": [
+          "CIEG 406 - Advanced Environmental Engineering"
+        ]
       },
       {
         "name": "CIEG 407 - Construction Technology",
-        "topics": ["CIEG 407 - Construction Technology"]
+        "topics": [
+          "CIEG 407 - Construction Technology"
+        ]
       },
       {
         "name": "CIEG 408 - Earthquake Resistant Design",
-        "topics": ["CIEG 408 - Earthquake Resistant Design"]
+        "topics": [
+          "CIEG 408 - Earthquake Resistant Design"
+        ]
       },
       {
         "name": "CIEG 409 - Thesis/Project",
-        "topics": ["CIEG 409 - Thesis/Project"]
+        "topics": [
+          "CIEG 409 - Thesis/Project"
+        ]
       },
       {
         "name": "CIEG 431 - Advanced Civil Engineering Project",
-        "topics": ["CIEG 431 - Advanced Civil Engineering Project"]
+        "topics": [
+          "CIEG 431 - Advanced Civil Engineering Project"
+        ]
       },
       {
         "name": "MEEG 112 - Engineering Mechanics",
-        "topics": ["MEEG 112 - Engineering Mechanics"]
+        "topics": [
+          "MEEG 112 - Engineering Mechanics",
+          "Power Plants",
+          "Wind Turbines",
+          "Hydropower Plants",
+          "Engineering Mechanics",
+          "Energy and Mechanics",
+          "Energy Audit"
+        ]
       },
       {
         "name": "MEEG 126 - Engineering Drawing and Design",
-        "topics": ["MEEG 126 - Engineering Drawing and Design"]
+        "topics": [
+          "MEEG 126 - Engineering Drawing and Design"
+        ]
       },
       {
         "name": "MEEG 141 - Thermodynamics I",
-        "topics": ["MEEG 141 - Thermodynamics I"]
+        "topics": [
+          "MEEG 141 - Thermodynamics I"
+        ]
       },
       {
         "name": "MEEG 156 - Manufacturing Processes",
-        "topics": ["MEEG 156 - Manufacturing Processes"]
+        "topics": [
+          "MEEG 156 - Manufacturing Processes"
+        ]
       },
       {
         "name": "MEEG 202 - Strength of Materials",
-        "topics": ["MEEG 202 - Strength of Materials"]
+        "topics": [
+          "MEEG 202 - Strength of Materials",
+          "General"
+        ]
       },
       {
         "name": "MEEG 206 - Fluid Mechanics",
-        "topics": ["MEEG 206 - Fluid Mechanics"]
+        "topics": [
+          "MEEG 206 - Fluid Mechanics"
+        ]
       },
       {
         "name": "MEEG 207 - Heat Transfer",
-        "topics": ["MEEG 207 - Heat Transfer"]
+        "topics": [
+          "MEEG 207 - Heat Transfer"
+        ]
       },
       {
         "name": "MEEG 211 - Machine Design I",
-        "topics": ["MEEG 211 - Machine Design I"]
+        "topics": [
+          "MEEG 211 - Machine Design I"
+        ]
       },
       {
         "name": "MEEG 213 - Dynamics of Machinery",
-        "topics": ["MEEG 213 - Dynamics of Machinery"]
+        "topics": [
+          "MEEG 213 - Dynamics of Machinery"
+        ]
       },
       {
         "name": "MEEG 216 - Thermodynamics II",
-        "topics": ["MEEG 216 - Thermodynamics II"]
+        "topics": [
+          "MEEG 216 - Thermodynamics II"
+        ]
       },
       {
         "name": "MEEG 217 - Manufacturing Technology",
-        "topics": ["MEEG 217 - Manufacturing Technology"]
+        "topics": [
+          "MEEG 217 - Manufacturing Technology"
+        ]
       },
       {
         "name": "MEEG 218 - Metrology and Quality Control",
-        "topics": ["MEEG 218 - Metrology and Quality Control"]
+        "topics": [
+          "MEEG 218 - Metrology and Quality Control"
+        ]
       },
       {
         "name": "MEEG 219 - Industrial Engineering",
-        "topics": ["MEEG 219 - Industrial Engineering"]
+        "topics": [
+          "MEEG 219 - Industrial Engineering"
+        ]
       },
       {
         "name": "MEEG 301 - Machine Design II",
-        "topics": ["MEEG 301 - Machine Design II"]
+        "topics": [
+          "MEEG 301 - Machine Design II"
+        ]
       },
       {
         "name": "MEEG 302 - Control Engineering",
-        "topics": ["MEEG 302 - Control Engineering"]
+        "topics": [
+          "MEEG 302 - Control Engineering"
+        ]
       },
       {
         "name": "MEEG 303 - Turbomachinery",
-        "topics": ["MEEG 303 - Turbomachinery"]
+        "topics": [
+          "MEEG 303 - Turbomachinery"
+        ]
       },
       {
         "name": "MEEG 306 - Finite Element Method",
-        "topics": ["MEEG 306 - Finite Element Method"]
+        "topics": [
+          "MEEG 306 - Finite Element Method"
+        ]
       },
       {
         "name": "MEEG 308 - Power Plant Engineering",
-        "topics": ["MEEG 308 - Power Plant Engineering"]
+        "topics": [
+          "MEEG 308 - Power Plant Engineering"
+        ]
       },
       {
         "name": "MEEG 309 - Refrigeration and Air Conditioning",
-        "topics": ["MEEG 309 - Refrigeration and Air Conditioning"]
+        "topics": [
+          "MEEG 309 - Refrigeration and Air Conditioning"
+        ]
       },
       {
         "name": "MEEG 315 - Advanced Manufacturing",
-        "topics": ["MEEG 315 - Advanced Manufacturing"]
+        "topics": [
+          "MEEG 315 - Advanced Manufacturing"
+        ]
       },
       {
         "name": "MEEG 316 - Robotics",
-        "topics": ["MEEG 316 - Robotics"]
+        "topics": [
+          "MEEG 316 - Robotics"
+        ]
       },
       {
         "name": "MEEG 317 - Mechatronics",
-        "topics": ["MEEG 317 - Mechatronics"]
+        "topics": [
+          "MEEG 317 - Mechatronics"
+        ]
       },
       {
         "name": "MEEG 318 - Vibration Analysis",
-        "topics": ["MEEG 318 - Vibration Analysis"]
+        "topics": [
+          "MEEG 318 - Vibration Analysis"
+        ]
       },
       {
         "name": "MEEG 325 - Advanced Thermodynamics",
-        "topics": ["MEEG 325 - Advanced Thermodynamics"]
+        "topics": [
+          "MEEG 325 - Advanced Thermodynamics"
+        ]
       },
       {
         "name": "MEEG 328 - Computational Fluid Dynamics",
-        "topics": ["MEEG 328 - Computational Fluid Dynamics"]
+        "topics": [
+          "MEEG 328 - Computational Fluid Dynamics"
+        ]
       },
       {
         "name": "MEEG 441 - Advanced Mechanical Systems",
-        "topics": ["MEEG 441 - Advanced Mechanical Systems"]
+        "topics": [
+          "MEEG 441 - Advanced Mechanical Systems"
+        ]
       },
       {
         "name": "MEPP 403 - Mechanical Engineering Project I",
-        "topics": ["MEPP 403 - Mechanical Engineering Project I"]
+        "topics": [
+          "MEPP 403 - Mechanical Engineering Project I"
+        ]
       },
       {
         "name": "MEPP 408 - Mechanical Engineering Project II",
-        "topics": ["MEPP 408 - Mechanical Engineering Project II"]
+        "topics": [
+          "MEPP 408 - Mechanical Engineering Project II"
+        ]
       },
       {
         "name": "MEPP 412 - Advanced Power Plant",
-        "topics": ["MEPP 412 - Advanced Power Plant"]
+        "topics": [
+          "MEPP 412 - Advanced Power Plant"
+        ]
       },
       {
         "name": "MEPP 425 - Manufacturing Systems",
-        "topics": ["MEPP 425 - Manufacturing Systems"]
+        "topics": [
+          "MEPP 425 - Manufacturing Systems"
+        ]
       },
       {
         "name": "MEPP 427 - Energy Systems Engineering",
-        "topics": ["MEPP 427 - Energy Systems Engineering"]
+        "topics": [
+          "MEPP 427 - Energy Systems Engineering"
+        ]
       },
       {
         "name": "MEPP 429 - Industrial Automation",
-        "topics": ["MEPP 429 - Industrial Automation"]
+        "topics": [
+          "MEPP 429 - Industrial Automation"
+        ]
       },
       {
         "name": "MEPP 430 - Design for Manufacturing",
-        "topics": ["MEPP 430 - Design for Manufacturing"]
+        "topics": [
+          "MEPP 430 - Design for Manufacturing"
+        ]
       },
       {
         "name": "MEPP 433 - Advanced Robotics",
-        "topics": ["MEPP 433 - Advanced Robotics"]
+        "topics": [
+          "MEPP 433 - Advanced Robotics"
+        ]
       },
       {
         "name": "MEPP 436 - Renewable Energy Systems",
-        "topics": ["MEPP 436 - Renewable Energy Systems"]
+        "topics": [
+          "MEPP 436 - Renewable Energy Systems"
+        ]
       },
       {
         "name": "MEPP 439 - Capstone Project",
-        "topics": ["MEPP 439 - Capstone Project"]
+        "topics": [
+          "MEPP 439 - Capstone Project"
+        ]
       },
       {
         "name": "CHEG 201 - Chemical Engineering Fundamentals",
-        "topics": ["CHEG 201 - Chemical Engineering Fundamentals"]
+        "topics": [
+          "CHEG 201 - Chemical Engineering Fundamentals"
+        ]
       },
       {
         "name": "CHEG 210 - Transport Phenomena",
-        "topics": ["CHEG 210 - Transport Phenomena"]
+        "topics": [
+          "CHEG 210 - Transport Phenomena"
+        ]
       },
       {
         "name": "CHEG 211 - Chemical Reaction Engineering",
-        "topics": ["CHEG 211 - Chemical Reaction Engineering"]
+        "topics": [
+          "CHEG 211 - Chemical Reaction Engineering"
+        ]
       },
       {
         "name": "CHEG 212 - Process Control",
-        "topics": ["CHEG 212 - Process Control"]
+        "topics": [
+          "CHEG 212 - Process Control"
+        ]
       },
       {
         "name": "CHEG 213 - Mass Transfer Operations",
-        "topics": ["CHEG 213 - Mass Transfer Operations"]
+        "topics": [
+          "CHEG 213 - Mass Transfer Operations"
+        ]
       },
       {
         "name": "CHEG 301 - Chemical Process Design I",
-        "topics": ["CHEG 301 - Chemical Process Design I"]
+        "topics": [
+          "CHEG 301 - Chemical Process Design I"
+        ]
       },
       {
         "name": "CHEG 302 - Chemical Process Design II",
-        "topics": ["CHEG 302 - Chemical Process Design II"]
+        "topics": [
+          "CHEG 302 - Chemical Process Design II"
+        ]
       },
       {
         "name": "CHEG 303 - Process Safety",
-        "topics": ["CHEG 303 - Process Safety"]
+        "topics": [
+          "CHEG 303 - Process Safety"
+        ]
       },
       {
         "name": "CHEG 304 - Separation Processes",
-        "topics": ["CHEG 304 - Separation Processes"]
+        "topics": [
+          "CHEG 304 - Separation Processes"
+        ]
       },
       {
         "name": "CHEG 305 - Catalysis and Reactor Design",
-        "topics": ["CHEG 305 - Catalysis and Reactor Design"]
+        "topics": [
+          "CHEG 305 - Catalysis and Reactor Design"
+        ]
       },
       {
         "name": "CHEG 310 - Biochemical Engineering",
-        "topics": ["CHEG 310 - Biochemical Engineering"]
+        "topics": [
+          "CHEG 310 - Biochemical Engineering"
+        ]
       },
       {
         "name": "CHEG 311 - Polymer Engineering",
-        "topics": ["CHEG 311 - Polymer Engineering"]
+        "topics": [
+          "CHEG 311 - Polymer Engineering"
+        ]
       },
       {
         "name": "CHEG 312 - Environmental Chemical Engineering",
-        "topics": ["CHEG 312 - Environmental Chemical Engineering"]
+        "topics": [
+          "CHEG 312 - Environmental Chemical Engineering"
+        ]
       },
       {
         "name": "CHEG 313 - Petrochemical Engineering",
-        "topics": ["CHEG 313 - Petrochemical Engineering"]
+        "topics": [
+          "CHEG 313 - Petrochemical Engineering"
+        ]
       },
       {
         "name": "CHEG 314 - Food Process Engineering",
-        "topics": ["CHEG 314 - Food Process Engineering"]
+        "topics": [
+          "CHEG 314 - Food Process Engineering"
+        ]
       },
       {
         "name": "CHEG 315 - Pharmaceutical Process Engineering",
-        "topics": ["CHEG 315 - Pharmaceutical Process Engineering"]
+        "topics": [
+          "CHEG 315 - Pharmaceutical Process Engineering",
+          "Clean Room Technology",
+          "Pharmaceutical Engineering",
+          "Installation Qualification"
+        ]
       },
       {
         "name": "CHEG 321 - Advanced Process Control",
-        "topics": ["CHEG 321 - Advanced Process Control"]
+        "topics": [
+          "CHEG 321 - Advanced Process Control"
+        ]
       },
       {
         "name": "CHEG 322 - Chemical Plant Design",
-        "topics": ["CHEG 322 - Chemical Plant Design"]
+        "topics": [
+          "CHEG 322 - Chemical Plant Design"
+        ]
       },
       {
         "name": "CHEG 325 - Sustainable Chemical Engineering",
-        "topics": ["CHEG 325 - Sustainable Chemical Engineering"]
+        "topics": [
+          "CHEG 325 - Sustainable Chemical Engineering"
+        ]
       },
       {
         "name": "CHEG 401 - Chemical Engineering Project I",
-        "topics": ["CHEG 401 - Chemical Engineering Project I"]
+        "topics": [
+          "CHEG 401 - Chemical Engineering Project I"
+        ]
       },
       {
         "name": "CHEG 406 - Chemical Engineering Project II",
-        "topics": ["CHEG 406 - Chemical Engineering Project II"]
+        "topics": [
+          "CHEG 406 - Chemical Engineering Project II"
+        ]
       },
       {
         "name": "CHEG 410 - Advanced Chemical Process Design",
-        "topics": ["CHEG 410 - Advanced Chemical Process Design"]
+        "topics": [
+          "CHEG 410 - Advanced Chemical Process Design"
+        ]
       },
       {
         "name": "ENVE 101 - Introduction to Environmental Engineering",
-        "topics": ["ENVE 101 - Introduction to Environmental Engineering"]
+        "topics": [
+          "ENVE 101 - Introduction to Environmental Engineering",
+          "Water Treatment",
+          "Fluid Mechanics",
+          "Mass Balance",
+          "Solid Waste Management",
+          "Water Quality Engineering",
+          "Waste Management",
+          "Air Quality",
+          "Particle Settling",
+          "Environmental Engineering Basics",
+          "Hydrology",
+          "Wastewater Treatment"
+        ]
       },
       {
         "name": "ENVE 102 - Environmental Science",
-        "topics": ["ENVE 102 - Environmental Science"]
+        "topics": [
+          "ENVE 102 - Environmental Science"
+        ]
       },
       {
         "name": "ENVE 204 - Environmental Chemistry",
-        "topics": ["ENVE 204 - Environmental Chemistry"]
+        "topics": [
+          "ENVE 204 - Environmental Chemistry"
+        ]
       },
       {
         "name": "ENVE 205 - Water and Wastewater Treatment",
-        "topics": ["ENVE 205 - Water and Wastewater Treatment"]
+        "topics": [
+          "ENVE 205 - Water and Wastewater Treatment"
+        ]
       },
       {
         "name": "ENVE 206 - Air Pollution Control",
-        "topics": ["ENVE 206 - Air Pollution Control"]
+        "topics": [
+          "ENVE 206 - Air Pollution Control"
+        ]
       },
       {
         "name": "ENVE 209 - Environmental Microbiology",
-        "topics": ["ENVE 209 - Environmental Microbiology"]
+        "topics": [
+          "ENVE 209 - Environmental Microbiology"
+        ]
       },
       {
         "name": "ENVE 301 - Environmental Impact Assessment",
-        "topics": ["ENVE 301 - Environmental Impact Assessment"]
+        "topics": [
+          "ENVE 301 - Environmental Impact Assessment"
+        ]
       },
       {
         "name": "ENVE 302 - Solid Waste Management",
-        "topics": ["ENVE 302 - Solid Waste Management"]
+        "topics": [
+          "ENVE 302 - Solid Waste Management"
+        ]
       },
       {
         "name": "ENVE 303 - Hazardous Waste Management",
-        "topics": ["ENVE 303 - Hazardous Waste Management"]
+        "topics": [
+          "ENVE 303 - Hazardous Waste Management"
+        ]
       },
       {
         "name": "ENVE 304 - Environmental Systems Modeling",
-        "topics": ["ENVE 304 - Environmental Systems Modeling"]
+        "topics": [
+          "ENVE 304 - Environmental Systems Modeling"
+        ]
       },
       {
         "name": "ENVE 309 - Ecological Engineering",
-        "topics": ["ENVE 309 - Ecological Engineering"]
+        "topics": [
+          "ENVE 309 - Ecological Engineering"
+        ]
       },
       {
         "name": "ENVE 311 - Climate Change Engineering",
-        "topics": ["ENVE 311 - Climate Change Engineering"]
+        "topics": [
+          "ENVE 311 - Climate Change Engineering"
+        ]
       },
       {
         "name": "ENVE 432 - Advanced Environmental Engineering I",
-        "topics": ["ENVE 432 - Advanced Environmental Engineering I"]
+        "topics": [
+          "ENVE 432 - Advanced Environmental Engineering I"
+        ]
       },
       {
         "name": "ENVE 433 - Advanced Environmental Engineering II",
-        "topics": ["ENVE 433 - Advanced Environmental Engineering II"]
+        "topics": [
+          "ENVE 433 - Advanced Environmental Engineering II"
+        ]
       },
       {
         "name": "ENVS 101 - Environmental Science I",
-        "topics": ["ENVS 101 - Environmental Science I"]
+        "topics": [
+          "ENVS 101 - Environmental Science I",
+          "Genetically Modified Organisms (GMOs) and Biotechnology",
+          "Agriculture and Environment",
+          "Environmental Health and Disease",
+          "Ecosystem Services",
+          "Pest Control and Management",
+          "Environmental Policy",
+          "Environmental Science",
+          "Environmental Health and Risk",
+          "Hydropower and Environment",
+          "Air Pollution",
+          "Ecology and Environmental Interactions",
+          "Environmental Pollution",
+          "Environmental Economics",
+          "Environmental Monitoring and Assessment",
+          "Population Ecology",
+          "Mineral Resources",
+          "Climate Change",
+          "Groundwater and Pollution",
+          "Biomes",
+          "Ecology and Ecosystems",
+          "Environmental Indicators and Biodiversity",
+          "Nuclear Energy and Resources",
+          "Ecology",
+          "Biogeochemical Cycles",
+          "Forestry",
+          "Biomes and Ecosystems",
+          "Pollution",
+          "Ecosystem Services and Environmental Economics",
+          "Energy and Environment",
+          "Toxicology",
+          "Energy Resources",
+          "Environmental Pollution and Pesticides",
+          "Biodiversity"
+        ]
       },
       {
         "name": "ENVS 102 - Environmental Science II",
-        "topics": ["ENVS 102 - Environmental Science II"]
+        "topics": [
+          "ENVS 102 - Environmental Science II"
+        ]
       },
       {
         "name": "ENVS 112 - Earth Sciences",
-        "topics": ["ENVS 112 - Earth Sciences"]
+        "topics": [
+          "ENVS 112 - Earth Sciences"
+        ]
       },
       {
         "name": "ENVS 201 - Ecology",
-        "topics": ["ENVS 201 - Ecology"]
+        "topics": [
+          "ENVS 201 - Ecology"
+        ]
       },
       {
         "name": "ENVS 202 - Environmental Biology",
-        "topics": ["ENVS 202 - Environmental Biology"]
+        "topics": [
+          "ENVS 202 - Environmental Biology"
+        ]
       },
       {
         "name": "ENVS 203 - Environmental Chemistry",
-        "topics": ["ENVS 203 - Environmental Chemistry"]
+        "topics": [
+          "ENVS 203 - Environmental Chemistry"
+        ]
       },
       {
         "name": "ENVS 205 - Environmental Policy",
-        "topics": ["ENVS 205 - Environmental Policy"]
+        "topics": [
+          "ENVS 205 - Environmental Policy"
+        ]
       },
       {
         "name": "ENVS 206 - Natural Resource Management",
-        "topics": ["ENVS 206 - Natural Resource Management"]
+        "topics": [
+          "ENVS 206 - Natural Resource Management"
+        ]
       },
       {
         "name": "ENVS 207 - Environmental Geology",
-        "topics": ["ENVS 207 - Environmental Geology"]
+        "topics": [
+          "ENVS 207 - Environmental Geology"
+        ]
       },
       {
         "name": "ENVS 209 - GIS and Remote Sensing",
-        "topics": ["ENVS 209 - GIS and Remote Sensing"]
+        "topics": [
+          "ENVS 209 - GIS and Remote Sensing"
+        ]
       },
       {
         "name": "ENVS 211 - Climate Science",
-        "topics": ["ENVS 211 - Climate Science"]
+        "topics": [
+          "ENVS 211 - Climate Science"
+        ]
       },
       {
         "name": "ENVS 212 - Environmental Toxicology",
-        "topics": ["ENVS 212 - Environmental Toxicology"]
+        "topics": [
+          "ENVS 212 - Environmental Toxicology"
+        ]
       },
       {
         "name": "ENVS 302 - Watershed Management",
-        "topics": ["ENVS 302 - Watershed Management"]
+        "topics": [
+          "ENVS 302 - Watershed Management"
+        ]
       },
       {
         "name": "ENVS 303 - Biodiversity Conservation",
-        "topics": ["ENVS 303 - Biodiversity Conservation"]
+        "topics": [
+          "ENVS 303 - Biodiversity Conservation"
+        ]
       },
       {
         "name": "ENVS 305 - Environmental Modeling",
-        "topics": ["ENVS 305 - Environmental Modeling"]
+        "topics": [
+          "ENVS 305 - Environmental Modeling"
+        ]
       },
       {
         "name": "ENVS 306 - Environmental Monitoring",
-        "topics": ["ENVS 306 - Environmental Monitoring"]
+        "topics": [
+          "ENVS 306 - Environmental Monitoring"
+        ]
       },
       {
         "name": "ENVS 328 - Environmental Management Systems",
-        "topics": ["ENVS 328 - Environmental Management Systems"]
+        "topics": [
+          "ENVS 328 - Environmental Management Systems"
+        ]
       },
       {
         "name": "ENVS 331 - Environmental Planning",
-        "topics": ["ENVS 331 - Environmental Planning"]
+        "topics": [
+          "ENVS 331 - Environmental Planning"
+        ]
       },
       {
         "name": "ENVS 332 - Sustainable Development",
-        "topics": ["ENVS 332 - Sustainable Development"]
+        "topics": [
+          "ENVS 332 - Sustainable Development"
+        ]
       },
       {
         "name": "ENVS 333 - Environmental Law and Policy",
-        "topics": ["ENVS 333 - Environmental Law and Policy"]
+        "topics": [
+          "ENVS 333 - Environmental Law and Policy"
+        ]
       },
       {
         "name": "ENVS 335 - Urban Environmental Management",
-        "topics": ["ENVS 335 - Urban Environmental Management"]
+        "topics": [
+          "ENVS 335 - Urban Environmental Management"
+        ]
       },
       {
         "name": "ENVS 402 - Environmental Engineering Project I",
-        "topics": ["ENVS 402 - Environmental Engineering Project I"]
+        "topics": [
+          "ENVS 402 - Environmental Engineering Project I"
+        ]
       },
       {
         "name": "ENVS 404 - Environmental Impact Studies",
-        "topics": ["ENVS 404 - Environmental Impact Studies"]
+        "topics": [
+          "ENVS 404 - Environmental Impact Studies"
+        ]
       },
       {
         "name": "ENVS 413 - Advanced Environmental Science I",
-        "topics": ["ENVS 413 - Advanced Environmental Science I"]
+        "topics": [
+          "ENVS 413 - Advanced Environmental Science I"
+        ]
       },
       {
         "name": "ENVS 415 - Advanced Environmental Science II",
-        "topics": ["ENVS 415 - Advanced Environmental Science II"]
+        "topics": [
+          "ENVS 415 - Advanced Environmental Science II"
+        ]
       },
       {
         "name": "ENVS 423 - Environmental Research Methods",
-        "topics": ["ENVS 423 - Environmental Research Methods"]
+        "topics": [
+          "ENVS 423 - Environmental Research Methods"
+        ]
       },
       {
         "name": "ENVS 431 - Environmental Systems",
-        "topics": ["ENVS 431 - Environmental Systems"]
+        "topics": [
+          "ENVS 431 - Environmental Systems"
+        ]
       },
       {
         "name": "ENVS 435 - Capstone Environmental Project",
-        "topics": ["ENVS 435 - Capstone Environmental Project"]
+        "topics": [
+          "ENVS 435 - Capstone Environmental Project"
+        ]
       },
       {
         "name": "ENVS 440 - Thesis/Dissertation",
-        "topics": ["ENVS 440 - Thesis/Dissertation"]
+        "topics": [
+          "ENVS 440 - Thesis/Dissertation"
+        ]
       },
       {
         "name": "BIOT 101 - Introduction to Biotechnology",
-        "topics": ["BIOT 101 - Introduction to Biotechnology"]
+        "topics": [
+          "BIOT 101 - Introduction to Biotechnology",
+          "Biosafety and Biosecurity",
+          "Introduction to Biotechnology"
+        ]
       },
       {
         "name": "BIOT 102 - Cell Biology",
-        "topics": ["BIOT 102 - Cell Biology"]
+        "topics": [
+          "BIOT 102 - Cell Biology"
+        ]
       },
       {
         "name": "BIOT 201 - Microbiology",
-        "topics": ["BIOT 201 - Microbiology"]
+        "topics": [
+          "BIOT 201 - Microbiology"
+        ]
       },
       {
         "name": "BIOT 202 - Biochemistry I",
-        "topics": ["BIOT 202 - Biochemistry I"]
+        "topics": [
+          "BIOT 202 - Biochemistry I"
+        ]
       },
       {
         "name": "BIOT 203 - Genetics",
-        "topics": ["BIOT 203 - Genetics"]
+        "topics": [
+          "BIOT 203 - Genetics"
+        ]
       },
       {
         "name": "BIOT 204 - Biochemistry II",
-        "topics": ["BIOT 204 - Biochemistry II"]
+        "topics": [
+          "BIOT 204 - Biochemistry II"
+        ]
       },
       {
         "name": "BIOT 205 - Molecular Biology",
-        "topics": ["BIOT 205 - Molecular Biology"]
+        "topics": [
+          "BIOT 205 - Molecular Biology"
+        ]
       },
       {
         "name": "BIOT 206 - Immunology",
-        "topics": ["BIOT 206 - Immunology"]
+        "topics": [
+          "BIOT 206 - Immunology"
+        ]
       },
       {
         "name": "BIOT 207 - Plant Biotechnology",
-        "topics": ["BIOT 207 - Plant Biotechnology"]
+        "topics": [
+          "BIOT 207 - Plant Biotechnology"
+        ]
       },
       {
         "name": "BIOT 208 - Animal Biotechnology",
-        "topics": ["BIOT 208 - Animal Biotechnology"]
+        "topics": [
+          "BIOT 208 - Animal Biotechnology"
+        ]
       },
       {
         "name": "BIOT 209 - Industrial Biotechnology",
-        "topics": ["BIOT 209 - Industrial Biotechnology"]
+        "topics": [
+          "BIOT 209 - Industrial Biotechnology"
+        ]
       },
       {
         "name": "BIOT 210 - Bioprocess Engineering",
-        "topics": ["BIOT 210 - Bioprocess Engineering"]
+        "topics": [
+          "BIOT 210 - Bioprocess Engineering"
+        ]
       },
       {
         "name": "BIOT 211 - Environmental Biotechnology",
-        "topics": ["BIOT 211 - Environmental Biotechnology"]
+        "topics": [
+          "BIOT 211 - Environmental Biotechnology"
+        ]
       },
       {
         "name": "BIOT 301 - Recombinant DNA Technology",
-        "topics": ["BIOT 301 - Recombinant DNA Technology"]
+        "topics": [
+          "BIOT 301 - Recombinant DNA Technology"
+        ]
       },
       {
         "name": "BIOT 302 - Genomics and Proteomics",
-        "topics": ["BIOT 302 - Genomics and Proteomics"]
+        "topics": [
+          "BIOT 302 - Genomics and Proteomics"
+        ]
       },
       {
         "name": "BIOT 303 - Bioinformatics",
-        "topics": ["BIOT 303 - Bioinformatics"]
+        "topics": [
+          "BIOT 303 - Bioinformatics"
+        ]
       },
       {
         "name": "BIOT 304 - Fermentation Technology",
-        "topics": ["BIOT 304 - Fermentation Technology"]
+        "topics": [
+          "BIOT 304 - Fermentation Technology"
+        ]
       },
       {
         "name": "BIOT 305 - Biosafety and Bioethics",
-        "topics": ["BIOT 305 - Biosafety and Bioethics"]
+        "topics": [
+          "BIOT 305 - Biosafety and Bioethics"
+        ]
       },
       {
         "name": "BIOT 306 - Metabolic Engineering",
-        "topics": ["BIOT 306 - Metabolic Engineering"]
+        "topics": [
+          "BIOT 306 - Metabolic Engineering"
+        ]
       },
       {
         "name": "BIOT 307 - Nanobiotechnology",
-        "topics": ["BIOT 307 - Nanobiotechnology"]
+        "topics": [
+          "BIOT 307 - Nanobiotechnology"
+        ]
       },
       {
         "name": "BIOT 308 - Medical Biotechnology",
-        "topics": ["BIOT 308 - Medical Biotechnology"]
+        "topics": [
+          "BIOT 308 - Medical Biotechnology"
+        ]
       },
       {
         "name": "BIOT 309 - Food Biotechnology",
-        "topics": ["BIOT 309 - Food Biotechnology"]
+        "topics": [
+          "BIOT 309 - Food Biotechnology"
+        ]
       },
       {
         "name": "BIOT 311 - Advanced Molecular Biology",
-        "topics": ["BIOT 311 - Advanced Molecular Biology"]
+        "topics": [
+          "BIOT 311 - Advanced Molecular Biology"
+        ]
       },
       {
         "name": "BIOT 312 - Stem Cell Technology",
-        "topics": ["BIOT 312 - Stem Cell Technology"]
+        "topics": [
+          "BIOT 312 - Stem Cell Technology"
+        ]
       },
       {
         "name": "BIOT 313 - Pharmaceutical Biotechnology",
-        "topics": ["BIOT 313 - Pharmaceutical Biotechnology"]
+        "topics": [
+          "BIOT 313 - Pharmaceutical Biotechnology"
+        ]
       },
       {
         "name": "BIOT 314 - Synthetic Biology",
-        "topics": ["BIOT 314 - Synthetic Biology"]
+        "topics": [
+          "BIOT 314 - Synthetic Biology"
+        ]
       },
       {
         "name": "BIOT 315 - Biotechnology Project",
-        "topics": ["BIOT 315 - Biotechnology Project"]
+        "topics": [
+          "BIOT 315 - Biotechnology Project"
+        ]
       },
       {
         "name": "BIOT 401 - Biotechnology Thesis I",
-        "topics": ["BIOT 401 - Biotechnology Thesis I"]
+        "topics": [
+          "BIOT 401 - Biotechnology Thesis I"
+        ]
       },
       {
         "name": "BIOT 403 - Advanced Bioprocessing",
-        "topics": ["BIOT 403 - Advanced Bioprocessing"]
+        "topics": [
+          "BIOT 403 - Advanced Bioprocessing"
+        ]
       },
       {
         "name": "BIOT 404 - Biopharmaceuticals",
-        "topics": ["BIOT 404 - Biopharmaceuticals"]
+        "topics": [
+          "BIOT 404 - Biopharmaceuticals"
+        ]
       },
       {
         "name": "BIOT 406 - Regulatory Affairs in Biotechnology",
-        "topics": ["BIOT 406 - Regulatory Affairs in Biotechnology"]
+        "topics": [
+          "BIOT 406 - Regulatory Affairs in Biotechnology"
+        ]
       },
       {
         "name": "BIOT 409 - Industrial Fermentation",
-        "topics": ["BIOT 409 - Industrial Fermentation"]
+        "topics": [
+          "BIOT 409 - Industrial Fermentation"
+        ]
       },
       {
         "name": "BIOT 410 - Agricultural Biotechnology",
-        "topics": ["BIOT 410 - Agricultural Biotechnology"]
+        "topics": [
+          "BIOT 410 - Agricultural Biotechnology"
+        ]
       },
       {
         "name": "BIOT 413 - Advanced Genomics",
-        "topics": ["BIOT 413 - Advanced Genomics"]
+        "topics": [
+          "BIOT 413 - Advanced Genomics"
+        ]
       },
       {
         "name": "BIOT 416 - Biotechnology Capstone I",
-        "topics": ["BIOT 416 - Biotechnology Capstone I"]
+        "topics": [
+          "BIOT 416 - Biotechnology Capstone I"
+        ]
       },
       {
         "name": "BIOT 417 - Biotechnology Capstone II",
-        "topics": ["BIOT 417 - Biotechnology Capstone II"]
+        "topics": [
+          "BIOT 417 - Biotechnology Capstone II"
+        ]
       },
       {
         "name": "PHAR 111 - Pharmaceutical Chemistry I",
-        "topics": ["PHAR 111 - Pharmaceutical Chemistry I"]
+        "topics": [
+          "PHAR 111 - Pharmaceutical Chemistry I"
+        ]
       },
       {
         "name": "PHAR 112 - Pharmacognosy I",
-        "topics": ["PHAR 112 - Pharmacognosy I"]
+        "topics": [
+          "PHAR 112 - Pharmacognosy I"
+        ]
       },
       {
         "name": "PHAR 113 - Pharmaceutics I",
-        "topics": ["PHAR 113 - Pharmaceutics I"]
+        "topics": [
+          "PHAR 113 - Pharmaceutics I"
+        ]
       },
       {
         "name": "PHAR 114 - Pharmacology I",
-        "topics": ["PHAR 114 - Pharmacology I"]
+        "topics": [
+          "PHAR 114 - Pharmacology I"
+        ]
       },
       {
         "name": "PHAR 212 - Pharmaceutical Chemistry II",
-        "topics": ["PHAR 212 - Pharmaceutical Chemistry II"]
+        "topics": [
+          "PHAR 212 - Pharmaceutical Chemistry II"
+        ]
       },
       {
         "name": "PHAR 218 - Pharmaceutics II",
-        "topics": ["PHAR 218 - Pharmaceutics II"]
+        "topics": [
+          "PHAR 218 - Pharmaceutics II"
+        ]
       },
       {
         "name": "PHAR 219 - Pharmacology II",
-        "topics": ["PHAR 219 - Pharmacology II"]
+        "topics": [
+          "PHAR 219 - Pharmacology II"
+        ]
       },
       {
         "name": "PHAR 220 - Pharmacognosy II",
-        "topics": ["PHAR 220 - Pharmacognosy II"]
+        "topics": [
+          "PHAR 220 - Pharmacognosy II"
+        ]
       },
       {
         "name": "PHAR 221 - Pharmaceutical Microbiology",
-        "topics": ["PHAR 221 - Pharmaceutical Microbiology"]
+        "topics": [
+          "PHAR 221 - Pharmaceutical Microbiology"
+        ]
       },
       {
         "name": "PHAR 222 - Pharmaceutical Biochemistry",
-        "topics": ["PHAR 222 - Pharmaceutical Biochemistry"]
+        "topics": [
+          "PHAR 222 - Pharmaceutical Biochemistry"
+        ]
       },
       {
         "name": "PHAR 223 - Pharmaceutical Analysis",
-        "topics": ["PHAR 223 - Pharmaceutical Analysis"]
+        "topics": [
+          "PHAR 223 - Pharmaceutical Analysis"
+        ]
       },
       {
         "name": "PHAR 224 - Biopharmaceutics",
-        "topics": ["PHAR 224 - Biopharmaceutics"]
+        "topics": [
+          "PHAR 224 - Biopharmaceutics"
+        ]
       },
       {
         "name": "PHAR 301 - Medicinal Chemistry I",
-        "topics": ["PHAR 301 - Medicinal Chemistry I"]
+        "topics": [
+          "PHAR 301 - Medicinal Chemistry I"
+        ]
       },
       {
         "name": "PHAR 303 - Clinical Pharmacy",
-        "topics": ["PHAR 303 - Clinical Pharmacy"]
+        "topics": [
+          "PHAR 303 - Clinical Pharmacy"
+        ]
       },
       {
         "name": "PHAR 304 - Pharmacokinetics",
-        "topics": ["PHAR 304 - Pharmacokinetics"]
+        "topics": [
+          "PHAR 304 - Pharmacokinetics"
+        ]
       },
       {
         "name": "PHAR 313 - Drug Design",
-        "topics": ["PHAR 313 - Drug Design"]
+        "topics": [
+          "PHAR 313 - Drug Design"
+        ]
       },
       {
         "name": "PHAR 315 - Pharmaceutical Technology",
-        "topics": ["PHAR 315 - Pharmaceutical Technology"]
+        "topics": [
+          "PHAR 315 - Pharmaceutical Technology"
+        ]
       },
       {
         "name": "PHAR 316 - Hospital Pharmacy",
-        "topics": ["PHAR 316 - Hospital Pharmacy"]
+        "topics": [
+          "PHAR 316 - Hospital Pharmacy"
+        ]
       },
       {
         "name": "PHAR 318 - Pharmacoepidemiology",
-        "topics": ["PHAR 318 - Pharmacoepidemiology"]
+        "topics": [
+          "PHAR 318 - Pharmacoepidemiology"
+        ]
       },
       {
         "name": "PHAR 319 - Pharmaceutical Biotechnology",
-        "topics": ["PHAR 319 - Pharmaceutical Biotechnology"]
+        "topics": [
+          "PHAR 319 - Pharmaceutical Biotechnology"
+        ]
       },
       {
         "name": "PHAR 320 - Toxicology",
-        "topics": ["PHAR 320 - Toxicology"]
+        "topics": [
+          "PHAR 320 - Toxicology"
+        ]
       },
       {
         "name": "PHAR 321 - Pharmaceutical Marketing",
-        "topics": ["PHAR 321 - Pharmaceutical Marketing"]
+        "topics": [
+          "PHAR 321 - Pharmaceutical Marketing"
+        ]
       },
       {
         "name": "PHAR 322 - Drug Regulatory Affairs",
-        "topics": ["PHAR 322 - Drug Regulatory Affairs"]
+        "topics": [
+          "PHAR 322 - Drug Regulatory Affairs"
+        ]
       },
       {
         "name": "PHAR 401 - Advanced Pharmaceutical Chemistry",
-        "topics": ["PHAR 401 - Advanced Pharmaceutical Chemistry"]
+        "topics": [
+          "PHAR 401 - Advanced Pharmaceutical Chemistry"
+        ]
       },
       {
         "name": "PHAR 402 - Advanced Pharmacology",
-        "topics": ["PHAR 402 - Advanced Pharmacology"]
+        "topics": [
+          "PHAR 402 - Advanced Pharmacology"
+        ]
       },
       {
         "name": "PHAR 404 - Pharmaceutical Care",
-        "topics": ["PHAR 404 - Pharmaceutical Care"]
+        "topics": [
+          "PHAR 404 - Pharmaceutical Care"
+        ]
       },
       {
         "name": "PHAR 406 - Drug Delivery Systems",
-        "topics": ["PHAR 406 - Drug Delivery Systems"]
+        "topics": [
+          "PHAR 406 - Drug Delivery Systems"
+        ]
       },
       {
         "name": "PHAR 408 - Industrial Pharmacy",
-        "topics": ["PHAR 408 - Industrial Pharmacy"]
+        "topics": [
+          "PHAR 408 - Industrial Pharmacy"
+        ]
       },
       {
         "name": "PHAR 411 - Pharmacy Practice I",
-        "topics": ["PHAR 411 - Pharmacy Practice I"]
+        "topics": [
+          "PHAR 411 - Pharmacy Practice I"
+        ]
       },
       {
         "name": "PHAR 412 - Pharmacy Practice II",
-        "topics": ["PHAR 412 - Pharmacy Practice II"]
+        "topics": [
+          "PHAR 412 - Pharmacy Practice II"
+        ]
       },
       {
         "name": "PHAR 414 - Pharmacovigilance",
-        "topics": ["PHAR 414 - Pharmacovigilance"]
+        "topics": [
+          "PHAR 414 - Pharmacovigilance"
+        ]
       },
       {
         "name": "PHAR 416 - Pharmacy Jurisprudence",
-        "topics": ["PHAR 416 - Pharmacy Jurisprudence"]
+        "topics": [
+          "PHAR 416 - Pharmacy Jurisprudence"
+        ]
       },
       {
         "name": "PHAR 417 - Biotechnology in Pharmacy",
-        "topics": ["PHAR 417 - Biotechnology in Pharmacy"]
+        "topics": [
+          "PHAR 417 - Biotechnology in Pharmacy"
+        ]
       },
       {
         "name": "PHAR 422 - Advanced Drug Delivery",
-        "topics": ["PHAR 422 - Advanced Drug Delivery"]
+        "topics": [
+          "PHAR 422 - Advanced Drug Delivery"
+        ]
       },
       {
         "name": "PHAR 429 - Clinical Toxicology",
-        "topics": ["PHAR 429 - Clinical Toxicology"]
+        "topics": [
+          "PHAR 429 - Clinical Toxicology"
+        ]
       },
       {
         "name": "PHAR 431 - Pharmacy Thesis/Project",
-        "topics": ["PHAR 431 - Pharmacy Thesis/Project"]
+        "topics": [
+          "PHAR 431 - Pharmacy Thesis/Project"
+        ]
       },
       {
         "name": "GEOM 201 - Surveying I",
-        "topics": ["GEOM 201 - Surveying I"]
+        "topics": [
+          "GEOM 201 - Surveying I",
+          "Satellite Geodesy"
+        ]
       },
       {
         "name": "GEOM 202 - Surveying II",
-        "topics": ["GEOM 202 - Surveying II"]
+        "topics": [
+          "GEOM 202 - Surveying II"
+        ]
       },
       {
         "name": "GEOM 204 - Geodesy",
-        "topics": ["GEOM 204 - Geodesy"]
+        "topics": [
+          "GEOM 204 - Geodesy"
+        ]
       },
       {
         "name": "GEOM 205 - Remote Sensing",
-        "topics": ["GEOM 205 - Remote Sensing"]
+        "topics": [
+          "GEOM 205 - Remote Sensing"
+        ]
       },
       {
         "name": "GEOM 206 - Geographic Information Systems",
-        "topics": ["GEOM 206 - Geographic Information Systems"]
+        "topics": [
+          "GEOM 206 - Geographic Information Systems"
+        ]
       },
       {
         "name": "GEOM 303 - Photogrammetry",
-        "topics": ["GEOM 303 - Photogrammetry"]
+        "topics": [
+          "GEOM 303 - Photogrammetry"
+        ]
       },
       {
         "name": "GEOM 306 - Land Administration",
-        "topics": ["GEOM 306 - Land Administration"]
+        "topics": [
+          "GEOM 306 - Land Administration"
+        ]
       },
       {
         "name": "GEOM 307 - Hydrography",
-        "topics": ["GEOM 307 - Hydrography"]
+        "topics": [
+          "GEOM 307 - Hydrography"
+        ]
       },
       {
         "name": "GEOM 310 - Satellite Geodesy",
-        "topics": ["GEOM 310 - Satellite Geodesy"]
+        "topics": [
+          "GEOM 310 - Satellite Geodesy"
+        ]
       },
       {
         "name": "GEOM 313 - Spatial Analysis",
-        "topics": ["GEOM 313 - Spatial Analysis"]
+        "topics": [
+          "GEOM 313 - Spatial Analysis"
+        ]
       },
       {
         "name": "GEOM 315 - Digital Cartography",
-        "topics": ["GEOM 315 - Digital Cartography"]
+        "topics": [
+          "GEOM 315 - Digital Cartography"
+        ]
       },
       {
         "name": "GEOM 316 - Urban Planning and GIS",
-        "topics": ["GEOM 316 - Urban Planning and GIS"]
+        "topics": [
+          "GEOM 316 - Urban Planning and GIS"
+        ]
       },
       {
         "name": "GEOM 317 - LiDAR and Point Cloud Processing",
-        "topics": ["GEOM 317 - LiDAR and Point Cloud Processing"]
+        "topics": [
+          "GEOM 317 - LiDAR and Point Cloud Processing"
+        ]
       },
       {
         "name": "GEOM 318 - Web GIS",
-        "topics": ["GEOM 318 - Web GIS"]
+        "topics": [
+          "GEOM 318 - Web GIS"
+        ]
       },
       {
         "name": "GEOM 319 - Disaster Management GIS",
-        "topics": ["GEOM 319 - Disaster Management GIS"]
+        "topics": [
+          "GEOM 319 - Disaster Management GIS"
+        ]
       },
       {
         "name": "GEOM 401 - Advanced GIS",
-        "topics": ["GEOM 401 - Advanced GIS"]
+        "topics": [
+          "GEOM 401 - Advanced GIS"
+        ]
       },
       {
         "name": "GEOM 402 - Advanced Remote Sensing",
-        "topics": ["GEOM 402 - Advanced Remote Sensing"]
+        "topics": [
+          "GEOM 402 - Advanced Remote Sensing"
+        ]
       },
       {
         "name": "GEOM 403 - Geomatics Project I",
-        "topics": ["GEOM 403 - Geomatics Project I"]
+        "topics": [
+          "GEOM 403 - Geomatics Project I"
+        ]
       },
       {
         "name": "GEOM 405 - Land Information Systems",
-        "topics": ["GEOM 405 - Land Information Systems"]
+        "topics": [
+          "GEOM 405 - Land Information Systems"
+        ]
       },
       {
         "name": "GEOM 406 - Geospatial Data Infrastructure",
-        "topics": ["GEOM 406 - Geospatial Data Infrastructure"]
+        "topics": [
+          "GEOM 406 - Geospatial Data Infrastructure"
+        ]
       },
       {
         "name": "GEOM 409 - Geomatics Thesis I",
-        "topics": ["GEOM 409 - Geomatics Thesis I"]
+        "topics": [
+          "GEOM 409 - Geomatics Thesis I"
+        ]
       },
       {
         "name": "GEOM 411 - Advanced Photogrammetry",
-        "topics": ["GEOM 411 - Advanced Photogrammetry"]
+        "topics": [
+          "GEOM 411 - Advanced Photogrammetry"
+        ]
       },
       {
         "name": "GEOM 415 - Geomatics Applications",
-        "topics": ["GEOM 415 - Geomatics Applications"]
+        "topics": [
+          "GEOM 415 - Geomatics Applications"
+        ]
       },
       {
         "name": "GEOM 417 - Geomatics Capstone",
-        "topics": ["GEOM 417 - Geomatics Capstone"]
+        "topics": [
+          "GEOM 417 - Geomatics Capstone"
+        ]
       },
       {
         "name": "ARCH 101 - Architectural Design I",
-        "topics": ["ARCH 101 - Architectural Design I"]
+        "topics": [
+          "ARCH 101 - Architectural Design I"
+        ]
       },
       {
         "name": "ARCH 111 - Architectural Drawing",
-        "topics": ["ARCH 111 - Architectural Drawing"]
+        "topics": [
+          "ARCH 111 - Architectural Drawing"
+        ]
       },
       {
         "name": "ARCH 112 - History of Architecture",
-        "topics": ["ARCH 112 - History of Architecture"]
+        "topics": [
+          "ARCH 112 - History of Architecture"
+        ]
       },
       {
         "name": "ARCH 161 - Building Materials and Construction",
-        "topics": ["ARCH 161 - Building Materials and Construction"]
+        "topics": [
+          "ARCH 161 - Building Materials and Construction"
+        ]
       },
       {
         "name": "ARCH 201 - Architectural Design II",
-        "topics": ["ARCH 201 - Architectural Design II"]
+        "topics": [
+          "ARCH 201 - Architectural Design II"
+        ]
       },
       {
         "name": "ARCH 202 - Structural Systems in Architecture",
-        "topics": ["ARCH 202 - Structural Systems in Architecture"]
+        "topics": [
+          "ARCH 202 - Structural Systems in Architecture"
+        ]
       },
       {
         "name": "ARCH 203 - Building Services I",
-        "topics": ["ARCH 203 - Building Services I"]
+        "topics": [
+          "ARCH 203 - Building Services I"
+        ]
       },
       {
         "name": "ARCH 204 - Urban Design",
-        "topics": ["ARCH 204 - Urban Design"]
+        "topics": [
+          "ARCH 204 - Urban Design"
+        ]
       },
       {
         "name": "ARCH 205 - Environmental Architecture",
-        "topics": ["ARCH 205 - Environmental Architecture"]
+        "topics": [
+          "ARCH 205 - Environmental Architecture"
+        ]
       },
       {
         "name": "ARCH 215 - Architectural Theory",
-        "topics": ["ARCH 215 - Architectural Theory"]
+        "topics": [
+          "ARCH 215 - Architectural Theory"
+        ]
       },
       {
         "name": "ARCH 216 - Landscape Architecture",
-        "topics": ["ARCH 216 - Landscape Architecture"]
+        "topics": [
+          "ARCH 216 - Landscape Architecture"
+        ]
       },
       {
         "name": "ARCH 301 - Architectural Design III",
-        "topics": ["ARCH 301 - Architectural Design III"]
+        "topics": [
+          "ARCH 301 - Architectural Design III"
+        ]
       },
       {
         "name": "ARCH 305 - Professional Practice",
-        "topics": ["ARCH 305 - Professional Practice"]
+        "topics": [
+          "ARCH 305 - Professional Practice"
+        ]
       },
       {
         "name": "ARCH 319 - Heritage Conservation",
-        "topics": ["ARCH 319 - Heritage Conservation"]
+        "topics": [
+          "ARCH 319 - Heritage Conservation"
+        ]
       },
       {
         "name": "ARCH 422 - Advanced Architectural Design I",
-        "topics": ["ARCH 422 - Advanced Architectural Design I"]
+        "topics": [
+          "ARCH 422 - Advanced Architectural Design I"
+        ]
       },
       {
         "name": "ARCH 425 - Advanced Architectural Design II",
-        "topics": ["ARCH 425 - Advanced Architectural Design II"]
+        "topics": [
+          "ARCH 425 - Advanced Architectural Design II"
+        ]
       },
       {
         "name": "ARCH 442 - Architectural Thesis",
-        "topics": ["ARCH 442 - Architectural Thesis"]
+        "topics": [
+          "ARCH 442 - Architectural Thesis"
+        ]
       },
       {
         "name": "ARCH 505 - Post-Graduate Architecture Studio",
-        "topics": ["ARCH 505 - Post-Graduate Architecture Studio"]
+        "topics": [
+          "ARCH 505 - Post-Graduate Architecture Studio"
+        ]
       },
       {
         "name": "EPEG 301 - Power Systems I",
-        "topics": ["EPEG 301 - Power Systems I"]
+        "topics": [
+          "EPEG 301 - Power Systems I",
+          "Power Systems"
+        ]
       },
       {
         "name": "EPEG 302 - Power Systems II",
-        "topics": ["EPEG 302 - Power Systems II"]
+        "topics": [
+          "EPEG 302 - Power Systems II"
+        ]
       },
       {
         "name": "EPEG 315 - Electrical Machines",
-        "topics": ["EPEG 315 - Electrical Machines"]
+        "topics": [
+          "EPEG 315 - Electrical Machines"
+        ]
       },
       {
         "name": "EPEG 317 - Renewable Energy",
-        "topics": ["EPEG 317 - Renewable Energy"]
+        "topics": [
+          "EPEG 317 - Renewable Energy"
+        ]
       },
       {
         "name": "EPEG 318 - Hydropower Engineering",
-        "topics": ["EPEG 318 - Hydropower Engineering"]
+        "topics": [
+          "EPEG 318 - Hydropower Engineering"
+        ]
       },
       {
         "name": "EPEG 409 - Power Systems Project I",
-        "topics": ["EPEG 409 - Power Systems Project I"]
+        "topics": [
+          "EPEG 409 - Power Systems Project I"
+        ]
       },
       {
         "name": "EPEG 410 - Power Systems Project II",
-        "topics": ["EPEG 410 - Power Systems Project II"]
+        "topics": [
+          "EPEG 410 - Power Systems Project II"
+        ]
       },
       {
         "name": "EPEG 411 - High Voltage Engineering",
-        "topics": ["EPEG 411 - High Voltage Engineering"]
+        "topics": [
+          "EPEG 411 - High Voltage Engineering"
+        ]
       },
       {
         "name": "EPEG 413 - Power System Protection",
-        "topics": ["EPEG 413 - Power System Protection"]
+        "topics": [
+          "EPEG 413 - Power System Protection"
+        ]
       },
       {
         "name": "EPEG 415 - Smart Grid Technology",
-        "topics": ["EPEG 415 - Smart Grid Technology"]
+        "topics": [
+          "EPEG 415 - Smart Grid Technology"
+        ]
       },
       {
         "name": "EPEG 416 - Power Electronics for Drives",
-        "topics": ["EPEG 416 - Power Electronics for Drives"]
+        "topics": [
+          "EPEG 416 - Power Electronics for Drives"
+        ]
       },
       {
         "name": "EPEG 422 - Advanced Power Systems",
-        "topics": ["EPEG 422 - Advanced Power Systems"]
+        "topics": [
+          "EPEG 422 - Advanced Power Systems"
+        ]
       },
       {
         "name": "EPEG 425 - Power System Dynamics",
-        "topics": ["EPEG 425 - Power System Dynamics"]
+        "topics": [
+          "EPEG 425 - Power System Dynamics"
+        ]
       },
       {
         "name": "EPEG 428 - Energy Storage Systems",
-        "topics": ["EPEG 428 - Energy Storage Systems"]
+        "topics": [
+          "EPEG 428 - Energy Storage Systems"
+        ]
       },
       {
         "name": "ETEG 301 - Electrical Technology I",
-        "topics": ["ETEG 301 - Electrical Technology I"]
+        "topics": [
+          "ETEG 301 - Electrical Technology I"
+        ]
       },
       {
         "name": "ETEG 302 - Electrical Technology II",
-        "topics": ["ETEG 302 - Electrical Technology II"]
+        "topics": [
+          "ETEG 302 - Electrical Technology II"
+        ]
       },
       {
         "name": "ETEG 303 - Industrial Electronics",
-        "topics": ["ETEG 303 - Industrial Electronics"]
+        "topics": [
+          "ETEG 303 - Industrial Electronics"
+        ]
       },
       {
         "name": "ETEG 304 - Instrumentation",
-        "topics": ["ETEG 304 - Instrumentation"]
+        "topics": [
+          "ETEG 304 - Instrumentation"
+        ]
       },
       {
         "name": "ETEG 305 - Control Systems",
-        "topics": ["ETEG 305 - Control Systems"]
+        "topics": [
+          "ETEG 305 - Control Systems"
+        ]
       },
       {
         "name": "ETEG 320 - Telecommunications",
-        "topics": ["ETEG 320 - Telecommunications"]
+        "topics": [
+          "ETEG 320 - Telecommunications"
+        ]
       },
       {
         "name": "ETEG 321 - Signal Processing",
-        "topics": ["ETEG 321 - Signal Processing"]
+        "topics": [
+          "ETEG 321 - Signal Processing"
+        ]
       },
       {
         "name": "ETEG 402 - Advanced Electrical Technology",
-        "topics": ["ETEG 402 - Advanced Electrical Technology"]
+        "topics": [
+          "ETEG 402 - Advanced Electrical Technology"
+        ]
       },
       {
         "name": "ETEG 408 - Electrical Systems Project",
-        "topics": ["ETEG 408 - Electrical Systems Project"]
+        "topics": [
+          "ETEG 408 - Electrical Systems Project"
+        ]
       },
       {
         "name": "ETEG 422 - Advanced Control Systems",
-        "topics": ["ETEG 422 - Advanced Control Systems"]
+        "topics": [
+          "ETEG 422 - Advanced Control Systems"
+        ]
       },
       {
         "name": "ETEG 427 - Power System Analysis",
-        "topics": ["ETEG 427 - Power System Analysis"]
+        "topics": [
+          "ETEG 427 - Power System Analysis"
+        ]
       },
       {
         "name": "ETEG 428 - Embedded Control Systems",
-        "topics": ["ETEG 428 - Embedded Control Systems"]
+        "topics": [
+          "ETEG 428 - Embedded Control Systems"
+        ]
       },
       {
         "name": "ETEG 429 - Advanced Telecommunications",
-        "topics": ["ETEG 429 - Advanced Telecommunications"]
+        "topics": [
+          "ETEG 429 - Advanced Telecommunications"
+        ]
       },
       {
         "name": "ETEG 432 - Capstone Electrical Project",
-        "topics": ["ETEG 432 - Capstone Electrical Project"]
+        "topics": [
+          "ETEG 432 - Capstone Electrical Project"
+        ]
       },
       {
         "name": "ESEE 201 - Electrical and Electronic Engineering I",
-        "topics": ["ESEE 201 - Electrical and Electronic Engineering I"]
+        "topics": [
+          "ESEE 201 - Electrical and Electronic Engineering I",
+          "Environmental Engineering"
+        ]
       },
       {
         "name": "ESEE 211 - Electronics Engineering I",
-        "topics": ["ESEE 211 - Electronics Engineering I"]
+        "topics": [
+          "ESEE 211 - Electronics Engineering I"
+        ]
       },
       {
         "name": "ESEE 221 - Electronic Systems I",
-        "topics": ["ESEE 221 - Electronic Systems I"]
+        "topics": [
+          "ESEE 221 - Electronic Systems I"
+        ]
       },
       {
         "name": "ESEE 301 - Electronic Systems Design I",
-        "topics": ["ESEE 301 - Electronic Systems Design I"]
+        "topics": [
+          "ESEE 301 - Electronic Systems Design I"
+        ]
       },
       {
         "name": "ESEE 302 - Electronic Systems Design II",
-        "topics": ["ESEE 302 - Electronic Systems Design II"]
+        "topics": [
+          "ESEE 302 - Electronic Systems Design II"
+        ]
       },
       {
         "name": "ESEE 303 - VLSI Design",
-        "topics": ["ESEE 303 - VLSI Design"]
+        "topics": [
+          "ESEE 303 - VLSI Design"
+        ]
       },
       {
         "name": "ESEE 304 - Communication Systems",
-        "topics": ["ESEE 304 - Communication Systems"]
+        "topics": [
+          "ESEE 304 - Communication Systems"
+        ]
       },
       {
         "name": "ESEE 305 - Digital Signal Processing",
-        "topics": ["ESEE 305 - Digital Signal Processing"]
+        "topics": [
+          "ESEE 305 - Digital Signal Processing"
+        ]
       },
       {
         "name": "ESEE 306 - Embedded Systems",
-        "topics": ["ESEE 306 - Embedded Systems"]
+        "topics": [
+          "ESEE 306 - Embedded Systems"
+        ]
       },
       {
         "name": "ESEE 307 - RF and Microwave Engineering",
-        "topics": ["ESEE 307 - RF and Microwave Engineering"]
+        "topics": [
+          "ESEE 307 - RF and Microwave Engineering"
+        ]
       },
       {
         "name": "ESEE 308 - Antenna and Wave Propagation",
-        "topics": ["ESEE 308 - Antenna and Wave Propagation"]
+        "topics": [
+          "ESEE 308 - Antenna and Wave Propagation"
+        ]
       },
       {
         "name": "ESEE 309 - Digital Communication",
-        "topics": ["ESEE 309 - Digital Communication"]
+        "topics": [
+          "ESEE 309 - Digital Communication"
+        ]
       },
       {
         "name": "ESEE 310 - Mobile Communications",
-        "topics": ["ESEE 310 - Mobile Communications"]
+        "topics": [
+          "ESEE 310 - Mobile Communications"
+        ]
       },
       {
         "name": "ESEE 331 - Advanced Electronic Systems",
-        "topics": ["ESEE 331 - Advanced Electronic Systems"]
+        "topics": [
+          "ESEE 331 - Advanced Electronic Systems"
+        ]
       },
       {
         "name": "ESEE 401 - Electronic Systems Project I",
-        "topics": ["ESEE 401 - Electronic Systems Project I"]
+        "topics": [
+          "ESEE 401 - Electronic Systems Project I"
+        ]
       },
       {
         "name": "ESEE 402 - Electronic Systems Project II",
-        "topics": ["ESEE 402 - Electronic Systems Project II"]
+        "topics": [
+          "ESEE 402 - Electronic Systems Project II"
+        ]
       },
       {
         "name": "ESEE 403 - Advanced Communication Engineering",
-        "topics": ["ESEE 403 - Advanced Communication Engineering"]
+        "topics": [
+          "ESEE 403 - Advanced Communication Engineering"
+        ]
       },
       {
         "name": "ESEE 405 - Photonics and Optoelectronics",
-        "topics": ["ESEE 405 - Photonics and Optoelectronics"]
+        "topics": [
+          "ESEE 405 - Photonics and Optoelectronics"
+        ]
       },
       {
         "name": "ESEE 432 - Capstone Electronics Project",
-        "topics": ["ESEE 432 - Capstone Electronics Project"]
+        "topics": [
+          "ESEE 432 - Capstone Electronics Project"
+        ]
       },
       {
         "name": "MGTS 301 - Engineering Economics",
-        "topics": ["MGTS 301 - Engineering Economics"]
+        "topics": [
+          "MGTS 301 - Engineering Economics"
+        ]
       },
       {
         "name": "MGTS 302 - Project Management",
-        "topics": ["MGTS 302 - Project Management"]
+        "topics": [
+          "MGTS 302 - Project Management"
+        ]
       },
       {
         "name": "MGTS 303 - Operations Management",
-        "topics": ["MGTS 303 - Operations Management"]
+        "topics": [
+          "MGTS 303 - Operations Management"
+        ]
       },
       {
         "name": "MGTS 305 - Technology Management",
-        "topics": ["MGTS 305 - Technology Management"]
+        "topics": [
+          "MGTS 305 - Technology Management"
+        ]
       },
       {
         "name": "MGTS 402 - Engineering Entrepreneurship",
-        "topics": ["MGTS 402 - Engineering Entrepreneurship"]
+        "topics": [
+          "MGTS 402 - Engineering Entrepreneurship"
+        ]
       },
       {
         "name": "MGTS 403 - Engineering Management",
-        "topics": ["MGTS 403 - Engineering Management"]
+        "topics": [
+          "MGTS 403 - Engineering Management"
+        ]
       },
       {
         "name": "BINF 101 - Introduction to Bioinformatics",
-        "topics": ["BINF 101 - Introduction to Bioinformatics"]
+        "topics": [
+          "BINF 101 - Introduction to Bioinformatics"
+        ]
       },
       {
         "name": "BINF 102 - Sequence Analysis",
-        "topics": ["BINF 102 - Sequence Analysis"]
+        "topics": [
+          "BINF 102 - Sequence Analysis"
+        ]
       },
       {
         "name": "BINF 206 - Structural Bioinformatics",
-        "topics": ["BINF 206 - Structural Bioinformatics"]
+        "topics": [
+          "BINF 206 - Structural Bioinformatics"
+        ]
       },
       {
         "name": "AGRS 101 - Introduction to Agriculture",
-        "topics": ["AGRS 101 - Introduction to Agriculture"]
+        "topics": [
+          "AGRS 101 - Introduction to Agriculture",
+          "Plant Nutrition",
+          "Agricultural Meteorology",
+          "Soil and Water Conservation",
+          "Crop Production",
+          "Climate-Smart Agriculture",
+          "Seed and Germination",
+          "Cropping Systems",
+          "Introduction to Agriculture"
+        ]
       },
       {
         "name": "AGRS 105 - Soil Science",
-        "topics": ["AGRS 105 - Soil Science"]
+        "topics": [
+          "AGRS 105 - Soil Science"
+        ]
       },
       {
         "name": "AGRS 112 - Crop Science I",
-        "topics": ["AGRS 112 - Crop Science I"]
+        "topics": [
+          "AGRS 112 - Crop Science I"
+        ]
       },
       {
         "name": "AGRS 113 - Crop Science II",
-        "topics": ["AGRS 113 - Crop Science II"]
+        "topics": [
+          "AGRS 113 - Crop Science II"
+        ]
       },
       {
         "name": "AGRS 117 - Agricultural Botany",
-        "topics": ["AGRS 117 - Agricultural Botany"]
+        "topics": [
+          "AGRS 117 - Agricultural Botany"
+        ]
       },
       {
         "name": "AGRS 201 - Plant Physiology",
-        "topics": ["AGRS 201 - Plant Physiology"]
+        "topics": [
+          "AGRS 201 - Plant Physiology"
+        ]
       },
       {
         "name": "AGRS 206 - Agricultural Chemistry",
-        "topics": ["AGRS 206 - Agricultural Chemistry"]
+        "topics": [
+          "AGRS 206 - Agricultural Chemistry"
+        ]
       },
       {
         "name": "AGRS 212 - Agricultural Entomology",
-        "topics": ["AGRS 212 - Agricultural Entomology"]
+        "topics": [
+          "AGRS 212 - Agricultural Entomology"
+        ]
       },
       {
         "name": "AGRS 214 - Agricultural Economics",
-        "topics": ["AGRS 214 - Agricultural Economics"]
+        "topics": [
+          "AGRS 214 - Agricultural Economics"
+        ]
       },
       {
         "name": "AGRS 225 - Irrigation and Water Management",
-        "topics": ["AGRS 225 - Irrigation and Water Management"]
+        "topics": [
+          "AGRS 225 - Irrigation and Water Management"
+        ]
       },
       {
         "name": "AGAN 111 - Animal Science I",
-        "topics": ["AGAN 111 - Animal Science I"]
+        "topics": [
+          "AGAN 111 - Animal Science I",
+          "Animal Nutrition",
+          "Veterinary Vaccines",
+          "Veterinary Medicine",
+          "Parasitology",
+          "Animal Diseases",
+          "Nutrition and Dairy Science",
+          "Breeding and Genetics",
+          "Animal Breeds",
+          "Animal Welfare",
+          "Livestock Production"
+        ]
       },
       {
         "name": "AGES 111 - Agricultural Extension I",
-        "topics": ["AGES 111 - Agricultural Extension I"]
+        "topics": [
+          "AGES 111 - Agricultural Extension I"
+        ]
       },
       {
         "name": "AGES 212 - Agricultural Extension II",
-        "topics": ["AGES 212 - Agricultural Extension II"]
+        "topics": [
+          "AGES 212 - Agricultural Extension II"
+        ]
       },
       {
         "name": "AGES 213 - Rural Sociology",
-        "topics": ["AGES 213 - Rural Sociology"]
+        "topics": [
+          "AGES 213 - Rural Sociology"
+        ]
       },
       {
         "name": "AGES 312 - Agricultural Development",
-        "topics": ["AGES 312 - Agricultural Development"]
+        "topics": [
+          "AGES 312 - Agricultural Development"
+        ]
       },
       {
         "name": "AGBT 202 - Agricultural Biotechnology I",
-        "topics": ["AGBT 202 - Agricultural Biotechnology I"]
+        "topics": [
+          "AGBT 202 - Agricultural Biotechnology I"
+        ]
       },
       {
         "name": "AGMT 201 - Agricultural Meteorology",
-        "topics": ["AGMT 201 - Agricultural Meteorology"]
+        "topics": [
+          "AGMT 201 - Agricultural Meteorology"
+        ]
       },
       {
         "name": "HBIO 101 - Human Anatomy I",
-        "topics": ["HBIO 101 - Human Anatomy I"]
+        "topics": [
+          "HBIO 101 - Human Anatomy I",
+          "Human Anatomy I",
+          "Genetics",
+          "Genetic Diseases",
+          "Genetics and Genomics",
+          "Blood Groups and Genetic Basis"
+        ]
       },
       {
         "name": "HBIO 102 - Human Physiology I",
-        "topics": ["HBIO 102 - Human Physiology I"]
+        "topics": [
+          "HBIO 102 - Human Physiology I"
+        ]
       },
       {
         "name": "HBIO 103 - Biochemistry",
-        "topics": ["HBIO 103 - Biochemistry"]
+        "topics": [
+          "HBIO 103 - Biochemistry"
+        ]
       },
       {
         "name": "HBIO 201 - Human Anatomy II",
-        "topics": ["HBIO 201 - Human Anatomy II"]
+        "topics": [
+          "HBIO 201 - Human Anatomy II"
+        ]
       },
       {
         "name": "HBIO 204 - Human Physiology II",
-        "topics": ["HBIO 204 - Human Physiology II"]
+        "topics": [
+          "HBIO 204 - Human Physiology II"
+        ]
       },
       {
         "name": "HBIO 213 - Histology",
-        "topics": ["HBIO 213 - Histology"]
+        "topics": [
+          "HBIO 213 - Histology"
+        ]
       },
       {
         "name": "HBIO 215 - Pathophysiology",
-        "topics": ["HBIO 215 - Pathophysiology"]
+        "topics": [
+          "HBIO 215 - Pathophysiology"
+        ]
       },
       {
         "name": "HIMS 101 - Introduction to Health Information Management",
-        "topics": ["HIMS 101 - Introduction to Health Information Management"]
+        "topics": [
+          "HIMS 101 - Introduction to Health Information Management",
+          "Health System Building Blocks",
+          "Health Systems and Goals",
+          "Health Information Classification",
+          "Introduction to Digital Health",
+          "Health Data Standards",
+          "Electronic Health Records (EHRs)",
+          "Health Information Standards",
+          "Epidemiology and Health Systems",
+          "System Development Lifecycle (SDLC)",
+          "Social Media and Public Health",
+          "Regulatory Standards for mHealth",
+          "Introduction to Health Information Systems",
+          "Health System Regulations",
+          "Software Development Life Cycle",
+          "Logical and Physical Tool Layer",
+          "Network Topology for Telemedicine",
+          "Change Management in Health Informatics",
+          "Patient Rights and HIPAA",
+          "Healthcare Information Systems",
+          "Role of Information Technology in Healthcare",
+          "Introduction to Health Information Management",
+          "Interoperability in Health Information Systems",
+          "Healthcare Analytics",
+          "Physical Data Processing Systems in Healthcare",
+          "Operating Systems in Healthcare Information Systems",
+          "Data Storage in Health Information Systems",
+          "Telemedicine",
+          "Electronic Health Records",
+          "Patient Engagement",
+          "Health Data Exchange Protocols",
+          "Non-Communicable Diseases (NCDs)",
+          "Interoperability in Health Information Exchanges",
+          "DHIS2",
+          "Artificial Intelligence in Healthcare",
+          "Health Systems and WHO Building Blocks",
+          "Health Information Delivery"
+        ]
       },
       {
         "name": "HIMS 102 - Medical Terminology",
-        "topics": ["HIMS 102 - Medical Terminology"]
+        "topics": [
+          "HIMS 102 - Medical Terminology"
+        ]
       },
       {
         "name": "HIMS 103 - Health Data Management",
-        "topics": ["HIMS 103 - Health Data Management"]
+        "topics": [
+          "HIMS 103 - Health Data Management"
+        ]
       },
       {
         "name": "HIMS 104 - Clinical Classification Systems",
-        "topics": ["HIMS 104 - Clinical Classification Systems"]
+        "topics": [
+          "HIMS 104 - Clinical Classification Systems"
+        ]
       },
       {
         "name": "HIMS 105 - Health Informatics",
-        "topics": ["HIMS 105 - Health Informatics"]
+        "topics": [
+          "HIMS 105 - Health Informatics"
+        ]
       },
       {
         "name": "HIMS 106 - Healthcare Quality Management",
-        "topics": ["HIMS 106 - Healthcare Quality Management"]
+        "topics": [
+          "HIMS 106 - Healthcare Quality Management"
+        ]
       },
       {
         "name": "AICS 101 - Introduction to AI and Computer Science",
-        "topics": ["AICS 101 - Introduction to AI and Computer Science"]
+        "topics": [
+          "AICS 101 - Introduction to AI and Computer Science"
+        ]
       },
       {
         "name": "AICS 201 - Machine Learning I",
-        "topics": ["AICS 201 - Machine Learning I"]
+        "topics": [
+          "AICS 201 - Machine Learning I"
+        ]
       },
       {
         "name": "AICS 202 - Machine Learning II",
-        "topics": ["AICS 202 - Machine Learning II"]
+        "topics": [
+          "AICS 202 - Machine Learning II"
+        ]
       },
       {
         "name": "AICS 203 - Deep Learning",
-        "topics": ["AICS 203 - Deep Learning"]
+        "topics": [
+          "AICS 203 - Deep Learning"
+        ]
       },
       {
         "name": "AICS 301 - Advanced AI",
-        "topics": ["AICS 301 - Advanced AI"]
+        "topics": [
+          "AICS 301 - Advanced AI"
+        ]
       },
       {
         "name": "AIMA 102 - Applied Mathematics for AI I",
-        "topics": ["AIMA 102 - Applied Mathematics for AI I"]
+        "topics": [
+          "AIMA 102 - Applied Mathematics for AI I"
+        ]
       },
       {
         "name": "AIMA 103 - Applied Mathematics for AI II",
-        "topics": ["AIMA 103 - Applied Mathematics for AI II"]
+        "topics": [
+          "AIMA 103 - Applied Mathematics for AI II"
+        ]
       },
       {
         "name": "AIMA 104 - Applied Mathematics for AI III",
-        "topics": ["AIMA 104 - Applied Mathematics for AI III"]
+        "topics": [
+          "AIMA 104 - Applied Mathematics for AI III"
+        ]
       },
       {
         "name": "AIMA 201 - Advanced Applied Mathematics for AI",
-        "topics": ["AIMA 201 - Advanced Applied Mathematics for AI"]
+        "topics": [
+          "AIMA 201 - Advanced Applied Mathematics for AI"
+        ]
       },
       {
         "name": "AICC 101 - AI and Computing Concepts I",
-        "topics": ["AICC 101 - AI and Computing Concepts I"]
+        "topics": [
+          "AICC 101 - AI and Computing Concepts I",
+          "Introduction to Artificial Intelligence",
+          "AI Language Models",
+          "Artificial Intelligence Agents",
+          "Decision Trees",
+          "Data Normalization",
+          "Optimization Techniques",
+          "Planning Languages",
+          "Expert Systems",
+          "Search Algorithms",
+          "Search Strategies in AI",
+          "Natural Language Processing (NLP)",
+          "Artificial Intelligence Planning",
+          "Minimax Algorithm",
+          "Neural Networks",
+          "Propositional Logic",
+          "History of AI",
+          "State Space Representation",
+          "Constraint Satisfaction Problems",
+          "Machine Learning Project Pipeline",
+          "Predicate Logic",
+          "Informed and Uninformed Search",
+          "Machine Learning"
+        ]
       },
       {
         "name": "AICC 201 - AI and Computing Concepts II",
-        "topics": ["AICC 201 - AI and Computing Concepts II"]
+        "topics": [
+          "AICC 201 - AI and Computing Concepts II"
+        ]
       },
       {
         "name": "AICC 202 - AI and Computing Concepts III",
-        "topics": ["AICC 202 - AI and Computing Concepts III"]
+        "topics": [
+          "AICC 202 - AI and Computing Concepts III"
+        ]
       },
       {
         "name": "AIMC 101 - AI and Management Computing",
-        "topics": ["AIMC 101 - AI and Management Computing"]
+        "topics": [
+          "AIMC 101 - AI and Management Computing",
+          "Communication Skills",
+          "Data Presentation",
+          "Technical Communication",
+          "Workshop Preliminaries",
+          "Audience Analysis",
+          "Negotiation Skills",
+          "Communication and Technical Writing",
+          "Team Communication",
+          "Job Application",
+          "CV and Professional Communication",
+          "Oral Presentations",
+          "Report Writing",
+          "Recommendation Letter and Email"
+        ]
       },
       {
         "name": "AIME 101 - AI in Mechanical Engineering",
-        "topics": ["AIME 101 - AI in Mechanical Engineering"]
+        "topics": [
+          "AIME 101 - AI in Mechanical Engineering",
+          "Data Ethics",
+          "AI and Ethics",
+          "Professional Ethics in AI"
+        ]
       },
       {
         "name": "AIPC 101 - AI Programming Concepts",
@@ -2486,79 +3591,143 @@
       },
       {
         "name": "MCSC 201 - Discrete Mathematics",
-        "topics": ["MCSC 201 - Discrete Mathematics"]
+        "topics": [
+          "MCSC 201 - Discrete Mathematics"
+        ]
       },
       {
         "name": "MCSC 202 - Numerical Methods",
-        "topics": ["MCSC 202 - Numerical Methods"]
+        "topics": [
+          "MCSC 202 - Numerical Methods"
+        ]
       },
       {
         "name": "DSMA 111 - Data Science Mathematics I",
-        "topics": ["DSMA 111 - Data Science Mathematics I"]
+        "topics": [
+          "DSMA 111 - Data Science Mathematics I",
+          "Dictionary Operations",
+          "Control Flow",
+          "Introduction to Python Programming",
+          "Asymptotes",
+          "Differentiation",
+          "Continuity and Discontinuity",
+          "Descriptive Statistics",
+          "String Operations",
+          "Integral Calculus",
+          "List Operations",
+          "Probability",
+          "Statistics",
+          "Calculus",
+          "Set Operations",
+          "Mathematical Functions",
+          "Introduction to Programming Concepts"
+        ]
       },
       {
         "name": "DSMA 113 - Data Science Mathematics III",
-        "topics": ["DSMA 113 - Data Science Mathematics III"]
+        "topics": [
+          "DSMA 113 - Data Science Mathematics III"
+        ]
       },
       {
         "name": "DSMA 114 - Data Science Mathematics IV",
-        "topics": ["DSMA 114 - Data Science Mathematics IV"]
+        "topics": [
+          "DSMA 114 - Data Science Mathematics IV"
+        ]
       },
       {
         "name": "DSMA 115 - Data Science Mathematics V",
-        "topics": ["DSMA 115 - Data Science Mathematics V"]
+        "topics": [
+          "DSMA 115 - Data Science Mathematics V"
+        ]
       },
       {
         "name": "DSMA 116 - Data Science Mathematics VI",
-        "topics": ["DSMA 116 - Data Science Mathematics VI"]
+        "topics": [
+          "DSMA 116 - Data Science Mathematics VI"
+        ]
       },
       {
         "name": "COEG 301 - Computer and Operations Engineering I",
-        "topics": ["COEG 301 - Computer and Operations Engineering I"]
+        "topics": [
+          "COEG 301 - Computer and Operations Engineering I"
+        ]
       },
       {
         "name": "COEG 304 - Instrumentation and Control",
-        "topics": ["COEG 304 - Instrumentation and Control"]
+        "topics": [
+          "COEG 304 - Instrumentation and Control"
+        ]
       },
       {
         "name": "COEG 401 - Advanced Computer Engineering I",
-        "topics": ["COEG 401 - Advanced Computer Engineering I"]
+        "topics": [
+          "COEG 401 - Advanced Computer Engineering I"
+        ]
       },
       {
         "name": "COEG 402 - Advanced Computer Engineering II",
-        "topics": ["COEG 402 - Advanced Computer Engineering II"]
+        "topics": [
+          "COEG 402 - Advanced Computer Engineering II"
+        ]
       },
       {
         "name": "MNEG 101 - Introduction to Mining Engineering",
-        "topics": ["MNEG 101 - Introduction to Mining Engineering"]
+        "topics": [
+          "MNEG 101 - Introduction to Mining Engineering",
+          "Metamorphism",
+          "Rock Mechanics",
+          "Mineralogy and Rock Types",
+          "Sedimentary Rocks",
+          "Environmental Impact of Mining",
+          "Crystallography",
+          "Igneous Rocks",
+          "Igneous and Metamorphic Rocks",
+          "Mineralogy",
+          "Introduction to Mining Engineering"
+        ]
       },
       {
         "name": "MNEG 102 - Mining Methods I",
-        "topics": ["MNEG 102 - Mining Methods I"]
+        "topics": [
+          "MNEG 102 - Mining Methods I"
+        ]
       },
       {
         "name": "MNEG 103 - Rock Mechanics",
-        "topics": ["MNEG 103 - Rock Mechanics"]
+        "topics": [
+          "MNEG 103 - Rock Mechanics"
+        ]
       },
       {
         "name": "MNEG 201 - Mining Methods II",
-        "topics": ["MNEG 201 - Mining Methods II"]
+        "topics": [
+          "MNEG 201 - Mining Methods II"
+        ]
       },
       {
         "name": "MNEG 202 - Mine Ventilation",
-        "topics": ["MNEG 202 - Mine Ventilation"]
+        "topics": [
+          "MNEG 202 - Mine Ventilation"
+        ]
       },
       {
         "name": "SOCA 401 - Sociology and Development",
-        "topics": ["SOCA 401 - Sociology and Development"]
+        "topics": [
+          "SOCA 401 - Sociology and Development"
+        ]
       },
       {
         "name": "INAN 301 - Anatomy I (Advanced)",
-        "topics": ["INAN 301 - Anatomy I (Advanced)"]
+        "topics": [
+          "INAN 301 - Anatomy I (Advanced)"
+        ]
       },
       {
         "name": "ACRS 113 - Agricultural Crop Science III",
-        "topics": ["ACRS 113 - Agricultural Crop Science III"]
+        "topics": [
+          "ACRS 113 - Agricultural Crop Science III"
+        ]
       }
     ],
     "components": [
@@ -2573,7 +3742,11 @@
     ]
   },
   "NEB": {
-    "levels": ["10", "11", "12"],
+    "levels": [
+      "10",
+      "11",
+      "12"
+    ],
     "subjects": [
       {
         "name": "Compulsory Maths",
@@ -2757,7 +3930,9 @@
     ]
   },
   "IOE": {
-    "levels": ["default"],
+    "levels": [
+      "default"
+    ],
     "subjects": [
       {
         "name": "Computer Engineering",
@@ -2802,7 +3977,10 @@
           "Signals and Systems",
           "Instrumentation and Measurement",
           "Renewable Energy Systems",
-          "Microcontrollers and Embedded Devices"
+          "Microcontrollers and Embedded Devices",
+          "Electric Circuits",
+          "Electric Machines",
+          "Transformers"
         ]
       },
       {
@@ -2956,11 +4134,14 @@
         ]
       }
     ],
-    "components": ["default"]
+    "components": [
+      "default"
+    ]
   },
-
   "TU": {
-    "levels": ["default"],
+    "levels": [
+      "default"
+    ],
     "subjects": [
       {
         "name": "Computer Science (BSc / BSc CSIT)",

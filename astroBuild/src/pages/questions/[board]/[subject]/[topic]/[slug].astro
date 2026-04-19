@@ -91,7 +91,6 @@ const boardDisplayName =
 <BaseLayout
   title={`${questionTitle.substring(0,60) || realTopicName + " Question"} — ${realSubjectName} | Paper Guides`}
   description={`Practice question and model answer for ${realTopicName} in ${realSubjectName} (${boardDisplayName}). Improve your exam technique with past-paper questions.`}
-  canonical={`${SITE_URL ?? "https://paperguides.org"}/questions/${board}/${subject}/${topic}/${slug}`}
   keywords={[realSubjectName, realTopicName, `${boardDisplayName}`, "past paper questions", "exam practice", "Paper Guides", ...questionKeywords]}
 >
   <div

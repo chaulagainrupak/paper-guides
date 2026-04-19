@@ -67,7 +67,6 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
   title={pageTitle}
   description={pageDescription}
   keywords={pageKeywords.filter((k): k is string => !!k)}
-  canonical={canonicalUrl}
 >
   <script type="application/ld+json" is:inline>
     {JSON.stringify({
