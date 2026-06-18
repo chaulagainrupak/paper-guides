@@ -9,7 +9,7 @@ import sitemap from "@astrojs/sitemap";
 // import react from "@astrojs/react";
 // import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
-  site: "https://example.com",
+  site: "https://paperguides.org",
   output: "static",
   integrations: [
     react(),
