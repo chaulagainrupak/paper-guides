@@ -1,83 +1,43 @@
 ---
 import { getCollection, render } from "astro:content";
-import BaseLayout from "../../../../layouts/BaseLayout.astro";
-import { getPaperIndex } from "../../../../utils/paperIndex";
-import { slugify } from "../../../../utils/slugify";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 
 export async function getStaticPaths() {
-    const index = await getPaperIndex();
-    const allNotes = await getCollection("notes");
-
-    // Build a map: "board/subject/topicSlug" -> note entry
-    const noteMap = new Map<string, (typeof allNotes)[0]>();
-    for (const note of allNotes) {
-        const { board, subject, topic } = note.data;
-        if (board && subject && topic) {
-            noteMap.set(`${board}/${subject}/${topic}`, note);
-        }
-    }
-
-    const paths: any[] = [];
-
-    for (const board in index) {
-        for (const subjectKey in index[board]) {
-            const subject = index[board][subjectKey];
-            for (const t of subject.topics ?? []) {
-                const key = `${board}/${subjectKey}/${t.slug}`;
-                const note = noteMap.get(key);
-                if (!note) continue; // only generate pages for topics that have notes
-
-                const siblingTopics = (subject.topics ?? []).map((st: any) => ({
-                    name: st.name,
-                    slug: st.slug,
-                    hasNote: noteMap.has(`${board}/${subjectKey}/${st.slug}`),
-                }));
-
-                paths.push({
-                    params: { board, subject: subjectKey, topic: t.slug },
-                    props: {
-                        note,
-                        topicName: t.name ?? t.slug.replace(/-/g, " "),
-                        subjectName:
-                            subject.name ?? subjectKey.replace(/-/g, " "),
-                        siblingTopics,
-                    },
-                });
-            }
-        }
-    }
-
-    return paths;
+    const posts = await getCollection("blog", ({ data }) => {
+        return import.meta.env.PROD ? data.draft !== true : true;
+    });
+    return posts.map((post) => ({
+        params: { slug: post.id },
+        props: { post },
+    }));
 }
 
-const { board, subject, topic } = Astro.params;
-const { note, topicName, subjectName, siblingTopics } = Astro.props;
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
 
-const { Content, headings } = await render(note);
+const dateStr = post.data.date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+});
 
-const boardDisplayName =
-    board === "a-levels"
-        ? "A Levels"
-        : board === "kathmandu-university"
-          ? "Kathmandu University"
-          : board!.replace(/-/g, " ");
+// Sibling posts for sidebar
+const allPosts = (
+    await getCollection("blog", ({ data }) => {
+        return import.meta.env.PROD ? data.draft !== true : true;
+    })
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-// Prev / next topic that also has notes
-const currentIdx = siblingTopics.findIndex((t: any) => t.slug === topic);
-const prevTopic =
-    siblingTopics
-        .slice(0, currentIdx)
-        .reverse()
-        .find((t: any) => t.hasNote) ?? null;
-const nextTopic =
-    siblingTopics.slice(currentIdx + 1).find((t: any) => t.hasNote) ?? null;
+const currentIdx = allPosts.findIndex((p) => p.id === post.id);
+const prevPost = allPosts[currentIdx + 1] ?? null;
+const nextPost = allPosts[currentIdx - 1] ?? null;
 ---
 
 <BaseLayout
-    title={`${topicName} — ${subjectName} Notes | Paper Guides`}
-    description={`Revision notes for ${topicName} in ${subjectName} (${boardDisplayName}).`}
+    title={`${post.data.title} — Blog | Paper Guides`}
+    description={post.data.description ?? `A blog post from Paper Guides.`}
 >
-    <!-- Header -->
+    <!-- Header — matches question page style -->
     <div
         class="bg-[#242424] text-[#f7f7f7] py-12 md:py-14 lg:py-20 md:px-8 lg:px-14 xl:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
     >
@@ -86,47 +46,62 @@ const nextTopic =
                 class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1 flex-wrap"
             >
                 <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
-                <a href="/notes"><i class="ph-fill ph-notebook"></i> Notes</a> /
-                <a href={`/notes/${board}`}>{boardDisplayName}</a> /
-                <a href={`/notes/${board}/${subject}`}>{subjectName}</a> /
-                <span><i class="ph-fill ph-file-text"></i> {topicName}</span>
+                <a href="/blog"><i class="ph-fill ph-pen-nib"></i> Blog</a> /
+                <span
+                    ><i class="ph-fill ph-file-text"></i>
+                    {post.data.title}</span
+                >
             </span>
             <h1 class="font-serif font-bold text-3xl md:text-5xl leading-snug">
-                {topicName}
+                {post.data.title}
             </h1>
             <p class="mt-4 text-xs md:text-sm text-[var(--muted)] max-w-md">
-                {subjectName} &middot; {boardDisplayName}
+                {post.data.description}
             </p>
+            <div class="mt-6 flex items-center gap-3 flex-wrap">
+                <span class="text-xs text-[var(--muted)] font-mono"
+                    >{dateStr}</span
+                >
+                {
+                    post.data.tags?.map((tag) => (
+                        <span class="text-xs px-2 py-0.5 bg-[var(--accent)]/30 text-[var(--accent)] rounded-full">
+                            {tag}
+                        </span>
+                    ))
+                }
+            </div>
         </div>
     </div>
 
-    <!-- Content + Sidebar -->
-    <div class="flex-1 grid grid-cols-1 md:grid-cols-[1fr_360px]">
-        <!-- Notes body -->
+    <!-- Content + Sidebar — stretches full height, no gap to footer -->
+    <div
+        class="flex-1 grid grid-cols-1 md:grid-cols-[1fr_360px] bg-[var(--baby-powder)] items-stretch"
+    >
+        <!-- Post body -->
         <div
-            class="bg-[var(--baby-powder)] px-5 md:px-8 lg:px-16 xl:px-24 py-6 shadow"
+            class="bg-[var(--baby-powder)] px-5 md:px-8 lg:px-16 xl:px-24 py-6"
         >
-            <article id="notes-content" class="prose-notes">
+            <article id="blog-content" class="prose-blog">
                 <Content />
             </article>
 
-            <!-- Prev / Next topic navigation -->
+            <!-- Prev / Next navigation — clean like question page -->
             <nav
                 class="flex items-center justify-between mt-12 pt-6 border-t border-[var(--border-subtle)]"
             >
                 {
-                    prevTopic ? (
+                    prevPost ? (
                         <a
-                            href={`/notes/${board}/${subject}/${prevTopic.slug}`}
+                            href={`/blog/${prevPost.id}`}
                             class="flex items-center gap-2 text-sm text-[var(--font-color)] hover:text-[var(--accent)] transition-colors group"
                         >
                             <i class="ph-fill ph-arrow-left transition-transform group-hover:-translate-x-1" />
                             <span class="flex flex-col">
                                 <span class="text-xs text-[var(--muted)]">
-                                    Previous
+                                    Older
                                 </span>
                                 <span class="line-clamp-1 max-w-[200px]">
-                                    {prevTopic.name}
+                                    {prevPost.data.title}
                                 </span>
                             </span>
                         </a>
@@ -136,17 +111,17 @@ const nextTopic =
                 }
 
                 {
-                    nextTopic ? (
+                    nextPost ? (
                         <a
-                            href={`/notes/${board}/${subject}/${nextTopic.slug}`}
+                            href={`/blog/${nextPost.id}`}
                             class="flex items-center gap-2 text-sm text-[var(--font-color)] hover:text-[var(--accent)] transition-colors group text-right"
                         >
                             <span class="flex flex-col">
                                 <span class="text-xs text-[var(--muted)]">
-                                    Next
+                                    Newer
                                 </span>
                                 <span class="line-clamp-1 max-w-[200px]">
-                                    {nextTopic.name}
+                                    {nextPost.data.title}
                                 </span>
                             </span>
                             <i class="ph-fill ph-arrow-right transition-transform group-hover:translate-x-1" />
@@ -158,11 +133,11 @@ const nextTopic =
             </nav>
         </div>
 
-        <!-- Sidebar -->
+        <!-- Sidebar — sticky, clean, ordered like question page -->
         <aside
-            class="hidden md:flex flex-col gap-6 sticky top-[80px] self-start bg-[var(--sidebar-bg)] p-4 border-l border-[var(--border-subtle)] h-fit"
+            class="hidden md:flex flex-col gap-6 sticky top-[80px] self-start bg-[var(--sidebar-bg)] border-l border-[var(--border-subtle)] p-4 h-[calc(100vh-80px)] overflow-y-auto"
         >
-            <!-- TOC -->
+            <!-- TOC header with print action -->
             <div
                 class="flex justify-between items-center border-b border-[var(--border-subtle)] pb-2"
             >
@@ -171,12 +146,15 @@ const nextTopic =
                 </p>
                 <button
                     onclick="window.print()"
+                    data-umami-event="Print Blog Post"
+                    data-umami-event-post={post.data.title}
                     class="cursor-pointer px-4 py-2 rounded-xl bg-[var(--green-highlight)] text-white font-bold hover:opacity-80 transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02] outline outline-1 outline-[var(--border-subtle)]"
                 >
                     <i class="ph-fill ph-printer"></i> Print
                 </button>
             </div>
 
+            <!-- TOC list — clean, numbered style -->
             {
                 headings.length > 0 && (
                     <div class="border-b border-[var(--border-subtle)] pb-2">
@@ -208,34 +186,31 @@ const nextTopic =
                 )
             }
 
-            <!-- Other topics in this subject -->
+            <!-- More posts — only shown when there are other posts -->
             {
-                siblingTopics.filter((t: any) => t.slug !== topic && t.hasNote)
-                    .length > 0 && (
+                allPosts.filter((p) => p.id !== post.id).length > 0 && (
                     <div class="border-b border-[var(--border-subtle)] pb-2 mb-2">
                         <h3 class="font-semibold border-b border-[var(--border-subtle)] pb-2 mb-2">
-                            {subjectName}
+                            More posts
                         </h3>
                         <ul class="space-y-1 text-sm">
-                            {siblingTopics
-                                .filter(
-                                    (t: any) => t.slug !== topic && t.hasNote,
-                                )
-                                .map((t: any, idx: number) => (
+                            {allPosts
+                                .filter((p) => p.id !== post.id)
+                                .slice(0, 10)
+                                .map((p) => (
                                     <li>
                                         <a
-                                            href={`/notes/${board}/${subject}/${t.slug}`}
+                                            href={`/blog/${p.id}`}
                                             class="flex gap-2 items-start py-1 hover:text-[var(--accent)] transition-colors hover:underline"
                                         >
                                             <span class="font-mono text-xs text-[var(--muted)] shrink-0 mt-0.5">
-                                                {String(idx + 1).padStart(
-                                                    2,
-                                                    "0",
-                                                )}
+                                                {String(
+                                                    allPosts.indexOf(p) + 1,
+                                                ).padStart(2, "0")}
                                                 .
                                             </span>
                                             <span class="line-clamp-2">
-                                                {t.name}
+                                                {p.data.title}
                                             </span>
                                         </a>
                                     </li>
@@ -245,7 +220,7 @@ const nextTopic =
                 )
             }
 
-            <!-- Sponsor Space -->
+            <!-- Sponsor Space — clean, at bottom -->
             <div
                 class="text-sm text-[var(--muted)] text-center mt-auto pt-2 border-t border-[var(--border-subtle)]"
             >
@@ -253,20 +228,14 @@ const nextTopic =
             </div>
         </aside>
     </div>
-
-    <!-- Mobile sponsor strip -->
-    <div
-        class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 text-center text-sm text-[var(--muted)]"
-    >
-        Sponsor Space
-    </div>
 </BaseLayout>
 
 <style>
-    .prose-notes :global(h1),
-    .prose-notes :global(h2),
-    .prose-notes :global(h3),
-    .prose-notes :global(h4) {
+    /* Blog prose styles — matches notes theme, clean & readable */
+    .prose-blog :global(h1),
+    .prose-blog :global(h2),
+    .prose-blog :global(h3),
+    .prose-blog :global(h4) {
         font-family: "Playfair Display", Georgia, serif;
         font-weight: 700;
         color: var(--color-text);
@@ -274,47 +243,48 @@ const nextTopic =
         margin-bottom: 0.75rem;
         scroll-margin-top: 90px;
     }
-    .prose-notes :global(h1) {
+    .prose-blog :global(h1) {
         font-size: 2rem;
     }
-    .prose-notes :global(h2) {
+    .prose-blog :global(h2) {
         font-size: 1.5rem;
         border-bottom: 1px solid var(--border-subtle);
         padding-bottom: 0.25rem;
     }
-    .prose-notes :global(h3) {
+    .prose-blog :global(h3) {
         font-size: 1.2rem;
     }
 
-    .prose-notes :global(p) {
+    .prose-blog :global(p) {
         line-height: 1.8;
         margin-bottom: 1.2rem;
         color: var(--color-text);
     }
 
-    .prose-notes :global(a) {
+    .prose-blog :global(a) {
         color: var(--accent);
         text-decoration: underline;
         text-underline-offset: 2px;
     }
 
-    .prose-notes :global(ul),
-    .prose-notes :global(ol) {
+    .prose-blog :global(ul),
+    .prose-blog :global(ol) {
         padding-left: 1.5rem;
         margin-bottom: 1.2rem;
         line-height: 1.8;
     }
-    .prose-notes :global(ul) {
+    .prose-blog :global(ul) {
         list-style-type: disc;
     }
-    .prose-notes :global(ol) {
+    .prose-blog :global(ol) {
         list-style-type: decimal;
     }
-    .prose-notes :global(li) {
+
+    .prose-blog :global(li) {
         margin-bottom: 0.3rem;
     }
 
-    .prose-notes :global(blockquote) {
+    .prose-blog :global(blockquote) {
         border-left: 3px solid var(--accent);
         padding-left: 1rem;
         margin: 1.5rem 0;
@@ -322,7 +292,7 @@ const nextTopic =
         font-style: italic;
     }
 
-    .prose-notes :global(code) {
+    .prose-blog :global(code) {
         background: var(--color-surface);
         border: 1px solid var(--border-subtle);
         border-radius: 4px;
@@ -331,7 +301,7 @@ const nextTopic =
         font-family: "Courier New", monospace;
     }
 
-    .prose-notes :global(pre) {
+    .prose-blog :global(pre) {
         background: #1e1e1e;
         color: #e2e0dc;
         padding: 1.25rem;
@@ -340,7 +310,7 @@ const nextTopic =
         margin-bottom: 1.5rem;
     }
 
-    .prose-notes :global(pre code) {
+    .prose-blog :global(pre code) {
         background: none;
         border: none;
         padding: 0;
@@ -348,13 +318,13 @@ const nextTopic =
         font-size: 0.9em;
     }
 
-    .prose-notes :global(hr) {
+    .prose-blog :global(hr) {
         border: none;
         border-top: 1px solid var(--border-subtle);
         margin: 2rem 0;
     }
 
-    .prose-notes :global(img) {
+    .prose-blog :global(img) {
         max-width: 100%;
         border-radius: 8px;
         margin: 1.5rem auto;
@@ -362,20 +332,20 @@ const nextTopic =
         border: 1px solid var(--border-subtle);
     }
 
-    .prose-notes :global(table) {
+    .prose-blog :global(table) {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 1.5rem;
         font-size: 0.9rem;
     }
-    .prose-notes :global(th) {
+    .prose-blog :global(th) {
         background: var(--color-surface);
         border: 1px solid var(--border-subtle);
         padding: 0.5rem 0.75rem;
         text-align: left;
         font-weight: 600;
     }
-    .prose-notes :global(td) {
+    .prose-blog :global(td) {
         border: 1px solid var(--border-subtle);
         padding: 0.5rem 0.75rem;
     }

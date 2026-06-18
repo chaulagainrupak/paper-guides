@@ -16,9 +16,10 @@ export function score(query: string, target: string): number {
   return (2 * intersection) / (qTri.size + tTri.size);
 }
 
-export function fuzzyFilter<T extends { name: string }>(
+export function fuzzyFilter<T extends Record<string, string>>(
   items: T[],
   query: string,
+  key: keyof T = "name" as keyof T,
   {
     initialThreshold = 0.4,
     minThreshold = 0.1,
@@ -27,18 +28,23 @@ export function fuzzyFilter<T extends { name: string }>(
     initialThreshold?: number;
     minThreshold?: number;
     step?: number;
-  } = {}
+  } = {},
 ): T[] {
   if (!query.trim()) return items;
 
+  const getValue = (item: T): string => String(item[key] ?? "");
+
   // Pass 1: exact / substring matches
   const exactMatches = items.filter((item) =>
-    item.name.toLowerCase().includes(query.toLowerCase())
+    getValue(item).toLowerCase().includes(query.toLowerCase()),
   );
   if (exactMatches.length > 0) return exactMatches;
 
   // Pass 2: fuzzy with progressive threshold relaxation
-  const scored = items.map((item) => ({ item, s: score(query, item.name) }));
+  const scored = items.map((item) => ({
+    item,
+    s: score(query, getValue(item)),
+  }));
 
   let threshold = initialThreshold;
   while (threshold >= minThreshold) {

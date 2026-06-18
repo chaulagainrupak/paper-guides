@@ -1,29 +1,48 @@
 ---
-export const prerender = false;
-
+import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { getPaperIndex } from "../../../utils/paperIndex";
 import { slugify } from "../../../utils/slugify";
-import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+    const index = await getPaperIndex();
+
+    // Build the set of topics that have notes from the content collection
+    const allNotes = await getCollection("notes");
+    const noteTopics = new Set<string>(); // "board/subject/topicSlug"
+    for (const note of allNotes) {
+        const { board, subject, topic } = note.data;
+        if (board && subject && topic) {
+            noteTopics.add(`${board}/${subject}/${topic}`);
+        }
+    }
+
+    const paths: any[] = [];
+
+    for (const board in index) {
+        for (const subjectKey in index[board]) {
+            const subject = index[board][subjectKey];
+            const topics = (subject.topics ?? []).map((t: any) => ({
+                name: t.name,
+                slug: t.slug,
+                hasNote: noteTopics.has(`${board}/${subjectKey}/${t.slug}`),
+            }));
+
+            paths.push({
+                params: { board, subject: subjectKey },
+                props: {
+                    subjectName: subject.name ?? subjectKey.replace(/-/g, " "),
+                    topics,
+                },
+            });
+        }
+    }
+
+    return paths;
+}
 
 const { board, subject } = Astro.params;
-
-let topics: { name: string; slug: string }[] = [];
-let globalIndex: any;
-let realSubjectName: string;
-
-try {
-    const index = await getPaperIndex();
-    globalIndex = index;
-    topics = index?.[board!]?.[subject!]?.topics ?? [];
-    topics = topics.sort((a, b) =>
-        a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
-    );
-    realSubjectName =
-        index?.[board!]?.[subject!]?.name ?? subject!.replace(/-/g, " ");
-} catch (err) {
-    console.error("Failed to fetch data:", err);
-    realSubjectName = subject!.replace(/-/g, " ");
-}
+const { subjectName, topics } = Astro.props;
 
 const boardDisplayName =
     board === "a-levels"
@@ -32,39 +51,16 @@ const boardDisplayName =
           ? "Kathmandu University"
           : board;
 
-// export async function getStaticPaths() {
-//     const index = await getPaperIndex();
-//     const paths: any[] = [];
-
-//     for (const board in index) {
-//         for (const subjectKey in index[board]) {
-//             paths.push({
-//                 params: {
-//                     board,
-//                     subject: subjectKey,
-//                 },
-//                 props: {
-//                     topics: index[board][subjectKey].topics ?? [],
-//                     realSubjectName:
-//                         index[board][subjectKey].name ??
-//                         subjectKey.replace(/-/g, " "),
-//                 },
-//             });
-//         }
-//     }
-
-//     return paths;
-// }
+const notesCount = topics.filter((t: any) => t.hasNote).length;
 ---
 
 <BaseLayout
-    title={`Topics for ${realSubjectName} | Paper Guides`}
-    description={`Explore all available study topics for ${realSubjectName}. Access concise revision notes organised by topic.`}
+    title={`${subjectName} Notes | Paper Guides`}
+    description={`Revision notes for ${subjectName} (${boardDisplayName}), organised by topic.`}
 >
     <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col">
-        <!-- Hero Section -->
         <div
-            class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
+            class="bg-[#242424] text-[#f7f7f7] py-12 md:py-14 lg:py-20 md:px-8 lg:px-14 xl:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
         >
             <div class="flex flex-col justify-center">
                 <span
@@ -77,20 +73,14 @@ const boardDisplayName =
                     <a href={`/notes/${board}`}
                         ><i class="ph-fill ph-book"></i> {boardDisplayName}</a
                     > /
-                    <a href={`/notes/${board}/${subject}`}
-                        ><i class="ph-fill ph-books"></i> {realSubjectName}</a
-                    >
+                    <span><i class="ph-fill ph-books"></i> {subjectName}</span>
                 </span>
                 <h1 class="font-serif font-bold text-4xl md:text-6xl">
-                    Topics for <br />
-                    <span class="text-[var(--accent)] italic"
-                        >{realSubjectName}</span
-                    >
+                    {subjectName}<br />
+                    <span class="text-[var(--accent)] italic">Notes</span>
                 </h1>
                 <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
-                    Available topics for {realSubjectName}. <br />
-                    Click on a topic to access the revision notes. <br />
-                    Found {topics.length} topics.
+                    {topics.length} topics · {notesCount} with notes available
                 </p>
             </div>
 
@@ -108,53 +98,71 @@ const boardDisplayName =
             </div>
         </div>
 
-        <!-- Topic list + sidebar -->
         <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
             <div id="topic-list" class="bg-[var(--baby-powder)] flex flex-col">
                 <span
-                    class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]"
+                    class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-8 lg:px-14 xl:px-20 py-3 border-b border-[var(--border-subtle)]"
                 >
-                    Click on a topic to access notes for {realSubjectName}.
+                    {
+                        notesCount > 0
+                            ? `${notesCount} of ${topics.length} topics have notes`
+                            : `Notes coming soon for ${subjectName}`
+                    }
                 </span>
 
                 {
-                    topics.map((topic) => (
-                        <a
-                            data-topic={topic.slug}
-                            href={`/notes/${board}/${subject}/${slugify(topic.slug)}`}
-                            class="group relative border-b border-[var(--border-subtle)] px-5 md:px-20 py-8 text-[var(--font-color)] transition-all duration-300 ease-out
-                   bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
-                   hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
-                   flex items-center justify-between"
-                        >
-                            <div class="flex gap-3">
-                                <span class="font-bold text-xl group-hover:text-[var(--accent)] transition-colors">
-                                    {topic.name}
+                    topics.map((t: any) =>
+                        t.hasNote ? (
+                            <a
+                                data-topic={t.slug}
+                                href={`/notes/${board}/${subject}/${slugify(t.slug)}`}
+                                class="group border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-14 xl:px-20 py-8
+                                                                   bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
+                                   hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1
+                                   flex items-center justify-between transition-all duration-300 ease-out"
+                            >
+                                <div class="flex items-center gap-3">
+                                    <span class="font-bold text-xl group-hover:text-[var(--accent)] transition-colors">
+                                        {t.name}
+                                    </span>
+                                    <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--green-highlight)]/20 text-[var(--green-highlight)] font-semibold">
+                                        Notes
+                                    </span>
+                                </div>
+                                <i class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl shrink-0 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]" />
+                            </a>
+                        ) : (
+                            <div
+                                data-topic={t.slug}
+                                class="border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-14 xl:px-20 py-8 flex items-center justify-between opacity-35"
+                            >
+                                <span class="font-bold text-xl">{t.name}</span>
+                                <span class="text-xs text-[var(--muted)]">
+                                    Coming soon
                                 </span>
                             </div>
+                        ),
+                    )
+                }
 
-                            <div class="flex items-center gap-3 ml-4">
-                                <span class="text-xs font-semibold text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                                    Explore
-                                </span>
-                                <i class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-3xl shrink-0 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]" />
-                            </div>
-                        </a>
-                    ))
+                {
+                    topics.length === 0 && (
+                        <div class="flex flex-col items-center justify-center py-24 gap-4 text-[var(--muted)]">
+                            <i class="ph-fill ph-smiley-x-eyes text-6xl" />
+                            <p class="text-sm">No topics available yet.</p>
+                        </div>
+                    )
                 }
 
                 <div
                     id="no-results"
                     class="hidden flex-col items-center justify-center py-24 gap-4 text-[var(--muted)]"
                 >
-                    <i
-                        class="ph-fill ph-smiley-x-eyes text-6xl text-[var(--jungle-green)]"
-                    ></i>
+                    <i class="ph-fill ph-smiley-x-eyes text-6xl"></i>
                     <p class="text-sm">No topics match your search.</p>
                 </div>
             </div>
 
-            <!-- sticky ad sidebar -->
             <aside
                 class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
             >
@@ -163,7 +171,6 @@ const boardDisplayName =
         </div>
     </div>
 
-    <!-- mobile ad strip -->
     <div
         class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center"
     >
@@ -172,38 +179,33 @@ const boardDisplayName =
 
     <script>
         import { fuzzyFilter } from "../../../utils/search";
-
         const input = document.getElementById(
             "topic-search",
         ) as HTMLInputElement;
         const items = Array.from(
-            document.querySelectorAll("#topic-list a"),
+            document.querySelectorAll("#topic-list [data-topic]"),
         ) as HTMLElement[];
         const data = items.map((el) => ({ topic: el.dataset.topic ?? "" }));
 
         input.addEventListener("input", () => {
-            const q = input.value.trim().toLowerCase();
-
+            const q = input.value.trim();
+            const noResults = document.getElementById("no-results")!;
             if (!q) {
                 items.forEach((el) => (el.style.display = ""));
+                noResults.style.display = "none";
                 return;
             }
-
             // @ts-ignore
-            const results = fuzzyFilter(data, q, "topic");
-            // @ts-ignore
-            const matchedTopics = new Set(results.map((r) => r.topic));
-
-            const list = document.getElementById("topic-list")!;
+            const matched = new Set(
+                fuzzyFilter(data, q, "topic").map((r) => r.topic),
+            );
+            let any = false;
             items.forEach((el) => {
-                const topic = el.dataset.topic ?? "";
-                if (matchedTopics.has(topic)) {
-                    el.style.display = "";
-                    list.appendChild(el);
-                } else {
-                    el.style.display = "none";
-                }
+                const show = matched.has(el.dataset.topic ?? "");
+                el.style.display = show ? "" : "none";
+                if (show) any = true;
             });
+            noResults.style.display = any ? "none" : "flex";
         });
     </script>
 </BaseLayout>

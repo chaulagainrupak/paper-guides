@@ -5,181 +5,187 @@ import ThemeToggle from "./ThemeToggle.astro";
 ---
 
 <nav class="bg-[var(--sidebar-bg)] fixed top-0 w-full z-50 shadow-md h-16 px-6">
-  <div class="flex justify-between items-center px-8 py-4 h-full">
-    <!-- Logo -->
-    <a
-      href="/"
-      class="font-bold text-lg hover:text-[var(--muted)] transition-all duration-300 ease-out"
-    >
-      <span class="flex items-center gap-2">
-        <Image
-          src={logo}
-          alt={"Image of Paper-Guides logo"}
-          width={25}
-          height={25}
-          class={"rounded-md"}
-        />
-        <span>Paper-<span class="text-[var(--blue-highlight)]">Guides</span></span>
-      </span>
-    </a>
-
-    <!-- Desktop Navigation -->
-    <div class="hidden xl:flex items-center gap-8">
-      <div class="flex gap-6 ">
+    <div class="flex justify-between items-center px-8 py-4 h-full">
+        <!-- Logo -->
         <a
-          class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
-          href="/pastpapers"
-          data-umami-event="Navigation Click"
-          data-umami-event-destination="Past Papers"
+            href="/"
+            class="font-bold text-lg hover:text-[var(--muted)] transition-all duration-300 ease-out"
         >
-          Past Papers
+            <span class="flex items-center gap-2">
+                <Image
+                    src={logo}
+                    alt={"Image of Paper-Guides logo"}
+                    width={25}
+                    height={25}
+                    class={"rounded-md"}
+                />
+                <span
+                    >Paper-<span class="text-[var(--blue-highlight)]"
+                        >Guides</span
+                    ></span
+                >
+            </span>
         </a>
-        <a
-          class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
-          href="/notes"
-          data-umami-event="Navigation Click"
-          data-umami-event-destination="Notes"
-        >
-          Notes
-        </a>
-        <a
-          class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
-          href="/generator"
-          data-umami-event="Navigation Click"
-          data-umami-event-destination="Question Generator"
-        >
-          Generator
-        </a>
-        <a
-          class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
-          href="/questions"
-          data-umami-event="Navigation Click"
-          data-umami-event-destination="Questions Repository"
-        >
-          Questions
-        </a>
-      </div>
-      
 
+        <!-- Desktop Navigation -->
+        <div class="hidden xl:flex items-center gap-8">
+            <div class="flex gap-6">
+                <a
+                    class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
+                    href="/pastpapers"
+                    data-umami-event="Navigation Click"
+                    data-umami-event-destination="Past Papers"
+                >
+                    Past Papers
+                </a>
+                <a
+                    class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
+                    href="/notes"
+                    data-umami-event="Navigation Click"
+                    data-umami-event-destination="Notes"
+                >
+                    Notes
+                </a>
+                <a
+                    class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
+                    href="/generator"
+                    data-umami-event="Navigation Click"
+                    data-umami-event-destination="Question Generator"
+                >
+                    Generator
+                </a>
+                <a
+                    class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
+                    href="/questions"
+                    data-umami-event="Navigation Click"
+                    data-umami-event-destination="Questions Repository"
+                >
+                    Questions
+                </a>
 
+                <a
+                    class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
+                    href="/blog"
+                    data-umami-event="Navigation Click"
+                    data-umami-event-destination="Blog"
+                >
+                    Blog
+                </a>
+            </div>
+        </div>
 
-
+        <!-- Mobile Controls -->
+        <div class="flex items-center gap-2">
+            <ThemeToggle />
+            <!-- Mobile Menu Button -->
+            <button
+                id="mobile-menu-btn"
+                aria-label="Toggle menu"
+                class="xl:hidden text-xl text-[var(--color-text)] hover:text-[var(--blue-highlight)] transition-colors duration-300 p-1 rounded-lg hover:bg-[var(--muted)]/10"
+            >
+                <i class="ph-fill ph-hamburger"></i>
+            </button>
+        </div>
     </div>
-
-
-    <!-- Mobile Controls -->
-    <div class=" flex items-center gap-2">
-      <ThemeToggle/>
-      <!-- Mobile Menu Button -->
-      <button
-        id="mobile-menu-btn"
-        aria-label="Toggle menu"
-        class="xl:hidden text-xl text-[var(--color-text)] hover:text-[var(--blue-highlight)] transition-colors duration-300 p-1 rounded-lg hover:bg-[var(--muted)]/10"
-      >
-        <i class="ph-fill ph-hamburger"></i>
-      </button>
-    </div>
-  </div>
 </nav>
 
 <!-- Mobile Sidebar -->
 <div
-  id="mobile-sidebar"
-  class="fixed left-0 top-0 h-screen w-64 bg-[var(--sidebar-bg)] shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out z-40 overflow-y-auto"
+    id="mobile-sidebar"
+    class="fixed left-0 top-0 h-screen w-64 bg-[var(--sidebar-bg)] shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out z-40 overflow-y-auto"
 >
-  <!-- Close Button -->
-  <div class="flex justify-end p-2 border-b border-[var(--muted)]/20">
-    <button
-      id="sidebar-close-btn"
-      aria-label="Close menu"
-      class="text-xl hover:text-[var(--blue-highlight)] transition-colors duration-300 p-1 rounded-lg hover:bg-[var(--muted)]/10"
-    >
-      <i class="ph-fill ph-x"></i>
-    </button>
-  </div>
+    <!-- Close Button -->
+    <div class="flex justify-end p-2 border-b border-[var(--muted)]/20">
+        <button
+            id="sidebar-close-btn"
+            aria-label="Close menu"
+            class="text-xl hover:text-[var(--blue-highlight)] transition-colors duration-300 p-1 rounded-lg hover:bg-[var(--muted)]/10"
+        >
+            <i class="ph-fill ph-x"></i>
+        </button>
+    </div>
 
-  <!-- Mobile Navigation Items -->
-  <div class="flex flex-col gap-1 p-3">
-    <a
-      class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 text-[var(--blue-highlight)] transition-colors duration-300"
-      href="/pastpapers"
-      data-umami-event="Navigation Click"
-      data-umami-event-destination="Past Papers"
-    >
-      Past Papers
-    </a>
-    <a
-      class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 transition-colors duration-300"
-      href="/notes"
-      data-umami-event="Navigation Click"
-      data-umami-event-destination="Notes"
-    >
-      Notes
-    </a>
-    <a
-      class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 transition-colors duration-300"
-      href="/generator"
-      data-umami-event="Navigation Click"
-      data-umami-event-destination="Question Generator"
-    >
-      Generator
-    </a>
-    <a
-      class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 transition-colors duration-300"
-      href="/questions"
-      data-umami-event="Navigation Click"
-      data-umami-event-destination="Questions Repository"
-    >
-      Questions
-    </a>
+    <!-- Mobile Navigation Items -->
+    <div class="flex flex-col gap-1 p-3">
+        <a
+            class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 text-[var(--blue-highlight)] transition-colors duration-300"
+            href="/pastpapers"
+            data-umami-event="Navigation Click"
+            data-umami-event-destination="Past Papers"
+        >
+            Past Papers
+        </a>
+        <a
+            class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 transition-colors duration-300"
+            href="/notes"
+            data-umami-event="Navigation Click"
+            data-umami-event-destination="Notes"
+        >
+            Notes
+        </a>
+        <a
+            class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 transition-colors duration-300"
+            href="/generator"
+            data-umami-event="Navigation Click"
+            data-umami-event-destination="Question Generator"
+        >
+            Generator
+        </a>
+        <a
+            class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 transition-colors duration-300"
+            href="/questions"
+            data-umami-event="Navigation Click"
+            data-umami-event-destination="Questions Repository"
+        >
+            Questions
+        </a>
 
-    <div class="border-t border-[var(--muted)]/20 my-2"></div>
+        <div class="border-t border-[var(--muted)]/20 my-2"></div>
 
-    <div id="nav-login-slot-mobile" class="px-3 py-2"></div>
-  </div>
+        <div id="nav-login-slot-mobile" class="px-3 py-2"></div>
+    </div>
 </div>
 
 <!-- Overlay for Mobile Menu -->
 <div
-  id="mobile-overlay"
-  class="fixed inset-0 bg-black/50 z-30 hidden"
-  data-visible="false"
-></div>
-
+    id="mobile-overlay"
+    class="fixed inset-0 bg-black/50 z-30 hidden"
+    data-visible="false"
+>
+</div>
 
 <script>
-  import { isLoggedIn, logOut } from "../utils/auth";
+    import { isLoggedIn, logOut } from "../utils/auth";
 
-  // Mobile Sidebar Management
-  const mobileMenuBtn = document.getElementById("mobile-menu-btn");
-  const mobileSidebar = document.getElementById("mobile-sidebar");
-  const mobileOverlay = document.getElementById("mobile-overlay");
-  const sidebarCloseBtn = document.getElementById("sidebar-close-btn");
+    // Mobile Sidebar Management
+    const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+    const mobileSidebar = document.getElementById("mobile-sidebar");
+    const mobileOverlay = document.getElementById("mobile-overlay");
+    const sidebarCloseBtn = document.getElementById("sidebar-close-btn");
 
-  function closeSidebar() {
-    mobileSidebar?.classList.add("-translate-x-full");
-    mobileOverlay?.classList.add("hidden");
-  }
-
-  function openSidebar() {
-    mobileSidebar?.classList.remove("-translate-x-full");
-    mobileOverlay?.classList.remove("hidden");
-  }
-
-  mobileMenuBtn?.addEventListener("click", () => {
-    const isOpen = !mobileSidebar?.classList.contains("-translate-x-full");
-    if (isOpen) {
-      closeSidebar();
-    } else {
-      openSidebar();
+    function closeSidebar() {
+        mobileSidebar?.classList.add("-translate-x-full");
+        mobileOverlay?.classList.add("hidden");
     }
-  }); 
 
-  </script>
+    function openSidebar() {
+        mobileSidebar?.classList.remove("-translate-x-full");
+        mobileOverlay?.classList.remove("hidden");
+    }
 
-  <!-- sidebarCloseBtn?.addEventListener("click", closeSidebar);
+    mobileMenuBtn?.addEventListener("click", () => {
+        const isOpen = !mobileSidebar?.classList.contains("-translate-x-full");
+        if (isOpen) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+</script>
+
+<!-- sidebarCloseBtn?.addEventListener("click", closeSidebar);
   mobileOverlay?.addEventListener("click", closeSidebar); -->
-<!-- 
+<!--
   // Close sidebar on nav item click
   const navLinks = document.querySelectorAll("#mobile-sidebar a");
   navLinks.forEach((link) => {

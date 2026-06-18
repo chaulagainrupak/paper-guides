@@ -202,19 +202,27 @@ export async function getStaticPaths() {
 
         input.addEventListener("input", () => {
             const q = input.value.trim();
+            const noResults = document.getElementById("no-results")!;
             if (!q) {
                 items.forEach((el) => (el.style.display = ""));
+                noResults.style.display = "none";
                 return;
             }
 
             const results = fuzzyFilter(data, q);
             const matchedNames = new Set(results.map((r) => r.name));
             const list = document.getElementById("subject-list")!;
+            let any = false;
             items.forEach((el) => {
                 const name = el.dataset.name ?? "";
-                el.style.display = matchedNames.has(name) ? "" : "none";
-                if (matchedNames.has(name)) list.appendChild(el);
+                const show = matchedNames.has(name);
+                el.style.display = show ? "" : "none";
+                if (show) {
+                    list.appendChild(el);
+                    any = true;
+                }
             });
+            noResults.style.display = any ? "none" : "flex";
         });
     </script>
 </BaseLayout>

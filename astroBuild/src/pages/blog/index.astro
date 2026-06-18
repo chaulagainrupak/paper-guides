@@ -1,0 +1,131 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const allPosts = (await getCollection("blog", ({ data }) => {
+  return import.meta.env.PROD ? data.draft !== true : true;
+})).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// Group posts by year for archive-style listing
+const byYear = allPosts.reduce<Record<number, typeof allPosts>>((acc, post) => {
+  const year = post.data.date.getFullYear();
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {});
+
+const years = Object.keys(byYear).map(Number).sort((a, b) => b - a);
+---
+
+<BaseLayout
+  title="Blog — Paper Guides"
+  description="Updates, essays, and notes from the Paper Guides team."
+>
+  <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col">
+    <!-- Hero -->
+    <div class="bg-[#242424] text-[#f7f7f7] py-12 md:py-14 lg:py-20 md:px-8 lg:px-14 xl:px-20 px-5">
+      <span class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1">
+        <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
+        <span><i class="ph-fill ph-pen-nib"></i> Blog</span>
+      </span>
+      <h1 class="font-serif font-bold text-4xl md:text-6xl">
+        The <br />
+        <span class="text-[var(--accent)] italic">Blog</span>
+      </h1>
+      <p class="mt-4 text-xs md:text-sm text-[var(--muted)] max-w-md">
+        Updates, essays, and notes from the team. {allPosts.length} posts and counting.
+      </p>
+    </div>
+
+    <!-- Archive listing -->
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
+      <div class="bg-[var(--baby-powder)] flex flex-col">
+        <span class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-8 lg:px-14 xl:px-20 py-3 border-b border-[var(--border-subtle)]">
+          All posts, newest first
+        </span>
+
+        {years.map((year) => (
+          <div>
+            <!-- Year divider -->
+            <div class="px-5 md:px-8 lg:px-14 xl:px-20 py-4 border-b border-[var(--border-subtle)] bg-[var(--color-surface)]">
+              <span class="font-serif text-2xl font-bold text-[var(--accent)]">{year}</span>
+            </div>
+
+            {byYear[year].map((post) => {
+              const d = post.data.date;
+              const dateStr = d.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              });
+              return (
+                <a
+                  href={`/blog/${post.id}`}
+                  class="group border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-14 xl:px-20 py-6
+                         bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(201,79,30,0.04)]
+                         flex items-start justify-between gap-4
+                         transition-all duration-300 ease-out hover:shadow-md hover:-translate-y-[2px]"
+                >
+                  <div class="flex flex-col gap-1 min-w-0">
+                    <span class="font-bold text-lg group-hover:text-[var(--accent)] transition-colors leading-snug">
+                      {post.data.title}
+                    </span>
+                    {post.data.description && (
+                      <span class="text-sm text-[var(--muted)] line-clamp-1">
+                        {post.data.description}
+                      </span>
+                    )}
+                    {post.data.tags.length > 0 && (
+                      <div class="flex gap-1 flex-wrap mt-1">
+                        {post.data.tags.map((tag) => (
+                          <span class="text-xs px-2 py-0.5 bg-[var(--accent)]/15 text-[var(--accent)] rounded-full">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div class="flex items-center gap-3 shrink-0 mt-1">
+                    <span class="text-xs text-[var(--muted)] font-mono tabular-nums whitespace-nowrap">
+                      {dateStr}
+                    </span>
+                    <i class="ph-fill ph-arrow-right text-[var(--muted)] text-xl transition-all duration-300 group-hover:translate-x-1 group-hover:text-[var(--accent)]" />
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        ))}
+
+        {allPosts.length === 0 && (
+          <div class="flex flex-col items-center justify-center py-24 gap-4 text-[var(--muted)]">
+            <i class="ph-fill ph-pen-nib text-6xl"></i>
+            <p class="text-sm">No posts yet. Check back soon.</p>
+          </div>
+        )}
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="hidden md:flex flex-col gap-6 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6">
+        <div class="border-b border-[var(--border-subtle)] pb-4">
+          <p class="text-xs text-[var(--muted)] uppercase tracking-widest mb-3">All tags</p>
+          <div class="flex flex-wrap gap-2">
+            {[...new Set(allPosts.flatMap((p) => p.data.tags))].map((tag) => (
+              <span class="text-xs px-2 py-1 bg-[var(--accent)]/15 text-[var(--accent)] rounded-full">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div class="text-sm text-[var(--muted)] text-center mt-auto">
+          Sponsor Space
+        </div>
+      </aside>
+    </div>
+
+    <!-- Mobile ad -->
+    <div class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center">
+      <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+    </div>
+  </div>
+</BaseLayout>

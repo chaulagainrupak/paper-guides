@@ -82,7 +82,7 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
   </script>
 
   <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col">
-    <div class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <div class="bg-[#242424] text-[#f7f7f7] py-12 md:py-14 lg:py-20 md:px-8 lg:px-14 xl:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
       <div class="flex flex-col justify-center">
         <nav aria-label="Breadcrumb" class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1 flex-wrap">
           <a href="/" class="hover:underline">Home</a> /
@@ -115,7 +115,7 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
 
     <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
       <div id="topic-list" class="bg-[var(--baby-powder)] flex flex-col">
-        <h2 class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]">
+        <h2 class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-8 lg:px-14 xl:px-20 py-3 border-b border-[var(--border-subtle)]">
           Click on a topic to practise questions for {realSubjectName}
         </h2>
 
@@ -129,7 +129,7 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
             <a
               data-name={topic.name.toLowerCase()}
               href={`/questions/${board}/${subject}/${slugify(topic.slug)}`}
-              class="group relative border-b border-[var(--border-subtle)] px-5 md:px-20 py-8 text-[var(--font-color)] transition-all duration-300 ease-out
+              class="group relative border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-14 xl:px-20 py-8 text-[var(--font-color)] transition-all duration-300 ease-out
                      bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
                      hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
                      flex items-center justify-between"
@@ -169,21 +169,28 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
     const items = Array.from(document.querySelectorAll("#topic-list a")) as HTMLElement[];
     const data = items.map((el) => ({ name: el.dataset.name ?? "" }));
 
+    const noResults = document.getElementById("no-results");
+
     input.addEventListener("input", () => {
       const q = input.value.trim().toLowerCase();
 
       if (!q) {
         items.forEach((el) => (el.style.display = ""));
+        if (noResults) noResults.style.display = "none";
         return;
       }
 
       const results = fuzzyFilter(data, q);
       const matchedNames = new Set(results.map((r) => r.name));
 
+      let any = false;
       items.forEach((el) => {
         const name = el.dataset.name ?? "";
-        el.style.display = matchedNames.has(name) ? "" : "none";
+        const show = matchedNames.has(name);
+        el.style.display = show ? "" : "none";
+        if (show) any = true;
       });
+      if (noResults) noResults.style.display = any ? "none" : "flex";
     });
   </script>
 </BaseLayout>
