@@ -1,20 +1,20 @@
 ---
 
-export const prerender = false;
+// export const prerender = false;
 
 
-// export async function getStaticPaths() {
-//   const index = await getPaperIndex();
-//   const paths: { params: { board: string } }[] = [];
+export async function getStaticPaths() {
+  const index = await getPaperIndex();
+  const paths: { params: { board: string } }[] = [];
 
-//   for (const boardKey in index) {
-//     paths.push({
-//       params: { board: boardKey },
-//     });
-//   }
+  for (const boardKey in index) {
+    paths.push({
+      params: { board: boardKey },
+    });
+  }
 
-//   return paths;
-// }
+  return paths;
+}
 
 
 import { getPaperIndex } from "../../utils/paperIndex";

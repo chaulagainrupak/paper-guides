@@ -19,4 +19,4 @@ User-agent: meta-externalagent
 Disallow: /
 
 
-Sitemap: https://paperguides.org/sitemap.xml
+Sitemap: https://paperguides.org/sitemap-index.xml

@@ -1,40 +1,33 @@
-from fastapi import (
-    FastAPI,
-    Form,
-    HTTPException,
-    Depends,
-    Request,
-    Form,
-    File,
-    UploadFile,
-)
-
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, Response, PlainTextResponse
-
-from jose import jwt
-from datetime import datetime, timedelta
+import base64
+import json
+import os
+import re
 import sqlite3
-import bcrypt
-from werkzeug.security import check_password_hash, generate_password_hash
+import time
+from datetime import datetime, timedelta
 
+import bcrypt
+from adminUtils import adminRouter
 from config import loadConfig
 from databaseHandler import *
-from turnstileVerify import verifyTurnstileToken
-import base64
-import time
-
-import json
-
-from picPatcher import process_images
-from objectiveQuestionsHandler import generateMcqTest, insertMcqQuestion
-
-from adminUtils import adminRouter
-
-import os
 from dotenv import load_dotenv
-
-import re
+from fastapi import (
+    Depends,
+    FastAPI,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    UploadFile,
+)
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, Response
+from fastapi.staticfiles import StaticFiles
+from jose import jwt
+from objectiveQuestionsHandler import generateMcqTest, insertMcqQuestion
+from picPatcher import process_images
+from turnstileVerify import verifyTurnstileToken
+from werkzeug.security import check_password_hash, generate_password_hash
 
 load_dotenv(".env")
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -52,6 +45,16 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 DATABASE_PATH = "instance/paper-guides.db"
 
 app = FastAPI()
+
+PAPERS_DIR = os.getenv("PAPERS_DIR", "./instance/data/papers")
+NOTES_DIR = os.getenv("NOTES_DIR", "./instance/data/notes")
+
+os.makedirs(PAPERS_DIR, exist_ok=True)
+os.makedirs(NOTES_DIR, exist_ok=True)
+
+app.mount("/papers", StaticFiles(directory=PAPERS_DIR), name="papers")
+app.mount("/notes", StaticFiles(directory=NOTES_DIR), name="notes")
+
 app.include_router(adminRouter, prefix="/admin")
 # rate limiting the generation of mcqs and papers
 
@@ -229,7 +232,6 @@ async def geatTopicsForSubject(subjectName: str):
 async def getPapers(year: str, subjectName: str, board: str | None):
 
     try:
-
         # The function is to be updated to take in board too as this is a half assed soltion
 
         if board.lower() == "ku":
@@ -318,6 +320,7 @@ async def getData(
 def getQuestionForClient(uuid):
     content = getQuestion(uuid)
     return content
+
 
 @app.get("/getNote/{subject}/{topic}")
 def getNoteForClient(subject, topic):
@@ -548,7 +551,7 @@ async def getQuestions(request: Request):
         conn = getDbConnection()
         cur = conn.cursor()
 
-        #  Turned off auth checking 
+        #  Turned off auth checking
         # authHeader = request.headers.get("authorization")
 
         # if not authHeader or not authHeader.startswith("Bearer "):
@@ -698,6 +701,7 @@ async def getQuestionsForMcqs(request: Request):
 
 #     return FileResponse(SITEMAP_PATH, media_type="application/json")
 
+
 @app.get("/sitemaps/{file}")
 async def get_sitemap_chunk(file: str):
     path = os.path.join(SITEMAP_DIR, file)
@@ -706,6 +710,7 @@ async def get_sitemap_chunk(file: str):
         return JSONResponse({"error": "not found"}, status_code=404)
 
     return FileResponse(path, media_type="application/json")
+
 
 @app.get("/paper-paths")
 async def paper_paths():
@@ -717,11 +722,14 @@ async def paper_paths():
 
     return data
 
+
 @app.get("/robots.txt", response_class=PlainTextResponse)
 async def return_robots():
     return """User-agent: *
 Disallow: /
 """
+
+
 def getClientIp(request):
     # Try to get the IP from the 'X-Forwarded-For' header (Cloudflare/proxy header)
     return request.headers.get("X-Forwarded-For", request.remote_addr)

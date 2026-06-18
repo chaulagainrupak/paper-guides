@@ -1,330 +1,370 @@
 ---
-export const prerender = false;
+export async function getStaticPaths() {
+    const index = await getPaperIndex();
+    const paths: {
+        params: {
+            board: string;
+            subject: string;
+            year: string;
+            question: string;
+        };
+        props: { qpPath: string; msPath: string };
+    }[] = [];
+
+    for (const board of Object.keys(index)) {
+        for (const subject of Object.keys(index[board])) {
+            const years = index[board][subject].years ?? {};
+            for (const year of Object.keys(years)) {
+                for (const paper of years[year]) {
+                    const slug = typeof paper === "string" ? paper : paper.slug;
+                    const qpPath =
+                        typeof paper === "string" ? "" : (paper.qp_path ?? "");
+                    const msPath =
+                        typeof paper === "string" ? "" : (paper.ms_path ?? "");
+                    paths.push({
+                        params: { board, subject, year, question: slug },
+                        props: { qpPath, msPath },
+                    });
+                }
+            }
+        }
+    }
+
+    return paths;
+}
 
 import BaseLayout from "../../../../../layouts/BaseLayout.astro";
-import PaperViewerClient from "../../../../../components/PaperViewerClient";
 import { getPaperIndex } from "../../../../../utils/paperIndex";
+import { API_URL } from "../../../../../utils/config";
 
-interface Params {
-  board: string;
-  subject: string;
-  year: string;
-  question: string;
-}
-const { board, subject, year, question } = Astro.params as unknown as Params;
+const { board, subject, year, question } = Astro.params;
+const { qpPath, msPath } = Astro.props;
 
 const index = await getPaperIndex();
-
-// export async function getStaticPaths() {
-//     const index = await getPaperIndex();
-
-//     const paths: {
-//         params: {
-//             board: string;
-//             subject: string;
-//             year: string;
-//             question: string;
-//         };
-//     }[] = [];
-
-//     for (const board of Object.keys(index)) {
-//         const subjects = index[board];
-//         for (const subject of Object.keys(subjects)) {
-//             const subjectData = subjects[subject];
-//             const years = subjectData.years ?? {};
-//             for (const year of Object.keys(years)) {
-//                 const questions = years[year];
-//                 for (const question of questions) {
-//                     paths.push({ params: { board, subject, year, question } });
-//                 }
-//             }
-//         }
-//     }
-
-//     return paths;
-// }
 const subjectData = index?.[board]?.[subject];
-
 const realSubjectName = subjectData?.name ?? subject.replace(/-/g, " ");
 
-const boardNameMap = {
-  "a-levels": "A Levels",
-  "kathmandu-university": "Kathmandu University",
-};
+const boardDisplayName =
+    board === "a-levels"
+        ? "A Levels"
+        : board === "kathmandu-university"
+          ? "Kathmandu University"
+          : board;
 
-const boardParamMap = {
-  "a-levels": "a levels",
-  "kathmandu-university": "ku",
-};
-
-// @ts-ignore
-const apiBoardName = boardNameMap[board] ?? board;
-// @ts-ignore
-const boardParam = boardParamMap[board] ?? board;
-
-/* parse slug */
-
-let component = "";
-let session = "";
-let type = "";
-let insert = false;
-let semester = "";
-
-if (boardParam === "ku") {
-  const semesterMatch = question.match(/semester-\d+/i);
-  semester = semesterMatch ? semesterMatch[0].replace("-", " ") : "";
-} else {
-  insert = question.includes("insert-paper");
-
-  const clean = question.replace("-insert-paper", "");
-
-  type = clean.includes("mark-scheme") ? "ms" : "qp";
-
-  const parts = clean.split("-");
-
-  component = parts[parts.length - 4];
-  session = `${parts[parts.length - 2]}-${parts[parts.length - 1]}`;
-}
+const apiBoardName =
+    board === "a-levels"
+        ? "A Levels"
+        : board === "kathmandu-university"
+          ? "Kathmandu University"
+          : board;
 
 const paperName = question.replace(/-/g, " ");
 
-const boardDisplayName =
-  board === "a-levels"
-    ? "A Levels"
-    : board === "kathmandu-university"
-      ? "Kathmandu University"
-      : board;
+const qpUrl = qpPath ? `${API_URL}/papers/${qpPath}` : null;
+const msUrl = msPath ? `${API_URL}/papers/${msPath}` : null;
+
+const hasQP = !!qpUrl;
+const hasMS = !!msUrl;
 ---
 
 <BaseLayout
-  title={`${realSubjectName} ${year} ${paperName} Past Paper (${boardDisplayName}) | QP & MS`}
-  description={`Download the official ${realSubjectName} ${year} ${paperName} past paper for ${apiBoardName}. Includes question papers (QP) and mark schemes (MS) to help students practise real exam questions and improve revision and exam performance.`}
+    title={`${realSubjectName} ${year} ${paperName} Past Paper (${boardDisplayName}) | QP & MS`}
+    description={`Download the official ${realSubjectName} ${year} ${paperName} past paper for ${apiBoardName}. Includes question papers (QP) and mark schemes (MS) to help students practise real exam questions and improve revision and exam performance.`}
 >
-  <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col">
-    <div class="bg-[#242424] text-[#f7f7f7]">
-      <div
-        class="py-8 md:py-12 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
-      >
-        <div class="flex flex-col justify-center">
-          <div class="w-full">
-            <span
-              class="text-[var(--muted)] text-xs flex items-center gap-1 flex-wrap"
+    <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col">
+        <div class="bg-[#242424] text-[#f7f7f7]">
+            <div
+                class="py-8 md:py-12 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
             >
-              <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
-              <a href="/pastpapers"
-                ><i class="ph-fill ph-exam"></i> Past Papers</a
-              > /
-              <a href={`/subjects/${board}`}
-                ><i class="ph-fill ph-book"></i>
-                {boardDisplayName}</a
-              > /
-              <a href={`/subjects/${board}/${subject}`}
-                ><i class="ph-fill ph-books"></i>
-                {realSubjectName}</a
-              > /
-              <a href={`/subjects/${board}/${subject}/${year}`}
-                ><i class="ph-fill ph-file"></i> {year}</a
-              > /
-              <span
-                ><i class="ph-fill ph-file-text"></i>
-                {paperName}</span
-              >
-            </span>
-          </div>
-
-          <h1 class="font-serif font-bold text-2xl md:text-4xl">
-  {realSubjectName} {year} <br />
-  <span class="text-[var(--accent)] italic">
-    {paperName} Past Paper ({boardDisplayName})
-  </span>
-</h1>
-          <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
-            Download the official {realSubjectName} {year} {paperName} 
-past paper for the {apiBoardName} examination board. 
-This paper includes authentic exam questions used in previous 
-examination sessions and is designed to help students practise 
-real exam-style questions and improve revision efficiency.
-          </p>
-          <p class="text-sm opacity-80 mt-2">
-  View or download this past paper as a PDF for offline revision.
-</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- content + sidebar side by side -->
-    <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
-      <!-- content -->
-      <div class="bg-[var(--baby-powder)] px-5 md:px-20 py-8">
-        <!-- Viewer -->
-        <!-- @ts-ignore -->
-        <PaperViewerClient
-          client:only="react"
-          name={paperName}
-          board={boardParam}
-          subject={realSubjectName}
-          year={year}
-          component={component}
-          session={session}
-          type={type}
-          insert={insert}
-          semester={semester}
-        />
-
-        <!-- Related papers -->
-        <section class="mt-12">
-          <h2 class="font-semibold text-[var(--blue-highlight)]">
-            More {realSubjectName} {year} Past Papers ({boardDisplayName})
-          </h2>
-
-          <p class="text-sm opacity-80">
-            Explore more past exam papers from the same subject and year to
-            strengthen your preparation and practice additional exam questions.
-          </p>
-
-          <ul class="list-disc pl-5 space-y-2 text-sm">
-            {
-              subjectData?.years?.[year]
-                ?.filter((q: any) => q !== question)
-                .slice(0, 10)
-                .map((q: string) => (
-                  <li>
-                    <a
-                      href={`/subjects/${board}/${subject}/${year}/${q}`}
-                      class="hover:underline"
+                <div class="flex flex-col justify-center">
+                    <span
+                        class="text-[var(--muted)] text-xs flex items-center gap-1 flex-wrap mb-4"
                     >
-                      {q.replace(/-/g, " ")}
-                    </a>
-                  </li>
-                ))
-            }
-          </ul>
-        </section>
+                        <a href="/"><i class="ph-fill ph-house"></i> Home</a> /
+                        <a href="/pastpapers"
+                            ><i class="ph-fill ph-exam"></i> Past Papers</a
+                        > /
+                        <a href={`/subjects/${board}`}
+                            ><i class="ph-fill ph-book"></i> {boardDisplayName}</a
+                        > /
+                        <a href={`/subjects/${board}/${subject}`}
+                            ><i class="ph-fill ph-books"></i> {realSubjectName}</a
+                        > /
+                        <a href={`/subjects/${board}/${subject}/${year}`}
+                            ><i class="ph-fill ph-file"></i> {year}</a
+                        > /
+                        <span
+                            ><i class="ph-fill ph-file-text"></i> {paperName}</span
+                        >
+                    </span>
 
-        <!-- Navigation links -->
-        <section class="text-sm mt-4">
-          <h2 class="font-semibold text-[var(--blue-highlight)]">
-            Browse More Past Papers
-          </h2>
+                    <h1 class="font-serif font-bold text-2xl md:text-4xl">
+                        {realSubjectName}
+                        {year}
+                        <br />
+                        <span class="text-[var(--accent)] italic">
+                            {paperName} Past Paper ({boardDisplayName})
+                        </span>
+                    </h1>
+                    <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
+                        Download the official {realSubjectName}
+                        {year}
+                        {paperName} past paper for the {apiBoardName} examination
+                        board. Includes authentic exam questions from previous sessions
+                        to support structured revision and exam preparation.
+                    </p>
+                </div>
+            </div>
+        </div>
 
-          <div class="flex flex-wrap gap-4">
-            <a href={`/subjects/${board}/${subject}`} class="hover:underline">
-              All {realSubjectName} Papers
-            </a>
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
+            <div class="bg-[var(--baby-powder)] px-5 md:px-20 py-8">
 
-            <a href={`/subjects/${board}`} class="hover:underline">
-              All {apiBoardName} Subjects
-            </a>
+                {
+                    !hasQP && !hasMS ? (
+                        <div class="flex items-center justify-center h-64 opacity-50">
+                            Paper not available
+                        </div>
+                    ) : (
+                        <div>
+                            <!-- Controls bar -->
+                            <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                                <!-- Toggle QP / MS -->
+                                <div class="flex gap-2">
+                                    {hasQP && (
+                                        <button
+                                            id="btn-qp"
+                                            class="text-sm font-bold px-4 py-2 rounded-lg transition flex items-center gap-2 bg-[var(--blue-highlight)] text-white"
+                                        >
+                                            <i class="ph ph-file-text" /> Question Paper
+                                        </button>
+                                    )}
+                                    {hasMS && (
+                                        <button
+                                            id="btn-ms"
+                                            class="text-sm font-bold px-4 py-2 rounded-lg transition flex items-center gap-2 bg-[var(--color-surface)] text-[var(--muted)] border border-[var(--border-subtle)]"
+                                        >
+                                            <i class="ph ph-check-circle" /> Mark Scheme
+                                        </button>
+                                    )}
+                                </div>
 
-            <a href="/pastpapers" class="hover:underline">
-              Browse All Past Papers
-            </a>
-          </div>
-        </section>
+                                <!-- Open / Download -->
+                                <div class="flex gap-2">
+                                    <a
+                                        id="btn-open"
+                                        href={qpUrl ?? msUrl ?? "#"}
+                                        target="_blank"
+                                        class="text-sm font-bold px-4 py-2 rounded-lg hover:opacity-80 transition flex items-center gap-2 bg-[var(--blue-highlight)] text-white"
+                                    >
+                                        <i class="ph ph-arrow-square-out" /> Open Full-Screen
+                                    </a>
+                                    <a
+                                        id="btn-download"
+                                        href={qpUrl ?? msUrl ?? "#"}
+                                        download
+                                        class="text-sm font-bold px-4 py-2 rounded-lg hover:opacity-80 transition flex items-center gap-2 bg-[var(--green-highlight)] text-white"
+                                    >
+                                        <i class="ph ph-download" /> Download
+                                    </a>
+                                </div>
+                            </div>
 
-        <!-- SEO content -->
-        <section class="mt-4 text-sm leading-relaxed space-y-4 opacity-80">
-          <h2 class="font-semibold text-[var(--blue-highlight)]">
-            {realSubjectName} {year} Past Paper – {apiBoardName}
-          </h2>
+                            <!-- Label above viewer -->
+                            <p id="viewer-label" class="text-xs uppercase tracking-widest text-[var(--muted)] font-semibold mb-3">
+                                Question Paper
+                            </p>
 
-          <p>
-            This page provides the official <strong>{paperName}</strong> examination
-            paper for <strong>{realSubjectName}</strong> under the <strong
-              >{apiBoardName}</strong
+                            <!-- PDF viewer -->
+                            <object
+                                id="pdf-viewer"
+                                data={qpUrl ?? msUrl ?? ""}
+                                type="application/pdf"
+                                class="w-full h-screen border rounded shadow"
+                            >
+                                <p class="text-center mt-8 opacity-60">
+                                    Your browser can't display PDFs inline.
+                                    <a
+                                        id="fallback-download"
+                                        href={qpUrl ?? msUrl ?? "#"}
+                                        download
+                                        class="text-[var(--accent)] hover:underline ml-1"
+                                    >
+                                        Download instead
+                                    </a>
+                                </p>
+                            </object>
+                        </div>
+                    )
+                }
+
+                <!-- Related papers -->
+                <section class="mt-12">
+                    <h2 class="font-semibold text-[var(--blue-highlight)]">
+                        More {realSubjectName}
+                        {year} Past Papers ({boardDisplayName})
+                    </h2>
+                    <p class="text-sm opacity-80 mb-3">
+                        Explore more past exam papers from the same subject and
+                        year to strengthen your preparation.
+                    </p>
+                    <ul class="list-disc pl-5 space-y-2 text-sm">
+                        {
+                            subjectData?.years?.[year]
+                                ?.filter((p: any) => {
+                                    const s =
+                                        typeof p === "string" ? p : p.slug;
+                                    return s !== question;
+                                })
+                                .slice(0, 10)
+                                .map((p: any) => {
+                                    const s =
+                                        typeof p === "string" ? p : p.slug;
+                                    return (
+                                        <li>
+                                            <a
+                                                href={`/subjects/${board}/${subject}/${year}/${s}`}
+                                                class="hover:underline"
+                                            >
+                                                {s.replace(/-/g, " ")}
+                                            </a>
+                                        </li>
+                                    );
+                                })
+                        }
+                    </ul>
+                </section>
+
+                <!-- Navigation links -->
+                <section class="text-sm mt-4">
+                    <h2 class="font-semibold text-[var(--blue-highlight)]">
+                        Browse More Past Papers
+                    </h2>
+                    <div class="flex flex-wrap gap-4">
+                        <a
+                            href={`/subjects/${board}/${subject}`}
+                            class="hover:underline"
+                        >
+                            All {realSubjectName} Papers
+                        </a>
+                        <a href={`/subjects/${board}`} class="hover:underline">
+                            All {apiBoardName} Subjects
+                        </a>
+                        <a href="/pastpapers" class="hover:underline">
+                            Browse All Past Papers
+                        </a>
+                    </div>
+                </section>
+
+                <!-- SEO content -->
+                <section class="mt-4 text-sm leading-relaxed space-y-4 opacity-80">
+                    <h2 class="font-semibold text-[var(--blue-highlight)]">
+                        {realSubjectName}
+                        {year} Past Paper – {apiBoardName}
+                    </h2>
+                    <p>
+                        This page provides the official <strong>{paperName}</strong>
+                        examination paper for <strong>{realSubjectName}</strong> under
+                        the <strong>{apiBoardName}</strong> examination board. Students
+                        can view and download the full exam paper directly in the browser.
+                    </p>
+                    <p>
+                        Past papers are one of the most effective study tools for exam
+                        preparation. By practising previous papers, students become
+                        familiar with the exam structure, marking style, and question
+                        difficulty.
+                    </p>
+                    <p>
+                        <i class="ph-fill ph-question mr-1"></i> Want to practise{" "}
+                        <strong>{realSubjectName}</strong> questions by topic?
+                        <a
+                            href={`/questions/${board}/${subject}`}
+                            class="text-[var(--accent)] hover:underline"
+                        >
+                            Browse {realSubjectName} questions →
+                        </a>
+                    </p>
+                    <p>
+                        <i class="ph-fill ph-notebook mr-1"></i> Looking for{" "}
+                        <strong>{realSubjectName}</strong> revision notes?
+                        <a
+                            href={`/notes/${board}/${subject}`}
+                            class="text-[var(--accent)] hover:underline"
+                        >
+                            Browse {realSubjectName} notes →
+                        </a>
+                    </p>
+                </section>
+            </div>
+
+            <aside
+                class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
             >
-            examination board. Students can view and download the full exam paper
-            directly in the browser using the built-in paper viewer.
-          </p>
-
-          <p>
-            Past papers are one of the most effective study tools for exam
-            preparation. By practicing previous examination papers, students
-            become familiar with the exam structure, marking style, and question
-            difficulty. Regular practice also improves time management and exam
-            confidence.
-          </p>
-
-          <p>
-            The <strong>{paperName}</strong> paper belongs to the <strong
-              >{year}</strong
-            >
-            examination series for <strong>{realSubjectName}</strong>. Students
-            preparing for exams often practice multiple years of past papers to
-            understand trends in questions and commonly tested topics.
-          </p>
-
-          <p>
-            You can explore more <strong>{realSubjectName} past papers</strong>,
-            different examination sessions, and other subjects from the
-            <strong>{apiBoardName}</strong> board using the navigation links above.
-            Paper-Guides hosts a large archive of past exam papers to help students
-            revise effectively and prepare for upcoming examinations.
-          </p>
-
-          <p>
-            <i class="ph-fill ph-question mr-1"></i> Want to practise
-            <strong>{realSubjectName}</strong> questions by topic? Work through past-paper
-            questions filtered by topic at your own pace.
-            <a
-              href={`/questions/${board}/${subject}`}
-              class="text-[var(--accent)] hover:underline"
-              >Browse {realSubjectName} questions →</a
-            >
-          </p>
-
-          <p>
-            <i class="ph-fill ph-notebook mr-1"></i> Looking for <strong
-              >{realSubjectName}</strong
-            > revision notes? Concise, student-made notes to go alongside your past
-            paper practice.
-            <a
-              href={`/notes/${board}/${subject}`}
-              class="text-[var(--accent)] hover:underline"
-              >Browse {realSubjectName} notes →</a
-            >
-          </p>
-        </section>
-      </div>
-
-      <!-- ad sidebar: sticky on desktop -->
-      <aside
-        class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
-      >
-        <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
-      </aside>
+                <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+            </aside>
+        </div>
     </div>
-  </div>
 
+    <section class="sr-only">
+        <h2>
+            {realSubjectName}
+            {year}
+            {paperName} Past Paper
+        </h2>
+        <p>
+            This page hosts the official {realSubjectName}
+            {year}
+            {paperName} past examination paper under the {apiBoardName} curriculum.
+            Students can view and download the complete exam paper and mark scheme
+            to support structured revision and exam preparation.
+        </p>
+    </section>
 
-  <section class="sr-only">
-  <h2>
-    {realSubjectName} {year} {paperName} Past Paper
-  </h2>
+    <div
+        class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center"
+    >
+        <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+    </div>
 
-  <p>
-    This page hosts the official {realSubjectName} 
-    {year} {paperName} past examination paper under 
-    the {apiBoardName} curriculum. Students can view 
-    and download the complete exam paper and mark 
-    scheme to support structured revision and exam 
-    preparation.
-  </p>
+    <script define:vars={{ qpUrl, msUrl, hasQP, hasMS }}>
+        const viewer = document.getElementById("pdf-viewer");
+        const label = document.getElementById("viewer-label");
+        const btnOpen = document.getElementById("btn-open");
+        const btnDownload = document.getElementById("btn-download");
+        const fallback = document.getElementById("fallback-download");
+        const btnQP = document.getElementById("btn-qp");
+        const btnMS = document.getElementById("btn-ms");
 
-  <p>
-    Practising past papers improves familiarity with 
-    exam formats, question patterns, and marking 
-    expectations. Students preparing for upcoming 
-    examinations often practise multiple sessions 
-    and components to build confidence and improve 
-    performance.
-  </p>
-</section>
+        const ACTIVE =
+            "bg-[var(--blue-highlight)] text-white";
+        const INACTIVE =
+            "bg-[var(--color-surface)] text-[var(--muted)] border border-[var(--border-subtle)]";
 
-  <!-- mobile ad strip -->
-  <div
-    class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center"
-  >
-    <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
-  </div>
+        let current = hasQP ? "qp" : "ms";
+
+        function switchTo(mode) {
+            current = mode;
+            const url = mode === "qp" ? qpUrl : msUrl;
+
+            if (viewer) viewer.setAttribute("data", url);
+            if (label) label.textContent = mode === "qp" ? "Question Paper" : "Mark Scheme";
+            if (btnOpen) btnOpen.setAttribute("href", url);
+            if (btnDownload) btnDownload.setAttribute("href", url);
+            if (fallback) fallback.setAttribute("href", url);
+
+            if (btnQP) {
+                btnQP.className = btnQP.className
+                    .replace(ACTIVE, "").replace(INACTIVE, "").trim();
+                btnQP.className += " " + (mode === "qp" ? ACTIVE : INACTIVE);
+            }
+            if (btnMS) {
+                btnMS.className = btnMS.className
+                    .replace(ACTIVE, "").replace(INACTIVE, "").trim();
+                btnMS.className += " " + (mode === "ms" ? ACTIVE : INACTIVE);
+            }
+        }
+
+        if (btnQP) btnQP.addEventListener("click", () => switchTo("qp"));
+        if (btnMS) btnMS.addEventListener("click", () => switchTo("ms"));
+    </script>
 </BaseLayout>

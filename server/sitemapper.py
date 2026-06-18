@@ -1,45 +1,122 @@
-import sqlite3
 import json
 import os
 import re
-import requests
-from datetime import datetime
+import sqlite3
+from pathlib import Path
 
 BASE_DIR = os.path.dirname(__file__)
 DB_PAPER = os.path.join(BASE_DIR, "instance", "paper-guides-papers.db")
 DB_NOTES = os.path.join(BASE_DIR, "instance", "paper-guides-notes.db")
 DB_QUESTIONS = os.path.join(BASE_DIR, "instance", "paper-guides-questions.db")
-OUTPUT_DIR = os.path.join(BASE_DIR, "configs", "sitemaps")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 CONFIG_PATH = os.path.join(BASE_DIR, "configs", "configs.json")
-BASE_URL = "https://paperguides.org"
-TODAY = datetime.today().strftime("%Y-%m-%d")
-CHUNK_SIZE = 1000
 
 with open(CONFIG_PATH, "r") as f:
     configData = json.load(f)
 
-def slugify(text: str, board: str = "") -> str:
-    text = text.lower()
-    text = re.sub(r"[()]", "", text)
-    if "kathmandu university" in board.lower() or "a levels" in board.lower():
-        text = text.replace(" - ", " ")
-    text = re.sub(r"[^a-z0-9]+", "-", text)
-    return text[:60].rstrip("-")
+# slugify
 
-def parse_year_session(year_field):
-    year_match = re.search(r"\d{4}", year_field)
-    if not year_match:
+_UNSAFE = re.compile(r"[^\w\s-]")
+_WS_DASHES = re.compile(r"[\s_-]+")
+
+
+def slugify(s: str) -> str:
+    s = s.strip().strip("'\"")
+    s = _UNSAFE.sub("-", s)
+    s = _WS_DASHES.sub("-", s)
+    return s.lower().strip("-")
+
+
+# subject parsers
+
+_ALEVEL_RE = re.compile(r"^(.*?)\s*\((\d{4})\)\s*$")
+_KU_RE = re.compile(r"^(.*?)\s*-\s*(.+)$")
+
+
+def parse_alevel_subject(subject: str):
+    m = _ALEVEL_RE.match(subject.strip())
+    if m:
+        name = slugify(m.group(1))
+        code = m.group(2).strip()
+        slug = f"{name}-{code}"
+        return slug, slug
+    slug = slugify(subject)
+    return slug, slug
+
+
+def parse_ku_subject(subject: str):
+    m = _KU_RE.match(subject.strip())
+    if m:
+        prefix = slugify(m.group(1))
+        full = slugify(subject)
+        return prefix, full
+    slug = slugify(subject)
+    return slug, slug
+
+
+# year / session parser
+
+_SESSION_MAP = {
+    "january": "jan",
+    "february": "feb",
+    "march": "mar",
+    "april": "apr",
+    "may": "may",
+    "june": "jun",
+    "july": "jul",
+    "august": "aug",
+    "september": "sep",
+    "october": "oct",
+    "november": "nov",
+    "december": "dec",
+    "summer": "summer",
+    "winter": "winter",
+    "spring": "spring",
+    "autumn": "autumn",
+}
+
+
+def parse_year_session(year_field: str):
+    yr_match = re.search(r"(\d{4})", year_field)
+    if not yr_match:
         return None, None
-    year = year_match.group(0)
-    session = ""
-    session_match = re.search(r"\((.*?)\)", year_field)
-    if session_match:
-        session = session_match.group(1)
-    session = session.lower().strip().replace(" / ", "-").replace("/", "-").replace(" ", "-")
-    session = re.sub(r"-+", "-", session)
-    session = re.sub(r"[^a-z0-9\-]", "", session)
-    return year, session
+    yr = yr_match.group(1)
+
+    paren = re.search(r"\(([^)]+)\)", year_field)
+    if paren:
+        parts = re.split(r"[\s/]+", paren.group(1).strip())
+        tokens = [_SESSION_MAP.get(p.lower(), p.lower()) for p in parts if p]
+        session = "-".join(tokens)
+    else:
+        session = ""
+
+    return yr, session
+
+
+# path builder
+
+
+def build_paths(
+    board: str, subject: str, year_field: str, component: str, file_type: str
+):
+    board_slug = slugify(board)
+    yr, session = parse_year_session(year_field)
+    if not yr:
+        return None, None
+    comp_slug = slugify(component)
+    yr_session = f"{yr}-{session}" if session else yr
+
+    if "a level" in board.lower():
+        folder_subj, file_subj = parse_alevel_subject(subject)
+    else:
+        folder_subj, file_subj = parse_ku_subject(subject)
+
+    fname = f"{file_subj}-{yr_session}-{comp_slug}-{file_type}.pdf"
+    folder = Path(board_slug) / folder_subj / yr
+    return folder, fname
+
+
+# topics
+
 
 def build_topics(topics: list[str], board: str, notes_db, questions_db) -> list[dict]:
     result = []
@@ -47,151 +124,143 @@ def build_topics(topics: list[str], board: str, notes_db, questions_db) -> list[
     cur_n = conn_n.cursor()
     conn_q = sqlite3.connect(questions_db)
     cur_q = conn_q.cursor()
+
     for topic in topics:
-        topic_slug = slugify(topic, board)
+        topic_slug = slugify(topic)
+
         cur_n.execute(
-            "SELECT uuid, subject || ' - ' || topic AS title FROM notes WHERE LOWER(topic)=LOWER(?) AND LOWER(board)=LOWER(?) AND approved=1",
-            (topic, board)
+            "SELECT uuid, subject || ' - ' || topic AS title FROM notes "
+            "WHERE LOWER(topic)=LOWER(?) AND LOWER(board)=LOWER(?) AND approved=1",
+            (topic, board),
         )
         notes = [{"slug": row[0], "title": row[1]} for row in cur_n.fetchall()]
+
         cur_q.execute(
-            "SELECT uuid, question FROM questions WHERE LOWER(topic)=LOWER(?) AND LOWER(board)=LOWER(?) AND approved=1",
-            (topic, board)
+            "SELECT uuid, question, solution, keywords FROM questions "
+            "WHERE LOWER(topic)=LOWER(?) AND LOWER(board)=LOWER(?) AND approved=1",
+            (topic, board),
         )
-        questions = [{"slug": row[0], "title": row[1]} for row in cur_q.fetchall()]
-        result.append({
-            "name": topic,
-            "slug": topic_slug,
-            "notes": notes,
-            "questions": questions
-        })
+        questions = []
+        for row in cur_q.fetchall():
+            questions.append(
+                {
+                    "slug": row[0],
+                    "title": row[1],
+                    "question": row[1],
+                    "solution": row[2],
+                    "keywords": json.loads(row[3]) if row[3] else [],
+                }
+            )
+
+        result.append(
+            {
+                "name": topic,
+                "slug": topic_slug,
+                "notes": notes,
+                "questions": questions,
+            }
+        )
+
     conn_n.close()
     conn_q.close()
     return result
 
-all_urls = []
-seen = set()
-subjectPages = set()
-yearPages = set()
-sessionPages = set()
-boards = set()
+
+# build index
+
 paperIndex = {}
 
-def add(loc, freq=None, pr=None):
-    if not loc or loc in seen:
-        return
-    seen.add(loc)
-    all_urls.append({"loc": loc, "lastmod": TODAY, "changefreq": freq, "priority": pr})
-
-DEFAULT_PAGES = [
-    ("/", "daily", 1.0),
-    ("/about", "monthly", 0.7),
-    ("/login", "monthly", 0.6),
-    ("/pastpapers", "weekly", 0.85),
-    ("/notes", "weekly", 0.9),
-    ("/questions", "weekly", 0.9),
-    ("/generator", "weekly", 0.85),
-]
-
-for path, freq, pr in DEFAULT_PAGES:
-    add(f"{BASE_URL}{path}", freq, pr)
-
-# Process papers from the database
+# papers
 conn = sqlite3.connect(DB_PAPER)
 cur = conn.cursor()
-rows = cur.execute("SELECT board, subject, year, component FROM papers WHERE approved = 1").fetchall()
+rows = cur.execute(
+    "SELECT board, subject, year, component FROM papers WHERE approved = 1"
+).fetchall()
+
 for board, subject, year_field, component in rows:
     if not board or not subject or not year_field:
         continue
-    boardSlug = slugify(board)
-    subjectSlug = slugify(subject, board)
-    boards.add(boardSlug)
-    yearOnly, sessionSlug = parse_year_session(year_field)
-    if not yearOnly:
+
+    yr, session = parse_year_session(year_field)
+    if not yr:
         continue
-    componentSlug = slugify(str(component))
-    subjectPages.add((boardSlug, subjectSlug))
-    yearPages.add((boardSlug, subjectSlug, yearOnly))
-    if sessionSlug:
-        sessionPages.add((boardSlug, subjectSlug, yearOnly, sessionSlug))
-    qpSlug = f"{subjectSlug}-question-paper-{componentSlug}-{yearOnly}-{sessionSlug}"
-    qpUrl = f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}/{yearOnly}/{qpSlug}"
-    add(qpUrl, "weekly", 0.85)
-    if boardSlug not in paperIndex:
-        paperIndex[boardSlug] = {}
-    if subjectSlug not in paperIndex[boardSlug]:
-        paperIndex[boardSlug][subjectSlug] = {"name": subject, "years": {}}
-    if yearOnly not in paperIndex[boardSlug][subjectSlug]["years"]:
-        paperIndex[boardSlug][subjectSlug]["years"][yearOnly] = []
-    paperIndex[boardSlug][subjectSlug]["years"][yearOnly].append(qpSlug)
+
+    yr_session = f"{yr}-{session}" if session else yr
+    board_slug = slugify(board)
+
+    if "a level" in board.lower():
+        folder_subj, file_subj = parse_alevel_subject(subject)
+    else:
+        folder_subj, file_subj = parse_ku_subject(subject)
+
+    comp_slug = slugify(component)
+    qpSlug = f"{file_subj}-{yr_session}-{comp_slug}-qp"
+
+    folder_qp, fname_qp = build_paths(board, subject, year_field, component, "qp")
+    folder_ms, fname_ms = build_paths(board, subject, year_field, component, "ms")
+
+    if not folder_qp:
+        continue
+
+    if board_slug not in paperIndex:
+        paperIndex[board_slug] = {}
+    if file_subj not in paperIndex[board_slug]:
+        paperIndex[board_slug][file_subj] = {"name": subject, "years": {}}
+    if yr not in paperIndex[board_slug][file_subj]["years"]:
+        paperIndex[board_slug][file_subj]["years"][yr] = []
+
+    paperIndex[board_slug][file_subj]["years"][yr].append(
+        {
+            "slug": qpSlug,
+            "qp_path": str(folder_qp / fname_qp),
+            "ms_path": str(folder_ms / fname_ms),
+        }
+    )
+
 conn.close()
 
-# Process notes and questions from config
+# notes and questions
 VALID_NOTES_BOARDS = ["A Levels", "Kathmandu University"]
+
 for boardName, boardData in configData.items():
     if boardName not in VALID_NOTES_BOARDS:
         continue
+
     print(f"\nProcessing board: {boardName}")
-    boardSlug = slugify(boardName)
-    if boardSlug not in paperIndex:
-        paperIndex[boardSlug] = {}
+    board_slug = slugify(boardName)
+
+    if board_slug not in paperIndex:
+        paperIndex[board_slug] = {}
+
     for subject in boardData.get("subjects", []):
         subjectName = subject.get("name")
         if not subjectName:
             continue
-        print(f"  Processing subject: {subjectName}")
-        subjectSlug = slugify(subjectName, boardName)
-        if subjectSlug not in paperIndex[boardSlug]:
-            paperIndex[boardSlug][subjectSlug] = {"name": subjectName, "years": {}}
+
+        print(f"  Subject: {subjectName}")
+
+        if "a level" in boardName.lower():
+            _, file_subj = parse_alevel_subject(subjectName)
+        else:
+            _, file_subj = parse_ku_subject(subjectName)
+
+        if file_subj not in paperIndex[board_slug]:
+            paperIndex[board_slug][file_subj] = {"name": subjectName, "years": {}}
+
         topics = subject.get("topics", [])
         if not isinstance(topics, list):
             topics = []
+
         built = build_topics(topics, boardName, DB_NOTES, DB_QUESTIONS)
-        paperIndex[boardSlug][subjectSlug]["topics"] = built
+        paperIndex[board_slug][file_subj]["topics"] = built
+
         for t in built:
-            print(f"    Processing topic: {t['name']}")
-            add(f"{BASE_URL}/notes/{boardSlug}/{subjectSlug}/{t['slug']}", "weekly", 0.9)
-            add(f"{BASE_URL}/questions/{boardSlug}/{subjectSlug}/{t['slug']}", "weekly", 0.9)
-            for q in t["questions"]:
-                add(f"{BASE_URL}/questions/{boardSlug}/{subjectSlug}/{t['slug']}/{q['slug']}", "weekly", 0.85)
+            print(
+                f"    {t['name']} — {len(t['questions'])} questions, {len(t['notes'])} notes"
+            )
 
-# Add all other URLs to the sitemap
-for boardSlug in boards:
-    add(f"{BASE_URL}/questions/{boardSlug}", "weekly", 0.85)
-for boardSlug, subjectSlug in subjectPages:
-    add(f"{BASE_URL}/questions/{boardSlug}/{subjectSlug}", "weekly", 0.85)
-for boardSlug in boards:
-    add(f"{BASE_URL}/subjects/{boardSlug}", "weekly", 0.95)
-for boardSlug, subjectSlug in subjectPages:
-    add(f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}", "daily", 0.95)
-for boardSlug, subjectSlug, year in yearPages:
-    add(f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}/{year}", "daily", 0.9)
-for boardSlug, subjectSlug, year, session in sessionPages:
-    add(f"{BASE_URL}/subjects/{boardSlug}/{subjectSlug}/{year}/{session}", "weekly", 0.85)
-
-# Save and ping sitemaps
-chunks = [all_urls[i:i + CHUNK_SIZE] for i in range(0, len(all_urls), CHUNK_SIZE)]
-manifest = {"generatedAt": TODAY, "count": len(all_urls), "chunks": []}
-for i, chunk in enumerate(chunks):
-    filename = f"urls-{i}.json"
-    path = os.path.join(OUTPUT_DIR, filename)
-    with open(path, "w") as f:
-        json.dump(chunk, f, separators=(",", ":"))
-    manifest["chunks"].append({"id": i, "file": filename, "count": len(chunk)})
-
-with open(os.path.join(OUTPUT_DIR, "manifest.json"), "w") as f:
-    json.dump(manifest, f, separators=(",", ":"))
-
+# write
 with open(os.path.join(BASE_DIR, "configs", "paperPaths.json"), "w") as f:
     json.dump(paperIndex, f, separators=(",", ":"))
 
-try:
-    sitemap_index = f"{BASE_URL}/sitemap.xml"
-    requests.get(f"https://www.google.com/ping?sitemap={sitemap_index}", timeout=5)
-    requests.get(f"https://www.bing.com/ping?sitemap={sitemap_index}", timeout=5)
-    for chunk in manifest["chunks"]:
-        chunk_url = f"{BASE_URL}/urls-{chunk['id']}.xml"
-        requests.get(f"https://www.google.com/ping?sitemap={chunk_url}", timeout=5)
-        requests.get(f"https://www.bing.com/ping?sitemap={chunk_url}", timeout=5)
-except:
-    pass
+print("\nDone. paperPaths.json written.")
