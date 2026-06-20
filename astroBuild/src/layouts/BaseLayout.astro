@@ -88,6 +88,14 @@ const resolvedLastUpdated = lastUpdated;
             src={`${UMAMI_URL}/script.js`}
             data-website-id={UMAMI_WEBSITE_ID}
             data-auto-track="true"></script>
+
+        <script
+            defer
+            src={`${UMAMI_URL}/recorder.js`}
+            data-website-id={UMAMI_WEBSITE_ID}
+            data-sample-rate="0.35"
+            data-mask-level="moderate"
+            data-max-duration="1200000"></script>
     </head>
     <body class="flex flex-col min-h-screen">
         <!-- We're making peanuts with this while making the site slower :( maybe once we have a large audience we can use this -->
