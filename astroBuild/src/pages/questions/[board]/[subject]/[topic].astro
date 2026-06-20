@@ -58,7 +58,7 @@ const boardDisplayName =
 
 const TRUNCATE_LENGTH = 120;
 
-const pageTitle = `${realTopicName} Questions | ${realSubjectName} Past Papers | Paper Guides`;
+const pageTitle = `${realTopicName} | ${realSubjectName} Question Bank | Paper Guides`;
 const pageDescription = `Practice ${questions.length} past-paper questions for ${realTopicName} in ${realSubjectName}. Free solutions and exam prep resources.`;
 const pageKeywords = [
   realTopicName,
@@ -81,7 +81,7 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": `${Astro.site?.href ?? "https://paperguides.org"}/` },
-      { "@type": "ListItem", "position": 2, "name": "Questions", "item": `${Astro.site?.href ?? "https://paperguides.org"}/questions` },
+      { "@type": "ListItem", "position": 2, "name": "Question Bank", "item": `${Astro.site?.href ?? "https://paperguides.org"}/questions` },
       { "@type": "ListItem", "position": 3, "name": boardDisplayName, "item": `${Astro.site?.href ?? "https://paperguides.org"}/questions/${board}` },
       { "@type": "ListItem", "position": 4, "name": realSubjectName, "item": `${Astro.site?.href ?? "https://paperguides.org"}/questions/${board}/${subject}` },
       { "@type": "ListItem", "position": 5, "name": realTopicName, "item": canonicalUrl }
@@ -94,7 +94,7 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
       <div class="flex flex-col justify-center">
         <nav aria-label="Breadcrumb" class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1 flex-wrap">
           <a href="/" class="hover:underline">Home</a> /
-          <a href="/questions" class="hover:underline">Questions</a> /
+          <a href="/questions" class="hover:underline">Question Bank</a> /
           <a href={`/questions/${board}`} class="hover:underline">{boardDisplayName}</a> /
           <a href={`/questions/${board}/${subject}`} class="hover:underline">{realSubjectName}</a> /
           <span aria-current="page">{realTopicName}</span>

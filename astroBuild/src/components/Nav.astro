@@ -30,14 +30,33 @@ import ThemeToggle from "./ThemeToggle.astro";
         <!-- Desktop Navigation -->
         <div class="hidden xl:flex items-center gap-8">
             <div class="flex gap-6">
-                <a
-                    class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
-                    href="/pastpapers"
-                    data-umami-event="Navigation Click"
-                    data-umami-event-destination="Past Papers"
-                >
-                    Past Papers
-                </a>
+                <!-- Past Papers -->
+                <div class="relative group">
+                    <a
+                        class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
+                        href="/pastpapers"
+                        data-umami-event="Navigation Click"
+                        data-umami-event-destination="Past Papers"
+                    >
+                        Past Papers
+                    </a>
+                    <div
+                        class="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-3 w-max bg-[var(--sidebar-bg)] border-2 border-[var(--muted)]/30 rounded-lg px-3 py-2 shadow-lg z-50
+                                opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150"
+                    >
+                        <div
+                            class="absolute -top-[6px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[var(--sidebar-bg)] border-l-2 border-t-2 border-[var(--muted)]/30 rotate-45"
+                        >
+                        </div>
+                        <p
+                            class="text-xs text-[var(--color-text)] whitespace-nowrap"
+                        >
+                            Full exam papers by year &amp; session
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Notes -->
                 <a
                     class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
                     href="/notes"
@@ -46,23 +65,60 @@ import ThemeToggle from "./ThemeToggle.astro";
                 >
                     Notes
                 </a>
-                <a
-                    class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
-                    href="/generator"
-                    data-umami-event="Navigation Click"
-                    data-umami-event-destination="Question Generator"
-                >
-                    Generator
-                </a>
-                <a
-                    class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
-                    href="/questions"
-                    data-umami-event="Navigation Click"
-                    data-umami-event-destination="Questions Repository"
-                >
-                    Questions
-                </a>
 
+                <!-- Question Generator -->
+                <div class="relative group">
+                    <a
+                        class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
+                        href="/generator"
+                        data-umami-event="Navigation Click"
+                        data-umami-event-destination="Question Generator"
+                    >
+                        Question Generator
+                    </a>
+                    <div
+                        class="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-3 w-max bg-[var(--sidebar-bg)] border-2 border-[var(--muted)]/30 rounded-lg px-3 py-2 shadow-lg z-50
+                                opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150"
+                    >
+                        <div
+                            class="absolute -top-[6px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[var(--sidebar-bg)] border-l-2 border-t-2 border-[var(--muted)]/30 rotate-45"
+                        >
+                        </div>
+                        <p
+                            class="text-xs text-[var(--color-text)] whitespace-nowrap"
+                        >
+                            Build a custom practice set by topic
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Question Bank -->
+                <div class="relative group">
+                    <a
+                        class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
+                        href="/questions"
+                        data-umami-event="Navigation Click"
+                        data-umami-event-destination="Question Bank"
+                    >
+                        Question Bank
+                    </a>
+                    <div
+                        class="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-3 w-max bg-[var(--sidebar-bg)] border-2 border-[var(--muted)]/30 rounded-lg px-3 py-2 shadow-lg z-50
+                                opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150"
+                    >
+                        <div
+                            class="absolute -top-[6px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[var(--sidebar-bg)] border-l-2 border-t-2 border-[var(--muted)]/30 rotate-45"
+                        >
+                        </div>
+                        <p
+                            class="text-xs text-[var(--color-text)] whitespace-nowrap"
+                        >
+                            Individual questions organised by topic
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Blog -->
                 <a
                     class="text-lg font-bold hover:text-[var(--blue-highlight)] transition-colors duration-300"
                     href="/blog"
@@ -129,15 +185,15 @@ import ThemeToggle from "./ThemeToggle.astro";
             data-umami-event="Navigation Click"
             data-umami-event-destination="Question Generator"
         >
-            Generator
+            Question Generator
         </a>
         <a
             class="px-3 py-2 rounded-lg hover:bg-[var(--blue-highlight)]/10 transition-colors duration-300"
             href="/questions"
             data-umami-event="Navigation Click"
-            data-umami-event-destination="Questions Repository"
+            data-umami-event-destination="Question Bank"
         >
-            Questions
+            Question Bank
         </a>
 
         <div class="border-t border-[var(--muted)]/20 my-2"></div>

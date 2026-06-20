@@ -50,7 +50,7 @@ const boardDisplayName =
       ? "Kathmandu University"
       : board;
 
-const pageTitle = `${realSubjectName} Topics | ${boardDisplayName} Questions | Paper Guides`;
+const pageTitle = `${realSubjectName} Topics | ${boardDisplayName} Question Bank | Paper Guides`;
 const pageDescription = `Browse ${topics.length} topics for ${realSubjectName} under ${boardDisplayName}. Click a topic to practise past-paper questions and improve exam prep.`;
 const pageKeywords = [
   realSubjectName,
@@ -74,7 +74,7 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": `${Astro.site?.href ?? "https://paperguides.org"}/` },
-        { "@type": "ListItem", "position": 2, "name": "Questions", "item": `${Astro.site?.href ?? "https://paperguides.org"}/questions` },
+        { "@type": "ListItem", "position": 2, "name": "Question Bank", "item": `${Astro.site?.href ?? "https://paperguides.org"}/questions` },
         { "@type": "ListItem", "position": 3, "name": boardDisplayName, "item": `${Astro.site?.href ?? "https://paperguides.org"}/questions/${board}` },
         { "@type": "ListItem", "position": 4, "name": realSubjectName, "item": canonicalUrl }
       ]
@@ -86,7 +86,7 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
       <div class="flex flex-col justify-center">
         <nav aria-label="Breadcrumb" class="text-[var(--muted)] mb-6 text-xs flex items-center gap-1 flex-wrap">
           <a href="/" class="hover:underline">Home</a> /
-          <a href="/questions" class="hover:underline">Questions</a> /
+          <a href="/questions" class="hover:underline">Question Bank</a> /
           <a href={`/questions/${board}`} class="hover:underline">{boardDisplayName}</a> /
           <span aria-current="page">{realSubjectName}</span>
         </nav>
@@ -94,7 +94,7 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
         <h1 class="font-serif font-bold text-4xl md:text-6xl">
           {realSubjectName} Topics
           <br />
-          <span class="text-[var(--accent)] italic">{boardDisplayName} Questions</span>
+          <span class="text-[var(--accent)] italic">{boardDisplayName} Question Bank</span>
         </h1>
 
         <p class="mt-4 text-xs md:text-sm text-[var(--muted)]">
