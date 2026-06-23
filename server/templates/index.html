@@ -1,0 +1,865 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ad Manager — Paper Guides</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #fff;
+            --border: #d0d0d0;
+            --text: #111;
+            --muted: #777;
+            --accent: #c94f1e;
+            --surface: #f5f5f5;
+            --green: #2a7a2a;
+            --yellow: #856c00;
+            --red: #b91c1c;
+            --blue: #1d5fa8;
+        }
+
+        body {
+            font-family: system-ui, sans-serif;
+            font-size: 14px;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        a { color: inherit; text-decoration: none; }
+        button { font-family: inherit; cursor: pointer; }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            border-bottom: 2px solid var(--text);
+        }
+        .header-brand { font-weight: 700; font-size: 14px; }
+        .header-brand span { color: var(--muted); font-weight: 400; }
+        .header-actions { display: flex; gap: 8px; }
+
+        /* Stats */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 1px solid var(--border);
+        }
+        .stat {
+            padding: 14px 20px;
+            border-right: 1px solid var(--border);
+        }
+        .stat:last-child { border-right: none; }
+        .stat-label { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+        .stat-value { font-size: 22px; font-weight: 700; }
+        .c-accent { color: var(--accent); }
+        .c-green  { color: var(--green); }
+        .c-yellow { color: var(--yellow); }
+        .c-blue   { color: var(--blue); }
+
+        /* Main */
+        .main { max-width: 1320px; margin: 0 auto; padding: 20px; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 2px solid var(--border); }
+        .tab-btn {
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+        .tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
+        .tab-btn:hover:not(.active) { color: var(--text); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn:hover { background: var(--surface); }
+        .btn-primary { background: var(--text); color: #fff; border-color: var(--text); }
+        .btn-primary:hover { opacity: 0.85; background: var(--text); }
+        .btn-sm { padding: 3px 8px; font-size: 12px; }
+
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: var(--muted);
+            padding: 3px 6px;
+            font-size: 13px;
+            border-radius: 3px;
+        }
+        .icon-btn:hover { color: var(--text); background: var(--surface); }
+        .icon-btn.danger:hover { color: var(--red); }
+        .icon-btn.success { color: var(--green); }
+        .icon-btn.success:hover { background: #f0fff0; }
+
+        /* Table */
+        .table-wrap {
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            overflow-x: auto;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead th {
+            background: var(--surface);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        tbody tr { border-bottom: 1px solid var(--border); }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: var(--surface); }
+        td { padding: 9px 12px; font-size: 13px; vertical-align: middle; }
+
+        /* Name cell */
+        .name-cell { display: flex; align-items: center; gap: 8px; }
+        .avatar {
+            width: 28px; height: 28px; border-radius: 4px;
+            object-fit: cover; border: 1px solid var(--border); flex-shrink: 0;
+        }
+        .avatar-init {
+            width: 28px; height: 28px; border-radius: 4px; flex-shrink: 0;
+            background: var(--surface); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 600; color: var(--muted);
+        }
+        .name-primary { font-weight: 600; font-size: 13px; }
+        .name-secondary { font-size: 11px; color: var(--muted); }
+
+        /* Progress */
+        .prog-wrap { display: flex; align-items: center; gap: 7px; min-width: 130px; }
+        .prog-bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+        .prog-fill { height: 100%; border-radius: 2px; }
+        .prog-fill.ok      { background: var(--green); }
+        .prog-fill.partial { background: var(--yellow); }
+        .prog-fill.low     { background: var(--red); }
+        .prog-label { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            border: 1px solid currentColor;
+        }
+        .badge-active    { color: var(--green); }
+        .badge-completed { color: var(--blue); }
+        .badge-overdue   { color: var(--red); }
+        .badge-suspended { color: var(--muted); }
+        .badge-paid      { color: var(--green); }
+        .badge-unpaid    { color: var(--yellow); }
+        .badge-live      { color: var(--green); }
+        .badge-off       { color: var(--muted); }
+        .badge-awaiting  { color: var(--yellow); }
+        .badge-live-unpaid { color: var(--red); }
+        .badge-expiring  { color: var(--yellow); }
+
+        /* Tier badges */
+        .tier-badge {
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: 1px solid currentColor;
+        }
+        .tier-bronze { color: #cd7f32; }
+        .tier-silver { color: #888; }
+        .tier-gold   { color: #b8860b; }
+
+        /* Image thumbs */
+        .img-strip { display: flex; gap: 3px; }
+        .img-thumb {
+            width: 32px; height: 32px; border-radius: 3px;
+            object-fit: cover; border: 1px solid var(--border);
+            cursor: pointer;
+        }
+        .img-thumb:hover { opacity: 0.75; }
+        .img-none {
+            width: 32px; height: 32px; border-radius: 3px;
+            border: 1px dashed var(--border);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--muted); font-size: 9px;
+        }
+
+        /* Actions */
+        .actions { display: flex; align-items: center; gap: 2px; }
+        .pay-inline { display: flex; align-items: center; gap: 4px; }
+        .pay-inline input {
+            width: 75px; padding: 3px 7px;
+            border: 1px solid var(--border); border-radius: 4px;
+            font-size: 12px; font-family: inherit;
+        }
+        .pay-inline input:focus { outline: none; border-color: var(--accent); }
+
+        .url-cell {
+            max-width: 140px; overflow: hidden; text-overflow: ellipsis;
+            white-space: nowrap; display: block; color: var(--accent);
+        }
+
+        /* Empty */
+        .empty { padding: 48px 20px; text-align: center; color: var(--muted); font-size: 13px; }
+
+        /* Archived */
+        .archived-toggle {
+            display: flex; align-items: center; gap: 6px;
+            margin-top: 16px; padding: 8px 12px;
+            border: 1px solid var(--border); border-radius: 4px;
+            cursor: pointer; font-size: 12px; color: var(--muted);
+            user-select: none; background: var(--surface);
+        }
+        .archived-toggle:hover { color: var(--text); }
+        .archived-toggle .arrow { transition: transform 0.15s; }
+        .archived-toggle.open .arrow { transform: rotate(90deg); }
+        .archived-section { display: none; margin-top: 6px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+        .archived-section.open { display: block; }
+        .archived-section tbody tr { opacity: 0.6; }
+        .archived-section tbody tr:hover { opacity: 0.9; }
+
+        /* Modal */
+        .overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 200;
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        .overlay.open { display: flex; }
+        .modal {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            width: 100%; max-width: 520px;
+            max-height: 92vh; overflow-y: auto;
+        }
+        .modal-head {
+            padding: 16px 18px 0;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid var(--border); padding-bottom: 12px;
+        }
+        .modal-title { font-size: 15px; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 16px; color: var(--muted); cursor: pointer; }
+        .modal-close:hover { color: var(--text); }
+        .modal-body { padding: 16px 18px 18px; }
+
+        /* Form */
+        .fg { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .fg > .full { grid-column: span 2; }
+        .fgroup { display: flex; flex-direction: column; gap: 3px; }
+        .fgroup label { font-size: 11px; font-weight: 600; color: var(--muted); }
+        .fgroup input, .fgroup select {
+            border: 1px solid var(--border); border-radius: 4px;
+            padding: 6px 9px; font-size: 13px; font-family: inherit;
+            width: 100%; outline: none;
+        }
+        .fgroup input:focus, .fgroup select:focus { border-color: var(--accent); }
+        .fgroup input[type="file"] {
+            padding: 5px 9px; font-size: 12px; color: var(--muted); cursor: pointer;
+        }
+        .fsection {
+            grid-column: span 2;
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.06em; color: var(--muted);
+            padding-top: 8px; border-top: 1px solid var(--border);
+        }
+        .current-img-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .current-img-row img { width: 36px; height: 36px; border-radius: 3px; object-fit: cover; border: 1px solid var(--border); }
+        .current-img-row span { font-size: 11px; color: var(--muted); }
+        .form-foot {
+            display: flex; justify-content: flex-end; gap: 8px;
+            margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);
+        }
+
+        /* Reset payment checkbox row */
+        .check-row {
+            grid-column: span 2;
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 4px;
+        }
+        .check-row label { font-size: 12px; color: var(--muted); cursor: pointer; text-transform: none; font-weight: 400; }
+        .check-row input[type="checkbox"] { width: auto; }
+
+        /* Toast */
+        #toasts { position: fixed; bottom: 16px; right: 16px; z-index: 999; display: flex; flex-direction: column; gap: 6px; }
+        .toast {
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 4px; padding: 8px 12px; font-size: 12px; font-weight: 500;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            display: flex; align-items: center; gap: 7px; max-width: 260px;
+        }
+        .toast-ok  { border-left: 3px solid var(--green); }
+        .toast-err { border-left: 3px solid var(--red); }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-brand">Paper Guides <span>/ Ad Manager</span></div>
+    <div class="header-actions">
+        <button class="btn" onclick="openModal('add-sponsor-modal')">+ Sponsor</button>
+        <button class="btn btn-primary" onclick="openModal('add-ad-modal')">+ Campaign</button>
+    </div>
+</header>
+
+<!-- STATS -->
+<div class="stats-bar">
+    <div class="stat">
+        <div class="stat-label">Active Sponsors</div>
+        <div class="stat-value c-accent">{{ stats.active_sponsors }}</div>
+    </div>
+    <div class="stat">
+        <div class="stat-label">Live Ads</div>
+        <div class="stat-value c-green">{{ stats.active_ads }}</div>
+    </div>
+    <div class="stat">
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-value c-blue">{{ stats.total_revenue }}</div>
+    </div>
+    <div class="stat">
+        <div class="stat-label">Pending Payments</div>
+        <div class="stat-value c-yellow">{{ stats.pending_payments }}</div>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('sponsors', this)">Sponsors ({{ sponsors|length }})</button>
+        <button class="tab-btn" onclick="switchTab('ads', this)">Campaigns ({{ ads|length }})</button>
+    </div>
+
+    <!-- SPONSORS TAB -->
+    <div id="tab-sponsors">
+        {% if sponsors %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sponsor</th><th>Tier</th><th>Payment</th>
+                        <th>Period</th><th>Status</th><th>Log Payment</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in sponsors %}
+                    <tr>
+                        <td>
+                            <div class="name-cell">
+                                {% if s.brand_logo %}<img class="avatar" src="{{ s.brand_logo }}" alt="{{ s.name }}">
+                                {% else %}<div class="avatar-init">{{ s.name[0]|upper }}</div>{% endif %}
+                                <div>
+                                    <div class="name-primary">{{ s.name }}</div>
+                                    {% if s.email %}<div class="name-secondary">{{ s.email }}</div>{% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="tier-badge tier-{{ s.tier }}">{{ s.tier }}</span></td>
+                        <td>
+                            {% set pct = ((s.paid_amount / s.promised_amount) * 100) if s.promised_amount > 0 else 0 %}
+                            {% set pct_c = [pct, 100] | min %}
+                            <div class="prog-wrap">
+                                <div class="prog-bar">
+                                    <div class="prog-fill {% if pct_c >= 100 %}ok{% elif pct_c >= 50 %}partial{% else %}low{% endif %}" style="width:{{ pct_c }}%"></div>
+                                </div>
+                                <span class="prog-label">Rs {{ s.paid_amount|round(0)|int }} / Rs {{ s.promised_amount|round(0)|int }}</span>
+                            </div>
+                        </td>
+                        <td style="font-size:11px; color:var(--muted); white-space:nowrap;">
+                            {{ s.start_date or '—' }} → {{ s.end_date or '—' }}
+                            {% if s.end_date and s.end_date <= soon %}<span class="badge badge-expiring" style="margin-left:4px;">expiring</span>{% endif %}
+                        </td>
+                        <td><span class="badge badge-{{ s.status }}">{{ s.status }}</span></td>
+                        <td>
+                            <form method="POST" action="/sponsor/pay/{{ s.id }}" class="pay-inline">
+                                <input type="number" name="amount" placeholder="0.00" step="0.01" min="0">
+                                <button type="submit" class="btn btn-sm">Pay</button>
+                            </form>
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <button class="icon-btn" title="Edit" onclick='openEditSponsor({{ s.id }}, {{ s.name|tojson }}, {{ (s.email or "")|tojson }}, {{ s.tier|tojson }}, {{ s.promised_amount }}, {{ (s.start_date or "")|tojson }}, {{ (s.end_date or "")|tojson }}, {{ (s.brand_logo or "")|tojson }})'>✎</button>
+                                <button class="icon-btn" title="Renew" onclick='openRenewSponsor({{ s.id }}, {{ (s.end_date or "")|tojson }}, {{ s.promised_amount }})'>↻</button>
+                                <a href="/sponsor/suspend/{{ s.id }}" class="icon-btn" title="{{ 'Activate' if s.status == 'suspended' else 'Suspend' }}">{{ '▶' if s.status == 'suspended' else '⏸' }}</a>
+                                <form method="POST" action="/sponsor/delete/{{ s.id }}" onsubmit="return confirm('Archive {{ s.name }}? Payment history is kept.');" style="display:inline;">
+                                    <button type="submit" class="icon-btn danger" title="Archive">✕</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="table-wrap"><div class="empty">No sponsors yet — click <b>+ Sponsor</b> to add one.</div></div>
+        {% endif %}
+
+        {% if archived_sponsors %}
+        <div class="archived-toggle" onclick="toggleArchived('arch-sponsors', this)">
+            <span class="arrow">›</span> Archived sponsors ({{ archived_sponsors|length }})
+        </div>
+        <div class="archived-section" id="arch-sponsors">
+            <table>
+                <thead><tr><th>Sponsor</th><th>Tier</th><th>Paid</th><th>Period</th><th></th></tr></thead>
+                <tbody>
+                {% for s in archived_sponsors %}
+                <tr>
+                    <td>
+                        <div class="name-cell">
+                            {% if s.brand_logo %}<img class="avatar" src="{{ s.brand_logo }}">{% else %}<div class="avatar-init">{{ s.name[0]|upper }}</div>{% endif %}
+                            <div><div class="name-primary">{{ s.name }}</div>{% if s.email %}<div class="name-secondary">{{ s.email }}</div>{% endif %}</div>
+                        </div>
+                    </td>
+                    <td><span class="tier-badge tier-{{ s.tier }}">{{ s.tier }}</span></td>
+                    <td style="font-size:12px;">Rs {{ s.paid_amount|round(0)|int }} / Rs {{ s.promised_amount|round(0)|int }}</td>
+                    <td style="font-size:11px; color:var(--muted);">{{ s.start_date or '—' }} → {{ s.end_date or '—' }}</td>
+                    <td><button class="icon-btn" title="Renew" onclick='openRenewSponsor({{ s.id }}, {{ (s.end_date or "")|tojson }}, {{ s.promised_amount }})'>↻</button></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ADS TAB -->
+    <div id="tab-ads" style="display:none">
+        {% if ads %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Advertiser</th><th>Campaign</th><th>Creatives</th>
+                        <th>Click URL</th><th>Billing</th><th>Period</th>
+                        <th>Payment</th><th>Live</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ad in ads %}
+                    <tr>
+                        <td>
+                            <div class="name-cell">
+                                {% if ad.sponsor_logo %}<img class="avatar" src="{{ ad.sponsor_logo }}" alt="">
+                                {% else %}<div class="avatar-init">{{ ad.advertiser_name[0]|upper }}</div>{% endif %}
+                                <div>
+                                    <div class="name-primary">{{ ad.advertiser_name }}</div>
+                                    {% if ad.sponsor_name %}<div class="name-secondary">{{ ad.sponsor_name }}</div>{% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td style="max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ ad.campaign_name or '—' }}</td>
+                        <td>
+                            <div class="img-strip">
+                                {% if ad.square_image %}<img class="img-thumb" src="{{ ad.square_image }}" title="Square" onclick="window.open(this.src)">{% else %}<div class="img-none">sq</div>{% endif %}
+                                {% if ad.horizontal_image %}<img class="img-thumb" src="{{ ad.horizontal_image }}" title="Horizontal" onclick="window.open(this.src)">{% endif %}
+                                {% if ad.vertical_image %}<img class="img-thumb" src="{{ ad.vertical_image }}" title="Vertical" onclick="window.open(this.src)">{% endif %}
+                            </div>
+                        </td>
+                        <td><a class="url-cell" href="{{ ad.click_url }}" target="_blank" title="{{ ad.click_url }}">{{ ad.click_url }}</a></td>
+                        <td style="white-space:nowrap;">Rs {{ ad.billing_amount|round(0)|int }}</td>
+                        <td style="font-size:11px; color:var(--muted); white-space:nowrap;">
+                            {{ ad.start_date or '—' }} → {{ ad.end_date or '—' }}
+                            {% if ad.end_date and ad.end_date <= soon %}<span class="badge badge-expiring" style="margin-left:4px;">expiring</span>{% endif %}
+                        </td>
+                        <td><span class="badge badge-{{ ad.payment_status }}">{{ ad.payment_status }}</span></td>
+                        <td>
+                            {% if ad.active and ad.payment_status == 'paid' %}<span class="badge badge-live">live</span>
+                            {% elif ad.active and ad.payment_status == 'unpaid' %}<span class="badge badge-live-unpaid" title="Live but unpaid">live !</span>
+                            {% elif not ad.active and ad.payment_status == 'unpaid' %}<span class="badge badge-awaiting">awaiting payment</span>
+                            {% else %}<span class="badge badge-off">paused</span>{% endif %}
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <button class="icon-btn" title="Edit" onclick='openEditAd({{ ad.id }}, {{ ad.advertiser_name|tojson }}, {{ (ad.advertiser_email or "")|tojson }}, {{ (ad.campaign_name or "")|tojson }}, {{ ad.click_url|tojson }}, {{ ad.billing_amount }}, {{ (ad.start_date or "")|tojson }}, {{ (ad.end_date or "")|tojson }}, {{ ad.sponsor_id or "null" }}, {{ ad.weight }}, {{ (ad.square_image or "")|tojson }}, {{ (ad.horizontal_image or "")|tojson }}, {{ (ad.vertical_image or "")|tojson }})'>✎</button>
+                                <button class="icon-btn" title="Renew campaign" onclick='openRenewAd({{ ad.id }}, {{ (ad.end_date or "")|tojson }})'>↻</button>
+                                {% if ad.payment_status == 'unpaid' %}
+                                <a href="/ad/pay/{{ ad.id }}" class="icon-btn success" title="Mark paid" onclick="return confirm('Mark as paid? This will activate the ad.')">Rs✓</a>
+                                {% endif %}
+                                {% if ad.active %}
+                                <a href="/toggle_ad/{{ ad.id }}" class="icon-btn" title="Pause">⏸</a>
+                                {% elif ad.payment_status == 'paid' %}
+                                <a href="/toggle_ad/{{ ad.id }}" class="icon-btn" title="Activate">▶</a>
+                                {% else %}
+                                <span class="icon-btn" title="Pay first to activate" style="opacity:0.3;cursor:not-allowed;">▶</span>
+                                {% endif %}
+                                <form method="POST" action="/ad/delete/{{ ad.id }}" onsubmit="return confirm('Archive this campaign? Billing history is kept.');" style="display:inline;">
+                                    <button type="submit" class="icon-btn danger" title="Archive">✕</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="table-wrap"><div class="empty">No campaigns yet — click <b>+ Campaign</b> to add one.</div></div>
+        {% endif %}
+
+        {% if archived_ads %}
+        <div class="archived-toggle" onclick="toggleArchived('arch-ads', this)">
+            <span class="arrow">›</span> Archived campaigns ({{ archived_ads|length }})
+        </div>
+        <div class="archived-section" id="arch-ads">
+            <table>
+                <thead><tr><th>Advertiser</th><th>Campaign</th><th>Billing</th><th>Period</th><th></th></tr></thead>
+                <tbody>
+                {% for ad in archived_ads %}
+                <tr>
+                    <td>
+                        <div class="name-cell">
+                            <div class="avatar-init">{{ ad.advertiser_name[0]|upper }}</div>
+                            <div><div class="name-primary">{{ ad.advertiser_name }}</div>{% if ad.sponsor_name %}<div class="name-secondary">{{ ad.sponsor_name }}</div>{% endif %}</div>
+                        </div>
+                    </td>
+                    <td>{{ ad.campaign_name or '—' }}</td>
+                    <td style="font-size:12px;">Rs {{ ad.billing_amount|round(0)|int }}</td>
+                    <td style="font-size:11px; color:var(--muted);">{{ ad.start_date or '—' }} → {{ ad.end_date or '—' }}</td>
+                    <td><button class="icon-btn" title="Renew" onclick='openRenewAd({{ ad.id }}, {{ (ad.end_date or "")|tojson }})'>↻</button></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ADD SPONSOR MODAL -->
+<div class="overlay" id="add-sponsor-modal">
+    <div class="modal">
+        <div class="modal-head">
+            <span class="modal-title">New Sponsor</span>
+            <button class="modal-close" onclick="closeModal('add-sponsor-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="/add_sponsor" enctype="multipart/form-data">
+                <div class="fg">
+                    <div class="fgroup"><label>Name *</label><input type="text" name="name" placeholder="Sponsor Co." required></div>
+                    <div class="fgroup"><label>Email</label><input type="email" name="email" placeholder="sponsor@example.com"></div>
+                    <div class="fgroup">
+                        <label>Tier</label>
+                        <select name="tier">
+                            <option value="bronze">Bronze</option>
+                            <option value="silver">Silver</option>
+                            <option value="gold">Gold</option>
+                        </select>
+                    </div>
+                    <div class="fgroup"><label>Brand Logo</label><input type="file" name="brand_logo" accept="image/*"></div>
+                    <div class="fsection">Contract</div>
+                    <div class="fgroup"><label>Total Contract (Rs)</label><input type="number" name="promised_amount" placeholder="0.00" step="0.01" min="0"></div>
+                    <div class="fgroup"><label>Initial Payment (Rs)</label><input type="number" name="paid_amount" placeholder="0.00" step="0.01" min="0"></div>
+                    <div class="fgroup"><label>Start Date</label><input type="date" name="start_date"></div>
+                    <div class="fgroup"><label>End Date</label><input type="date" name="end_date"></div>
+                </div>
+                <div class="form-foot">
+                    <button type="button" class="btn" onclick="closeModal('add-sponsor-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Sponsor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT SPONSOR MODAL -->
+<div class="overlay" id="edit-sponsor-modal">
+    <div class="modal">
+        <div class="modal-head">
+            <span class="modal-title">Edit Sponsor</span>
+            <button class="modal-close" onclick="closeModal('edit-sponsor-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" id="edit-sponsor-form" action="" enctype="multipart/form-data">
+                <div class="fg">
+                    <div class="fgroup"><label>Name *</label><input type="text" name="name" id="es-name" required></div>
+                    <div class="fgroup"><label>Email</label><input type="email" name="email" id="es-email"></div>
+                    <div class="fgroup">
+                        <label>Tier</label>
+                        <select name="tier" id="es-tier">
+                            <option value="bronze">Bronze</option>
+                            <option value="silver">Silver</option>
+                            <option value="gold">Gold</option>
+                        </select>
+                    </div>
+                    <div class="fgroup">
+                        <label>New Logo (blank to keep)</label>
+                        <div id="es-logo-row" class="current-img-row" style="display:none">
+                            <img id="es-logo-img" src="" alt="Current logo"><span>Current logo</span>
+                        </div>
+                        <input type="file" name="brand_logo" accept="image/*">
+                    </div>
+                    <div class="fsection">Contract</div>
+                    <div class="fgroup"><label>Total Contract (Rs)</label><input type="number" name="promised_amount" id="es-promised" step="0.01" min="0"></div>
+                    <div class="fgroup"></div>
+                    <div class="fgroup"><label>Start Date</label><input type="date" name="start_date" id="es-start"></div>
+                    <div class="fgroup"><label>End Date</label><input type="date" name="end_date" id="es-end"></div>
+                </div>
+                <div class="form-foot">
+                    <button type="button" class="btn" onclick="closeModal('edit-sponsor-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ADD AD MODAL -->
+<div class="overlay" id="add-ad-modal">
+    <div class="modal">
+        <div class="modal-head">
+            <span class="modal-title">New Ad Campaign</span>
+            <button class="modal-close" onclick="closeModal('add-ad-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="/add_ad" enctype="multipart/form-data">
+                <div class="fg">
+                    <div class="fgroup"><label>Advertiser Name *</label><input type="text" name="advertiser_name" placeholder="Brand Inc." required></div>
+                    <div class="fgroup"><label>Advertiser Email</label><input type="email" name="advertiser_email" placeholder="ads@brand.com"></div>
+                    <div class="fgroup full"><label>Campaign Name</label><input type="text" name="campaign_name" placeholder="Spring 2025 Campaign"></div>
+                    <div class="fgroup full"><label>Target URL *</label><input type="url" name="click_url" placeholder="https://..." required></div>
+                    <div class="fgroup"><label>Billing Amount (Rs)</label><input type="number" name="billing_amount" placeholder="0.00" step="0.01" min="0"></div>
+                    <div class="fgroup"><label>Weight (higher = shown more)</label><input type="number" name="weight" value="1" min="1" max="100"></div>
+                    <div class="fgroup"><label>Start Date</label><input type="date" name="start_date"></div>
+                    <div class="fgroup"><label>End Date</label><input type="date" name="end_date"></div>
+                    <div class="fgroup full">
+                        <label>Link to Sponsor</label>
+                        <select name="sponsor_id">
+                            <option value="">No Sponsor</option>
+                            {% for s in sponsors %}<option value="{{ s.id }}">{{ s.name }} ({{ s.tier }})</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="fsection">Creative Assets</div>
+                    <div class="fgroup full"><label>Square Image * (e.g. 300×300)</label><input type="file" name="square_image" accept="image/*" required></div>
+                    <div class="fgroup"><label>Horizontal Image (e.g. 728×90)</label><input type="file" name="horizontal_image" accept="image/*"></div>
+                    <div class="fgroup"><label>Vertical Image (e.g. 160×600)</label><input type="file" name="vertical_image" accept="image/*"></div>
+                </div>
+                <div class="form-foot">
+                    <button type="button" class="btn" onclick="closeModal('add-ad-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Campaign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT AD MODAL -->
+<div class="overlay" id="edit-ad-modal">
+    <div class="modal">
+        <div class="modal-head">
+            <span class="modal-title">Edit Ad Campaign</span>
+            <button class="modal-close" onclick="closeModal('edit-ad-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" id="edit-ad-form" action="" enctype="multipart/form-data">
+                <div class="fg">
+                    <div class="fgroup"><label>Advertiser Name *</label><input type="text" name="advertiser_name" id="ea-name" required></div>
+                    <div class="fgroup"><label>Advertiser Email</label><input type="email" name="advertiser_email" id="ea-email"></div>
+                    <div class="fgroup full"><label>Campaign Name</label><input type="text" name="campaign_name" id="ea-campaign"></div>
+                    <div class="fgroup full"><label>Target URL *</label><input type="url" name="click_url" id="ea-url" required></div>
+                    <div class="fgroup"><label>Billing Amount (Rs)</label><input type="number" name="billing_amount" id="ea-billing" step="0.01" min="0"></div>
+                    <div class="fgroup"><label>Weight</label><input type="number" name="weight" id="ea-weight" min="1" max="100"></div>
+                    <div class="fgroup"><label>Start Date</label><input type="date" name="start_date" id="ea-start"></div>
+                    <div class="fgroup"><label>End Date</label><input type="date" name="end_date" id="ea-end"></div>
+                    <div class="fgroup full">
+                        <label>Link to Sponsor</label>
+                        <select name="sponsor_id" id="ea-sponsor">
+                            <option value="">No Sponsor</option>
+                            {% for s in sponsors %}<option value="{{ s.id }}">{{ s.name }} ({{ s.tier }})</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="check-row full">
+                        <input type="checkbox" name="reset_payment" id="ea-reset-pay" value="1">
+                        <label for="ea-reset-pay">Reset to unpaid &amp; deactivate (use if billing amount changed)</label>
+                    </div>
+                    <div class="fsection">Update Creatives (blank to keep current)</div>
+                    <div class="fgroup full">
+                        <label>Square Image</label>
+                        <div id="ea-sq-row" class="current-img-row" style="display:none"><img id="ea-sq-img" src="" alt=""><span>Current square</span></div>
+                        <input type="file" name="square_image" accept="image/*">
+                    </div>
+                    <div class="fgroup">
+                        <label>Horizontal Image</label>
+                        <div id="ea-hz-row" class="current-img-row" style="display:none"><img id="ea-hz-img" src="" alt=""><span>Current horizontal</span></div>
+                        <input type="file" name="horizontal_image" accept="image/*">
+                    </div>
+                    <div class="fgroup">
+                        <label>Vertical Image</label>
+                        <div id="ea-vt-row" class="current-img-row" style="display:none"><img id="ea-vt-img" src="" alt=""><span>Current vertical</span></div>
+                        <input type="file" name="vertical_image" accept="image/*">
+                    </div>
+                </div>
+                <div class="form-foot">
+                    <button type="button" class="btn" onclick="closeModal('edit-ad-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- RENEW SPONSOR MODAL -->
+<div class="overlay" id="renew-sponsor-modal">
+    <div class="modal">
+        <div class="modal-head">
+            <span class="modal-title">Renew Sponsor</span>
+            <button class="modal-close" onclick="closeModal('renew-sponsor-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" id="renew-sponsor-form" action="">
+                <div class="fg">
+                    <div class="fgroup"><label>New End Date</label><input type="date" name="end_date" id="rs-end" required></div>
+                    <div class="fgroup"><label>New Contract Amount (Rs)</label><input type="number" name="promised_amount" id="rs-amount" step="1" min="0" placeholder="Leave blank to keep current"></div>
+                </div>
+                <p style="font-size:11px; color:var(--muted); margin-top:10px;">Sponsor will be unarchived and set back to active. Existing payment history is preserved.</p>
+                <div class="form-foot">
+                    <button type="button" class="btn" onclick="closeModal('renew-sponsor-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Renew</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- RENEW AD MODAL -->
+<div class="overlay" id="renew-ad-modal">
+    <div class="modal">
+        <div class="modal-head">
+            <span class="modal-title">Renew Campaign</span>
+            <button class="modal-close" onclick="closeModal('renew-ad-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" id="renew-ad-form" action="">
+                <div class="fg">
+                    <div class="fgroup"><label>New Start Date</label><input type="date" name="start_date" id="ra-start"></div>
+                    <div class="fgroup"><label>New End Date</label><input type="date" name="end_date" id="ra-end" required></div>
+                    <div class="fgroup full"><label>New Billing Amount (Rs) — blank to keep current</label><input type="number" name="billing_amount" id="ra-billing" step="1" min="0"></div>
+                </div>
+                <p style="font-size:11px; color:var(--muted); margin-top:10px;">Ad will be re-activated and marked unpaid for the new billing cycle. Previous billing history is preserved.</p>
+                <div class="form-foot">
+                    <button type="button" class="btn" onclick="closeModal('renew-ad-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Renew Campaign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+    function switchTab(name, btn) {
+        document.getElementById('tab-sponsors').style.display = name === 'sponsors' ? '' : 'none';
+        document.getElementById('tab-ads').style.display = name === 'ads' ? '' : 'none';
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+
+    document.querySelectorAll('.overlay').forEach(el => {
+        el.addEventListener('click', e => { if (e.target === el) closeModal(el.id); });
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(el => closeModal(el.id));
+    });
+
+    function openEditSponsor(id, name, email, tier, promised, start, end, logo) {
+        document.getElementById('edit-sponsor-form').action = '/sponsor/edit/' + id;
+        document.getElementById('es-name').value = name;
+        document.getElementById('es-email').value = email;
+        document.getElementById('es-tier').value = tier;
+        document.getElementById('es-promised').value = promised;
+        document.getElementById('es-start').value = start;
+        document.getElementById('es-end').value = end;
+        const row = document.getElementById('es-logo-row');
+        const img = document.getElementById('es-logo-img');
+        if (logo) { img.src = logo; row.style.display = 'flex'; } else { row.style.display = 'none'; }
+        openModal('edit-sponsor-modal');
+    }
+
+    function openEditAd(id, name, email, campaign, url, billing, start, end, sponsorId, weight, sq, hz, vt) {
+        document.getElementById('edit-ad-form').action = '/ad/edit/' + id;
+        document.getElementById('ea-name').value = name;
+        document.getElementById('ea-email').value = email;
+        document.getElementById('ea-campaign').value = campaign;
+        document.getElementById('ea-url').value = url;
+        document.getElementById('ea-billing').value = billing;
+        document.getElementById('ea-start').value = start;
+        document.getElementById('ea-end').value = end;
+        document.getElementById('ea-weight').value = weight;
+        document.getElementById('ea-sponsor').value = sponsorId ? String(sponsorId) : '';
+        function setPreview(rowId, imgId, src) {
+            const r = document.getElementById(rowId), i = document.getElementById(imgId);
+            if (src) { i.src = src; r.style.display = 'flex'; } else { r.style.display = 'none'; }
+        }
+        setPreview('ea-sq-row', 'ea-sq-img', sq);
+        setPreview('ea-hz-row', 'ea-hz-img', hz);
+        setPreview('ea-vt-row', 'ea-vt-img', vt);
+        openModal('edit-ad-modal');
+    }
+
+    function toggleArchived(id, btn) {
+        document.getElementById(id).classList.toggle('open');
+        btn.classList.toggle('open');
+    }
+
+    function openRenewSponsor(id, currentEnd, currentAmount) {
+        document.getElementById('renew-sponsor-form').action = '/sponsor/renew/' + id;
+        document.getElementById('rs-end').value = currentEnd || '';
+        document.getElementById('rs-amount').value = currentAmount || '';
+        openModal('renew-sponsor-modal');
+    }
+
+    function openRenewAd(id, currentEnd) {
+        document.getElementById('renew-ad-form').action = '/ad/renew/' + id;
+        document.getElementById('ra-end').value = currentEnd || '';
+        document.getElementById('ra-start').value = '';
+        document.getElementById('ra-billing').value = '';
+        openModal('renew-ad-modal');
+    }
+
+    function toast(msg, type = 'ok') {
+        const el = document.createElement('div');
+        el.className = 'toast toast-' + type;
+        el.textContent = msg;
+        document.getElementById('toasts').appendChild(el);
+        setTimeout(() => el.remove(), 3200);
+    }
+
+    const params = new URLSearchParams(location.search);
+    if (params.get('ok')) toast('Saved successfully', 'ok');
+    if (params.get('err') === 'unpaid') toast('Mark the campaign as paid first.', 'err');
+</script>
+</body>
+</html>

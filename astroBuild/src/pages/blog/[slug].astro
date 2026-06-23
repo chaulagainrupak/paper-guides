@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import FeaturedSlot from "../../components/Campaign";
 
 export async function getStaticPaths() {
     const posts = await getCollection("blog", ({ data }) => {
@@ -224,7 +225,7 @@ const nextPost = allPosts[currentIdx - 1] ?? null;
             <div
                 class="text-sm text-[var(--muted)] text-center mt-auto pt-2 border-t border-[var(--border-subtle)]"
             >
-                Sponsor Space
+                <FeaturedSlot client:only="react"/>
             </div>
         </aside>
     </div>

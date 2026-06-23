@@ -1,0 +1,27 @@
+---
+// redirect.astro - no frontmatter logic needed
+---
+<html>
+<head><title>Redirecting...</title></head>
+<body>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const dest = params.get("dest");
+  if (dest) {
+    try {
+      const u = new URL(dest);
+      if (u.protocol === "http:" || u.protocol === "https:") {
+        window.location.replace(dest);
+      } else {
+        window.location.replace("/");
+      }
+    } catch {
+      window.location.replace("/");
+    }
+  } else {
+    window.location.replace("/");
+  }
+</script>
+<p>Redirecting...</p>
+</body>
+</html>

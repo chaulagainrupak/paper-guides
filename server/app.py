@@ -29,6 +29,10 @@ from picPatcher import process_images
 from turnstileVerify import verifyTurnstileToken
 from werkzeug.security import check_password_hash, generate_password_hash
 
+
+from featureCampaign import AdManager
+import asyncio
+
 load_dotenv(".env")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
@@ -45,15 +49,39 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
 DATABASE_PATH = "instance/paper-guides.db"
 
 app = FastAPI()
+ad_manager = AdManager()
 
+
+
+
+
+async def cleanup_loop():
+    while True:
+        ad_manager.cleanup()
+        await asyncio.sleep(30 * 60)  # 30 minutes\
+
+    
+@app.on_event("startup")
+async def startup():
+    ad_manager.cleanup()  # run once immediately
+
+    asyncio.create_task(cleanup_loop())  # start background loop
+
+
+    
 PAPERS_DIR = os.getenv("PAPERS_DIR", "./instance/data/papers")
 NOTES_DIR = os.getenv("NOTES_DIR", "./instance/data/notes")
+ADS_DIR = os.getenv("ADS_DIR", "./instance/static")
+
 
 os.makedirs(PAPERS_DIR, exist_ok=True)
 os.makedirs(NOTES_DIR, exist_ok=True)
+os.makedirs(ADS_DIR, exist_ok=True)
+
 
 app.mount("/papers", StaticFiles(directory=PAPERS_DIR), name="papers")
 app.mount("/notes", StaticFiles(directory=NOTES_DIR), name="notes")
+app.mount("/instance/static", StaticFiles(directory=ADS_DIR), name="ads")
 
 app.include_router(adminRouter, prefix="/admin")
 # rate limiting the generation of mcqs and papers
@@ -700,6 +728,13 @@ async def getQuestionsForMcqs(request: Request):
 #         return Response(content="Not Found", status_code=404)
 
 #     return FileResponse(SITEMAP_PATH, media_type="application/json")
+
+
+
+
+@app.get("/featured")
+async def get_featured_campaign(session: str | None = None):
+    return ad_manager.get_campaign(session)
 
 
 @app.get("/sitemaps/{file}")

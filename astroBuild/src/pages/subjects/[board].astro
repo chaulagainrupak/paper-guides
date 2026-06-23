@@ -1,6 +1,7 @@
 ---
 // export const prerender = false;
 
+import FeaturedSlot from "../../components/Campaign";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getPaperIndex } from "../../utils/paperIndex";
 
@@ -178,7 +179,9 @@ export async function getStaticPaths() {
             <aside
                 class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
             >
-                <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+
+                <FeaturedSlot client:only="react"/>
+
             </aside>
         </div>
     </div>
@@ -186,7 +189,8 @@ export async function getStaticPaths() {
     <div
         class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center"
     >
-        <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+                <FeaturedSlot client:only="react"/>
+
     </div>
 
     <script>
