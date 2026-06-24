@@ -54,17 +54,18 @@ const pageTitle = `Subjects for ${boardDisplayName} | Question Bank | Paper Guid
 const pageDescription = `Browse ${subjects.length} subjects for ${boardDisplayName}. Click a subject to explore practice questions organised by topic. Improve your exam prep today.`;
 const pageKeywords = ["past paper questions", "exam practice", boardDisplayName, "subjects", "topics", "Paper Guides"];
 const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.url.pathname}`;
-
-const CHUNK_SIZE = Math.ceil(subjects.length / 4);
-const USE_CHUNKS = subjects.length > 40;
-const chunks: { name: string; slug: string }[][] = [];
-if (USE_CHUNKS) {
-  for (let i = 0; i < subjects.length; i += CHUNK_SIZE) {
-    chunks.push(subjects.slice(i, i + CHUNK_SIZE));
-  }
+// Chunk into 4 equal sections for inline ad breaks (only when list is long)
+const CHUNK_SIZE_SUBJECTS = Math.ceil(subjects.length / 4);
+const USE_CHUNKS_SUBJECTS = subjects.length > 40;
+const chunks_subjects: (typeof subjects[0])[][] = [];
+if (USE_CHUNKS_SUBJECTS) {
+    for (let i = 0; i < subjects.length; i += CHUNK_SIZE_SUBJECTS) {
+        chunks_subjects.push(subjects.slice(i, i + CHUNK_SIZE_SUBJECTS));
+    }
 } else {
-  chunks.push([...subjects]);
+    chunks_subjects.push([...subjects]);
 }
+
 ---
 
 <BaseLayout
@@ -126,7 +127,7 @@ if (USE_CHUNKS) {
             <p class="text-sm">No subjects available yet.</p>
           </div>
         ) : (
-          chunks.map((chunk, chunkIdx) => (
+          chunks_subjects.map((chunk, chunkIdx) => (
             <div class="chunk-section">
               {chunk.map(({ name, slug }) => (
                 <a
@@ -150,7 +151,7 @@ if (USE_CHUNKS) {
                   </div>
                 </a>
               ))}
-              {chunkIdx < chunks.length - 1 && (
+              {chunkIdx < chunks_subjects.length - 1 && (
                 <div class="ad-break border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-14 xl:px-20 py-5 bg-[var(--color-surface)]/50 flex items-center gap-5" data-ad-break>
                   <div class="flex-1 h-px bg-[var(--border-subtle)]" />
                   <FeaturedSlot variant="horizontal" client:only="react" />

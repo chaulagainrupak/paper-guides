@@ -76,7 +76,7 @@ const nextPost = allPosts[currentIdx - 1] ?? null;
 
     <!-- Content + Sidebar — stretches full height, no gap to footer -->
     <div
-        class="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_360px] bg-[var(--baby-powder)] items-stretch min-h-0"
+        class="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_360px] bg-[var(--baby-powder)] items-stretch"
     >
         <!-- Post body -->
         <div
@@ -86,8 +86,8 @@ const nextPost = allPosts[currentIdx - 1] ?? null;
                 <Content />
             </article>
 
-            <!-- Inline ad — injected mid-article by JS on mobile/md; fallback shown for short posts -->
-            <div id="blog-mid-ad" class="lg:hidden mt-8 pt-6 border-t border-[var(--border-subtle)]">
+            <!-- Inline ad — between content and nav, only on mobile/md where sidebar is hidden -->
+            <div class="lg:hidden mt-8 pt-6 border-t border-[var(--border-subtle)]">
                 <FeaturedSlot variant="horizontal" client:only="react" />
             </div>
 
@@ -356,19 +356,3 @@ const nextPost = allPosts[currentIdx - 1] ?? null;
         padding: 0.5rem 0.75rem;
     }
 </style>
-
-<script>
-  // Move the mid-article ad to after the ~40% mark of paragraphs (mobile/md only)
-  // Falls back to its original position (below article) if not enough content
-  const midAd = document.getElementById("blog-mid-ad");
-  const article = document.getElementById("blog-content");
-  if (midAd && article && window.innerWidth < 1024) {
-    const paras = Array.from(article.querySelectorAll("p, h2, h3, blockquote"));
-    const insertAfter = Math.floor(paras.length * 0.4);
-    if (insertAfter >= 2 && paras[insertAfter]) {
-      paras[insertAfter].insertAdjacentElement("afterend", midAd);
-      midAd.classList.remove("mt-8", "pt-6", "border-t");
-      midAd.classList.add("my-8", "py-4", "border-y");
-    }
-  }
-</script>
