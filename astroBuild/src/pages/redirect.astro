@@ -1,27 +1,35 @@
 ---
-// redirect.astro - no frontmatter logic needed
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
-<html>
-<head><title>Redirecting...</title></head>
-<body>
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const dest = params.get("dest");
-  if (dest) {
-    try {
-      const u = new URL(dest);
-      if (u.protocol === "http:" || u.protocol === "https:") {
-        window.location.replace(dest);
-      } else {
+
+<BaseLayout title="Redirecting... | Paper Guides">
+  <div
+    class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col items-center justify-center gap-4 text-[var(--muted)]"
+  >
+    <i class="ph-fill ph-arrow-square-out text-4xl text-[var(--accent)]"></i>
+    <p class="text-sm">Redirecting you now...</p>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const dest = params.get("dest");
+    if (dest) {
+      try {
+        const u = new URL(dest);
+        if (
+          u.protocol === "http:" ||
+          u.protocol === "https:" ||
+          u.protocol === "mailto:"
+        ) {
+          window.location.replace(dest);
+        } else {
+          window.location.replace("/");
+        }
+      } catch {
         window.location.replace("/");
       }
-    } catch {
+    } else {
       window.location.replace("/");
     }
-  } else {
-    window.location.replace("/");
-  }
-</script>
-<p>Redirecting...</p>
-</body>
-</html>
+  </script>
+</BaseLayout>
