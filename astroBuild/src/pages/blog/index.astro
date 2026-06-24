@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import FeaturedSlot from "../../components/Campaign";
 
 const allPosts = (await getCollection("blog", ({ data }) => {
   return import.meta.env.PROD ? data.draft !== true : true;
@@ -42,7 +43,7 @@ const MONTHS = ["January","February","March","April","May","June","July","August
     </div>
 
     <!-- Archive listing -->
-    <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] flex-1">
       <div class="bg-[var(--baby-powder)] flex flex-col">
         <span class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-8 lg:px-14 xl:px-20 py-3 border-b border-[var(--border-subtle)]">
           All posts, newest first
@@ -120,7 +121,7 @@ const MONTHS = ["January","February","March","April","May","June","July","August
       </div>
 
       <!-- Sidebar -->
-      <aside class="hidden md:flex flex-col gap-6 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6">
+      <aside class="hidden lg:flex flex-col gap-6 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6">
         <div class="border-b border-[var(--border-subtle)] pb-4">
           <p class="text-xs text-[var(--muted)] uppercase tracking-widest mb-3">All tags</p>
           <div class="flex flex-wrap gap-2">
@@ -131,15 +132,15 @@ const MONTHS = ["January","February","March","April","May","June","July","August
             ))}
           </div>
         </div>
-        <div class="text-sm text-[var(--muted)] text-center mt-auto">
-          Sponsor Space
+        <div class="mt-auto">
+          <FeaturedSlot client:only="react" />
         </div>
       </aside>
     </div>
 
-    <!-- Mobile ad -->
-    <div class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center">
-      <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+    <!-- Mobile + md strip -->
+    <div class="lg:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-4 flex items-center justify-center">
+      <FeaturedSlot variant="horizontal" client:only="react" />
     </div>
   </div>
 </BaseLayout>

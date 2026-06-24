@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import FeaturedSlot from "../../../../components/Campaign";
 import { getPaperIndex } from "../../../../utils/paperIndex";
 import { slugify } from "../../../../utils/slugify";
 
@@ -101,7 +102,7 @@ const nextTopic =
     </div>
 
     <!-- Content + Sidebar -->
-    <div class="flex-1 grid grid-cols-1 md:grid-cols-[1fr_360px]">
+    <div class="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_360px]">
         <!-- Notes body -->
         <div
             class="bg-[var(--baby-powder)] px-5 md:px-8 lg:px-16 xl:px-24 py-6 shadow"
@@ -160,7 +161,7 @@ const nextTopic =
 
         <!-- Sidebar -->
         <aside
-            class="hidden md:flex flex-col gap-6 sticky top-[80px] self-start bg-[var(--sidebar-bg)] p-4 border-l border-[var(--border-subtle)] h-fit"
+            class="hidden lg:flex flex-col gap-6 sticky top-[80px] self-start bg-[var(--sidebar-bg)] p-4 border-l border-[var(--border-subtle)] h-fit"
         >
             <!-- TOC -->
             <div
@@ -245,20 +246,18 @@ const nextTopic =
                 )
             }
 
-            <!-- Sponsor Space -->
-            <div
-                class="text-sm text-[var(--muted)] text-center mt-auto pt-2 border-t border-[var(--border-subtle)]"
-            >
-                Sponsor Space
+            <!-- Ad slot -->
+            <div class="mt-auto pt-2 border-t border-[var(--border-subtle)]">
+                <FeaturedSlot client:only="react" />
             </div>
         </aside>
     </div>
 
     <!-- Mobile sponsor strip -->
     <div
-        class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 text-center text-sm text-[var(--muted)]"
+        class="lg:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-4 flex items-center justify-center"
     >
-        Sponsor Space
+        <FeaturedSlot variant="horizontal" client:only="react" />
     </div>
 </BaseLayout>
 

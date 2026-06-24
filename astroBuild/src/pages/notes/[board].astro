@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getPaperIndex } from "../../utils/paperIndex";
+import FeaturedSlot from "../../components/Campaign";
 
 export async function getStaticPaths() {
     const index = await getPaperIndex();
@@ -30,6 +31,18 @@ const boardDisplayName =
         : board === "kathmandu-university"
           ? "Kathmandu University"
           : board;
+// Chunk into 4 equal sections for inline ad breaks (only when list is long)
+const CHUNK_SIZE_SUBJECTS = Math.ceil(subjects.length / 4);
+const USE_CHUNKS_SUBJECTS = subjects.length > 40;
+const chunks_subjects: (typeof subjects[0])[][] = [];
+if (USE_CHUNKS_SUBJECTS) {
+    for (let i = 0; i < subjects.length; i += CHUNK_SIZE_SUBJECTS) {
+        chunks_subjects.push(subjects.slice(i, i + CHUNK_SIZE_SUBJECTS));
+    }
+} else {
+    chunks_subjects.push([...subjects]);
+}
+
 ---
 
 <BaseLayout
@@ -56,7 +69,7 @@ const boardDisplayName =
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] flex-1">
             <div class="bg-[var(--baby-powder)] flex flex-col">
                 <span
                     class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-8 lg:px-14 xl:px-20 py-3 border-b border-[var(--border-subtle)]"
@@ -65,39 +78,50 @@ const boardDisplayName =
                 </span>
 
                 {
-                    subjects.map((s) => (
-                        <a
-                            href={`/notes/${board}/${s.key}`}
-                            class="group border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-14 xl:px-20 py-8
-                                                           bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(201,79,30,0.04)]
-                               hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1
-                               flex items-center justify-between transition-all duration-300 ease-out"
-                        >
-                            <div class="flex flex-col gap-1">
-                                <span class="font-bold text-xl group-hover:text-[var(--accent)] transition-colors">
-                                    {s.name}
-                                </span>
-                                <span class="text-xs text-[var(--muted)]">
-                                    {s.topicCount} topics
-                                </span>
-                            </div>
-                            <i class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl shrink-0 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]" />
-                        </a>
+                    chunks_subjects.map((chunk, chunkIdx) => (
+                        <div class="chunk-section">
+                            {chunk.map((s) => (
+                                <a
+                                    href={`/notes/${board}/${s.key}`}
+                                    class="group border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-14 xl:px-20 py-8
+                                           bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(201,79,30,0.04)]
+                                           hover:shadow-lg hover:scale-[1.02] hover:-translate-y-1
+                                           flex items-center justify-between transition-all duration-300 ease-out"
+                                >
+                                    <div class="flex flex-col gap-1">
+                                        <span class="font-bold text-xl group-hover:text-[var(--accent)] transition-colors">
+                                            {s.name}
+                                        </span>
+                                        <span class="text-xs text-[var(--muted)]">
+                                            {s.topicCount} topics
+                                        </span>
+                                    </div>
+                                    <i class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl shrink-0 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]" />
+                                </a>
+                            ))}
+                            {chunkIdx < chunks_subjects.length - 1 && (
+                                <div class="ad-break border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-14 xl:px-20 py-5 bg-[var(--color-surface)]/50 flex items-center gap-5" data-ad-break>
+                                    <div class="flex-1 h-px bg-[var(--border-subtle)]" />
+                                    <FeaturedSlot variant="horizontal" client:only="react" />
+                                    <div class="flex-1 h-px bg-[var(--border-subtle)]" />
+                                </div>
+                            )}
+                        </div>
                     ))
                 }
             </div>
 
             <aside
-                class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
+                class="hidden lg:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
             >
-                <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+                <FeaturedSlot client:only="react" />
             </aside>
         </div>
     </div>
 
     <div
-        class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center"
+        class="lg:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center"
     >
-        <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+        <FeaturedSlot variant="horizontal" client:only="react" />
     </div>
 </BaseLayout>

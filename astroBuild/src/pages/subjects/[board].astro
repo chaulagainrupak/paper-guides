@@ -38,12 +38,24 @@ export async function getStaticPaths() {
 
     const paths: { params: { board: string } }[] = [];
 
-    // Loop through all boards
     for (const board of Object.keys(index)) {
         paths.push({ params: { board } });
     }
 
     return paths;
+}
+
+// Chunk subjects into 4 equal-ish sections for inline ad breaks
+// Only bother if list is long enough to warrant it (> 40 items)
+const CHUNK_SIZE = Math.ceil(subjects.length / 4);
+const USE_CHUNKS = subjects.length > 40;
+const chunks: { name: string; slug: string }[][] = [];
+if (USE_CHUNKS) {
+    for (let i = 0; i < subjects.length; i += CHUNK_SIZE) {
+        chunks.push(subjects.slice(i, i + CHUNK_SIZE));
+    }
+} else {
+    chunks.push(subjects);
 }
 ---
 
@@ -54,7 +66,7 @@ export async function getStaticPaths() {
     <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col">
         <!-- header -->
         <div
-            class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
+            class="bg-[#242424] text-[#f7f7f7] py-12 md:py-20 md:px-8 lg:px-20 px-5 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center"
         >
             <div class="flex flex-col justify-center">
                 <span
@@ -68,7 +80,7 @@ export async function getStaticPaths() {
                         ><i class="ph-fill ph-book"></i> {boardDisplayName}</a
                     >
                 </span>
-                <h1 class="font-serif font-bold text-4xl md:text-6xl">
+                <h1 class="font-serif font-bold text-4xl md:text-5xl lg:text-6xl">
                     {boardDisplayName}
                     <br />
                     <span class="text-[var(--accent)] italic">
@@ -99,70 +111,140 @@ export async function getStaticPaths() {
         </div>
 
         <!-- subject list + sidebar -->
-        <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
+        <!-- sidebar kicks in at lg (1024px) not md — md is too narrow for 420px aside -->
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] flex-1">
             <div
                 id="subject-list"
                 class="bg-[var(--baby-powder)] flex flex-col"
             >
                 <span
-                    class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]"
+                    class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-8 lg:px-20 py-3 border-b border-[var(--border-subtle)]"
                 >
                     Click a subject to explore past papers for {
                         boardDisplayName
-                    }.
+                    }. {USE_CHUNKS && <span class="normal-case not-italic opacity-60">— {subjects.length} subjects, split into sections</span>}
                 </span>
 
                 {
-                    subjects.map(({ name, slug }) => (
-                        <a
-                            data-name={name.toLowerCase()}
-                            href={`/subjects/${board}/${slug}`}
-                            class="group relative border-b border-[var(--border-subtle)] px-5 md:px-20 py-8 text-[var(--font-color)] transition-all duration-300 ease-out
-                   bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
-                   hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
-                   flex items-center justify-between"
-                        >
-                            <div class="flex gap-3">
-                                <span class="font-bold text-xl group-hover:text-[var(--accent)] transition-colors">
-                                    {name}
-                                </span>
-                            </div>
+                    USE_CHUNKS ? (
+                        chunks.map((chunk, chunkIdx) => (
+                            <div class="chunk-section" data-chunk={chunkIdx}>
+                                {chunk.map(({ name, slug }) => (
+                                    <a
+                                        data-name={name.toLowerCase()}
+                                        href={`/subjects/${board}/${slug}`}
+                                        class="group relative border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-20 py-6 text-[var(--font-color)] transition-all duration-300 ease-out
+                               bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
+                               hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
+                               flex items-center justify-between"
+                                    >
+                                        <div class="flex gap-3">
+                                            <span class="font-bold text-xl group-hover:text-[var(--accent)] transition-colors">
+                                                {name}
+                                            </span>
+                                        </div>
 
-                            <div class="flex items-center gap-3 ml-4">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="text-xs px-2 py-1 bg-[var(--accent)]/20 text-[var(--accent)] rounded-full">
-                                        {
-                                            Object.keys(
-                                                globalIndex[board][slug][
-                                                    "years"
-                                                ],
-                                            ).length
-                                        }{" "}
-                                        years
-                                    </span>
-                                    <span class="text-xs px-2 py-1 bg-[var(--blue-highlight)]/20 text-[var(--blue-highlight)] rounded-full">
-                                        {
-                                            // @ts-ignore
-                                            Object.values(
-                                                globalIndex[board][slug][
-                                                    "years"
-                                                ],
-                                            ).reduce(
-                                                (acc, arr) => acc + arr.length,
-                                                0,
-                                            )
-                                        }{" "}
-                                        papers
+                                        <div class="flex items-center gap-3 ml-4">
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <span class="text-xs px-2 py-1 bg-[var(--accent)]/20 text-[var(--accent)] rounded-full">
+                                                    {
+                                                        Object.keys(
+                                                            globalIndex[board][slug][
+                                                                "years"
+                                                            ],
+                                                        ).length
+                                                    }{" "}
+                                                    years
+                                                </span>
+                                                <span class="text-xs px-2 py-1 bg-[var(--blue-highlight)]/20 text-[var(--blue-highlight)] rounded-full">
+                                                    {
+                                                        // @ts-ignore
+                                                        Object.values(
+                                                            globalIndex[board][slug][
+                                                                "years"
+                                                            ],
+                                                        ).reduce(
+                                                            (acc, arr) => acc + arr.length,
+                                                            0,
+                                                        )
+                                                    }{" "}
+                                                    papers
+                                                </span>
+                                            </div>
+
+                                            <span class="text-xs font-semibold text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                                                Explore
+                                            </span>
+                                            <i class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-3xl shrink-0 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]" />
+                                        </div>
+                                    </a>
+                                ))}
+
+                                {/* Ad break between chunks — not after the last one */}
+                                {chunkIdx < chunks.length - 1 && (
+                                    <div
+                                        class="ad-break border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-20 py-5 bg-[var(--color-surface)]/50 flex items-center gap-5"
+                                        data-ad-break
+                                    >
+                                        <div class="flex-1 h-px bg-[var(--border-subtle)]" />
+                                        <FeaturedSlot variant="horizontal" client:only="react" />
+                                        <div class="flex-1 h-px bg-[var(--border-subtle)]" />
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        subjects.map(({ name, slug }) => (
+                            <a
+                                data-name={name.toLowerCase()}
+                                href={`/subjects/${board}/${slug}`}
+                                class="group relative border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-20 py-6 text-[var(--font-color)] transition-all duration-300 ease-out
+                       bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
+                       hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
+                       flex items-center justify-between"
+                            >
+                                <div class="flex gap-3">
+                                    <span class="font-bold text-xl group-hover:text-[var(--accent)] transition-colors">
+                                        {name}
                                     </span>
                                 </div>
 
-                                <span class="text-xs font-semibold text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                                    Explore
-                                </span>
-                                <i class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-3xl shrink-0 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]" />
-                            </div>
-                        </a>
-                    ))
+                                <div class="flex items-center gap-3 ml-4">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="text-xs px-2 py-1 bg-[var(--accent)]/20 text-[var(--accent)] rounded-full">
+                                            {
+                                                Object.keys(
+                                                    globalIndex[board][slug][
+                                                        "years"
+                                                    ],
+                                                ).length
+                                            }{" "}
+                                            years
+                                        </span>
+                                        <span class="text-xs px-2 py-1 bg-[var(--blue-highlight)]/20 text-[var(--blue-highlight)] rounded-full">
+                                            {
+                                                // @ts-ignore
+                                                Object.values(
+                                                    globalIndex[board][slug][
+                                                        "years"
+                                                    ],
+                                                ).reduce(
+                                                    (acc, arr) => acc + arr.length,
+                                                    0,
+                                                )
+                                            }{" "}
+                                            papers
+                                        </span>
+                                    </div>
+
+                                    <span class="text-xs font-semibold text-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                                        Explore
+                                    </span>
+                                    <i class="ph-fill ph-arrow-right text-[var(--muted)] text-2xl md:text-3xl shrink-0 transition-all duration-300 group-hover:translate-x-2 group-hover:text-[var(--accent)]" />
+                                </div>
+                            </a>
+                        ))
+                    )
                 }
 
                 <div
@@ -176,21 +258,20 @@ export async function getStaticPaths() {
                 </div>
             </div>
 
+            <!-- sidebar only at lg+, narrowed to 360px so content has room -->
             <aside
-                class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
+                class="hidden lg:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
             >
-
-                <FeaturedSlot client:only="react"/>
-
+                <FeaturedSlot client:only="react" />
             </aside>
         </div>
     </div>
 
+    <!-- mobile + md strip (below lg) -->
     <div
-        class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center"
+        class="lg:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-4 flex items-center justify-center"
     >
-                <FeaturedSlot client:only="react"/>
-
+        <FeaturedSlot variant="horizontal" client:only="react" />
     </div>
 
     <script>
@@ -199,19 +280,28 @@ export async function getStaticPaths() {
         const input = document.getElementById(
             "subject-search",
         ) as HTMLInputElement;
+        // get all subject links (skip ad-break divs)
         const items = Array.from(
-            document.querySelectorAll("#subject-list a"),
+            document.querySelectorAll("#subject-list a[data-name]"),
+        ) as HTMLElement[];
+        const adBreaks = Array.from(
+            document.querySelectorAll("[data-ad-break]"),
         ) as HTMLElement[];
         const data = items.map((el) => ({ name: el.dataset.name ?? "" }));
 
         input.addEventListener("input", () => {
             const q = input.value.trim();
             const noResults = document.getElementById("no-results")!;
+
             if (!q) {
                 items.forEach((el) => (el.style.display = ""));
+                adBreaks.forEach((el) => (el.style.display = ""));
                 noResults.style.display = "none";
                 return;
             }
+
+            // hide ad breaks during search — chunks aren't meaningful when filtered
+            adBreaks.forEach((el) => (el.style.display = "none"));
 
             const results = fuzzyFilter(data, q);
             const matchedNames = new Set(results.map((r) => r.name));

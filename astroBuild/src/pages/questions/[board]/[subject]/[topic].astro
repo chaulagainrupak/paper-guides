@@ -28,6 +28,7 @@ export async function getStaticPaths() {
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import { getPaperIndex } from "../../../../utils/paperIndex";
 import { slugify } from "../../../../utils/slugify";
+import FeaturedSlot from "../../../../components/Campaign";
 
 const { board, subject, topic } = Astro.params;
 
@@ -112,9 +113,9 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] flex-1">
       <div id="question-list" class="bg-[var(--baby-powder)] flex flex-col">
-        <h2 class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]">
+        <h2 class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-8 lg:px-20 py-3 border-b border-[var(--border-subtle)]">
           Click on a question to view the full answer
         </h2>
 
@@ -131,7 +132,7 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
             return (
               <a
                 href={`/questions/${board}/${subject}/${topic}/${q.slug}`}
-                class="group relative border-b border-[var(--border-subtle)] px-5 md:px-20 py-8 text-[var(--font-color)] transition-all duration-300 ease-out
+                class="group relative border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-20 py-6 text-[var(--font-color)] transition-all duration-300 ease-out
                        bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
                        hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
                        flex items-start justify-between gap-4"
@@ -151,14 +152,14 @@ const canonicalUrl = `${Astro.site?.href ?? "https://paperguides.org"}${Astro.ur
         )}
       </div>
 
-      <aside class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6">
-        <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+      <aside class="hidden lg:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6">
+        <FeaturedSlot client:only="react" />
       </aside>
     </div>
   </div>
 
-  <div class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center">
-    <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+  <div class="lg:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center">
+    <FeaturedSlot variant="horizontal" client:only="react" />
   </div>
 
   <script type="application/ld+json" is:inline>

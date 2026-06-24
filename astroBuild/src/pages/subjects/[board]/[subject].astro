@@ -3,6 +3,7 @@
 
 import { getPaperIndex } from "../../../utils/paperIndex";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import FeaturedSlot from "../../../components/Campaign";
 
 const { board, subject } = Astro.params;
 
@@ -100,12 +101,12 @@ export async function getStaticPaths() {
         </div>
 
         <!-- list + sidebar side by side -->
-        <div class="grid grid-cols-1 md:grid-cols-[1fr_420px] flex-1">
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] flex-1">
             <!-- year list -->
 
             <div id="year-list" class="bg-[var(--baby-powder)] flex flex-col">
                 <span
-                    class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-20 py-3 border-b border-[var(--border-subtle)]"
+                    class="bg-[var(--color-surface)] text-sm text-[var(--muted)] uppercase tracking-widest px-5 md:px-8 lg:px-20 py-3 border-b border-[var(--border-subtle)]"
                 >
                     Click on a year to explore past papers for {
                         realSubjectName
@@ -116,7 +117,7 @@ export async function getStaticPaths() {
                         <a
                             data-year={year}
                             href={`/subjects/${board}/${subject}/${year}`}
-                            class="group relative border-b border-[var(--border-subtle)] px-5 md:px-20 py-8 text-[var(--font-color)] transition-all duration-300 ease-out
+                            class="group relative border-b border-[var(--border-subtle)] px-5 md:px-8 lg:px-20 py-6 text-[var(--font-color)] transition-all duration-300 ease-out
                      bg-[var(--baby-powder)] hover:bg-gradient-to-r hover:from-[var(--baby-powder)] hover:to-[rgba(74,222,128,0.05)]
                      hover:shadow-lg hover:scale-[1.02] hover:translate-y-[-4px]
                      flex items-center justify-between"
@@ -161,18 +162,18 @@ export async function getStaticPaths() {
 
             <!-- ad sidebar: sticky on desktop -->
             <aside
-                class="hidden md:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
+                class="hidden lg:flex flex-col items-center gap-4 sticky top-[64px] self-start h-[calc(100vh-64px)] bg-[var(--nav-bg)] border-l border-[var(--border-subtle)] p-6"
             >
-                <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+                <FeaturedSlot client:only="react" />
             </aside>
         </div>
     </div>
 
-    <!-- mobile ad strip -->
+    <!-- mobile + md strip -->
     <div
-        class="md:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-3 flex items-center justify-center"
+        class="lg:hidden w-full bg-[var(--nav-bg)] border-t border-[var(--border-subtle)] px-5 py-4 flex items-center justify-center"
     >
-        <span class="text-sm text-[var(--muted)]">Sponsor Space</span>
+        <FeaturedSlot variant="horizontal" client:only="react" />
     </div>
 
     <script>
