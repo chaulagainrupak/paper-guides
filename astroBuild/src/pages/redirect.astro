@@ -1,11 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
-
 <BaseLayout title="Redirecting... | Paper Guides">
-  <div
-    class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col items-center justify-center gap-4 text-[var(--muted)]"
-  >
+  <div class="mt-[64px] min-h-[calc(100vh-64px)] flex flex-col items-center justify-center gap-4 text-[var(--muted)]">
     <i class="ph-fill ph-arrow-square-out text-4xl text-[var(--accent)]"></i>
     <p class="text-sm">Redirecting you now...</p>
   </div>
@@ -16,11 +13,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     if (dest) {
       try {
         const u = new URL(dest);
-        if (
-          u.protocol === "http:" ||
-          u.protocol === "https:" ||
-          u.protocol === "mailto:"
-        ) {
+        if (u.protocol === "http:" || u.protocol === "https:" || u.protocol === "mailto:") {
           window.location.replace(dest);
         } else {
           window.location.replace("/");

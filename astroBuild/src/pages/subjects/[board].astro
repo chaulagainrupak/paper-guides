@@ -187,7 +187,7 @@ if (USE_CHUNKS) {
                                         data-ad-break
                                     >
                                         <div class="flex-1 h-px bg-[var(--border-subtle)]" />
-                                        <FeaturedSlot variant="horizontal" client:only="react" />
+                                        <div data-ad-mount class="max-w-2xl w-full"></div>
                                         <div class="flex-1 h-px bg-[var(--border-subtle)]" />
                                     </div>
                                 )}
@@ -319,4 +319,19 @@ if (USE_CHUNKS) {
             noResults.style.display = any ? "none" : "flex";
         });
     </script>
+
+  <script>
+    (async () => {
+      const mounts = document.querySelectorAll("[data-ad-mount]");
+      if (!mounts.length) return;
+      const [{ default: FeaturedSlot }, { createElement }, { createRoot }] = await Promise.all([
+        import("/src/components/Campaign"),
+        import("react"),
+        import("react-dom/client"),
+      ]);
+      mounts.forEach((el) => {
+        createRoot(el).render(createElement(FeaturedSlot, { variant: "horizontal" }));
+      });
+    })();
+  </script>
 </BaseLayout>
