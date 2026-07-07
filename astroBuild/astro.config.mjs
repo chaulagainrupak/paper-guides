@@ -11,6 +11,7 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://paperguides.org",
   output: "static",
+  trailingSlash: "never",
   integrations: [
     react(),
     sitemap({
